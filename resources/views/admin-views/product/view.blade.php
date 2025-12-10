@@ -215,7 +215,7 @@
 
                         @if(($product->product_type == 'digital') && ($product->digital_product_type == 'ready_product'))
                             <div>
-                                <a href="{{asset("storage/app/public/product/digital-product/$product->digital_file_ready")}}" class="btn btn--primary py-1 mt-3" download>{{\App\CPU\translate('download')}}</a>
+                                <a href="{{asset("storage/product/digital-product/$product->digital_file_ready")}}" class="btn btn--primary py-1 mt-3" download>{{\App\CPU\translate('download')}}</a>
                             </div>
                         @endif
 
@@ -252,7 +252,7 @@
                                             <div class="card-body">
                                                 <img class="width-100"
                                                     onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                    src="{{asset("storage/app/public/product/$photo")}}" alt="Product image">
+                                                    src="{{asset("storage/product/$photo")}}" alt="Product image">
 
                                             </div>
                                         </div>
@@ -292,11 +292,11 @@
                                         <img
                                             class="avatar-img"
                                             onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                            src="{{asset('storage/app/public/profile/'.$review->customer->image)}}"
+                                            src="{{asset('storage/profile/'.$review->customer->image)}}"
                                             alt="Image Description">
                                     </div>
                                     <div class="{{Session::get('direction') === "rtl" ? 'mr-3' : 'ml-3'}}">
-                                    <span class="d-block h5 text-hover-primary mb-0">{{$review->customer['f_name']." ".$review->customer['l_name']}} <i
+                                        <span class="d-block h5 text-hover-primary mb-0">{{$review->customer['f_name']." ".$review->customer['l_name']}} <i
                                             class="tio-verified text-primary" data-toggle="tooltip" data-placement="top"
                                             title="Verified Customer"></i></span>
                                         <span class="d-block font-size-sm text-body">{{$review->customer->email??""}}</span>
@@ -316,8 +316,8 @@
                                     </p>
                                     @foreach (json_decode($review->attachment) as $img)
 
-                                        <a class="float-left" href="{{asset('storage/app/public/review')}}/{{$img}}" data-lightbox="mygallery">
-                                            <img class="p-2" width="60" height="60" src="{{asset('storage/app/public/review')}}/{{$img}}" alt="">
+                                        <a class="float-left" href="{{asset('storage/review')}}/{{$img}}" data-lightbox="mygallery">
+                                            <img class="p-2" width="60" height="60" src="{{asset('storage/review')}}/{{$img}}" alt="">
                                         </a>
 
                                     @endforeach

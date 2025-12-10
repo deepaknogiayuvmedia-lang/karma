@@ -36,6 +36,16 @@ class Product extends Model
         'is_shipping_cost_updated' => 'integer'
     ];
 
+    protected $fillable = [
+        'name',
+        'price',
+        'product_type',
+        // other fields...
+        'added_by',   // <–– add this
+        'code',
+        'pid' ,
+    ];
+
     public function translations()
     {
         return $this->morphMany('App\Model\Translation', 'translationable');

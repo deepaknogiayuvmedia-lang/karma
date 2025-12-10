@@ -177,7 +177,7 @@
                         @endif
 
                         @if(($product->product_type == 'digital') && ($product->digital_product_type == 'ready_product'))
-                            <a href="{{asset("storage/app/public/product/digital-product/$product->digital_file_ready")}}"
+                            <a href="{{asset("storage/product/digital-product/$product->digital_file_ready")}}"
                                class="btn btn--primary px-4 mt-4">{{\App\CPU\translate('download')}}</a>
                         @endif
                     </div>
@@ -216,7 +216,7 @@
                                             <div class="card-body">
                                                 <img class="w-100"
                                                      onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                     src="{{asset("storage/app/public/product/$photo")}}"
+                                                     src="{{asset("storage/product/$photo")}}"
                                                      alt="Product image">
 
                                             </div>
@@ -257,7 +257,7 @@
                                             <img
                                                 class="avatar-img"
                                                 onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                src="{{asset('storage/app/public/profile/'.$review->customer->image??"")}}"
+                                                src="{{asset('storage/profile/'.$review->customer->image??"")}}"
                                                 alt="Image Description">
                                         </div>
                                         <div>
@@ -284,11 +284,11 @@
                                         @if(json_decode($review->attachment) != null)
                                             @foreach (json_decode($review->attachment) as $img)
                                                 <a class="float-left"
-                                                   href="{{asset('storage/app/public/review')}}/{{$img}}"
+                                                   href="{{asset('storage/review')}}/{{$img}}"
                                                    data-lightbox="mygallery">
                                                     <img class="p-2" width="60" height="60"
                                                          onerror="this.src='{{asset('public/assets/back-end/img/160x160/img2.jpg')}}'"
-                                                         src="{{asset('storage/app/public/review')}}/{{$img}}" alt="">
+                                                         src="{{asset('storage/review')}}/{{$img}}" alt="">
                                                 </a>
                                             @endforeach
                                         @endif

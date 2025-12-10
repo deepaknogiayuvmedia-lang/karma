@@ -187,7 +187,7 @@ Preserve the relative scale, though. */
                                         </div>
                                         <div class="col-md-6">
                                             <p class="h-100 mt-5">
-                                                <a href="{{asset("storage/app/public/product/digital-product/$product->digital_file_ready")}}" target="_blank">{{ $product->digital_file_ready }}</a>
+                                                <a href="{{asset("storage/product/digital-product/$product->digital_file_ready")}}" target="_blank">{{ $product->digital_file_ready }}</a>
                                             </p>
                                         </div>
                                     </div>
@@ -851,7 +851,7 @@ Preserve the relative scale, though. */
                                     </span>
                                         <img class="w-100" height="auto"
                                              onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                             src="{{asset('storage/app/public/product/`+image_name+`')}}"
+                                             src="{{asset('storage/product/`+image_name+`')}}"
                                              alt="Product image">
                                         <a href="`+remove_url+`?id=`+product_id+`&name=`+image_name+`&color=`+color_value['color']+`"
                                            class="btn btn-danger btn-block">{{\App\CPU\translate('Remove')}}</a>

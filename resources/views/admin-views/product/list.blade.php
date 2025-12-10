@@ -13,9 +13,9 @@
         <h2 class="h1 mb-0 text-capitalize d-flex gap-2">
             <img src="{{asset('/public/assets/back-end/img/inhouse-product-list.png')}}" alt="">
             @if($type == 'in_house')
-                {{\App\CPU\translate('In-House_Product_List')}}
+            {{\App\CPU\translate('In-House_Product_List')}}
             @elseif($type == 'seller')
-                {{\App\CPU\translate('Seller_Product_List')}}
+            {{\App\CPU\translate('Seller_Product_List')}}
             @endif
             <span class="badge badge-soft-dark radius-50 fz-14 ml-1">{{ $pro->total() }}</span>
         </h2>
@@ -37,8 +37,8 @@
                                         </div>
                                     </div>
                                     <input id="datatableSearch_" type="search" name="search" class="form-control"
-                                           placeholder="{{\App\CPU\translate('Search Product Name')}}" aria-label="Search orders"
-                                           value="{{ $search }}" required>
+                                        placeholder="{{\App\CPU\translate('Search Product Name')}}" aria-label="Search orders"
+                                        value="{{ $search }}" required>
                                     <input type="hidden" value="{{ $request_status }}" name="status">
                                     <button type="submit" class="btn btn--primary">{{\App\CPU\translate('search')}}</button>
                                 </div>
@@ -63,10 +63,10 @@
                             </a>
                             @endif
                             @if (!isset($request_status))
-                                <a href="{{route('admin.product.add-new')}}" class="btn btn--primary">
-                                    <i class="tio-add"></i>
-                                    <span class="text">{{\App\CPU\translate('Add_New_Product')}}</span>
-                                </a>
+                            <a href="{{route('admin.product.add-new')}}" class="btn btn--primary">
+                                <i class="tio-add"></i>
+                                <span class="text">{{\App\CPU\translate('Add_New_Product')}}</span>
+                            </a>
                             @endif
                         </div>
                     </div>
@@ -83,17 +83,18 @@
                                 <th class="text-right">{{\App\CPU\translate('selling_price')}}</th>
                                 <th class="text-center">{{\App\CPU\translate('Show_as_featured')}}</th>
                                 <th class="text-center">{{\App\CPU\translate('Active')}} {{\App\CPU\translate('status')}}</th>
+                                <th class="text-center">{{\App\CPU\translate('sellers')}}</th>
                                 <th class="text-center">{{\App\CPU\translate('Action')}}</th>
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach($pro as $k=>$p)
+                            @foreach($pro as $k=>$p)
                             <tr>
                                 <th scope="row">{{$pro->firstItem()+$k}}</th>
                                 <td>
                                     <a href="{{route('admin.product.view',[$p['id']])}}" class="media align-items-center gap-2">
                                         <img src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$p['thumbnail']}}"
-                                             onerror="this.src='{{asset('/public/assets/back-end/img/brand-logo.png')}}'"class="avatar border" alt="">
+                                            onerror="this.src='{{asset('/public/assets/back-end/img/brand-logo.png')}}'" class="avatar border" alt="">
                                         <span class="media-body title-color hover-c1">
                                             {{\Illuminate\Support\Str::limit($p['name'],20)}}
                                         </span>
@@ -111,16 +112,23 @@
                                 <td class="text-center">
                                     <label class="mx-auto switcher">
                                         <input class="switcher_input" type="checkbox"
-                                                onclick="featured_status('{{$p['id']}}')" {{$p->featured == 1?'checked':''}}>
+                                            onclick="featured_status('{{$p['id']}}')" {{$p->featured == 1?'checked':''}}>
                                         <span class="switcher_control"></span>
                                     </label>
                                 </td>
                                 <td class="text-center">
                                     <label class="mx-auto switcher">
                                         <input type="checkbox" class="status switcher_input"
-                                                id="{{$p['id']}}" {{$p->status == 1?'checked':''}}>
+                                            id="{{$p['id']}}" {{$p->status == 1?'checked':''}}>
                                         <span class="switcher_control"></span>
                                     </label>
+                                </td>
+                                <td>
+
+                                    @php($seller=\App\Model\Product::where('pid',$p['id'])->count())
+
+                                    {{ $seller }}
+
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
@@ -143,12 +151,12 @@
                                         </a>
                                     </div>
                                     <form action="{{route('admin.product.delete',[$p['id']])}}"
-                                            method="post" id="product-{{$p['id']}}">
+                                        method="post" id="product-{{$p['id']}}">
                                         @csrf @method('delete')
                                     </form>
                                 </td>
                             </tr>
-                        @endforeach
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -161,10 +169,10 @@
                 </div>
 
                 @if(count($pro)==0)
-                    <div class="text-center p-4">
-                        <img class="mb-3 w-160" src="{{asset('public/assets/back-end')}}/svg/illustrations/sorry.svg" alt="Image Description">
-                        <p class="mb-0">{{\App\CPU\translate('No data to show')}}</p>
-                    </div>
+                <div class="text-center p-4">
+                    <img class="mb-3 w-160" src="{{asset('public/assets/back-end')}}/svg/illustrations/sorry.svg" alt="Image Description">
+                    <p class="mb-0">{{\App\CPU\translate('No data to show')}}</p>
+                </div>
                 @endif
             </div>
         </div>
@@ -173,66 +181,67 @@
 @endsection
 
 @push('script')
-    <!-- Page level plugins -->
-    <script src="{{asset('public/assets/back-end')}}/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="{{asset('public/assets/back-end')}}/vendor/datatables/dataTables.bootstrap4.min.js"></script>
-    <!-- Page level custom scripts -->
-    <script>
-        // Call the dataTables jQuery plugin
-        $(document).ready(function () {
-            $('#dataTable').DataTable();
-        });
+<!-- Page level plugins -->
+<script src="{{asset('public/assets/back-end')}}/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="{{asset('public/assets/back-end')}}/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+<!-- Page level custom scripts -->
+<script>
+    // Call the dataTables jQuery plugin
+    $(document).ready(function() {
+        $('#dataTable').DataTable();
+    });
 
-        $(document).on('change', '.status', function () {
-            var id = $(this).attr("id");
-            if ($(this).prop("checked") == true) {
-                var status = 1;
-            } else if ($(this).prop("checked") == false) {
-                var status = 0;
-            }
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                }
-            });
-            $.ajax({
-                url: "{{route('admin.product.status-update')}}",
-                method: 'POST',
-                data: {
-                    id: id,
-                    status: status
-                },
-                success: function (data) {
-                    if(data.success == true) {
-                        toastr.success('{{\App\CPU\translate('Status updated successfully')}}');
-                    }
-                    else if(data.success == false) {
-                        toastr.error('{{\App\CPU\translate('Status updated failed. Product must be approved')}}');
-                        setTimeout(function(){
-                            location.reload();
-                        }, 2000);
-                    }
-                }
-            });
-        });
-
-        function featured_status(id) {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                }
-            });
-            $.ajax({
-                url: "{{route('admin.product.featured-status')}}",
-                method: 'POST',
-                data: {
-                    id: id
-                },
-                success: function () {
-                    toastr.success('{{\App\CPU\translate('Featured status updated successfully')}}');
-                }
-            });
+    $(document).on('change', '.status', function() {
+        var id = $(this).attr("id");
+        if ($(this).prop("checked") == true) {
+            var status = 1;
+        } else if ($(this).prop("checked") == false) {
+            var status = 0;
         }
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: "{{route('admin.product.status-update')}}",
+            method: 'POST',
+            data: {
+                id: id,
+                status: status
+            },
+            success: function(data) {
+                if (data.success == true) {
+                    toastr.success('{{\App\CPU\translate('
+                        Status updated successfully ')}}');
+                } else if (data.success == false) {
+                    toastr.error('{{\App\CPU\translate('
+                        Status updated failed.Product must be approved ')}}');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+                }
+            }
+        });
+    });
 
-    </script>
+    function featured_status(id) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: "{{route('admin.product.featured-status')}}",
+            method: 'POST',
+            data: {
+                id: id
+            },
+            success: function() {
+                toastr.success('{{\App\CPU\translate('
+                    Featured status updated successfully ')}}');
+            }
+        });
+    }
+</script>
 @endpush

@@ -50,7 +50,9 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
             Route::get('add-new', 'ProductController@add_new')->name('add-new');
             Route::post('add-new', 'ProductController@store')->name('storeproduct');
             Route::post('status-update', 'ProductController@status_update')->name('status-update');
+            Route::post('admintoseller', 'ProductController@admintoseller')->name('admintoseller');
             Route::get('list', 'ProductController@list')->name('list');
+            Route::get('adminlist', 'ProductController@adminlist')->name('adminlist');
             Route::get('stock-limit-list/{type}', 'ProductController@stock_limit_list')->name('stock-limit-list');
             Route::get('get-variations', 'ProductController@get_variations')->name('get-variations');
             Route::post('update-quantity', 'ProductController@update_quantity')->name('update-quantity');

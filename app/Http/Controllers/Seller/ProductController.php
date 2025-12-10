@@ -63,6 +63,54 @@ class ProductController extends Controller
             }
         }
     }
+    public function admintoseller(Request $request)
+    {
+        $sellerproduct = Product::where(['added_by' => 'seller', 'user_id' => \auth('seller')->id()])->where('pid', '!=', null)->pluck('pid')->toArray();
+        if ($request['id']) {
+            $product = Product::findOrFail($request['id']);
+            if(in_array($product->id, $sellerproduct)){
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'You have already Added this product.',
+                ], 200);
+            }
+           
+            //  dd($blankid);
+            do {
+                $code = random_int(100000, 999999);
+            } while (Product::where('code', $code)->exists());
+            $duplicate   = $product->replicate();
+            $duplicate->user_id = \auth('seller')->id();
+            $duplicate->added_by = 'seller';
+            $duplicate->pid = $product->id;
+            $duplicate->unit_price = Convert::usd($request->price);
+            $duplicate->slug = $duplicate->slug . '-' . Str::random(6);
+            $duplicate->tax            = 0;
+            $duplicate->discount       = 0;
+            $duplicate->current_stock  = 0;
+            $duplicate->status         = 0;
+            $duplicate->shipping_cost  = 0;
+            $duplicate->multiply_qty   = 0;
+            $duplicate->minimum_order_qty = 1;
+            $duplicate->code = $code;
+            
+
+            unset($duplicate->reviews_count);
+
+            $duplicate->save();
+           
+           
+            return response()->json([
+                'success' => 1,
+                'message' => 'Product Added successfully  ',
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Something went wrong',
+            ], 200);
+        }
+    }
 
     public function featured_status(Request $request)
     {
@@ -109,10 +157,11 @@ class ProductController extends Controller
             'shipping_cost.required_if'         => 'Shipping Cost is required!',
         ]);
 
-        if(!$request->has('colors_active') && !$request->file('images')) {
+        if (!$request->has('colors_active') && !$request->file('images')) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
-                    'images', 'Product images is required!'
+                    'images',
+                    'Product images is required!'
                 );
             });
         }
@@ -121,7 +170,8 @@ class ProductController extends Controller
         if ($brand_setting && empty($request->brand_id)) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
-                    'brand_id', 'Brand is required!'
+                    'brand_id',
+                    'Brand is required!'
                 );
             });
         }
@@ -135,7 +185,8 @@ class ProductController extends Controller
         if ($request['unit_price'] <= $dis) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
-                    'unit_price', 'Discount can not be more or equal to the price!'
+                    'unit_price',
+                    'Discount can not be more or equal to the price!'
                 );
             });
         }
@@ -143,7 +194,8 @@ class ProductController extends Controller
         if (is_null($request->name[array_search('en', $request->lang)])) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
-                    'name', 'Name field is required!'
+                    'name',
+                    'Name field is required!'
                 );
             });
         }
@@ -157,21 +209,22 @@ class ProductController extends Controller
         $product_images = [];
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             foreach ($request->colors as $color) {
-                $color_ = str_replace('#','',$color);
-                $img = 'color_image_'.$color_;
-                if($request->file($img)){
+                $color_ = str_replace('#', '', $color);
+                $img = 'color_image_' . $color_;
+                if ($request->file($img)) {
                     $image_name = ImageManager::upload('product/', 'png', $request->file($img));
                     $product_images[] = $image_name;
                     $color_image_serial[] = [
-                        'color'=>$color_,
-                        'image_name'=>$image_name,
+                        'color' => $color_,
+                        'image_name' => $image_name,
                     ];
                 }
             }
-            if(count($product_images) != count($request->colors)) {
+            if (count($product_images) != count($request->colors)) {
                 $validator->after(function ($validator) {
                     $validator->errors()->add(
-                        'images', 'Color images is required!'
+                        'images',
+                        'Color images is required!'
                     );
                 });
             }
@@ -265,7 +318,7 @@ class ProductController extends Controller
                 $stock_count += $item['qty'];
             }
         } else {
-            $stock_count = (integer)$request['current_stock'];
+            $stock_count = (int)$request['current_stock'];
         }
 
         if ($validator->errors()->count() > 0) {
@@ -285,10 +338,10 @@ class ProductController extends Controller
         $product->current_stock  = $request->product_type == 'physical' ? abs($stock_count) : 0;
         $product->video_provider = 'youtube';
         $product->video_url      = $request->video_link;
-        $product->request_status = Helpers::get_business_settings('new_product_approval')==1?0:1;
+        $product->request_status = Helpers::get_business_settings('new_product_approval') == 1 ? 0 : 1;
         $product->status         = 0;
         $product->shipping_cost  = $request->product_type == 'physical' ? Convert::usd($request->shipping_cost) : 0;
-        $product->multiply_qty   = ($request->product_type == 'physical') ? ($request->multiplyQTY=='on'?1:0) : 0;
+        $product->multiply_qty   = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
 
         if ($request->ajax()) {
             return response()->json([], 200);
@@ -297,12 +350,12 @@ class ProductController extends Controller
                 foreach ($request->file('images') as $img) {
                     $image_name = ImageManager::upload('product/', 'png', $img);
                     $product_images[] = $image_name;
-                    if($request->has('colors_active')){
+                    if ($request->has('colors_active')) {
                         $color_image_serial[] = [
-                            'color'=>null,
-                            'image_name'=>$image_name,
+                            'color' => null,
+                            'image_name' => $image_name,
                         ];
-                    }else{
+                    } else {
                         $color_image_serial = [];
                     }
                 }
@@ -311,7 +364,7 @@ class ProductController extends Controller
             $product->images = json_encode($product_images);
             $product->thumbnail = ImageManager::upload('product/thumbnail/', 'png', $request->file('image'));
 
-            if($request->product_type == 'digital' && $request->digital_product_type == 'ready_product') {
+            if ($request->product_type == 'digital' && $request->digital_product_type == 'ready_product') {
                 $product->digital_file_ready = ImageManager::upload('product/digital-product/', $request->digital_file_ready->getClientOriginalExtension(), $request->digital_file_ready);
             }
 
@@ -319,12 +372,11 @@ class ProductController extends Controller
             $product->meta_description = $request->meta_description;
             $product->meta_image = ImageManager::upload('product/meta/', 'png', $request->meta_image);
             $product->save();
-
             $tag_ids = [];
             if ($request->tags != null) {
                 $tags = explode(",", $request->tags);
             }
-            if(isset($tags)){
+            if (isset($tags)) {
                 foreach ($tags as $key => $value) {
                     $tag = Tag::firstOrNew(
                         ['tag' => trim($value)]
@@ -382,6 +434,28 @@ class ProductController extends Controller
 
         return view('seller-views.product.list', compact('products', 'search'));
     }
+    function adminlist(Request $request)
+    {
+        $query_param = [];
+        $search = $request['search'];
+        $sellerproduct = Product::where(['added_by' => 'seller', 'user_id' => \auth('seller')->id()])->where('pid', '!=', null)->pluck('pid')->toArray();
+        // dd($sellerproduct);
+        if ($request->has('search')) {
+            $key = explode(' ', $request['search']);
+            $products = Product::where(['added_by' => 'admin'])
+                ->where(function ($q) use ($key) {
+                    foreach ($key as $value) {
+                        $q->Where('name', 'like', "%{$value}%");
+                    }
+                });
+            $query_param = ['search' => $request['search']];
+        } else {
+            $products = Product::where(['added_by' => 'admin']);
+        }
+        $products = $products->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($query_param);
+
+        return view('seller-views.product.adminproduct', compact('products', 'search', 'sellerproduct'));
+    }
 
     public function stock_limit_list(Request $request, $type)
     {
@@ -389,8 +463,8 @@ class ProductController extends Controller
         $sort_oqrderQty = $request['sort_oqrderQty'];
         $query_param = $request->all();
         $search = $request['search'];
-        $pro = Product::where(['added_by' => 'seller', 'product_type'=>'physical', 'user_id' => auth('seller')->id()])
-            ->where('request_status',1)
+        $pro = Product::where(['added_by' => 'seller', 'product_type' => 'physical', 'user_id' => auth('seller')->id()])
+            ->where('request_status', 1)
             ->when($request->has('status') && $request->status != null, function ($query) use ($request) {
                 $query->where('request_status', $request->status);
             });
@@ -437,26 +511,27 @@ class ProductController extends Controller
      * @throws \Box\Spout\Common\Exception\UnsupportedTypeException
      * @throws \Box\Spout\Writer\Exception\WriterNotOpenedException
      */
-    public function stock_limit_export(Request $request){
+    public function stock_limit_export(Request $request)
+    {
 
         $sort = $request['sort'] ?? 'ASC';
 
-        $products = Product::when(empty($request['seller_id']) || $request['seller_id'] == 'all',function ($query){
+        $products = Product::when(empty($request['seller_id']) || $request['seller_id'] == 'all', function ($query) {
             $query->whereIn('added_by', ['admin', 'seller']);
         })
-            ->when($request['seller_id'] == 'in_house',function ($query){
+            ->when($request['seller_id'] == 'in_house', function ($query) {
                 $query->where(['added_by' => 'admin']);
             })
-            ->when($request['seller_id'] != 'in_house' && isset($request['seller_id']) && $request['seller_id'] != 'all',function ($query) use($request){
+            ->when($request['seller_id'] != 'in_house' && isset($request['seller_id']) && $request['seller_id'] != 'all', function ($query) use ($request) {
                 $query->where(['added_by' => 'seller', 'user_id' => $request['seller_id']]);
             })
             ->orderBy('current_stock', $sort)->get();
 
         $data = array();
-        foreach($products as $product){
+        foreach ($products as $product) {
             $data[] = array(
                 'Product Name'   => $product->name,
-                'Date'           => date('d M Y',strtotime($product->created_at)),
+                'Date'           => date('d M Y', strtotime($product->created_at)),
                 'Total Stock'    => $product->current_stock,
             );
         }
@@ -554,7 +629,6 @@ class ProductController extends Controller
         $digital_product_setting = BusinessSetting::where('type', 'digital_product')->first()->value;
 
         return view('seller-views.product.edit', compact('categories', 'br', 'product', 'product_category', 'brand_setting', 'digital_product_setting'));
-
     }
 
     public function update(Request $request, $id)
@@ -573,7 +647,7 @@ class ProductController extends Controller
             'purchase_price'        => 'required|numeric|gt:0',
             'discount'              => 'required|gt:-1',
             'shipping_cost'         => 'required_if:product_type,==,physical|gt:-1',
-            'code'                  => 'required|numeric|min:1|digits_between:6,20|unique:products,code,'.$product->id,
+            'code'                  => 'required|numeric|min:1|digits_between:6,20|unique:products,code,' . $product->id,
             'minimum_order_qty'     => 'required|numeric|min:1',
         ], [
             'name.required'                     => 'Product name is required!',
@@ -592,7 +666,8 @@ class ProductController extends Controller
         if ($brand_setting && empty($request->brand_id)) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
-                    'brand_id', 'Brand is required!'
+                    'brand_id',
+                    'Brand is required!'
                 );
             });
         }
@@ -612,7 +687,8 @@ class ProductController extends Controller
         if (is_null($request->name[array_search('en', $request->lang)])) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
-                    'name', 'Name field is required!'
+                    'name',
+                    'Name field is required!'
                 );
             });
         }
@@ -621,19 +697,19 @@ class ProductController extends Controller
         $color_image_array = [];
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $db_color_image = $product->color_image ? json_decode($product->color_image, true) : [];
-            if(!$db_color_image){
-                foreach($product_images as $image){
+            if (!$db_color_image) {
+                foreach ($product_images as $image) {
                     $db_color_image[] = [
-                        'color'=>null,
-                        'image_name'=>$image,
+                        'color' => null,
+                        'image_name' => $image,
                     ];
                 }
             }
 
             $db_color_image_final = [];
-            if($db_color_image){
-                foreach ($db_color_image as $color_img){
-                    if($color_img['color']) {
+            if ($db_color_image) {
+                foreach ($db_color_image as $color_img) {
+                    if ($color_img['color']) {
                         $db_color_image_final[] = $color_img['color'];
                     }
                 }
@@ -641,17 +717,17 @@ class ProductController extends Controller
 
             $input_colors = [];
             foreach ($request->colors as $color) {
-                $input_colors[] = str_replace('#','',$color);
+                $input_colors[] = str_replace('#', '', $color);
             }
             $diff_color = array_diff($db_color_image_final, $input_colors);
 
             $color_image_required = [];
-            if($db_color_image){
-                foreach ($db_color_image as $color_img){
-                    if($color_img['color'] !=null && !in_array($color_img['color'], $diff_color)){
+            if ($db_color_image) {
+                foreach ($db_color_image as $color_img) {
+                    if ($color_img['color'] != null && !in_array($color_img['color'], $diff_color)) {
                         $color_image_required[] = [
-                            'color'=>$color_img['color'],
-                            'image_name'=>$color_img['image_name'],
+                            'color' => $color_img['color'],
+                            'image_name' => $color_img['image_name'],
                         ];
                     }
                 }
@@ -659,14 +735,14 @@ class ProductController extends Controller
             $color_image_array = $db_color_image;
 
             foreach ($input_colors as $color) {
-                if(!in_array($color, $db_color_image_final)){
-                    $img = 'color_image_'.$color;
-                    if($request->file($img)){
+                if (!in_array($color, $db_color_image_final)) {
+                    $img = 'color_image_' . $color;
+                    if ($request->file($img)) {
                         $image_name = ImageManager::upload('product/', 'png', $request->file($img));
                         $product_images[] = $image_name;
                         $col_img_arr = [
-                            'color'=>$color,
-                            'image_name'=>$image_name,
+                            'color' => $color,
+                            'image_name' => $image_name,
                         ];
                         $color_image_required[] = $col_img_arr;
                         $color_image_array[] = $col_img_arr;
@@ -674,10 +750,11 @@ class ProductController extends Controller
                 }
             }
 
-            if(count($color_image_required) != count($request->colors)) {
+            if (count($color_image_required) != count($request->colors)) {
                 $validator->after(function ($validator) {
                     $validator->errors()->add(
-                        'images', 'Color images is required!'
+                        'images',
+                        'Color images is required!'
                     );
                 });
             }
@@ -771,7 +848,7 @@ class ProductController extends Controller
                 $stock_count += $item['qty'];
             }
         } else {
-            $stock_count = (integer)$request['current_stock'];
+            $stock_count = (int)$request['current_stock'];
         }
 
         if ($validator->errors()->count() > 0) {
@@ -791,14 +868,12 @@ class ProductController extends Controller
         $product->attributes        = $request->product_type == 'physical' ? json_encode($request->choice_attributes) : json_encode([]);
         $product->discount_type     = $request->discount_type;
         $product->current_stock     = $request->product_type == 'physical' ? abs($stock_count) : 0;
-        $product->shipping_cost     = $request->product_type == 'physical' ? (Helpers::get_business_settings('product_wise_shipping_cost_approval')==1?$product->shipping_cost:Convert::usd($request->shipping_cost)) : 0;
-        $product->multiply_qty      = ($request->product_type == 'physical') ? ($request->multiplyQTY=='on'?1:0) : 0;
+        $product->shipping_cost     = $request->product_type == 'physical' ? (Helpers::get_business_settings('product_wise_shipping_cost_approval') == 1 ? $product->shipping_cost : Convert::usd($request->shipping_cost)) : 0;
+        $product->multiply_qty      = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
 
-        if(Helpers::get_business_settings('product_wise_shipping_cost_approval')==1 && $product->shipping_cost != Convert::usd($request->shipping_cost))
-        {
+        if (Helpers::get_business_settings('product_wise_shipping_cost_approval') == 1 && $product->shipping_cost != Convert::usd($request->shipping_cost)) {
             $product->temp_shipping_cost = Convert::usd($request->shipping_cost);
             $product->is_shipping_cost_updated = 0;
-
         }
 
         $product->video_provider = 'youtube';
@@ -814,10 +889,10 @@ class ProductController extends Controller
                 foreach ($request->file('images') as $img) {
                     $image_name = ImageManager::upload('product/', 'png', $img);
                     $product_images[] = $image_name;
-                    if($request->has('colors_active')){
+                    if ($request->has('colors_active')) {
                         $color_image_array[] = [
-                            'color'=>null,
-                            'image_name'=>$image_name,
+                            'color' => null,
+                            'image_name' => $image_name,
                         ];
                     }
                 }
@@ -829,15 +904,15 @@ class ProductController extends Controller
                 $product->thumbnail = ImageManager::update('product/thumbnail/', $product->thumbnail, 'png', $request->file('image'));
             }
 
-            if($request->product_type == 'digital') {
-                if($request->digital_product_type == 'ready_product' && $request->hasFile('digital_file_ready')){
+            if ($request->product_type == 'digital') {
+                if ($request->digital_product_type == 'ready_product' && $request->hasFile('digital_file_ready')) {
                     $product->digital_file_ready = ImageManager::update('product/digital-product/', $product->digital_file_ready, $request->digital_file_ready->getClientOriginalExtension(), $request->file('digital_file_ready'));
-                }elseif(($request->digital_product_type == 'ready_after_sell') && $product->digital_file_ready){
-                    ImageManager::delete('product/digital-product/'.$product->digital_file_ready);
+                } elseif (($request->digital_product_type == 'ready_after_sell') && $product->digital_file_ready) {
+                    ImageManager::delete('product/digital-product/' . $product->digital_file_ready);
                     $product->digital_file_ready = null;
                 }
-            }elseif($request->product_type == 'physical' && $product->digital_file_ready){
-                ImageManager::delete('product/digital-product/'.$product->digital_file_ready);
+            } elseif ($request->product_type == 'physical' && $product->digital_file_ready) {
+                ImageManager::delete('product/digital-product/' . $product->digital_file_ready);
                 $product->digital_file_ready = null;
             }
 
@@ -852,7 +927,7 @@ class ProductController extends Controller
             if ($request->tags != null) {
                 $tags = explode(",", $request->tags);
             }
-            if(isset($tags)){
+            if (isset($tags)) {
                 foreach ($tags as $key => $value) {
                     $tag = Tag::firstOrNew(
                         ['tag' => trim($value)]
@@ -866,19 +941,23 @@ class ProductController extends Controller
             foreach ($request->lang as $index => $key) {
                 if ($request->name[$index] && $key != 'en') {
                     Translation::updateOrInsert(
-                        ['translationable_type' => 'App\Model\Product',
+                        [
+                            'translationable_type' => 'App\Model\Product',
                             'translationable_id' => $product->id,
                             'locale' => $key,
-                            'key' => 'name'],
+                            'key' => 'name'
+                        ],
                         ['value' => $request->name[$index]]
                     );
                 }
                 if ($request->description[$index] && $key != 'en') {
                     Translation::updateOrInsert(
-                        ['translationable_type' => 'App\Model\Product',
+                        [
+                            'translationable_type' => 'App\Model\Product',
                             'translationable_id' => $product->id,
                             'locale' => $key,
-                            'key' => 'description'],
+                            'key' => 'description'
+                        ],
                         ['value' => $request->description[$index]]
                     );
                 }
@@ -907,12 +986,12 @@ class ProductController extends Controller
         $colors = json_decode($product['colors']);
         $color_image = json_decode($product['color_image']);
         $color_image_arr = [];
-        if($colors && $color_image){
-            foreach($color_image as $img){
-                if($img->color != $request->color && $img->image_name != $request->name){
+        if ($colors && $color_image) {
+            foreach ($color_image as $img) {
+                if ($img->color != $request->color && $img->image_name != $request->name) {
                     $color_image_arr[] = [
-                        'color' =>$img->color!=null ? $img->color:null,
-                        'image_name' =>$img->image_name,
+                        'color' => $img->color != null ? $img->color : null,
+                        'image_name' => $img->image_name,
                     ];
                 }
             }
@@ -964,12 +1043,12 @@ class ProductController extends Controller
         $skip = ['youtube_video_url', 'details', 'thumbnail'];
         foreach ($collections as $collection) {
             foreach ($collection as $key => $value) {
-                if ($key!="" && !in_array($key, $col_key)) {
+                if ($key != "" && !in_array($key, $col_key)) {
                     Toastr::error('Please upload the correct format file.');
                     return back();
                 }
 
-                if ($key!="" && $value === "" && !in_array($key, $skip)) {
+                if ($key != "" && $value === "" && !in_array($key, $skip)) {
                     Toastr::error('Please fill ' . $key . ' fields');
                     return back();
                 }
@@ -1057,11 +1136,10 @@ class ProductController extends Controller
     {
         if ($request->limit > 270) {
             Toastr::warning(translate('You can not generate more than 270 barcode'));
-             return back();
+            return back();
         }
         $product = Product::findOrFail($id);
         $limit =  $request->limit ?? 4;
         return view('seller-views.product.barcode', compact('product', 'limit'));
     }
-
 }

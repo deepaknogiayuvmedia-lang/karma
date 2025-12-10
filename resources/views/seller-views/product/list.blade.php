@@ -13,7 +13,7 @@
         <div class="mb-4">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
                 <img width="20" src="{{asset('/public/assets/back-end/img/products.png')}}" alt="">
-                {{\App\CPU\translate('Products')}}
+                {{\App\CPU\translate('Products23')}}
                 <span class="badge badge-soft-dark radius-50 fz-14 ml-1">{{ $products->total() }}</span>
             </h2>
         </div>
@@ -52,6 +52,10 @@
                                         <div class="dropdown-divider"></div>
                                     </ul>
                                 </div>
+                                <a href="{{route('seller.product.adminlist')}}" class="btn btn-info">
+                                    <i class="tio-add-circle"></i>
+                                    <span class="text">{{\App\CPU\translate('Admin Product')}}</span>
+                                </a>
                                 <a href="{{route('seller.product.stock-limit-list',['in_house', ''])}}" class="btn btn-info">
                                     <i class="tio-add-circle"></i>
                                     <span class="text">{{\App\CPU\translate('Limited_Stocks')}}</span>
