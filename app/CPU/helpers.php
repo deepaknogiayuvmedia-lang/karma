@@ -160,7 +160,6 @@ class Helpers
                 session()->put($name, $config);
             }
         }
-
         return $config;
     }
 

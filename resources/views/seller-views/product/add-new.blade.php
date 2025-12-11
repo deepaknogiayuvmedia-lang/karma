@@ -40,7 +40,7 @@
                                             id="{{ $lang }}-link">{{ \App\CPU\Helpers::get_language_name($lang) . '(' . strtoupper($lang) . ')' }}</a>
                                     </li>
                                 @endforeach
-                            </ul>
+                            </ul> 
                         </div>
 
                         <div class="card-body">
@@ -689,20 +689,22 @@
             }).then((result) => {
               
                 
-
+            
                 var formData = new FormData(document.getElementById('product_form'));
-                console(formData)
+                
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
+                   
                 $.post({
-                    url: '{{ route('seller.product.storeproduct') }}',
+                    url: '{{ url('seller/product/add-new') }}',
                     data: formData,
                     contentType: false,
                     processData: false,
                     success: function(data) {
+                       
                         if (data.errors) {
                             for (var i = 0; i < data.errors.length; i++) {
                                 toastr.error(data.errors[i].message, {
@@ -782,13 +784,6 @@
         }
     </script>
 
-    {{-- ck editor --}}
-    <script src="{{ asset('/') }}vendor/ckeditor/ckeditor/ckeditor.js"></script>
-    <script src="{{ asset('/') }}vendor/ckeditor/ckeditor/adapters/jquery.js"></script>
-    <script>
-        $('.textarea').ckeditor({
-            contentsLangDirection: '{{ Session::get('direction') }}',
-        });
-    </script>
+    
     {{-- ck editor --}}
 @endpush

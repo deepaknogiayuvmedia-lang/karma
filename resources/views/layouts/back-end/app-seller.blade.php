@@ -357,12 +357,12 @@
     {{-- ck editor --}}
     <script src="{{ asset('public/ckeditor/ckeditor.js') }}"></script>
     <script>
-        CKEDITOR.replace('editor');
+        // CKEDITOR.replace('editor');
     </script>
     {{-- ck editor --}}
 
     <script>
-        initSample();
+        // initSample();
     </script>
     <script>
         function getRndInteger() {

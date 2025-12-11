@@ -3159,4 +3159,5 @@
   '${message}' => '${message}',
   '${msg}' => '${msg}',
   ' Featured status updated successfully ' => ' Featured status updated successfully ',
+  'product_brand_updated' => 'Product brand updated',
 );

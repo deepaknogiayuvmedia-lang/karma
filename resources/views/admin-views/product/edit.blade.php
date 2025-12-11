@@ -564,7 +564,7 @@ Preserve the relative scale, though. */
 
                                     <div class="row gy-3" id="thumbnail">
                                         <div class="col-sm-6 col-md-12 col-lg-6">
-                                            <img class="w-100" height="auto" onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                            <img class="w-100" height="auto" 
                                                     src="{{asset("storage/product/thumbnail")}}/{{$product['thumbnail']}}" alt="Product image">
                                         </div>
                                     </div>

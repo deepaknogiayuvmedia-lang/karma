@@ -3,12 +3,13 @@
 namespace App\CPU;
 
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
 class ImageManager
 {
-    public static function upload(string $dir, string $format, $image = null)
+     public static function upload(string $dir, string $format, $image = null)
     {
         if ($image != null) {
             $imageName = Carbon::now()->toDateString() . "-" . uniqid() . "." . $format;
@@ -42,6 +43,5 @@ class ImageManager
             'success' => 1,
             'message' => 'Removed successfully !'
         ];
-
     }
 }
