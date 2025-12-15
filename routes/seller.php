@@ -62,13 +62,12 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
             Route::get('get-categories', 'ProductController@get_categories')->name('get-categories');
             Route::get('barcode', 'ProductController@get_categories')->name('get-categories');
             Route::get('barcode/{id}', 'ProductController@barcode')->name('barcode');
-
             Route::delete('delete/{id}', 'ProductController@delete')->name('delete');
-
             Route::get('view/{id}', 'ProductController@view')->name('view');
             Route::get('bulk-import', 'ProductController@bulk_import_index')->name('bulk-import');
             Route::post('bulk-import', 'ProductController@bulk_import_data');
             Route::get('bulk-export', 'ProductController@bulk_export_data')->name('bulk-export');
+            Route::get('bidding-list', 'ProductController@bidding_list')->name('bidding-list');
         });
 
         Route::group(['prefix' => 'report', 'as' => 'report.'], function () {

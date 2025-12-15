@@ -82,7 +82,7 @@
                     <div class="d-flex flex-wrap end-footer footer-end last-footer-content-align ">
                     <div class="mb-2 mt-2">
                         <a class="d-block" href="{{route('home')}}">
-                            <img class="{{Session::get('direction') === "rtl" ? 'rightalign' : ''}}" src="{{asset("storage/company/")}}/{{ $web_config['footer_logo']->value }}"
+                            <img class="{{Session::get('direction') === "rtl" ? 'rightalign' : ''}}" src="{{asset(env('PUBLIC_STORAGE_PATH')."/company/")}}/{{ $web_config['footer_logo']->value }}"
                                 onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
                                 alt="{{ $web_config['name']->value }}" style="max-width:85px;"/>
                         </a>
@@ -158,7 +158,7 @@
                     <div class="col-md-4 footer-web-logo" >
                         <h6 class="text-uppercase mb-4 font-weight-bold footer-heder">Contact Info</h6>
                         <!--<a class="d-block" href="{{route('home')}}">-->
-                        <!--    <img class="{{Session::get('direction') === "rtl" ? 'rightalign' : ''}}" src="{{asset("storage/app/public/company/")}}/{{ $web_config['footer_logo']->value }}"-->
+                        <!--    <img class="{{Session::get('direction') === "rtl" ? 'rightalign' : ''}}" src="{{asset(env('PUBLIC_STORAGE_PATH')."/company/")}}/{{ $web_config['footer_logo']->value }}"-->
                         <!--        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"-->
                         <!--        alt="{{ $web_config['name']->value }}"/>-->
                         <!--</a>-->

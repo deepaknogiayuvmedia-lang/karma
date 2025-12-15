@@ -53,11 +53,11 @@
                                             <p class="title-color">{{Str::limit($file['name'],10)}}</p>
                                         </a>
                                     @elseif($file['type']=='file')
-                                    <!-- <a class="btn" href="{{asset('storage/app/'.$file['path'])}}" download> -->
+                                    <!-- <a class="btn" href="{{asset(env('PUBLIC_STORAGE_PATH').'/app/'.$file['path'])}}" download> -->
                                         <button class="btn p-0 w-100" data-toggle="modal"
                                                 data-target="#imagemodal{{$key}}" title="{{$file['name']}}">
                                             <div class="gallary-card">
-                                                <img src="{{asset('storage/app/'.$file['path'])}}"
+                                                <img src="{{asset(env('PUBLIC_STORAGE_PATH').'/app/'.$file['path'])}}"
                                                      alt="{{$file['name']}}" class="h-auto w-100 mb-2">
                                             </div>
                                             <p class="overflow-hidden">{{Str::limit($file['name'],10)}}</p>
@@ -74,7 +74,7 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <img src="{{asset('storage/app/'.$file['path'])}}"
+                                                        <img src="{{asset(env('PUBLIC_STORAGE_PATH').'/app/'.$file['path'])}}"
                                                              class="w-100 h-auto">
                                                     </div>
                                                     <div class="modal-footer">

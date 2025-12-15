@@ -107,7 +107,7 @@
                                             <img
                                                 class="ratio-4:1"
                                                 id="mbImageviewer"
-                                                src="{{asset('storage/banner')}}/{{$banner['photo']}}"
+                                                src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$banner['photo']}}"
                                                 onerror='this.src="{{asset('public/assets/front-end/img/placeholder.png')}}"'
                                                 alt=""/>
                                         </center>

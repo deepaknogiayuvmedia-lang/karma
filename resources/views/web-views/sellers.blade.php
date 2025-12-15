@@ -3,12 +3,12 @@
 @section('title',\App\CPU\translate('All Seller Page'))
 
 @push('css_or_js')
-    <meta property="og:image" content="{{asset('storage/company')}}/{{$web_config['web_logo']->value}}"/>
+    <meta property="og:image" content="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{$web_config['web_logo']->value}}"/>
     <meta property="og:title" content="Brands of {{$web_config['name']->value}} "/>
     <meta property="og:url" content="{{env('APP_URL')}}">
     <meta property="og:description" content="{!! substr($web_config['about']->value,0,100) !!}">
 
-    <meta property="twitter:card" content="{{asset('storage/company')}}/{{$web_config['web_logo']->value}}"/>
+    <meta property="twitter:card" content="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{$web_config['web_logo']->value}}"/>
     <meta property="twitter:title" content="Brands of {{$web_config['name']->value}}"/>
     <meta property="twitter:url" content="{{env('APP_URL')}}">
     <meta property="twitter:description" content="{!! substr($web_config['about']->value,0,100) !!}">
@@ -66,7 +66,7 @@
                                 <a href="{{route('shopView',['id'=>$shop['seller_id']])}}">
                                     <img class="__inline-66"
                                          onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                         src="{{asset("storage/shop/$shop->image")}}"
+                                         src="{{asset(env('PUBLIC_STORAGE_PATH')."/shop/$shop->image")}}"
                                          alt="{{$shop->name}}">
                                     <div class="text-center text-dark">
                                         <span class="text-center font-weight-bold small p-1">{{Str::limit($shop->name, 14)}}</span>

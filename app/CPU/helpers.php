@@ -185,7 +185,7 @@ class Helpers
 
     public static function get_image_path($type)
     {
-        $path = asset('storage/app/public/brand');
+        $path = asset(env('PUBLIC_STORAGE_PATH').'/brand');
         return $path;
     }
 
@@ -510,7 +510,7 @@ class Helpers
             "content-type: application/json",
         ];
 
-        $image = asset('storage/app/public/notification') . '/' . $data['image'];
+        $image = asset(env('PUBLIC_STORAGE_PATH').'/notification') . '/' . $data['image'];
         $postdata = '{
             "to" : "/topics/sixvalley",
             "data" : {

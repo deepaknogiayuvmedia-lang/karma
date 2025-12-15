@@ -213,7 +213,7 @@
                                                             @if($detail->digital_file_after_sell)
                                                                 <div class="mb-4">
                                                                     {{\App\CPU\translate('uploaded_file')}} :
-                                                                    <a href="{{ asset('storage/app/public/product/digital-product/'.$detail->digital_file_after_sell) }}"
+                                                                    <a href="{{ asset(env('PUBLIC_STORAGE_PATH').'/product/digital-product/'.$detail->digital_file_after_sell) }}"
                                                                        class="btn btn-success btn-sm" title="Download" download><i class="tio-download"></i> {{\App\CPU\translate('Download')}}</a>
                                                                 </div>
                                                             @else
@@ -410,7 +410,7 @@
                                 <div class="">
                                     <img class="avatar rounded-circle avatar-70"
                                          onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                         src="{{asset('storage/app/public/profile/'.$order->customer->image)}}"
+                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$order->customer->image)}}"
                                          alt="Image">
                                 </div>
                                 <div class="media-body d-flex flex-column gap-1">
@@ -549,7 +549,7 @@
                             @if($order->seller_is == 'admin')
                                 <div class="mr-3">
                                     <img class="avatar rounded avatar-70" onerror="this.src='https://6valley.6amtech.com/public/assets/front-end/img/image-place-holder.png'"
-                                         src="{{asset("storage/app/public/company/$company_web_logo")}}" alt="">
+                                         src="{{asset(env('PUBLIC_STORAGE_PATH')."/company/$company_web_logo")}}" alt="">
                                 </div>
 
                                 <div class="media-body d-flex flex-column gap-2">
@@ -560,7 +560,7 @@
                                 @if(!empty($order->seller->shop))
                                     <div class="mr-3">
                                         <img class="avatar rounded avatar-70" onerror="this.src='https://6valley.6amtech.com/public/assets/front-end/img/image-place-holder.png'"
-                                             src="{{asset('storage/app/public/shop')}}/{{$order->seller->shop->image}}" alt="">
+                                             src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop')}}/{{$order->seller->shop->image}}" alt="">
                                     </div>
                                     <div class="media-body d-flex flex-column gap-2">
                                         <h5>{{ $order->seller->shop->name }}</h5>
@@ -963,7 +963,7 @@
 
             google.maps.event.addListener(marker, 'click', (function (marker) {
                 return function () {
-                    infowindow.setContent("<div class='float-left'><img class='__inline-5' src='{{asset('storage/app/public/profile/')}}{{$order->customer->image??""}}'></div><div class='float-right __p-10'><b>{{$order->customer->f_name??""}} {{$order->customer->l_name??""}}</b><br/>{{$shipping_address->address??""}}</div>");
+                    infowindow.setContent("<div class='float-left'><img class='__inline-5' src='{{asset(env('PUBLIC_STORAGE_PATH').'/profile/')}}{{$order->customer->image??""}}'></div><div class='float-right __p-10'><b>{{$order->customer->f_name??""}} {{$order->customer->l_name??""}}</b><br/>{{$shipping_address->address??""}}</div>");
                     infowindow.open(map, marker);
                 }
             })(marker));

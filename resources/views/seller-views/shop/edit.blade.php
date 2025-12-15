@@ -62,7 +62,7 @@
                                 <div class="text-center">
                                     <img class="upload-img-view" id="viewer"
                                     onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                    src="{{asset('storage/app/public/shop/'.$shop->image)}}" alt="Product thumbnail"/>
+                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop/'.$shop->image)}}" alt="Product thumbnail"/>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-4 mt-2">
@@ -82,7 +82,7 @@
                                 <div class="text-center">
                                     <img class="upload-img-view" id="viewerBanner"
                                          onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                         src="{{asset('storage/app/public/shop/banner/'.$shop->banner)}}" alt="Product thumbnail"/>
+                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop/banner/'.$shop->banner)}}" alt="Product thumbnail"/>
                                 </div>
                             </div>
                         </div>

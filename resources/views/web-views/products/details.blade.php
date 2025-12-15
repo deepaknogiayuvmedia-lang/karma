@@ -13,13 +13,13 @@
     <!-- Viewport-->
 
     @if($product['meta_image']!=null)
-        <meta property="og:image" content="{{asset("storage/app/public/product/meta")}}/{{$product->meta_image}}"/>
+        <meta property="og:image" content="{{asset(env('PUBLIC_STORAGE_PATH')."/app/public/product/meta")}}/{{$product->meta_image}}"/>
         <meta property="twitter:card"
-              content="{{asset("storage/app/public/product/meta")}}/{{$product->meta_image}}"/>
+              content="{{asset(env('PUBLIC_STORAGE_PATH')."/app/public/product/meta")}}/{{$product->meta_image}}"/>
     @else
-        <meta property="og:image" content="{{asset("storage/app/public/product/thumbnail")}}/{{$product->thumbnail}}"/>
+        <meta property="og:image" content="{{asset(env('PUBLIC_STORAGE_PATH')."/app/public/product/thumbnail")}}/{{$product->thumbnail}}"/>
         <meta property="twitter:card"
-              content="{{asset("storage/app/public/product/thumbnail/")}}/{{$product->thumbnail}}"/>
+              content="{{asset(env('PUBLIC_STORAGE_PATH')."/app/public/product/thumbnail/")}}/{{$product->thumbnail}}"/>
     @endif
 
     @if($product['meta_title']!=null)
@@ -149,8 +149,8 @@
                                                          id="image{{$photo->color}}">
                                                         <img class="cz-image-zoom img-responsive w-100 __max-h-323px"
                                                              onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                             src="{{asset("storage/product/$photo->image_name")}}"
-                                                             data-zoom="{{asset("storage/product/$photo->image_name")}}"
+                                                             src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo->image_name")}}"
+                                                             data-zoom="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo->image_name")}}"
                                                              alt="Product image" width="">
                                                         <div class="cz-image-zoom-pane"></div>
                                                     </div>
@@ -159,8 +159,8 @@
                                                          id="image{{$key}}">
                                                         <img class="cz-image-zoom img-responsive w-100 __max-h-323px"
                                                              onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                             src="{{asset("storage/product/$photo->image_name")}}"
-                                                             data-zoom="{{asset("storage/product/$photo->image_name")}}"
+                                                             src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo->image_name")}}"
+                                                             data-zoom="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo->image_name")}}"
                                                              alt="Product image" width="">
                                                         <div class="cz-image-zoom-pane"></div>
                                                     </div>
@@ -172,8 +172,8 @@
                                                      id="image{{$key}}">
                                                     <img class="cz-image-zoom img-responsive w-100 __max-h-323px"
                                                          onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                         src="{{asset("storage/product/$photo")}}"
-                                                         data-zoom="{{asset("storage/product/$photo")}}"
+                                                         src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo")}}"
+                                                         data-zoom="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo")}}"
                                                          alt="Product image" width="">
                                                     <div class="cz-image-zoom-pane"></div>
                                                 </div>
@@ -193,7 +193,7 @@
                                                                    id="preview-img{{$photo->color}}" href="#image{{$photo->color}}">
                                                                     <img
                                                                         onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                                        src="{{asset("storage/product/$photo->image_name")}}"
+                                                                        src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo->image_name")}}"
                                                                         alt="Product thumb">
                                                                 </a>
                                                             </div>
@@ -203,7 +203,7 @@
                                                                    id="preview-img{{$key}}" href="#image{{$key}}">
                                                                     <img
                                                                         onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                                        src="{{asset("storage/product/$photo->image_name")}}"
+                                                                        src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo->image_name")}}"
                                                                         alt="Product thumb">
                                                                 </a>
                                                             </div>
@@ -216,7 +216,7 @@
                                                                id="preview-img{{$key}}" href="#image{{$key}}">
                                                                 <img
                                                                     onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                                    src="{{asset("storage/product/$photo")}}"
+                                                                    src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo")}}"
                                                                     alt="Product thumb">
                                                             </a>
                                                         </div>
@@ -411,7 +411,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="col-md-12">
                             <label class="h6">Enquiry For Product</label>
                             <hr>
@@ -441,7 +441,7 @@
 </div>
 </form>
                             </div>
-                    </div>
+                    </div> -->
                 
                     <div class="row">
                         <div class="mt-4 rtl col-12" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
@@ -711,7 +711,7 @@
                                     <div class="col-12 position-relative">
                                         <div class="d-flex __seller-author align-items-center">
                                             <div>
-                                                <img class="__img-60 img-circle" src="{{asset('storage/shop')}}/{{$product->seller->shop->image}}"
+                                                <img class="__img-60 img-circle" src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop')}}/{{$product->seller->shop->image}}"
                                                     onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
                                                     alt="">
                                             </div>
@@ -824,7 +824,7 @@
                                     <div class="row d-flex ">
                                         <div>
                                             <img class="__inline-32"
-                                                src="{{asset("storage/company")}}/{{$web_config['fav_icon']->value}}"
+                                                src="{{asset(env('PUBLIC_STORAGE_PATH')."/company")}}/{{$web_config['fav_icon']->value}}"
                                                 onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
                                                 alt="">
                                         </div>

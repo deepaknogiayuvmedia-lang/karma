@@ -196,9 +196,9 @@ class ProductManager
     {
         $path = '';
         if ($image_type == 'thumbnail') {
-            $path = asset('storage/product/thumbnail');
+            $path = asset(env('PUBLIC_STORAGE_PATH').'/product/thumbnail');
         } elseif ($image_type == 'product') {
-            $path = asset('storage/product');
+            $path = asset(env('PUBLIC_STORAGE_PATH').'/product');
         }
         return $path;
     }

@@ -1142,4 +1142,25 @@ class ProductController extends Controller
         $limit =  $request->limit ?? 4;
         return view('seller-views.product.barcode', compact('product', 'limit'));
     }
+
+    public function bidding_list(Request $request)
+    {
+        $biddings = Biding::whereHas('product', function ($query) {
+            $query->where('added_by', 'seller')
+                  ->where('user_id', auth('seller')->id());
+        });
+
+        if ($request->has('search')) {
+            $key = explode(' ', $request['search']);
+            $biddings = $biddings->whereHas('product', function ($q) use ($key) {
+                foreach ($key as $value) {
+                    $q->Where('name', 'like', "%{$value}%");
+                }
+            });
+        }
+
+        $biddings = $biddings->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($request->all());
+
+        return view('seller-views.product.biding', compact('biddings'));
+    }
 }

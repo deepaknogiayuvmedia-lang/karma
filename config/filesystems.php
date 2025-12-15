@@ -66,5 +66,8 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
         ],
     ],
+    'links' => [
+        public_path('storage') => storage_path('app/public'),
+    ],
 
 ];

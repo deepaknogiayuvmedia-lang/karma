@@ -58,7 +58,7 @@
                         <div class="media __incoming-msg">
                             <img class="rounded-circle __img-40" style="text-align: {{Session::get('direction') === "rtl" ? 'left' : 'right'}};"
                                 onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                src="{{asset('storage/profile')}}/{{auth('customer')->user()->image}}"
+                                src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile')}}/{{auth('customer')->user()->image}}"
                                 alt="{{auth('customer')->user()->f_name}}"/>
                             <div class="media-body">
                                 <h6 class="font-size-md mb-2">{{auth('customer')->user()->f_name}}</h6>
@@ -86,7 +86,7 @@
                                 <div class="media __incoming-msg">
                                     <img class="rounded-circle" height="40" width="40"
                                         onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                        src="{{asset('storage/profile')}}/{{auth('customer')->user()->image}}"
+                                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile')}}/{{auth('customer')->user()->image}}"
                                         alt="{{auth('customer')->user()->f_name}}"/>
                                     <div class="media-body">
                                         <h6 class="font-size-md mb-2">{{auth('customer')->user()->f_name}}</h6>

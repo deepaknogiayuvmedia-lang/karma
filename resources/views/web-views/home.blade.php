@@ -3,12 +3,12 @@
 @section('title', $web_config['name']->value.' '.\App\CPU\translate('Online Shopping').' | '.$web_config['name']->value.' '.\App\CPU\translate(' Ecommerce'))
 
 @push('css_or_js')
-<meta property="og:image" content="{{asset('storage/app/public/company')}}/{{$web_config['web_logo']->value}}" />
+<meta property="og:image" content="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{$web_config['web_logo']->value}}" />
 <meta property="og:title" content="Welcome To {{$web_config['name']->value}} Home" />
 <meta property="og:url" content="{{env('APP_URL')}}">
 <meta property="og:description" content="{!! substr($web_config['about']->value,0,100) !!}">
 
-<meta property="twitter:card" content="{{asset('storage/app/public/company')}}/{{$web_config['web_logo']->value}}" />
+<meta property="twitter:card" content="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{$web_config['web_logo']->value}}" />
 <meta property="twitter:title" content="Welcome To {{$web_config['name']->value}} Home" />
 <meta property="twitter:url" content="{{env('APP_URL')}}">
 <meta property="twitter:description" content="{!! substr($web_config['about']->value,0,100) !!}">
@@ -515,7 +515,7 @@
                             class="__brand-item">
                             <img
                                
-                                src="{{asset("storage/brand/$brand->image")}}"
+                                src="{{asset(env('PUBLIC_STORAGE_PATH').'/brand/'.$brand->image)}}"
                                 alt="{{$brand->name}}">
                         </a>
                     </div>
@@ -772,7 +772,7 @@
                                             
 <img class="d-block"
                                                     onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                    src="{{asset('storage/banner')}}/{{$mainbanner['photo']}}">
+                                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$mainbanner['photo']}}">
                                             </a>
                                         </div>
                                         @endforeach
@@ -813,7 +813,7 @@
                                                 <div class="__img">
                                                     <img
                                                         onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                        src="{{asset("storage/category/$category->icon")}}"
+                                                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/category/'.$category->icon)}}"
                                                         alt="{{$category->name}}">
                                                 </div>
                                                 <p class="text-center small mt-2">{{Str::limit($category->name, 12)}}</p>
@@ -851,7 +851,7 @@
                                             <div class="__img">
                                                 <img
                                                     onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                    src="{{asset("storage/category/$category->icon")}}"
+                                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/category/'.$category->icon)}}"
                                                     alt="{{$category->name}}">
                                                 <p class="text-center small mt-1">{{Str::limit($category->name, 12)}}</p>
                                             </div>
@@ -905,7 +905,7 @@
                                                     @endif
                                                     <img
                                                         onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                        src="{{asset("storage/shop")}}/{{$seller->shop->image}}">
+                                                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop')}}/{{$seller->shop->image}}">
                                             </div>
                                             <p class="text-center small mt-2">{{Str::limit($seller->shop->name, 14)}}</p>
                                         </a>
@@ -1176,7 +1176,7 @@
                     class="cursor-pointer d-block h-100 __cate-product-side-img">
                     <img class="h-100"
                         onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                        src="{{asset('storage/category')}}/{{$category['icon']}}">
+                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/category')}}/{{$category['icon']}}">
                 </a>
             </div>
             <div class="col-md-9 col-12 ">
@@ -1272,7 +1272,7 @@
                             <a href="{{$banner->url}}" class="d-block">
                                 <img class="footer_banner_img"
                                     onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                    src="{{asset('storage/banner')}}/{{$banner['photo']}}">
+                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$banner['photo']}}">
                             </a>
                         </div>
                         @endforeach
