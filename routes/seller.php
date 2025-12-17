@@ -68,6 +68,13 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
             Route::post('bulk-import', 'ProductController@bulk_import_data');
             Route::get('bulk-export', 'ProductController@bulk_export_data')->name('bulk-export');
             Route::get('bidding-list', 'ProductController@bidding_list')->name('bidding-list');
+            Route::post('bidding-place', 'ProductController@bidding_place')->name('bidding-place');
+            Route::post('vendor-bidding-place', 'ProductController@vendor_bidding_place')->name('vendor-bidding-place');
+            Route::get('get-bidding-details', 'ProductController@get_bidding_details')->name('get-bidding-details');
+            Route::post('bidding-close', 'ProductController@bidding_close')->name('bidding-close');
+            Route::get('bidding-delete', 'ProductController@bidding_delete')->name('bidding-delete');
+            Route::get('bidding-win', 'ProductController@bidding_win')->name('bidding-win');
+            Route::post('bidding-invoice', 'ProductController@uploadInvoice')->name('upload_invoice');
         });
 
         Route::group(['prefix' => 'report', 'as' => 'report.'], function () {

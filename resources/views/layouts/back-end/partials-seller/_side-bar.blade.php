@@ -288,6 +288,12 @@
                                         <span class="text-truncate">{{\App\CPU\translate('Products')}}</span>
                                     </a>
                                 </li>
+                                <li class="nav-item {{Request::is('seller/product/bidding-list') || Request::is('seller/product/stock-limit-list/in_house')?'active':''}}">
+                                    <a class="nav-link " href="{{route('seller.product.bidding-list')}}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{\App\CPU\translate('Products Bidding')}}</span>
+                                    </a>
+                                </li>
 
                                 <li class="nav-item {{Request::is('seller/product/bulk-import')?'active':''}}">
                                     <a class="nav-link " href="{{route('seller.product.bulk-import')}}">
