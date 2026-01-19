@@ -72,7 +72,7 @@
                                     class="card-body align-items-center d-flex flex-wrap justify-content-between gap-3 border-bottom">
                                     <div class="media gap-3">
                                         <img class="avatar avatar-lg"
-                                             src="{{asset('storage/profile')}}/{{$ticket->customer->image??""}}"
+                                             src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile')}}/{{$ticket->customer->image??""}}"
                                              alt="">
                                         <div class="media-body">
                                             <h6 class="mb-0 {{Session::get('direction') === "rtl" ? 'text-right' : 'text-left'}}">{{$ticket->customer->f_name??""}} {{$ticket->customer->l_name??""}}</h6>

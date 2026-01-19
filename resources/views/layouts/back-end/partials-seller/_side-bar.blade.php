@@ -10,7 +10,7 @@
                         @if (isset($shop))
                             <img onerror="this.src='{{asset('public/assets/back-end/img/900x400/img1.jpg')}}'"
                                 class="navbar-brand-logo-mini for-seller-logo"
-                                src="{{asset("storage/shop/$shop->image")}}" alt="Logo">
+                                src="{{asset(env('PUBLIC_STORAGE_PATH')."/shop/$shop->image")}}" alt="Logo">
                         @else
                             <img class="navbar-brand-logo-mini for-seller-logo"
                                 src="{{asset('public/assets/back-end/img/900x400/img1.jpg')}}" alt="Logo">
@@ -286,6 +286,12 @@
                                     <a class="nav-link " href="{{route('seller.product.list')}}">
                                         <span class="tio-circle nav-indicator-icon"></span>
                                         <span class="text-truncate">{{\App\CPU\translate('Products')}}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{Request::is('seller/product/bidding-list') || Request::is('seller/product/stock-limit-list/in_house')?'active':''}}">
+                                    <a class="nav-link " href="{{route('seller.product.bidding-list')}}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{\App\CPU\translate('Products Bidding')}}</span>
                                     </a>
                                 </li>
 

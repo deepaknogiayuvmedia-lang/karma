@@ -386,7 +386,7 @@
                                     <img
                                         class="avatar-img"
                                         onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                        src="{{asset('storage/app/public/profile/'.$order->customer->image)}}"
+                                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$order->customer->image)}}"
                                         alt="Image Description">
                                 </div>
                                 <div class="media-body">

@@ -22,10 +22,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\Model\Cart;
+use App\Model\Seller;
+use Nwidart\Modules\Json;
+use stdClass;
+
 use function App\CPU\translate;
 
 class ProductController extends Controller
@@ -68,13 +73,13 @@ class ProductController extends Controller
         $sellerproduct = Product::where(['added_by' => 'seller', 'user_id' => \auth('seller')->id()])->where('pid', '!=', null)->pluck('pid')->toArray();
         if ($request['id']) {
             $product = Product::findOrFail($request['id']);
-            if(in_array($product->id, $sellerproduct)){
+            if (in_array($product->id, $sellerproduct)) {
                 return response()->json([
                     'success' => 0,
                     'message' => 'You have already Added this product.',
                 ], 200);
             }
-           
+
             //  dd($blankid);
             do {
                 $code = random_int(100000, 999999);
@@ -93,13 +98,13 @@ class ProductController extends Controller
             $duplicate->multiply_qty   = 0;
             $duplicate->minimum_order_qty = 1;
             $duplicate->code = $code;
-            
+
 
             unset($duplicate->reviews_count);
 
             $duplicate->save();
-           
-           
+
+
             return response()->json([
                 'success' => 1,
                 'message' => 'Product Added successfully  ',
@@ -1141,5 +1146,241 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $limit =  $request->limit ?? 4;
         return view('seller-views.product.barcode', compact('product', 'limit'));
+    }
+
+    public function bidding_list(Request $request)
+    {
+        // SELF SELLER BIDDING LISTQ
+
+        $Product = Product::where('added_by', 'seller')->where('user_id', auth('seller')->id())->get();
+        $query_param = [];
+        $search = $request['search'];
+        $search1 = $request['search1'];
+        if ($request->has('search')) {
+            $key = explode(' ', $request['search']);
+            $biddings = DB::table('biddings')->where(['user_id' => \auth('seller')->id()])
+                ->where(function ($q) use ($key) {
+                    foreach ($key as $value) {
+                        $q->Where('product_name', 'like', "%{$value}%");
+                    }
+                });
+            $query_param = ['search' => $request['search']];
+        } else {
+            $biddings = DB::table('biddings')->where(['user_id' => \auth('seller')->id()]);
+        }
+        $biddings = $biddings->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($query_param);
+
+
+
+        // OTHER SELLER BIDDING LIST
+
+
+        if ($request->has('search1')) {
+            $key = explode(' ', $request['search1']);
+            $allbiddings = DB::table('biddings')->where('user_id', '!=', auth('seller')->id())->where('status', 'pending')
+                ->where(function ($q) use ($key) {
+                    foreach ($key as $value) {
+                        $q->Where('product_name', 'like', "%{$value}%");
+                    }
+                });
+            $query_param = ['search1' => $request['search1']];
+        } else {
+            $allbiddings = DB::table('biddings')->where('user_id', '!=', auth('seller')->id())->where('status', 'pending');
+        }
+        $allbiddings = $allbiddings->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($query_param);
+        return view('seller-views.product.biding', compact('biddings', 'Product', 'allbiddings', 'search', 'search1'));
+    }
+    public function bidding_place(Request $request)
+
+    {
+        // dd($request->all());
+        $request->validate([
+            'product_id' => 'required',
+            'qty' => 'required|numeric|min:1',
+
+        ]);
+
+
+
+        DB::table('biddings')->updateOrInsert(
+            [
+
+                'id' => $request->id,
+            ],
+            [
+                'user_id' => auth('seller')->id(),
+                'product_name' => $request->product_id,
+                'product_qty' => $request->qty,
+                'description' => $request->description,
+                'status' => 'pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        if ($request->id == null) {
+            Toastr::success('Bidding placed successfully!');
+        } else {
+            Toastr::success('Bidding updated successfully!');
+        }
+
+        return back();
+    }
+
+    /**
+     * Upload vendor invoice (PDF) for a bidding via AJAX
+     */
+    public function uploadInvoice(Request $request)
+    {
+        $request->validate([
+            'invoice' => 'required|mimes:pdf|max:10240', // max 10MB
+            'bidding_id' => 'required|integer',
+        ]);
+
+        if (!$request->file('invoice')->isValid()) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid file upload'], 422);
+        }
+
+        $file = $request->file('invoice');
+        $path = $file->store('invoices', 'public');
+
+        // Try to update biddings table if column exists
+        try {
+            if (Schema::hasTable('biddings') && Schema::hasColumn('biddings', 'vendor_invoice')) {
+                DB::table('biddings')->where('id', $request->bidding_id)->update([
+                    'vendor_invoice' => $path,
+                    'updated_at' => now(),
+                ]);
+            } else {
+                // still update updated_at to mark activity if possible
+                if (Schema::hasTable('biddings')) {
+                    DB::table('biddings')->where('id', $request->bidding_id)->update([
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            // Don't fail the upload if DB update isn't possible
+        }
+
+        return response()->json(['status' => 'success', 'path' => Storage::url($path), 'raw_path' => $path]);
+    }
+
+    public function vendor_bidding_place(Request $request)
+    {;
+        $array = [];
+        $bidding = DB::table('biddings')->where('id', $request->input('product_id'))->where('status', 'pending')->first();
+
+        // sava as arry object in table
+        if ($bidding) {
+            if ($bidding->bedders != null) {
+                $array = json_decode($bidding->bedders, true);
+            }
+        } else {
+            return response()->json(['status' => 'error', 'message' => 'Bidding Closed!']);
+        }
+
+
+        $item = new stdClass();
+        $item->vendor_id = auth('seller')->id();
+        $item->price = $request->input('amount');
+        $yes = false;
+        foreach ($array as $key => $value) {
+            if ($value['price'] == $request->input('amount')) {
+                return response()->json(['status' => 'error', 'message' => 'This Price Bidding Already Apply successfully!']);
+            }
+            if ($value['vendor_id'] == auth('seller')->id()) {
+                $array[$key]['price'] =  $request->input('amount');
+                $yes = true;
+            }
+        }
+        if (!$yes) {
+            $array[] = $item;
+        }
+        // dd($array);
+        DB::table('biddings')->where('id', $request->input('product_id'))->update([
+            'bedders' => json_encode($array),
+            'updated_at' => now(),
+        ]);
+
+        // return json response with success status and message
+        return response()->json(['status' => 'success', 'message' => 'Bidding place successfully!']);
+    }
+    public function get_bidding_details(Request $request)
+    {
+
+        $alldata = DB::table('biddings')->where('id', $request->input('product_id'))->first();
+
+        if ($alldata->bedders != null) {
+            $data = json_decode($alldata->bedders); // array of stdClass
+
+            foreach ($data as $key => $value) {
+
+                $seller = Seller::select('f_name', 'l_name','phone')
+                    ->find($value->vendor_id);
+
+                if ($seller) {
+                    $value->name = $seller->f_name . ' ' . $seller->l_name;
+                    $data[$key]->phone = $seller->phone;
+                }
+            }
+        }
+        if ($request->input('data') == 0) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $data,
+                'bidstatus' => $alldata->status,
+                'document' => $alldata->vendor_invoice,
+                'document_url' => asset(env('PUBLIC_STORAGE_PATH') . '/' . $alldata->vendor_invoice),
+               
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'success',
+                'alldata' => $alldata,
+            ]);
+        }
+    }
+    public function bidding_close(Request $request)
+    {
+        $data = DB::table('biddings')->where('id', $request->input('product_id'))->where('status', 'pending')->select('bedders')->first();
+        $data = json_decode($data->bedders); // array of stdClass
+
+        foreach ($data as $key => $value) {
+
+            if ($request->input('userid') == $value->vendor_id) {
+                $data[$key]->done = 1;
+            }
+        }
+        DB::table('biddings')->where('id', $request->input('product_id'))->update([
+            'bedders' => json_encode($data),
+            'status' => 'close',
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Bidding assigned successfully!']);
+    }
+    public function bidding_delete(Request $request)
+    {
+        DB::table('biddings')->delete($request->input('recordid'));
+        return response()->json(['status' => 'success', 'message' => 'Bidding Deleted successfully!']);
+    }
+    public function bidding_win(Request $request)
+    {
+        $query_param = [];
+        $search = $request['search'];
+        if ($request->has('search')) {
+            $key = explode(' ', $request['search']);
+            $biddings = DB::table('biddings')->where('status', 'close')
+                ->where(function ($q) use ($key) {
+                    foreach ($key as $value) {
+                        $q->Where('product_name', 'like', "%{$value}%");
+                    }
+                });
+            $query_param = ['search' => $request['search']];
+        } else {
+            $biddings = DB::table('biddings')->where('status', 'close');
+        }
+        $biddings = $biddings->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($query_param);
+        return view('seller-views.product.winbid', compact('biddings', 'search'));
     }
 }

@@ -255,7 +255,7 @@
                         {{\App\CPU\translate('Oder_Transaction_Statement')}}
                     </th>
                     <th class="p-0 text-right">
-                        <img class="logo" src="{{asset("storage/app/public/company/$company_web_logo")}}" alt="">
+                        <img class="logo" src="{{asset(env('PUBLIC_STORAGE_PATH')."/company/$company_web_logo")}}" alt="">
                     </th>
                 </tr>
             </table>

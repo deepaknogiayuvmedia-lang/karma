@@ -135,7 +135,7 @@
                                         class="cz-preview-item d-flex align-items-center justify-content-center  {{$key==0?'active':''}}">
                                         <img class="show-imag img-responsive" style="max-height: 500px!important;"
                                              onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                             src="{{asset("storage/product/$photo->image_name")}}"
+                                             src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo->image_name")}}"
                                              alt="Product image" width="">
                                     </div>
                                 @else
@@ -143,7 +143,7 @@
                                         class="cz-preview-item d-flex align-items-center justify-content-center  {{$key==0?'active':''}}">
                                         <img class="show-imag img-responsive" style="max-height: 500px!important;"
                                              onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                             src="{{asset("storage/product/$photo->image_name")}}"
+                                             src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo->image_name")}}"
                                              alt="Product image" width="">
                                     </div>
                                 @endif
@@ -154,7 +154,7 @@
                                     class="cz-preview-item d-flex align-items-center justify-content-center  {{$key==0?'active':''}}">
                                     <img class="show-imag img-responsive" style="max-height: 500px!important;"
                                          onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                         src="{{asset("storage/product/$photo")}}"
+                                         src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo")}}"
                                          alt="Product image" width="">
                                 </div>
                             @endforeach
@@ -171,7 +171,7 @@
                                             <a href="javascript:"
                                                class=" cz-thumblist-item d-flex align-items-center justify-content-center">
                                                 <img class="click-img" id="preview-img{{$photo->color}}"
-                                                     src="{{asset("storage/product/$photo->image_name")}}"
+                                                     src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo->image_name")}}"
                                                      onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
                                                      alt="Product thumb">
                                             </a>
@@ -181,7 +181,7 @@
                                             <a href="javascript:"
                                                class=" cz-thumblist-item d-flex align-items-center justify-content-center">
                                                 <img class="click-img" id="preview-img{{$key}}"
-                                                     src="{{asset("storage/product/$photo->image_name")}}"
+                                                     src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo->image_name")}}"
                                                      onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
                                                      alt="Product thumb">
                                             </a>
@@ -194,7 +194,7 @@
                                         <a href="javascript:"
                                            class=" cz-thumblist-item d-flex align-items-center justify-content-center">
                                             <img class="click-img" id="preview-img{{$key}}"
-                                                 src="{{asset("storage/product/$photo")}}"
+                                                 src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo")}}"
                                                  onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
                                                  alt="Product thumb">
                                         </a>

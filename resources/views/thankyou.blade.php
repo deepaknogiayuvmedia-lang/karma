@@ -41,7 +41,9 @@
             }
         </style>
         <div class="thank-you-container">
-            <img src="https://herbanix.co/storage/app/public/company/2023-12-20-658269db7badc.png" alt="Logo" class="logo" />
+            <img src="{{asset(env('PUBLIC_STORAGE_PATH').'/company/2023-12-20-658269db7badc.png')}}"
+                onerror=""
+            alt="Logo" class="logo" />
             <p>Thank you for your support!</p>
             <a href="https://herbanix.co/" class="home-button">Find more Product</a>
         </div>

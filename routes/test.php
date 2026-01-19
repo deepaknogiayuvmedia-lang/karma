@@ -30,7 +30,7 @@ use Madnest\Madzipper\Facades\Madzipper;
 
 /*Route::get('qr-code', function () {
     return QRCode::text('Laravel QR Code Generator!')
-        ->setOutfile('storage/app/public/deal/2021-10-30-617d68a9a7e8b.png')
+        ->setOutfile(env('PUBLIC_STORAGE_PATH').'/deal/2021-10-30-617d68a9a7e8b.png')
         ->png();
 });*/
 
