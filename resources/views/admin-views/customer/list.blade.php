@@ -84,7 +84,7 @@
                             <td>
                                 <a href="{{route('admin.customer.view',[$customer['id']])}}"
                                    class="title-color hover-c1 d-flex align-items-center gap-10">
-                                    <img src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile')}}/{{$customer->image}}"
+                                    <img src="{{asset('storage/app/public/profile')}}/{{$customer->image}}"
                                          onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
                                          class="rounded-circle" alt="" width="40">
                                     {{\Illuminate\Support\Str::limit($customer['f_name']." ".$customer['l_name'],20)}}

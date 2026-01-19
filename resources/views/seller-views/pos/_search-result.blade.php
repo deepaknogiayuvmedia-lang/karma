@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="{{asset('public/assets/admin')}}/css/custom.css"/>
 <ul class="list-group list-group-flush">
     @foreach($products as $i)
         <li class="list-group-item" >

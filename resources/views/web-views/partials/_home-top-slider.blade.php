@@ -15,12 +15,12 @@
             </ol>
             <div class="carousel-inner">
                 @foreach($main_banner as $key=>$banner)
-                    <div class="carousel-item {{$key==0?'active':''}}">
-                        <a href="{{$banner['url']}}">
+                    <div class="carousel-item {{$key==0?'active':''}}" >
+                        <a href="{{$banner['url']}}" class="" >
                             <img class="d-block w-100 __slide-img new-st-slider"
                                  
                                  src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$banner['photo']}}"
-                                 alt="">
+                                 alt="" style="min-height: 590px">
                         </a>
                     </div>
                 @endforeach

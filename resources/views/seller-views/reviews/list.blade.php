@@ -181,11 +181,11 @@
                                         @if($review->attachment)
                                             @foreach (json_decode($review->attachment) as $img)
                                                 <a class=""
-                                                    href="{{ asset(env('PUBLIC_STORAGE_PATH').'/review') }}/{{ $img }}"
+                                                    href="{{ asset('storage/app/public/review') }}/{{ $img }}"
                                                     data-lightbox="mygallery">
                                                     <img clsss="p-2" width="60" height="60"
                                                         onerror="this.src='{{asset('public/assets/back-end/img/160x160/img2.jpg')}}'"
-                                                        src="{{ asset(env('PUBLIC_STORAGE_PATH').'/review') }}/{{ $img }}"
+                                                        src="{{ asset('storage/app/public/review') }}/{{ $img }}"
                                                         alt="Image">
                                                 </a>
                                             @endforeach

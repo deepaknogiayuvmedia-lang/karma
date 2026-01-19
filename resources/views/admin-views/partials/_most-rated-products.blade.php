@@ -18,7 +18,7 @@
                         @if(isset($product))
                             <div class="cursor-pointer grid-card" onclick="location.href='{{route('admin.product.view',[$item['product_id']])}}'">
                                 <div class="">
-                                    <img class="avatar avatar-bordered border-gold avatar-60 rounded" src="{{asset(env('PUBLIC_STORAGE_PATH').'/product/thumbnail')}}/{{$product['thumbnail']}}"
+                                    <img class="avatar avatar-bordered border-gold avatar-60 rounded" src="{{asset('storage/app/public/product/thumbnail')}}/{{$product['thumbnail']}}"
                                         onerror="this.src='{{asset('public/assets/back-end/img/160x160/img2.jpg')}}'"
                                         alt="{{$product->name}} image">
                                 </div>

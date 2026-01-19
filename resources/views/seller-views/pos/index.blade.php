@@ -263,7 +263,7 @@
         $('.main_card_qty_cart').hide();
         $.ajax({
             url: '{{route('seller.pos.get-cart-ids')}}',
-            type: 'GET',
+            type: 'GET',    
 
             dataType: 'json', // added data type
             beforeSend: function () {

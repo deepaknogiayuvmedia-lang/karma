@@ -92,7 +92,7 @@
   <div style="width:595px;margin:auto; background-color:white; 
               padding-top:40px;padding-bottom:40px;border-radius: 3px; text-align:center; ">
       <div style="display:block;">
-        <img src="{{asset('/'.env('PUBLIC_STORAGE_PATH').'/business/'.$logo)}}" alt="{{$company_name}}" style="height: 15px; width:auto;">
+        <img src="{{asset('/storage/app/public/business/'.$logo)}}" alt="{{$company_name}}" style="height: 15px; width:auto;">
       </div>
       
       <img src="{{asset('public/assets/admin/img/tick.png')}}" style="height: 50px; width:50px; margin-top:40px;">

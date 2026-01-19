@@ -134,7 +134,7 @@
                                     <td>
                                         <img class="min-w-75" width="75" height="75"
                                              onerror="this.src='{{asset('public/assets/back-end/img/160x160/img2.jpg')}}'"
-                                             src="{{asset(env('PUBLIC_STORAGE_PATH').'/notification')}}/{{$notification['image']}}">
+                                             src="{{asset('storage/app/public/notification')}}/{{$notification['image']}}">
                                     </td>
                                     <td id="count-{{$notification->id}}">{{ $notification['notification_count'] }}</td>
                                     <td>

@@ -19,7 +19,7 @@
                             <div class="text-center">
                                 <img class="avatar rounded-circle avatar-lg"
                                      onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
-                                     src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$item->customer->image??'')}}">
+                                     src="{{asset('storage/profile/'.$item->customer->image??'')}}">
                             </div>
 
                             <h5 class="mb-0">{{$item->customer['f_name']??'Not exist'}}</h5>

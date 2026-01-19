@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
-ini_set('memory_limit',-1);
-ini_set('upload_max_filesize','180M');
-ini_set('post_max_size','200M');
+ini_set('memory_limit', -1);
+ini_set('upload_max_filesize', '180M');
+ini_set('post_max_size', '200M');
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
         try {
             $web = BusinessSetting::all();
-            
+
             $settings = Helpers::get_settings($web, 'colors');
             $data = json_decode($settings['value'], true);
             $web_config = [
@@ -69,7 +69,6 @@ class AppServiceProvider extends ServiceProvider
 
             Schema::defaultStringLength(191);
         } catch (\Exception $ex) {
-
         }
 
         /**
@@ -96,6 +95,5 @@ class AppServiceProvider extends ServiceProvider
                 ]
             );
         });
-
     }
 }

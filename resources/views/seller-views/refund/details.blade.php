@@ -220,8 +220,8 @@
                         @if ($refund->images !=null)
                             <div class="gallery grid-gallery">
                                 @foreach (json_decode($refund->images) as $key => $photo)
-                                    <a href="{{asset(env('PUBLIC_STORAGE_PATH').'/refund')}}/{{$photo}}" data-lightbox="mygallery">
-                                        <img src="{{asset(env('PUBLIC_STORAGE_PATH').'/refund')}}/{{$photo}}" alt="">
+                                    <a href="{{asset('storage/app/public/refund')}}/{{$photo}}" data-lightbox="mygallery">
+                                        <img src="{{asset('storage/app/public/refund')}}/{{$photo}}" alt="">
                                     </a>
                                 @endforeach
                            </div>

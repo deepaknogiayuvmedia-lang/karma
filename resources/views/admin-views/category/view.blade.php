@@ -148,7 +148,7 @@
                             <tbody>
                             @foreach($categories as $key=>$category)
                                 <tr>
-                                    <td >{{$category['id']}}</td>
+                                    <td >{{ $loop->iteration }}</td>
                                     <td class="text-center">
                                         <img class="rounded" width="64"
                                                 onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"

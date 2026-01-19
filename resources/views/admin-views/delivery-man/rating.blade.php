@@ -33,7 +33,7 @@
                             <img
                                 class="avatar avatar-xxl avatar-4by3 {{Session::get('direction') === "rtl" ? 'ml-4' : 'mr-4'}}"
                                 onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                src="{{asset(env('PUBLIC_STORAGE_PATH').'/delivery-man')}}/{{$delivery_man['image']}}"
+                                src="{{asset('storage/app/public/delivery-man')}}/{{$delivery_man['image']}}"
                                 alt="Image Description">
                             <div class="d-block">
                                 <h4 class="display-2 text-dark mb-0">
@@ -236,7 +236,7 @@
                                         <img
                                             class="avatar-img"
                                             onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                            src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$review->customer->image)}}"
+                                            src="{{asset('storage/app/public/profile/'.$review->customer->image)}}"
                                             alt="Image Description">
                                     </div>
                                     <div class="{{Session::get('direction') === "rtl" ? 'mr-3' : 'ml-3'}}">

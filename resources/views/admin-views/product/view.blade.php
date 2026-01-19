@@ -215,7 +215,7 @@
 
                         @if(($product->product_type == 'digital') && ($product->digital_product_type == 'ready_product'))
                             <div>
-                                <a href="{{asset(env('PUBLIC_STORAGE_PATH')."/product/digital-product/$product->digital_file_ready")}}" class="btn btn--primary py-1 mt-3" download>{{\App\CPU\translate('download')}}</a>
+                                <a href="{{asset("storage/product/digital-product/$product->digital_file_ready")}}" class="btn btn--primary py-1 mt-3" download>{{\App\CPU\translate('download')}}</a>
                             </div>
                         @endif
 
@@ -252,7 +252,7 @@
                                             <div class="card-body">
                                                 <img class="width-100"
                                                     onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                    src="{{asset(env('PUBLIC_STORAGE_PATH')."/product/$photo")}}" alt="Product image">
+                                                    src="{{asset("storage/product/$photo")}}" alt="Product image">
 
                                             </div>
                                         </div>
@@ -292,7 +292,7 @@
                                         <img
                                             class="avatar-img"
                                             onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                            src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$review->customer->image)}}"
+                                            src="{{asset('storage/profile/'.$review->customer->image)}}"
                                             alt="Image Description">
                                     </div>
                                     <div class="{{Session::get('direction') === "rtl" ? 'mr-3' : 'ml-3'}}">
@@ -316,8 +316,8 @@
                                     </p>
                                     @foreach (json_decode($review->attachment) as $img)
 
-                                        <a class="float-left" href="{{asset(env('PUBLIC_STORAGE_PATH').'/review')}}/{{$img}}" data-lightbox="mygallery">
-                                            <img class="p-2" width="60" height="60" src="{{asset(env('PUBLIC_STORAGE_PATH').'/review')}}/{{$img}}" alt="">
+                                        <a class="float-left" href="{{asset('storage/review')}}/{{$img}}" data-lightbox="mygallery">
+                                            <img class="p-2" width="60" height="60" src="{{asset('storage/review')}}/{{$img}}" alt="">
                                         </a>
 
                                     @endforeach

@@ -60,7 +60,7 @@
                                 </div>
                             @else
                                 <div class="text-{{Session::get('direction') === "rtl" ? 'right' : 'left'}}">
-                                    <img src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop/'.$shop->image)}}"
+                                    <img src="{{asset('storage/app/public/shop/'.$shop->image)}}"
                                          onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
                                          class="rounded-circle border"
                                          height="200" width="200" alt="">

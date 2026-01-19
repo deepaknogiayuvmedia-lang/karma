@@ -9,10 +9,10 @@
                     @if (isset($shop))
                         <img class="navbar-brand-logo"
                              onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
-                             src="{{asset(env('PUBLIC_STORAGE_PATH')."/shop/$shop->image")}}" alt="Logo" height="40">
+                             src="{{asset("storage/shop/$shop->image")}}" alt="Logo" height="40">
                         <img class="navbar-brand-logo-mini"
                              onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
-                             src="{{asset(env('PUBLIC_STORAGE_PATH')."/shop/$shop->image")}}"
+                             src="{{asset("storage/shop/$shop->image")}}"
                              alt="Logo" height="40">
 
                     @else
@@ -200,7 +200,7 @@
                                 <div class="avatar avatar-sm avatar-circle">
                                     <img class="avatar-img"
                                          onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
-                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/seller/')}}/{{auth('seller')->user()->image}}"
+                                         src="{{asset('storage/seller/')}}/{{auth('seller')->user()->image}}"
                                          alt="Image Description">
                                     <span class="avatar-status avatar-sm-status avatar-status-success"></span>
                                 </div>
@@ -214,7 +214,7 @@
 
                                             <img class="avatar-img"
                                                  onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
-                                                 src="{{asset(env('PUBLIC_STORAGE_PATH').'/seller/')}}/{{auth('seller')->user()->image}}"
+                                                 src="{{asset('storage/seller/')}}/{{auth('seller')->user()->image}}"
                                                  alt="Image Description">
                                         </div>
                                         <div class="media-body">

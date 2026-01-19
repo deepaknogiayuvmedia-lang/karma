@@ -510,9 +510,9 @@
             <div class="mt-sm-3 mb-3 brand-slider">
                 <div class="owl-carousel owl-theme p-2" id="brands-slider">
                     @foreach($brands as $brand)
-                    <div class="text-center">
+                    <div class="text-center ">
                         <a href="{{route('products',['id'=> $brand['id'],'data_from'=>'brand','page'=>1])}}"
-                            class="__brand-item">
+                            class="__brand-item ">
                             <img
                                
                                 src="{{asset(env('PUBLIC_STORAGE_PATH').'/brand/'.$brand->image)}}"
@@ -1590,7 +1590,7 @@
     $('#brands-slider').owlCarousel({
         loop: false,
         autoplay: false,
-        margin: 10,
+        margin: 100,
         nav: false,
         '{{session('
         direction ')}}': true,
@@ -1617,19 +1617,19 @@
             },
             //Medium
             768: {
-                items: 7
+                items: 6
             },
             //Large
             992: {
-                items: 9
+                items: 6
             },
             //Extra large
             1200: {
-                items: 11
+                items: 6
             },
             //Extra extra large
             1400: {
-                items: 12
+                items: 6
             }
         }
     })

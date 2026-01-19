@@ -15,9 +15,8 @@
 @endpush
 
 @section('content')
-
     <!-- Page Content-->
-    <div class="container pb-5 mb-2 mb-md-4 rtl" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
+    <div class="container pb-5 mb-2 mb-md-4 rtl mt-6" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};margin-top:20px">
                                   
         <div class="row">
             <!-- Content  -->

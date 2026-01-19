@@ -19,51 +19,39 @@ use Ramsey\Uuid\Uuid;
 use function App\CPU\translate;
 use App\CPU\CustomerManager;
 use App\CPU\Convert;
-use App\Model\Product;
 use Rap2hpoutre\FastExcel\FastExcel;
 
 class ProductQueryController extends Controller
 {
-
+    
     public function list(Request $request)
     {
-
-        // $orders = ProductQuery::join('products','products.id','=','product_queries.product_id')->join('chanals','chanals.id','=','product_queries.chanal_id')->where('product_queries.name','Like','%'.$request->search.'%');
-        // if($request->filter){
-        //     $orders=$orders->where('product_queries.status',$request->filter);
-        // }
-        // if($request->from){
-        //     $orders=$orders->whereDate('product_queries.created_at', '>=', $request->from);
-        // }
-        // if($request->to){
-        //     $orders=$orders->whereDate('product_queries.created_at', '<=', $request->to);
-        // }
-        // if($request->search){
-        //     $orders=$orders->where('product_queries.name','Like','%'.$request->search.'%')->orwhere('product_queries.email','Like','%'.$request->search.'%')->orwhere('product_queries.mobile','Like','%'.$request->search.'%');
-        // }
-        // $orders=$orders->orderBy('product_queries.id','desc')
-        //     ->paginate(Helpers::pagination_limit(),['product_queries.*','products.name as product_name','products.unit_price','products.tax','products.tax_type','products.tax_model','products.discount','products.discount_type','chanals.name as chid']);
        
-        $query_param = [];
-        $search = $request['search'];
-        $search1 = $request['search1'];
-        if ($request->has('search')) {
-            $key = explode(' ', $request['search']);
-            $biddings = DB::table('biddings')
-                ->where(function ($q) use ($key) {
-                    foreach ($key as $value) {
-                        $q->Where('product_name', 'like', "%{$value}%");
-                    }
-                });
-            $query_param = ['search' => $request['search']];
-        } else {
-            $biddings = DB::table('biddings');
+        $orders = ProductQuery::join('products','products.id','=','product_queries.product_id')->join('chanals','chanals.id','=','product_queries.chanal_id')->where('product_queries.name','Like','%'.$request->search.'%');
+        if($request->filter){
+            $orders=$orders->where('product_queries.status',$request->filter);
         }
-        $biddings = $biddings->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($query_param);
-
+        if($request->from){
+            $orders=$orders->whereDate('product_queries.created_at', '>=', $request->from);
+        }
+        if($request->to){
+            $orders=$orders->whereDate('product_queries.created_at', '<=', $request->to);
+        }
+        if($request->search){
+            $orders=$orders->where('product_queries.name','Like','%'.$request->search.'%')->orwhere('product_queries.email','Like','%'.$request->search.'%')->orwhere('product_queries.mobile','Like','%'.$request->search.'%');
+        }
+        $orders=$orders->orderBy('product_queries.id','desc')
+            ->paginate(Helpers::pagination_limit(),['product_queries.*','products.name as product_name','products.unit_price','products.tax','products.tax_type','products.tax_model','products.discount','products.discount_type','chanals.name as chid']);
+            
         return view(
-            'admin-views.productquery.list',
-            compact('biddings','search')
-        );
+                'admin-views.productquery.list',
+                compact(
+                    'orders'
+                  
+                )
+            );
     }
+    
+   
+  
 }
