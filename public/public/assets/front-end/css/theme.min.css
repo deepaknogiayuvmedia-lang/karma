@@ -523,6 +523,16 @@ pre code {
         max-width: 1280px
     }
 }
+@media (min-width: 1400px) {
+    .container, .container-sm, .container-md, .container-lg, .container-xl {
+        max-width: 1480px
+    }
+}
+@media (min-width: 1500px) {
+    .container, .container-sm, .container-md, .container-lg, .container-xl {
+        max-width: 1580px
+    }
+}
 
 .row {
     display: -ms-flexbox;
@@ -2627,15 +2637,15 @@ a.btn.disabled, fieldset:disabled a.btn {
 
 .btn-primary {
     color: #fff;
-    background-color: #fe696a;
-    border-color: #fe696a;
-    box-shadow: none
+    background-color: #2d421b;
+    border-color: #2d421b;
+    box-shadow: none;
 }
 
 .btn-primary:hover {
     color: #fff;
-    background-color: #fe4344;
-    border-color: #fe3638
+    background-color: #5c7634;
+    border-color: #597431;
 }
 
 .btn-primary:focus, .btn-primary.focus {

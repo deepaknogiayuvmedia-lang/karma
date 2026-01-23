@@ -15,7 +15,6 @@
 
 <link rel="stylesheet" href="{{asset('public/assets/front-end')}}/css/home.css" />
 <style>
- 
     .cz-countdown-days {
         border: .5px solid var(--primary_color);
     }
@@ -34,9 +33,7 @@
     }
 
     .cz-countdown-minutes {
-        border: .5px solid var(--primary_color)
-
-        ;
+        border: .5px solid var(--primary_color);
     }
 
     .cz-countdown-seconds {
@@ -44,151 +41,164 @@
     }
 
     .flash_deal_product_details .flash-product-price {
-        color: var(--primary_color)
-
-        ;
+        color: var(--primary_color);
     }
 
     .featured_deal_left {
-        background: var(--primary_color)  0% 0% no-repeat padding-box;
+        background: var(--primary_color) 0% 0% no-repeat padding-box;
     }
 
     .category_div:hover {
-        color: var(--primary_color)
-
-        ;
+        color: var(--primary_color);
     }
 
     .deal_of_the_day {
-        background: var(--primary_color)
-
-        ;
+        background: var(--primary_color);
     }
 
     .best-selleing-image {
-        background: var(--primary_color)
-
-        10;
+        background: var(--primary_color)10;
     }
 
     .top-rated-image {
-        background: var(--primary_color)
-
-        10;
+        background: var(--primary_color)10;
     }
 
     @media (max-width: 800px) {
         .categories-view-all {
-                {{session('direction')==="rtl" ? 'margin-left: 10px;': 'margin-right: 6px;'}}
-
+                {
+                    {
+                    session('direction')==="rtl" ? 'margin-left: 10px;': 'margin-right: 6px;'
+                }
+            }
         }
 
         .categories-title {
-                {{Session::get('direction')==="rtl" ? 'margin-right: 0px;': 'margin-left: 6px;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'margin-right: 0px;': 'margin-left: 6px;'
+                }
+            }
         }
 
         .seller-list-title {
-                {{Session::get('direction')==="rtl" ? 'margin-right: 0px;': 'margin-left: 10px;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'margin-right: 0px;': 'margin-left: 10px;'
+                }
+            }
         }
 
         .seller-list-view-all {
-                {{Session::get('direction')==="rtl" ? 'margin-left: 20px;': 'margin-right: 10px;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'margin-left: 20px;': 'margin-right: 10px;'
+                }
+            }
         }
 
         .category-product-view-title {
-                {{Session::get('direction')==="rtl" ? 'margin-right: 16px;': 'margin-left: -8px;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'margin-right: 16px;': 'margin-left: -8px;'
+                }
+            }
         }
 
         .category-product-view-all {
-                {{ Session::get('direction')==="rtl" ? 'margin-left: -7px;': 'margin-right: 5px;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'margin-left: -7px;': 'margin-right: 5px;'
+                }
+            }
         }
     }
 
     @media (min-width: 801px) {
         .categories-view-all {
-                {{session('direction')==="rtl" ? 'margin-left: 30px;': 'margin-right: 27px;'}}
-
+                {
+                    {
+                    session('direction')==="rtl" ? 'margin-left: 30px;': 'margin-right: 27px;'
+                }
+            }
         }
 
         .categories-title {
-                {{Session::get('direction')==="rtl" ? 'margin-right: 25px;': 'margin-left: 25px;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'margin-right: 25px;': 'margin-left: 25px;'
+                }
+            }
         }
 
         .seller-list-title {
-                {{ Session::get('direction')==="rtl" ? 'margin-right: 6px;': 'margin-left: 10px;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'margin-right: 6px;': 'margin-left: 10px;'
+                }
+            }
         }
 
         .seller-list-view-all {
-                {{Session::get('direction')==="rtl" ? 'margin-left: 12px;': 'margin-right: 10px;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'margin-left: 12px;': 'margin-right: 10px;'
+                }
+            }
         }
 
         .seller-card {
-                {{Session::get('direction')==="rtl" ? 'padding-left:0px !important;': 'padding-right:0px !important;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'padding-left:0px !important;': 'padding-right:0px !important;'
+                }
+            }
         }
 
         .category-product-view-title {
-                {{Session::get('direction')==="rtl" ? 'margin-right: 10px;': 'margin-left: -12px;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'margin-right: 10px;': 'margin-left: -12px;'
+                }
+            }
         }
 
         .category-product-view-all {
-                {{ Session::get('direction')==="rtl" ? 'margin-left: -20px;': 'margin-right: 0px;'}}
-
+                {
+                    {
+                    Session: :get('direction')==="rtl" ? 'margin-left: -20px;': 'margin-right: 0px;'
+                }
+            }
         }
     }
 
     .countdown-card {
-        background: {{$web_config['primary_color']}}10;
+        background: {{ $web_config['primary_color']}}10;
 
     }
 
     .flash-deal-text {
-        color: var(--primary_color)
-
-        ;
+        color: var(--primary_color);
     }
 
     .countdown-background {
-        background: var(--primary_color)
-
-        ;
+        background: #00695c;
     }
 
     }
 
     .czi-arrow-left {
-        color: var(--primary_color)
-
-        ;
-
-        background: var(--primary_color)
-
-        10;
+        color: var(--primary_color);
+        background: var(--primary_color)10;
     }
 
     .czi-arrow-right {
-        color: var(--primary_color)
-
-        ;
-
-        background: var(--primary_color)
-
-        10;
+        color: var(--primary_color);
+        background: var(--primary_color)10;
     }
 
     .flash-deals-background-image {
-        background: var(--primary_color)
-
-        10;
+        background: var(--primary_color)10;
     }
 
     .view-all-text {
@@ -196,32 +206,15 @@
     }
 
     .feature-product .czi-arrow-left {
-        color: var(--primary_color)
-
-        ;
-
-        background: var(--primary_color)
-
-        10
+        color: var(--primary_color);
+        background: var(--primary_color)10
     }
 
     .feature-product .czi-arrow-right {
-        color: var(--primary_color)
-
-        ;
-
-        background: var(--primary_color)
-
-        10;
+        color: var(--primary_color);
+        background: var(--primary_color)10;
         font-size: 12px;
     }
-
-    /*  */
-
-
-
-
-
 
     .block-policy2 {
         border: 1px solid #ebebeb;
@@ -234,6 +227,7 @@
 
     .block-policy2 ul {
         list-style: none;
+        padding:6px;
     }
 
     .block-policy2 ul li {
@@ -241,9 +235,10 @@
         padding: 0 15px;
         text-align: center;
         width: 20%;
+       
         position: relative;
         margin: 10px 0;
-        min-width: 240px;
+        /* min-width: 240px; */
         font-size: 14px;
     }
 
@@ -259,6 +254,7 @@
 
     .block-policy2 ul li .item-inner {
         display: inline-block;
+        display: flex;
     }
 
     .block-policy2 ul li .item-inner .icon {
@@ -267,6 +263,10 @@
         height: 52px;
         float: left;
         margin-right: 10px;
+        @media (width<534px) {
+             width: 60px;
+        height: 52px;
+        }
     }
 
     .block-policy2 ul li .item-inner .icon.icon1 {
@@ -287,6 +287,31 @@
 
     .block-policy2 ul li .item-inner .icon.icon5 {
         background-position: -394px -23px;
+    }
+
+    @media (width< 576px){
+        .block-policy2 ul li .item-inner .icon.icon1 {
+        background-position: -29px -23px;
+        }
+
+        .block-policy2 ul li .item-inner .icon.icon2 {
+            background-position: -115px -23px;
+        }
+
+        .block-policy2 ul li .item-inner .icon.icon3 {
+            background-position: -200px -23px;
+        }
+
+        .block-policy2 ul li .item-inner .icon.icon4 {
+            background-position: -296px -23px;
+        }
+
+        .block-policy2 ul li .item-inner .icon.icon5 {
+            background-position: -394px -23px;
+        }
+.block-policy2 ul li{
+     font-size: 14px;
+}
     }
 
     .block-policy2 ul li .item-inner .content {
@@ -434,7 +459,701 @@
             </div>
         </section>
         @endif
-        <section class="so-page-builder">
+        
+        @php($business_mode=\App\CPU\Helpers::get_business_settings('business_mode'))
+        {{--categries--}}
+    
+            @if ($business_mode == 'multi')
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-5">
+                        <div class="card border-0 bg-transparent h-100">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-between">
+                                    <div class="categories-title">
+                                        <span class="font-semibold ">{{ \App\CPU\translate('categories')}}</span>
+                                    </div>
+                                    <div class="categories-view-all">
+                                        <a class="text-capitalize view-all-text"
+                                            href="{{route('categories')}}">{{ \App\CPU\translate('view_all')}}
+                                            <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    @foreach($categories as $key=>$category)
+
+                                    @if ($key<12)
+                                        <div class="text-center  __cate-item col-lg-2 col-6">
+                                        <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
+                                            <div class="__img overflow-hidden rounded-circle">
+                                                <img
+                                                    onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/category/'.$category->icon)}}"
+                                                    alt="{{$category->name}}">
+                                            </div>
+                                            <p class="text-center  mt-2">{{Str::limit($category->name, 12)}}</p>
+                                        </a>
+                                </div>
+                                @endif
+
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            @else
+            <div class="col-md-12 mb-5">
+                <div class="card h-100 pb-4">
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-between">
+                            <div
+                                style="{{Session::get('direction') === "rtl" ? 'margin-right: 20px;' : 'margin-left: 22px;'}}">
+                                <span class="font-semibold">{{ \App\CPU\translate('categories')}}</span>
+                            </div>
+                            <div
+                                style="{{Session::get('direction') === "rtl" ? 'margin-left: 15px;' : 'margin-right: 13px;'}}">
+                                <a class="text-capitalize view-all-text"
+                                    href="{{route('categories')}}">{{ \App\CPU\translate('view_all')}}
+                                    <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            @foreach($categories as $key=>$category)
+                            @if ($key<6)
+                                <div class="text-center __cate-item">
+                                <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
+                                    <div class="__img">
+                                        <img
+                                            onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                            src="{{asset(env('PUBLIC_STORAGE_PATH').'/category/'.$category->icon)}}"
+                                            alt="{{$category->name}}">
+                                        <p class="text-center small mt-1">{{Str::limit($category->name, 12)}}</p>
+                                    </div>
+                                </a>
+                        </div>
+                        @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+
+        <!-- Products grid (featured products)-->
+        @if ($featured_products->count() > 0 )
+       <section class="py-4" style="background: rgb(234 245 241 / 10);">
+         <div class="container mb-4">
+            <div class="row ">
+                <div class="col-md-12">
+                    <div class="feature-product-title">
+                        {{ \App\CPU\translate('featured_products')}}
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="feature-product">
+                        <div class="carousel-wrap p-1">
+                            <div class="owl-carousel owl-theme " id="featured_products_list">
+                                @foreach($featured_products as $product)
+                                <div>
+                                    @include('web-views.partials._feature-product',['product'=>$product, 'decimal_point_settings'=>$decimal_point_settings])
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       </section>
+        @endif
+
+        {{--featured deal--}}
+        @php($featured_deals=\App\Model\FlashDeal::with(['products'=>function($query_one){
+        $query_one->with('product.reviews')->whereHas('product',function($query_two){
+        $query_two->active();
+        });
+        }])
+        ->whereDate('start_date', '<=', date('Y-m-d'))->whereDate('end_date', '>=', date('Y-m-d'))
+            ->where(['status'=>1])->where(['deal_type'=>'feature_deal'])
+            ->first())
+
+            @if(isset($featured_deals))
+            <section class="featured_deal rtl" style="background: rgb(234 245 241 / 10);">
+                <div class="container">
+                    <div class="row __featured-deal-wrap" style="background: {{$web_config['primary_color']}};">
+                        <div class="col-12 pb-2">
+                            @if (count($featured_deals->products)>0)
+                            <div
+                                class="{{Session::get('direction') === "rtl" ? 'text-left ml-lg-3' : 'text-right mr-lg-3'}}">
+                                <a class="text-capitalize text-white"
+                                    href="{{route('products',['data_from'=>'featured_deal'])}}">
+                                    {{ \App\CPU\translate('view_all')}}
+                                    <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1' : 'right ml-1'}} text-white"></i>
+                                </a>
+                            </div>
+                            @endif
+                        </div>
+                        <div class="col-xl-3 col-lg-4">
+                            <div class="m-lg-4 mb-4">
+                                <span
+                                    class="featured_deal_title __pt-12">{{ \App\CPU\translate('featured_deal')}}</span>
+                                <br>
+
+                                <span class="text-white text-left">{{ \App\CPU\translate('See the latest deals and exciting new offers')}}!</span>
+
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="col-xl-9 col-lg-8 d-flex align-items-center justify-content-center {{Session::get('direction') === "rtl" ? 'pl-md-4' : 'pr-md-4'}}">
+                            <div class="owl-carousel owl-theme" id="web-feature-deal-slider">
+                                @foreach($featured_deals->products as $key=>$product)
+                                @include('web-views.partials._feature-deal-product',['product'=>$product->product, 'decimal_point_settings'=>$decimal_point_settings])
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            @endif
+            {{--deal of the day--}}
+            <div class="container py-4 rtl">
+                <div class="row g-4 pt-2 mt-0  __deal-of">
+                    {{-- Deal of the day/Recommended Product --}}
+                    <div class="col-xl-3 col-md-4">
+                        <div class="deal_of_the_day h-100" style="background: {{$web_config['primary_color']}}">
+                            @if(isset($deal_of_the_day) && isset($deal_of_the_day->product))
+                            <div class="d-flex justify-content-center align-items-center __w-70p mx-auto">
+                                <h1 class="align-items-center text-white"> {{ \App\CPU\translate('deal_of_the_day') }}</h1>
+                            </div>
+                            <div class="recomanded-product-card">
+
+                                <div class="d-flex justify-content-center align-items-center __pt-20 __m-20-r">
+                                    <img class="__rounded-top"
+                                        src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$deal_of_the_day->product['thumbnail']}}"
+
+                                        alt="" style="height: 250px">
+                                </div>
+                                <div class="__i-1">
+                                    <div class="text-left __p-20px">
+
+                                        @php($overallRating = \App\CPU\ProductManager::get_overall_rating($deal_of_the_day->product['reviews']))
+                                        <div class="rating-show">
+                                            <h5 class="font-semibold" style="color: {{$web_config['primary_color']}}">
+                                                {{\Illuminate\Support\Str::limit($deal_of_the_day->product['name'],30)}}
+                                            </h5>
+                                            <!-- <span class="d-inline-block font-size-sm text-body">
+                                                @for($inc=0;$inc<5;$inc++)
+                                                    @if($inc<$overallRating[0])
+                                                    <i class="p-0 sr-star czi-star-filled active"></i>
+                                                    @else
+                                                    <i class="p-0 sr-star czi-star __color-fea569"></i>
+                                                    @endif
+                                                    @endfor
+                                                    <label
+                                                        class="badge-style">( {{$deal_of_the_day->product->reviews_count}} )</label>
+                                            </span> -->
+                                        </div>
+                                        <div class="">
+
+                                            <span class="text-accent __text-22px __m-10px">
+                                                {{\App\CPU\Helpers::currency_converter(
+                                                $deal_of_the_day->product->unit_price-(\App\CPU\Helpers::get_product_discount($deal_of_the_day->product,$deal_of_the_day->product->unit_price))
+                                            )}}
+                                                @if($deal_of_the_day->product->discount > 0)
+                                                <strike class="__text-12px __color-E96A6A __pl-2">
+                                                    {{\App\CPU\Helpers::currency_converter($deal_of_the_day->product->unit_price)}}
+                                                </strike>
+                                                @endif
+                                            </span>
+
+                                        </div>
+                                        @if($product->discount > 0)
+                                        <div class="__text-14px" style="color: #4eaa6f;">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.665 3.04a4 4 0 0 0-5.33 0l-.242.216a2 2 0 0 1-1.22.506l-.324.018a4 4 0 0 0-3.77 3.77l-.017.323a2 2 0 0 1-.506 1.22l-.216.242a4 4 0 0 0 0 5.33l.216.242a2 2 0 0 1 .506 1.22l.018.324a4 4 0 0 0 3.769 3.769l.324.018a2 2 0 0 1 1.22.506l.242.216a4 4 0 0 0 5.33 0l.242-.216a2 2 0 0 1 1.22-.506l.324-.018a4 4 0 0 0 3.769-3.77l.018-.323a2 2 0 0 1 .505-1.22l.216-.242a4 4 0 0 0 0-5.33l-.216-.242a2 2 0 0 1-.505-1.22l-.018-.324a4 4 0 0 0-3.77-3.769l-.323-.018a2 2 0 0 1-1.22-.506l-.242-.216Zm1.042 5.253a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0ZM16 14.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="#4eaa6f"></path>
+                                            </svg>
+                                            save  {{\App\CPU\Helpers::currency_converter(
+                            (\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
+                        )}}
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="recomanded-buy-button">
+                                <button class="buy_btn" style="color:{{$web_config['primary_color']}}"
+                                    onclick="location.href='{{route('product',$deal_of_the_day->product->slug)}}'">{{\App\CPU\translate('buy_now')}}
+                                </button>
+                            </div>
+                            @else
+                            @php($product=\App\Model\Product::active()->inRandomOrder()->first())
+                            @if(isset($product))
+                            <div class="d-flex justify-content-center align-items-center">
+                                <h1 class="text-white"> {{ \App\CPU\translate('recommended_product') }}</h1>
+                            </div>
+                            <div class="recomanded-product-card">
+
+                                <div class="d-flex justify-content-center align-items-center  __pt-20 __m-20-r" style="background-color: #fff;">
+                                    <img
+                                        src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$product['thumbnail']}}"
+                                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                        alt="" style="height: 250px">
+                                </div>
+                                <div class="__i-1">
+                                    <div class="text-left __p-20px">
+
+                                        @php($overallRating = \App\CPU\ProductManager::get_overall_rating($product['reviews']))
+                                        <div class="rating-show">
+                                            <h5 class="font-semibold _text-10px"
+                                                style="color: {{$web_config['primary_color']}}">
+                                                {{\Illuminate\Support\Str::limit($product['name'],40)}}
+                                            </h5>
+                                            <!-- <span class="d-inline-block font-size-sm text-body">
+                                                @for($inc=0;$inc<5;$inc++)
+                                                    @if($inc<$overallRating[0])
+                                                    <i class="p-0 sr-star czi-star-filled active"></i>
+                                                    @else
+                                                    <i class="p-0 sr-star czi-star __color-fea569"></i>
+                                                    @endif
+                                                    @endfor
+                                                    <label class="badge-style">( {{$product->reviews_count}} )</label>
+                                            </span> -->
+                                        </div>
+                                        <div class="">
+
+                                         
+                                            <span class="text-accent __text-22px __m-10px">
+                                                {{\App\CPU\Helpers::currency_converter(
+                                                    $product->unit_price-(\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
+                                                )}}
+                                            </span>
+                                            @if($product->discount > 0)
+                                            <strike class="__text-12px __color-E96A6A">
+                                                {{\App\CPU\Helpers::currency_converter($product->unit_price)}}
+                                            </strike>
+                                            @endif
+                                        </div>
+                                        @if($product->discount > 0)
+                                            <div class="__text-14px" style="color: #4eaa6f;">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 "><path fill-rule="evenodd" clip-rule="evenodd" d="M14.665 3.04a4 4 0 0 0-5.33 0l-.242.216a2 2 0 0 1-1.22.506l-.324.018a4 4 0 0 0-3.77 3.77l-.017.323a2 2 0 0 1-.506 1.22l-.216.242a4 4 0 0 0 0 5.33l.216.242a2 2 0 0 1 .506 1.22l.018.324a4 4 0 0 0 3.769 3.769l.324.018a2 2 0 0 1 1.22.506l.242.216a4 4 0 0 0 5.33 0l.242-.216a2 2 0 0 1 1.22-.506l.324-.018a4 4 0 0 0 3.769-3.77l.018-.323a2 2 0 0 1 .505-1.22l.216-.242a4 4 0 0 0 0-5.33l-.216-.242a2 2 0 0 1-.505-1.22l-.018-.324a4 4 0 0 0-3.77-3.769l-.323-.018a2 2 0 0 1-1.22-.506l-.242-.216Zm1.042 5.253a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0ZM16 14.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="#4eaa6f"></path></svg>
+                                                save  {{\App\CPU\Helpers::currency_converter(
+                                                            (\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
+                                                        )}}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="recomanded-buy-button">
+                                <button class="buy_btn" style="color:{{$web_config['primary_color']}}"
+                                    onclick="location.href='{{route('product',$product->slug)}}'">{{\App\CPU\translate('buy_now')}}
+                                </button>
+                            </div>
+
+                            @endif
+                            @endif
+                        </div>
+
+                    </div>
+
+                    {{-- Latest products --}}
+                    <div class="col-xl-9 col-md-8  mt-2">
+                        <div class="latest-product-margin">
+                            <div class="d-flex justify-content-between">
+                                <div class="text-center">
+                                    <span
+                                        class="for-feature-title __text-22px font-bold text-center">{{ \App\CPU\translate('latest_products')}}</span>
+                                </div>
+                                <div class="mr-1">
+                                    <a class="text-capitalize view-all-text"
+                                        href="{{route('products',['data_from'=>'latest'])}}">
+                                        {{ \App\CPU\translate('view_all')}}
+                                        <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="row mt-0 g-3">
+                                @foreach($latest_products as $product)
+                                <div class="col-xl-3 col-sm-4 col-md-6 col-lg-4 col-6">
+                                    <div>
+                                        @include('web-views.partials._single-product',['product'=>$product,'decimal_point_settings'=>$decimal_point_settings])
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="container mb-4" style="padding:0">
+                    <div class="row ">
+
+                        <div class="col-md-12">
+                            <div style="over-flow:hidden">
+                                <div class="carousel-wrap p-1">
+                                    <div class="owl-carousel owl-theme " id="main_section_banner">
+                                        @foreach(\App\Model\Banner::where('banner_type','Main Section Banner')->where('published',1)->orderBy('id','desc')->get() as $mainbanner)
+                                        <div class="col-12">
+
+                                            <a href="{{$mainbanner->url}}" class="d-block">
+
+                                                <img class="d-block"
+                                                    onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$mainbanner['photo']}}">
+                                            </a>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+{{--brands--}}
+@if($brand_setting)
+<section class=" rtl mt-3" style="background: rgb(234 245 241 / 10);">
+    <!-- Heading-->
+    <div class="container py-4">
+
+
+        <div class="section-header pb-3  px-5 Featured Products">
+            <div class="text-black font-bold __text-22px">
+                <span> {{\App\CPU\translate('brands')}}</span>
+            </div>
+            <div class="__mr-2px">
+                <a class="text-capitalize view-all-text" href="{{route('brands')}}">
+                    {{ \App\CPU\translate('view_all')}}
+                    <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
+                </a>
+            </div>
+        </div>
+        <!-- Grid-->
+        <div class="mt-sm-3  brand-slider px-5">
+            <div class="owl-carousel owl-theme pb-5 pt-2" id="brands-slider">
+                @foreach($brands as $brand)
+                <div class="text-center">
+                    <a href="{{route('products',['id'=> $brand['id'],'data_from'=>'brand','page'=>1])}}"
+                        class="__brand-item">
+                        <img
+
+                            src="{{asset(env('PUBLIC_STORAGE_PATH').'/brand/'.$brand->image)}}"
+                            alt="{{$brand->name}}">
+                    </a>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</section>
+@endif
+
+<div class="container rtl mt-4" style="padding:0">
+    <div class="arrival-title">
+        <div>
+            <img src="{{asset("public/assets/front-end/png/new-arrivals.png")}}" alt="">
+
+        </div>
+        <div class="pl-2">
+            {{ \App\CPU\translate('ARRIVALS')}}
+        </div>
+    </div>
+</div>
+<div class="container rtl mb-3 overflow-hidden" style="padding:0">
+    <div class="py-2">
+        <div class="new_arrival_product">
+            <div class="carousel-wrap">
+                <div class="owl-carousel owl-theme" id="new-arrivals-product">
+                    @foreach($latest_products as $key=>$product)
+
+                    @include('web-views.partials._product-card-1',['product'=>$product,'decimal_point_settings'=>$decimal_point_settings])
+
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container rtl " style="padding:0">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card card __shadow h-100">
+                <div class="card-body p-xl-35">
+                    <div class="row d-flex justify-content-between mx-1 mb-3">
+                        <div>
+                            <img class="size-30"
+                                src="{{asset("public/assets/front-end/png/best sellings.png")}}"
+                                alt="">
+                            <span class="font-bold pl-1">{{ \App\CPU\translate('best sellings')}}</span>
+                        </div>
+                        <div>
+                            <a class="text-capitalize view-all-text"
+                                href="{{route('products',['data_from'=>'best-selling','page'=>1])}}">{{ \App\CPU\translate('view_all')}}
+                                <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                    <div>
+                        <div class="row">
+                            @foreach($bestSellProduct as $key=>$bestSell)
+                            @if($bestSell->product && $key<2)
+                                <div class="col-md-6">
+                                <a class="__best-selling" href="{{route('product',$bestSell->product->slug)}}">
+                                    @if($bestSell->product->discount > 0)
+                                    <div class="d-flex"
+                                        style="top:0;position:absolute;{{Session::get('direction') === "rtl" ? 'right:0;' : 'left:0;'}}">
+                                        <span class="for-discoutn-value p-1 pl-2 pr-2"
+                                            style="{{Session::get('direction') === "rtl" ? 'border-radius:0px 5px' : 'border-radius:5px 0px'}};">
+                                            @if ($bestSell->product->discount_type == 'percent')
+                                            {{round($bestSell->product->discount)}}%
+                                            @elseif($bestSell->product->discount_type =='flat')
+                                            {{\App\CPU\Helpers::currency_converter($bestSell->product->discount)}}
+                                            @endif {{\App\CPU\translate('off')}}
+                                        </span>
+                                    </div>
+                                    @endif
+                                    <div class="d-flex flex-wrap p-2">
+                                        <div class="best-selleing-image">
+                                            <img class="rounded"
+                                                onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                                src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$bestSell->product['thumbnail']}}"
+                                                alt="Product" />
+                                        </div>
+                                        <div class="best-selling-details">
+                                            <h6 class="widget-product-title">
+                                                <span class="ptr _text-14px" style="font-weight: 600;font-size: 14px;">
+                                                    {{\Illuminate\Support\Str::limit($bestSell->product['name'],100)}}
+                                                </span>
+                                            </h6>
+                                            @php($bestSell_overallRating = \App\CPU\ProductManager::get_overall_rating($bestSell->product['reviews']))
+                                            <!-- <div class="rating-show">
+                                                <span class="d-inline-block font-size-sm text-body">
+                                                    @for($inc=0;$inc<5;$inc++)
+                                                        @if($inc<$bestSell_overallRating[0])
+                                                        <i class="p-0 sr-star czi-star-filled active"></i>
+                                                        @else
+                                                        <i class="p-0 sr-star czi-star __color-fea569"></i>
+                                                        @endif
+                                                        @endfor
+                                                        <label class="badge-style">( {{$bestSell->product->reviews_count}} )</label>
+                                                </span>
+                                            </div> -->
+                                            <div class="widget-product-meta">
+                                              
+                                                <span class="text-accent __text-14px">
+                                                    {{\App\CPU\Helpers::currency_converter(
+                                                        $bestSell->product->unit_price-(\App\CPU\Helpers::get_product_discount($bestSell->product,$bestSell->product->unit_price))
+                                                        )}}
+                                                </span>
+                                                  @if($bestSell->product->discount > 0)
+                                                <span> <strike class="__color-E96A6A __text-12px">
+                                                        {{\App\CPU\Helpers::currency_converter($bestSell->product->unit_price)}}
+                                                    </strike> </span>
+                                                @endif
+                                            </div>
+                                              @if($product->discount > 0)
+                                                <div class="__text-14px" style="color: #4eaa6f;">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 "><path fill-rule="evenodd" clip-rule="evenodd" d="M14.665 3.04a4 4 0 0 0-5.33 0l-.242.216a2 2 0 0 1-1.22.506l-.324.018a4 4 0 0 0-3.77 3.77l-.017.323a2 2 0 0 1-.506 1.22l-.216.242a4 4 0 0 0 0 5.33l.216.242a2 2 0 0 1 .506 1.22l.018.324a4 4 0 0 0 3.769 3.769l.324.018a2 2 0 0 1 1.22.506l.242.216a4 4 0 0 0 5.33 0l.242-.216a2 2 0 0 1 1.22-.506l.324-.018a4 4 0 0 0 3.769-3.77l.018-.323a2 2 0 0 1 .505-1.22l.216-.242a4 4 0 0 0 0-5.33l-.216-.242a2 2 0 0 1-.505-1.22l-.018-.324a4 4 0 0 0-3.77-3.769l-.323-.018a2 2 0 0 1-1.22-.506l-.242-.216Zm1.042 5.253a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0ZM16 14.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="#4eaa6f"></path></svg>
+                                                    save {{\App\CPU\Helpers::currency_converter(
+                                                            (\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
+                                                        )}}
+                                            </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </a>
+                                @endif
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-6 mt-2 mt-md-0">
+        <div class="card card __shadow h-100">
+            <div class="card-body p-xl-35">
+                <div class="row d-flex justify-content-between mx-1 mb-3">
+                    <div>
+                        <img class="size-30" src="{{asset("public/assets/front-end/png/top-rated.png")}}"
+                            alt="">
+                        <span class="font-bold pl-1">{{ \App\CPU\translate('top rated')}}</span>
+                    </div>
+                    <div>
+                        <a class="text-capitalize view-all-text"
+                            href="{{route('products',['data_from'=>'top-rated','page'=>1])}}">{{ \App\CPU\translate('view_all')}}
+                            <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <div class="row">
+                        @foreach($topRated as $key=>$top)
+                        @if($top->product && $key<2)
+                            <div class="col-md-6">
+                            <a class="__best-selling" href="{{route('product',$top->product->slug)}}">
+                                @if($top->product->discount > 0)
+                                <div class="d-flex"
+                                    style="top:0;position:absolute;{{Session::get('direction') === "rtl" ? 'right:0;' : 'left:0;'}}">
+                                    <span class="for-discoutn-value p-1 pl-2 pr-2"
+                                        style="{{Session::get('direction') === "rtl" ? 'border-radius:0px 5px' : 'border-radius:5px 0px'}};">
+                                        @if ($top->product->discount_type == 'percent')
+                                        {{round($top->product->discount)}}%
+                                        @elseif($top->product->discount_type =='flat')
+                                        {{\App\CPU\Helpers::currency_converter($top->product->discount)}}
+                                        @endif {{\App\CPU\translate('off')}}
+                                    </span>
+                                </div>
+                                @endif
+                                <div class="d-flex flex-wrap p-2">
+                                    <div class="top-rated-image">
+                                        <img class="rounded"
+                                            onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                            src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$top->product['thumbnail']}}"
+                                            alt="Product" />
+                                    </div>
+                                    <div class="top-rated-details">
+                                        <h6 class="widget-product-title _text-14px">
+                                            <span class="ptr _text-14px" style="font-weight: 600;font-size: 14px;">
+                                                {{\Illuminate\Support\Str::limit($top->product['name'],100)}}
+                                            </span>
+                                        </h6>
+                                        @php($top_overallRating = \App\CPU\ProductManager::get_overall_rating($top->product['reviews']))
+                                        <!-- <div class="rating-show">
+                                            <span class="d-inline-block font-size-sm text-body">
+                                                @for($inc=0;$inc<5;$inc++)
+                                                    @if($inc<$top_overallRating[0])
+                                                    <i class="p-0 sr-star czi-star-filled active"></i>
+                                                    @else
+                                                    <i class="p-0 sr-star czi-star __color-fea569"></i>
+                                                    @endif
+                                                    @endfor
+                                                    <label
+                                                        class="badge-style">( {{$top->product->reviews_count}} )</label>
+                                            </span>
+                                        </div> -->
+                                         <div class="widget-product-meta">
+                                              
+                                                <span class="text-accent">
+                                                    {{\App\CPU\Helpers::currency_converter(
+                                                        $bestSell->product->unit_price-(\App\CPU\Helpers::get_product_discount($bestSell->product,$bestSell->product->unit_price))
+                                                        )}}
+                                                </span>
+                                                  @if($bestSell->product->discount > 0)
+                                                <span> <strike class="__color-E96A6A __text-12px">
+                                                        {{\App\CPU\Helpers::currency_converter($bestSell->product->unit_price)}}
+                                                    </strike> </span>
+                                                @endif
+                                            </div>
+                                              @if($product->discount > 0)
+                                                <div class="__text-14px" style="color: #4eaa6f;">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 "><path fill-rule="evenodd" clip-rule="evenodd" d="M14.665 3.04a4 4 0 0 0-5.33 0l-.242.216a2 2 0 0 1-1.22.506l-.324.018a4 4 0 0 0-3.77 3.77l-.017.323a2 2 0 0 1-.506 1.22l-.216.242a4 4 0 0 0 0 5.33l.216.242a2 2 0 0 1 .506 1.22l.018.324a4 4 0 0 0 3.769 3.769l.324.018a2 2 0 0 1 1.22.506l.242.216a4 4 0 0 0 5.33 0l.242-.216a2 2 0 0 1 1.22-.506l.324-.018a4 4 0 0 0 3.769-3.77l.018-.323a2 2 0 0 1 .505-1.22l.216-.242a4 4 0 0 0 0-5.33l-.216-.242a2 2 0 0 1-.505-1.22l-.018-.324a4 4 0 0 0-3.77-3.769l-.323-.018a2 2 0 0 1-1.22-.506l-.242-.216Zm1.042 5.253a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0ZM16 14.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="#4eaa6f"></path></svg>
+                                                    save {{\App\CPU\Helpers::currency_converter(
+                                                            (\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
+                                                        )}}
+                                            </div>
+                                            @endif
+                                    </div>
+
+                                </div>
+
+                            </a>
+                    </div>
+                    @endif
+                    @endforeach
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+<div class="container rtl py-4">
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col_llqj  col-style">
+        <div class="banners banners2">
+            <div class="banner">
+                <a href="#"><img src="public/assets/front-end/img/id2-banner2.png" alt="image"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{{-- Categorized product --}}
+@foreach($home_categories as $key1=>$category)
+@if ($key1<4)
+
+
+    <section class="container rtl pb-4">
+    <!-- Heading-->
+    <div class="__p-20px rounded bg-white">
+        <div class="flex-wrap __gap-6px flex-between pl-xl-4">
+            <div class="category-product-view-title">
+                <span
+                    class="for-feature-title {{Session::get('direction') === "rtl" ? 'float-right' : 'float-left'}} font-bold __text-20px text-uppercase"
+                    style="{{Session::get('direction') === "rtl" ? 'text-align:right;' : 'text-align:left;'}}">
+                    {{Str::limit($category['name'],18)}}
+                </span>
+            </div>
+            <div class="category-product-view-all">
+                <a class="text-capitalize view-all-text "
+                    href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">{{ \App\CPU\translate('view_all')}}
+                    <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="row mt-2 justify-content-between g-3">
+            <div class="col-md-2 col-12 d-flex justify-content-center align-items-center">
+                <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}"
+                    class="cursor-pointer d-block  __cate-product-side-img">
+                    <img class=""
+                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/category')}}/{{$category['icon']}}">
+                </a>
+            </div>
+            <div class="col-md-10 col-12 ">
+                <div class="row g-2">
+                    @foreach($category['products'] as $key=>$product)
+                    @if ($key<4)
+                        <div class="col-md-3 col-sm-4 col-6">
+                        @include('web-views.partials._category-single-product',['product'=>$product,'decimal_point_settings'=>$decimal_point_settings])
+                </div>
+                @endif
+                @endforeach
+            </div>
+        </div>
+
+
+    </div>
+    </div>
+    </section>
+    @endif
+    @endforeach
+
+    {{--delivery type --}}
+
+  <section class="so-page-builder">
             <div class="container" style="padding:0;">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col_pfg8  col-style">
                     <div class="block-policy2">
@@ -490,1198 +1209,440 @@
                 </div>
             </div>
         </section>
-        {{--brands--}}
-        @if($brand_setting)
-        <section class="container rtl mt-3">
-            <!-- Heading-->
-            <div class="section-header">
-                <div class="text-black font-bold __text-22px">
-                    <span> {{\App\CPU\translate('brands')}}</span>
-                </div>
-                <div class="__mr-2px">
-                    <a class="text-capitalize view-all-text" href="{{route('brands')}}">
-                        {{ \App\CPU\translate('view_all')}}
-                        <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                    </a>
-                </div>
-            </div>
-            <!-- Grid-->
+    {{-- Banner  --}}
+    <div class="container mb-4">
+        <div class="row __inline-62">
 
-            <div class="mt-sm-3 mb-3 brand-slider">
-                <div class="owl-carousel owl-theme p-2" id="brands-slider">
-                    @foreach($brands as $brand)
-                    <div class="text-center">
-                        <a href="{{route('products',['id'=> $brand['id'],'data_from'=>'brand','page'=>1])}}"
-                            class="__brand-item">
-                            <img
-                               
-                                src="{{asset(env('PUBLIC_STORAGE_PATH').'/brand/'.$brand->image)}}"
-                                alt="{{$brand->name}}">
-                        </a>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-        @endif
+            <div class="col-md-12">
+                <div class="feature-product">
+                    <div class="carousel-wrap p-1">
+                        <div class="owl-carousel owl-theme " id="footer_banner_list">
+                            @foreach(\App\Model\Banner::where('banner_type','Footer Banner')->where('published',1)->orderBy('id','desc')->get() as $banner)
+                            <div class="col-md-6">
 
-        <!-- Products grid (featured products)-->
-        @if ($featured_products->count() > 0 )
-        <div class="container mb-4">
-            <div class="row __inline-62">
-                <div class="col-md-12">
-                    <div class="feature-product-title">
-                        {{ \App\CPU\translate('featured_products')}}
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="feature-product">
-                        <div class="carousel-wrap p-1">
-                            <div class="owl-carousel owl-theme " id="featured_products_list">
-                                @foreach($featured_products as $product)
-                                <div>
-                                    @include('web-views.partials._feature-product',['product'=>$product, 'decimal_point_settings'=>$decimal_point_settings])
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
 
-        {{--featured deal--}}
-        @php($featured_deals=\App\Model\FlashDeal::with(['products'=>function($query_one){
-        $query_one->with('product.reviews')->whereHas('product',function($query_two){
-        $query_two->active();
-        });
-        }])
-        ->whereDate('start_date', '<=', date('Y-m-d'))->whereDate('end_date', '>=', date('Y-m-d'))
-            ->where(['status'=>1])->where(['deal_type'=>'feature_deal'])
-            ->first())
-
-            @if(isset($featured_deals))
-            <section class="featured_deal rtl">
-                <div class="container">
-                    <div class="row __featured-deal-wrap" style="background: {{$web_config['primary_color']}};">
-                        <div class="col-12 pb-2">
-                            @if (count($featured_deals->products)>0)
-                            <div
-                                class="{{Session::get('direction') === "rtl" ? 'text-left ml-lg-3' : 'text-right mr-lg-3'}}">
-                                <a class="text-capitalize text-white"
-                                    href="{{route('products',['data_from'=>'featured_deal'])}}">
-                                    {{ \App\CPU\translate('view_all')}}
-                                    <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1' : 'right ml-1'}} text-white"></i>
-                                </a>
-                            </div>
-                            @endif
-                        </div>
-                        <div class="col-xl-3 col-lg-4">
-                            <div class="m-lg-4 mb-4">
-                                <span
-                                    class="featured_deal_title __pt-12">{{ \App\CPU\translate('featured_deal')}}</span>
-                                <br>
-
-                                <span class="text-white text-left">{{ \App\CPU\translate('See the latest deals and exciting new offers')}}!</span>
-
-                            </div>
-
-                        </div>
-
-                        <div
-                            class="col-xl-9 col-lg-8 d-flex align-items-center justify-content-center {{Session::get('direction') === "rtl" ? 'pl-md-4' : 'pr-md-4'}}">
-                            <div class="owl-carousel owl-theme" id="web-feature-deal-slider">
-                                @foreach($featured_deals->products as $key=>$product)
-                                @include('web-views.partials._feature-deal-product',['product'=>$product->product, 'decimal_point_settings'=>$decimal_point_settings])
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            @endif
-            {{--deal of the day--}}
-            <div class="container rtl">
-                <div class="row g-4 pt-2 mt-0 mb-4 pb-2 __deal-of">
-                    {{-- Deal of the day/Recommended Product --}}
-                    <div class="col-xl-3 col-md-4">
-                        <div class="deal_of_the_day h-100" style="background: {{$web_config['primary_color']}}">
-                            @if(isset($deal_of_the_day) && isset($deal_of_the_day->product))
-                            <div class="d-flex justify-content-center align-items-center __w-70p mx-auto">
-                                <h1 class="align-items-center text-white"> {{ \App\CPU\translate('deal_of_the_day') }}</h1>
-                            </div>
-                            <div class="recomanded-product-card">
-
-                                <div class="d-flex justify-content-center align-items-center __pt-20 __m-20-r">
-                                    <img class="__rounded-top"
-                                        src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$deal_of_the_day->product['thumbnail']}}"
-                                       
-                                        alt="">
-                                </div>
-                                <div class="__i-1">
-                                    <div class="text-left __p-20px">
-
-                                        @php($overallRating = \App\CPU\ProductManager::get_overall_rating($deal_of_the_day->product['reviews']))
-                                        <div class="rating-show">
-                                            <h5 class="font-semibold" style="color: {{$web_config['primary_color']}}">
-                                                {{\Illuminate\Support\Str::limit($deal_of_the_day->product['name'],30)}}
-                                            </h5>
-                                            <span class="d-inline-block font-size-sm text-body">
-                                                @for($inc=0;$inc<5;$inc++)
-                                                    @if($inc<$overallRating[0])
-                                                    <i class="p-0 sr-star czi-star-filled active"></i>
-                                                    @else
-                                                    <i class="p-0 sr-star czi-star __color-fea569"></i>
-                                                    @endif
-                                                    @endfor
-                                                    <label
-                                                        class="badge-style">( {{$deal_of_the_day->product->reviews_count}} )</label>
-                                            </span>
-                                        </div>
-                                        <div class="">
-
-                                            @if($deal_of_the_day->product->discount > 0)
-                                            <strike class="__text-12px __color-E96A6A __pl-2">
-                                                {{\App\CPU\Helpers::currency_converter($deal_of_the_day->product->unit_price)}}
-                                            </strike>
-                                            @endif
-                                            <span class="text-accent __text-22px __m-10px">
-                                                {{\App\CPU\Helpers::currency_converter(
-                                                $deal_of_the_day->product->unit_price-(\App\CPU\Helpers::get_product_discount($deal_of_the_day->product,$deal_of_the_day->product->unit_price))
-                                            )}}
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="recomanded-buy-button">
-                                <button class="buy_btn" style="color:{{$web_config['primary_color']}}"
-                                    onclick="location.href='{{route('product',$deal_of_the_day->product->slug)}}'">{{\App\CPU\translate('buy_now')}}
-                                </button>
-                            </div>
-                            @else
-                            @php($product=\App\Model\Product::active()->inRandomOrder()->first())
-                            @if(isset($product))
-                            <div class="d-flex justify-content-center align-items-center">
-                                <h1 class="text-white"> {{ \App\CPU\translate('recommended_product') }}</h1>
-                            </div>
-                            <div class="recomanded-product-card">
-
-                                <div class="d-flex justify-content-center align-items-center  __pt-20 __m-20-r">
-                                    <img
-                                        src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$product['thumbnail']}}"
+                                <a href="{{$banner->url}}" class="d-block">
+                                    <img class="footer_banner_img"
                                         onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                        alt="">
-                                </div>
-                                <div class="__i-1">
-                                    <div class="text-left __p-20px">
-
-                                        @php($overallRating = \App\CPU\ProductManager::get_overall_rating($product['reviews']))
-                                        <div class="rating-show">
-                                            <h5 class="font-semibold"
-                                                style="color: {{$web_config['primary_color']}}">
-                                                {{\Illuminate\Support\Str::limit($product['name'],40)}}
-                                            </h5>
-                                            <span class="d-inline-block font-size-sm text-body">
-                                                @for($inc=0;$inc<5;$inc++)
-                                                    @if($inc<$overallRating[0])
-                                                    <i class="p-0 sr-star czi-star-filled active"></i>
-                                                    @else
-                                                    <i class="p-0 sr-star czi-star __color-fea569"></i>
-                                                    @endif
-                                                    @endfor
-                                                    <label class="badge-style">( {{$product->reviews_count}} )</label>
-                                            </span>
-                                        </div>
-                                        <div class="float-right">
-
-                                            @if($product->discount > 0)
-                                            <strike class="__text-12px __color-E96A6A">
-                                                {{\App\CPU\Helpers::currency_converter($product->unit_price)}}
-                                            </strike>
-                                            @endif
-                                            <span class="text-accent __text-22px __m-10px">
-                                                {{\App\CPU\Helpers::currency_converter(
-                                                    $product->unit_price-(\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
-                                                )}}
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="recomanded-buy-button">
-                                <button class="buy_btn" style="color:{{$web_config['primary_color']}}"
-                                    onclick="location.href='{{route('product',$product->slug)}}'">{{\App\CPU\translate('buy_now')}}
-                                </button>
-                            </div>
-
-                            @endif
-                            @endif
-                        </div>
-
-                    </div>
-
-                    {{-- Latest products --}}
-                    <div class="col-xl-9 col-md-8 mt-2">
-                        <div class="latest-product-margin">
-                            <div class="d-flex justify-content-between">
-                                <div class="text-center">
-                                    <span
-                                        class="for-feature-title __text-22px font-bold text-center">{{ \App\CPU\translate('latest_products')}}</span>
-                                </div>
-                                <div class="mr-1">
-                                    <a class="text-capitalize view-all-text"
-                                        href="{{route('products',['data_from'=>'latest'])}}">
-                                        {{ \App\CPU\translate('view_all')}}
-                                        <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="row mt-0 g-3">
-                                @foreach($latest_products as $product)
-                                <div class="col-xl-3 col-sm-4 col-md-6 col-lg-4 col-6">
-                                    <div>
-                                        @include('web-views.partials._single-product',['product'=>$product,'decimal_point_settings'=>$decimal_point_settings])
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <div class="container mb-4" style="padding:0">
-                    <div class="row ">
-
-                        <div class="col-md-12">
-                            <div style="over-flow:hidden">
-                                <div class="carousel-wrap p-1">
-                                    <div class="owl-carousel owl-theme " id="main_section_banner">
-                                        @foreach(\App\Model\Banner::where('banner_type','Main Section Banner')->where('published',1)->orderBy('id','desc')->get() as $mainbanner)
-                                        <div class="col-12">
-                                                  
-                                            <a href="{{$mainbanner->url}}" class="d-block">
-                                            
-<img class="d-block"
-                                                    onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$mainbanner['photo']}}">
-                                            </a>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                @php($business_mode=\App\CPU\Helpers::get_business_settings('business_mode'))
-                {{--categries--}}
-                <div class="container rtl" style="padding:0">
-                    <div class="row">
-                        @if ($business_mode == 'multi')
-                        <div class="col-md-6">
-                            <div class="card __shadow h-100">
-                                <div class="card-body">
-                                    <div class="row d-flex justify-content-between">
-                                        <div class="categories-title">
-                                            <span class="font-semibold">{{ \App\CPU\translate('categories')}}</span>
-                                        </div>
-                                        <div class="categories-view-all">
-                                            <a class="text-capitalize view-all-text"
-                                                href="{{route('categories')}}">{{ \App\CPU\translate('view_all')}}
-                                                <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        @foreach($categories as $key=>$category)
-
-                                        @if ($key<10)
-                                            <div class="text-center __m-5px __cate-item">
-                                            <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
-                                                <div class="__img">
-                                                    <img
-                                                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/category/'.$category->icon)}}"
-                                                        alt="{{$category->name}}">
-                                                </div>
-                                                <p class="text-center small mt-2">{{Str::limit($category->name, 12)}}</p>
-                                            </a>
-                                    </div>
-                                    @endif
-
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @else
-                    <div class="col-md-12">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <div class="row d-flex justify-content-between">
-                                    <div
-                                        style="{{Session::get('direction') === "rtl" ? 'margin-right: 20px;' : 'margin-left: 22px;'}}">
-                                        <span class="font-semibold">{{ \App\CPU\translate('categories')}}</span>
-                                    </div>
-                                    <div
-                                        style="{{Session::get('direction') === "rtl" ? 'margin-left: 15px;' : 'margin-right: 13px;'}}">
-                                        <a class="text-capitalize view-all-text"
-                                            href="{{route('categories')}}">{{ \App\CPU\translate('view_all')}}
-                                            <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    @foreach($categories as $key=>$category)
-                                    @if ($key<11)
-                                        <div class="text-center __m-5px __cate-item">
-                                        <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
-                                            <div class="__img">
-                                                <img
-                                                    onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/category/'.$category->icon)}}"
-                                                    alt="{{$category->name}}">
-                                                <p class="text-center small mt-1">{{Str::limit($category->name, 12)}}</p>
-                                            </div>
-                                        </a>
-                                </div>
-                                @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endif
-                <!-- top sellers -->
-
-                @if ($business_mode == 'multi')
-                @if(count($top_sellers) > 0)
-                <div class="col-md-6 mt-2 mt-md-0 seller-card">
-                    <div class="card __shadow h-100">
-                        <div class="card-body">
-                            <div class="row d-flex justify-content-between">
-                                <div class="seller-list-title">
-                                    <span class="font-semibold">{{ \App\CPU\translate('sellers')}}</span>
-                                </div>
-                                <div class="seller-list-view-all">
-                                    <a class="text-capitalize view-all-text"
-                                        href="{{route('sellers')}}">{{ \App\CPU\translate('view_all')}}
-                                        <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="row mt-3">
-                                @foreach($top_sellers as $key=>$seller)
-                                @if ($key<10)
-
-                                    @if($seller->shop)
-                                    <div class="__m-5px __cate-item">
-                                        <a href="{{route('shopView',['id'=>$seller['id']])}}">
-                                            <div class="__img circle position-relative">
-                                                @php($shop=$seller->shop)
-                                                @php($current_date = date('Y-m-d'))
-                                                @php($start_date = date('Y-m-d', strtotime($shop['vacation_start_date'])))
-                                                @php($end_date = date('Y-m-d', strtotime($shop['vacation_end_date'])))
-                                                @if($shop->vacation_status && ($current_date >= $start_date) && ($current_date <= $end_date))
-                                                    <span class="temporary-closed">
-                                                    <small>{{\App\CPU\translate('closed_now')}}</small>
-                                                    </span>
-                                                    @elseif($shop->temporary_close)
-                                                    <span class="temporary-closed">
-                                                        <small>{{\App\CPU\translate('closed_now')}}</small>
-                                                    </span>
-                                                    @endif
-                                                    <img
-                                                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop')}}/{{$seller->shop->image}}">
-                                            </div>
-                                            <p class="text-center small mt-2">{{Str::limit($seller->shop->name, 14)}}</p>
-                                        </a>
-                                    </div>
-                                    @endif
-                                    @endif
-                                    @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endif
-                @endif
-            </div>
-</div>
-
-
-<div class="container rtl mt-4" style="padding:0">
-    <div class="arrival-title">
-        <div>
-            <img src="{{asset("public/assets/front-end/png/new-arrivals.png")}}" alt="">
-
-        </div>
-        <div class="pl-2">
-            {{ \App\CPU\translate('ARRIVALS')}}
-        </div>
-    </div>
-</div>
-<div class="container rtl mb-3 overflow-hidden" style="padding:0">
-    <div class="py-2">
-        <div class="new_arrival_product">
-            <div class="carousel-wrap">
-                <div class="owl-carousel owl-theme" id="new-arrivals-product">
-                    @foreach($latest_products as $key=>$product)
-
-                    @include('web-views.partials._product-card-1',['product'=>$product,'decimal_point_settings'=>$decimal_point_settings])
-
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container rtl" style="padding:0">
-    <div class="row g-3">
-        <div class="col-md-12">
-            <div class="card card __shadow h-100">
-                <div class="card-body p-xl-35">
-                    <div class="row d-flex justify-content-between mx-1 mb-3">
-                        <div>
-                            <img class="size-30"
-                                src="{{asset("public/assets/front-end/png/best sellings.png")}}"
-                                alt="">
-                            <span class="font-bold pl-1">{{ \App\CPU\translate('best sellings')}}</span>
-                        </div>
-                        <div>
-                            <a class="text-capitalize view-all-text"
-                                href="{{route('products',['data_from'=>'best-selling','page'=>1])}}">{{ \App\CPU\translate('view_all')}}
-                                <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                            </a>
-                        </div>
-
-                    </div>
-                    <div>
-                        <div class="row">
-                            @foreach($bestSellProduct as $key=>$bestSell)
-                            @if($bestSell->product && $key<3)
-                                <div class="col-md-4">
-                                <a class="__best-selling" href="{{route('product',$bestSell->product->slug)}}">
-                                    @if($bestSell->product->discount > 0)
-                                    <div class="d-flex"
-                                        style="top:0;position:absolute;{{Session::get('direction') === "rtl" ? 'right:0;' : 'left:0;'}}">
-                                        <span class="for-discoutn-value p-1 pl-2 pr-2"
-                                            style="{{Session::get('direction') === "rtl" ? 'border-radius:0px 5px' : 'border-radius:5px 0px'}};">
-                                            @if ($bestSell->product->discount_type == 'percent')
-                                            {{round($bestSell->product->discount)}}%
-                                            @elseif($bestSell->product->discount_type =='flat')
-                                            {{\App\CPU\Helpers::currency_converter($bestSell->product->discount)}}
-                                            @endif {{\App\CPU\translate('off')}}
-                                        </span>
-                                    </div>
-                                    @endif
-                                    <div class="d-flex flex-wrap p-2">
-                                        <div class="best-selleing-image">
-                                            <img class="rounded"
-                                                onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$bestSell->product['thumbnail']}}"
-                                                alt="Product" />
-                                        </div>
-                                        <div class="best-selling-details">
-                                            <h6 class="widget-product-title">
-                                                <span class="ptr">
-                                                    {{\Illuminate\Support\Str::limit($bestSell->product['name'],100)}}
-                                                </span>
-                                            </h6>
-                                            @php($bestSell_overallRating = \App\CPU\ProductManager::get_overall_rating($bestSell->product['reviews']))
-                                            <div class="rating-show">
-                                                <span class="d-inline-block font-size-sm text-body">
-                                                    @for($inc=0;$inc<5;$inc++)
-                                                        @if($inc<$bestSell_overallRating[0])
-                                                        <i class="p-0 sr-star czi-star-filled active"></i>
-                                                        @else
-                                                        <i class="p-0 sr-star czi-star __color-fea569"></i>
-                                                        @endif
-                                                        @endfor
-                                                        <label class="badge-style">( {{$bestSell->product->reviews_count}} )</label>
-                                                </span>
-                                            </div>
-                                            <div class="widget-product-meta">
-                                                @if($bestSell->product->discount > 0)
-                                                <span> <strike class="__color-E96A6A __text-12px">
-                                                        {{\App\CPU\Helpers::currency_converter($bestSell->product->unit_price)}}
-                                                    </strike> </span>
-                                                @endif
-                                                <span class="text-accent">
-                                                    {{\App\CPU\Helpers::currency_converter(
-                                                        $bestSell->product->unit_price-(\App\CPU\Helpers::get_product_discount($bestSell->product,$bestSell->product->unit_price))
-                                                        )}}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$banner['photo']}}">
                                 </a>
-                                @endif
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-</div>
-<div class="container rtl pb-4">
-    <div class="row g-3">
-        <div class="col-md-12 mt-2 mt-md-0">
-            <div class="card card __shadow h-100">
-                <div class="card-body p-xl-35">
-                    <div class="row d-flex justify-content-between mx-1 mb-3">
-                        <div>
-                            <img class="size-30" src="{{asset("public/assets/front-end/png/top-rated.png")}}"
-                                alt="">
-                            <span class="font-bold pl-1">{{ \App\CPU\translate('top rated')}}</span>
-                        </div>
-                        <div>
-                            <a class="text-capitalize view-all-text"
-                                href="{{route('products',['data_from'=>'top-rated','page'=>1])}}">{{ \App\CPU\translate('view_all')}}
-                                <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                            </a>
+                            </div>
+                            @endforeach
                         </div>
                     </div>
-                    <div>
-                        <div class="row">
-                            @foreach($topRated as $key=>$top)
-                            @if($top->product && $key<3)
-                                <div class="col-md-4">
-                                <a class="__best-selling" href="{{route('product',$top->product->slug)}}">
-                                    @if($top->product->discount > 0)
-                                    <div class="d-flex"
-                                        style="top:0;position:absolute;{{Session::get('direction') === "rtl" ? 'right:0;' : 'left:0;'}}">
-                                        <span class="for-discoutn-value p-1 pl-2 pr-2"
-                                            style="{{Session::get('direction') === "rtl" ? 'border-radius:0px 5px' : 'border-radius:5px 0px'}};">
-                                            @if ($top->product->discount_type == 'percent')
-                                            {{round($top->product->discount)}}%
-                                            @elseif($top->product->discount_type =='flat')
-                                            {{\App\CPU\Helpers::currency_converter($top->product->discount)}}
-                                            @endif {{\App\CPU\translate('off')}}
-                                        </span>
-                                    </div>
-                                    @endif
-                                    <div class="d-flex flex-wrap p-2">
-                                        <div class="top-rated-image">
-                                            <img class="rounded"
-                                                onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$top->product['thumbnail']}}"
-                                                alt="Product" />
-                                        </div>
-                                        <div class="top-rated-details">
-                                            <h6 class="widget-product-title">
-                                                <span class="ptr">
-                                                    {{\Illuminate\Support\Str::limit($top->product['name'],100)}}
-                                                </span>
-                                            </h6>
-                                            @php($top_overallRating = \App\CPU\ProductManager::get_overall_rating($top->product['reviews']))
-                                            <div class="rating-show">
-                                                <span class="d-inline-block font-size-sm text-body">
-                                                    @for($inc=0;$inc<5;$inc++)
-                                                        @if($inc<$top_overallRating[0])
-                                                        <i class="p-0 sr-star czi-star-filled active"></i>
-                                                        @else
-                                                        <i class="p-0 sr-star czi-star __color-fea569"></i>
-                                                        @endif
-                                                        @endfor
-                                                        <label
-                                                            class="badge-style">( {{$top->product->reviews_count}} )</label>
-                                                </span>
-                                            </div>
-                                            <div class="widget-product-meta"> @if($top->product->discount > 0)
-                                                <span> <strike class="__text-12px __color-E96A6A">
-                                                        {{\App\CPU\Helpers::currency_converter($top->product->unit_price)}}
-                                                    </strike></span>
-                                                @endif
-                                                <span class="text-accent">
-                                                    {{\App\CPU\Helpers::currency_converter(
-                                                        $top->product->unit_price-(\App\CPU\Helpers::get_product_discount($top->product,$top->product->unit_price))
-                                                        )}}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                </a>
-                        </div>
-                        @endif
-                        @endforeach
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col_llqj  col-style">
-        <div class="banners banners2">
-            <div class="banner">
-                <a href="#"><img src="public/assets/front-end/img/id2-banner2.png" alt="image"></a>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-</div>
-
-
-
-{{-- Categorized product --}}
-@foreach($home_categories as $category)
-<section class="container rtl pb-4">
-    <!-- Heading-->
-    <div class="__p-20px rounded bg-white">
-        <div class="flex-wrap __gap-6px flex-between pl-xl-4">
-            <div class="category-product-view-title">
-                <span
-                    class="for-feature-title {{Session::get('direction') === "rtl" ? 'float-right' : 'float-left'}} font-bold __text-20px text-uppercase"
-                    style="{{Session::get('direction') === "rtl" ? 'text-align:right;' : 'text-align:left;'}}">
-                    {{Str::limit($category['name'],18)}}
-                </span>
-            </div>
-            <div class="category-product-view-all">
-                <a class="text-capitalize view-all-text "
-                    href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">{{ \App\CPU\translate('view_all')}}
-                    <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                </a>
-
-            </div>
-        </div>
-
-        <div class="row mt-2 justify-content-between g-3">
-            <div class="col-md-3 col-12">
-                <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}"
-                    class="cursor-pointer d-block h-100 __cate-product-side-img">
-                    <img class="h-100"
-                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/category')}}/{{$category['icon']}}">
-                </a>
-            </div>
-            <div class="col-md-9 col-12 ">
-                <div class="row g-2">
-                    @foreach($category['products'] as $key=>$product)
-                    @if ($key<4)
-                        <div class="col-md-3 col-sm-4 col-6">
-                        @include('web-views.partials._category-single-product',['product'=>$product,'decimal_point_settings'=>$decimal_point_settings])
-                </div>
-                @endif
-                @endforeach
-            </div>
-        </div>
-
-
-    </div>
-    </div>
-</section>
-@endforeach
-
-{{--delivery type --}}
-
-<div class="container rtl pb-4 pt-3">
-    <div class="shipping-policy-web">
-        <div class="row g-3">
-            <div class="col-md-3 d-flex justify-content-center">
-                <div class="shipping-method-system">
-                    <div class="text-center">
-                        <img class="size-60" src="{{asset("public/assets/front-end/png/delivery.png")}}"
-                            alt="">
-                    </div>
-                    <div class="text-center">
-                        <p class="m-0">
-                            {{ \App\CPU\translate('Fast Delivery all accross the country')}}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 d-flex justify-content-center">
-                <div class="shipping-method-system">
-                    <div class="text-center">
-                        <img class="size-60" src="{{asset("public/assets/front-end/png/Payment.png")}}"
-                            alt="">
-                    </div>
-                    <div class="text-center">
-                        <p class="m-0">
-                            {{ \App\CPU\translate('Safe Payment')}}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 d-flex justify-content-center">
-                <div class="shipping-method-system">
-                    <div class="text-center">
-                        <img class="size-60" src="{{asset("public/assets/front-end/png/money.png")}}"
-                            alt="">
-                    </div>
-                    <div class="text-center">
-                        <p class="m-0">
-                            {{ \App\CPU\translate('7 Days Return Policy')}}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 d-flex justify-content-center">
-                <div class="shipping-method-system">
-                    <div class="text-center">
-                        <img class="size-60" src="{{asset("public/assets/front-end/png/Genuine.png")}}"
-                            alt="">
-                    </div>
-                    <div class="text-center">
-                        <p class="m-0">
-                            {{ \App\CPU\translate('100% Authentic Products')}}
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{{-- Banner  --}}
-<div class="container mb-4">
-    <div class="row __inline-62">
-
-        <div class="col-md-12">
-            <div class="feature-product">
-                <div class="carousel-wrap p-1">
-                    <div class="owl-carousel owl-theme " id="footer_banner_list">
-                        @foreach(\App\Model\Banner::where('banner_type','Footer Banner')->where('published',1)->orderBy('id','desc')->get() as $banner)
-                        <div class="col-md-6">
 
 
-                            <a href="{{$banner->url}}" class="d-block">
-                                <img class="footer_banner_img"
-                                    onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$banner['photo']}}">
-                            </a>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-</div>
+    @endsection
 
+    @push('script')
+    {{-- Owl Carousel --}}
+    <script src="{{asset('public/assets/front-end')}}/js/owl.carousel.min.js"></script>
 
-</div>
-@endsection
+    <script>
+        $('#flash-deal-slider').owlCarousel({
+            loop: false,
+            autoplay: false,
+            margin: 20,
+            nav: true,
+            navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
+            dots: false,
+            autoplayHoverPause: true,
+            '{{session('
+            direction ')}}': false,
+            // center: true,
+            responsive: {
+                //X-Small
+                0: {
+                    items: 1
+                },
+                360: {
+                    items: 1
+                },
+                375: {
+                    items: 1
+                },
+                540: {
+                    items: 2
+                },
+                //Small
+                576: {
+                    items: 2
+                },
+                //Medium
+                768: {
+                    items: 2
+                },
+                //Large
+                992: {
+                    items: 2
+                },
+                //Extra large
+                1200: {
+                    items: 2
+                },
+                //Extra extra large
+                1400: {
+                    items: 3
+                }
+            }
+        })
 
-@push('script')
-{{-- Owl Carousel --}}
-<script src="{{asset('public/assets/front-end')}}/js/owl.carousel.min.js"></script>
+        $('#web-feature-deal-slider').owlCarousel({
+            loop: false,
+            autoplay: true,
+            margin: 20,
+            nav: false,
+            //navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
+            dots: false,
+            autoplayHoverPause: true,
+            '{{session('
+            direction ')}}': true,
+            // center: true,
+            responsive: {
+                //X-Small
+                0: {
+                    items: 1
+                },
+                360: {
+                    items: 1
+                },
+                375: {
+                    items: 1
+                },
+                540: {
+                    items: 2
+                },
+                //Small
+                576: {
+                    items: 2
+                },
+                //Medium
+                768: {
+                    items: 2
+                },
+                //Large
+                992: {
+                    items: 2
+                },
+                //Extra large
+                1200: {
+                    items: 2
+                },
+                //Extra extra large
+                1400: {
+                    items: 2
+                }
+            }
+        })
 
-<script>
-    $('#flash-deal-slider').owlCarousel({
-        loop: false,
-        autoplay: false,
-        margin: 20,
-        nav: true,
-        navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
-        dots: false,
-        autoplayHoverPause: true,
-        '{{session('
-        direction ')}}': false,
-        // center: true,
-        responsive: {
-            //X-Small
-            0: {
-                items: 1
-            },
-            360: {
-                items: 1
-            },
-            375: {
-                items: 1
-            },
-            540: {
-                items: 2
-            },
-            //Small
-            576: {
-                items: 2
-            },
-            //Medium
-            768: {
-                items: 2
-            },
-            //Large
-            992: {
-                items: 2
-            },
-            //Extra large
-            1200: {
-                items: 2
-            },
-            //Extra extra large
-            1400: {
-                items: 3
+        $('#new-arrivals-product').owlCarousel({
+            loop: true,
+            autoplay: false,
+            margin: 20,
+            nav: true,
+            navText: ["<i class='czi-arrow-{{Session::get('direction') === "
+                rtl " ? 'right' : 'left'}}'></i>", "<i class='czi-arrow-{{Session::get('direction') === "
+                rtl " ? 'left' : 'right'}}'></i>"
+            ],
+            dots: false,
+            autoplayHoverPause: true,
+            '{{session('
+            direction ')}}': true,
+            // center: true,
+            responsive: {
+                //X-Small
+                0: {
+                    items: 1
+                },
+                360: {
+                    items: 1
+                },
+                375: {
+                    items: 1
+                },
+                540: {
+                    items: 2
+                },
+                //Small
+                576: {
+                    items: 2
+                },
+                //Medium
+                768: {
+                    items: 2
+                },
+                //Large
+                992: {
+                    items: 2
+                },
+                //Extra large
+                1200: {
+                    items: 4
+                },
+                //Extra extra large
+                1400: {
+                    items: 4
+                }
             }
-        }
-    })
+        })
+    </script>
+    <script>
+        $('#featured_products_list').owlCarousel({
+            loop: true,
+            autoplay: true,
+            margin: 50,
+            nav: true,
+            navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
+            dots: false,
+            autoplayHoverPause: true,
+            '{{session('
+            direction ')}}': true,
+            // center: true,
+            responsive: {
+                //X-Small
+                0: {
+                    items: 1,
+                     margin: 10,
+                },
+                360: {
+                    items: 1 ,
+                     margin: 10,
+                },
+                375: {
+                    items:1 ,
+                     margin: 10,
+                },
+                425: {
+                    items:2 ,
+                     margin: 10,
+                },
+                540: {
+                    items: 2,
+                     margin: 10,
+                },
+                //Small
+                576: {
+                    items: 2,
+                     margin: 10,
+                },
+                //Medium
+                768: {
+                    items: 3
+                },
+                //Large
+                992: {
+                    items: 4
+                },
+                //Extra large
+                1200: {
+                    items: 5
+                },
+                //Extra extra large
+                1400: {
+                    items: 5
+                }
+            }
+        });
+    </script>
+    <script>
+        $('#main_section_banner').owlCarousel({
+            loop: true,
+            autoplay: false,
+            margin: 20,
+            nav: true,
+            navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
+            dots: false,
+            autoplayHoverPause: true,
+            '{{session('
+            direction ')}}': false,
+            // center: true,
+            responsive: {
+                //X-Small
+                0: {
+                    items: 1
+                },
+                360: {
+                    items: 1
+                },
+                375: {
+                    items: 1
+                },
+                540: {
+                    items: 1
+                },
+                //Small
+                576: {
+                    items: 1
+                },
+                //Medium
+                768: {
+                    items: 2
+                },
+                //Large
+                992: {
+                    items: 2
+                },
+                //Extra large
+                1200: {
+                    items: 2
+                },
+                //Extra extra large
+                1400: {
+                    items: 3
+                }
+            }
+        });
+    </script>
+    <script>
+        $('#footer_banner_list').owlCarousel({
+            loop: true,
+            autoplay: false,
+            margin: 20,
+            nav: true,
+            navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
+            dots: false,
+            autoplayHoverPause: true,
+            '{{session('
+            direction ')}}': false,
+            // center: true,
+            responsive: {
+                //X-Small
+                0: {
+                    items: 1
+                },
+                360: {
+                    items: 1
+                },
+                375: {
+                    items: 1
+                },
+                540: {
+                    items: 2
+                },
+                //Small
+                576: {
+                    items: 2
+                },
+                //Medium
+                768: {
+                    items: 3
+                },
+                //Large
+                992: {
+                    items: 4
+                },
+                //Extra large
+                1200: {
+                    items: 5
+                },
+                //Extra extra large
+                1400: {
+                    items: 5
+                }
+            }
+        });
+    </script>
+    <script>
+        $('#brands-slider').owlCarousel({
+            loop: true,
+            autoplay: true,
+            margin: 20,
+            nav: false,
+            '{{session('
+            direction ')}}': true,
+            dots: true,
+            autoplayHoverPause: true,
+            // center: true,
+            responsive: {
+                //X-Small
+                0: {
+                    items: 4
+                },
+                360: {
+                    items: 2
+                },
+                375: {
+                    items: 2
+                },
+                540: {
+                    items: 2
+                },
+                //Small
+                576: {
+                    items: 2
+                },
+                //Medium
+                768: {
+                    items: 7
+                },
+                //Large
+                992: {
+                    items: 7
+                },
+                //Extra large
+                1200: {
+                    items: 7
+                },
+                //Extra extra large
+                1400: {
+                    items: 7
+                }
+            }
+        })
+    </script>
 
-    $('#web-feature-deal-slider').owlCarousel({
-        loop: false,
-        autoplay: true,
-        margin: 20,
-        nav: false,
-        //navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
-        dots: false,
-        autoplayHoverPause: true,
-        '{{session('
-        direction ')}}': true,
-        // center: true,
-        responsive: {
-            //X-Small
-            0: {
-                items: 1
-            },
-            360: {
-                items: 1
-            },
-            375: {
-                items: 1
-            },
-            540: {
-                items: 2
-            },
-            //Small
-            576: {
-                items: 2
-            },
-            //Medium
-            768: {
-                items: 2
-            },
-            //Large
-            992: {
-                items: 2
-            },
-            //Extra large
-            1200: {
-                items: 2
-            },
-            //Extra extra large
-            1400: {
-                items: 2
+    <script>
+        $('#category-slider, #top-seller-slider').owlCarousel({
+            loop: false,
+            autoplay: false,
+            margin: 20,
+            nav: false,
+            // navText: ["<i class='czi-arrow-left'></i>","<i class='czi-arrow-right'></i>"],
+            dots: true,
+            autoplayHoverPause: true,
+            '{{session('
+            direction ')}}': true,
+            // center: true,
+            responsive: {
+                //X-Small
+                0: {
+                    items: 2
+                },
+                360: {
+                    items: 3
+                },
+                375: {
+                    items: 3
+                },
+                540: {
+                    items: 4
+                },
+                //Small
+                576: {
+                    items: 5
+                },
+                //Medium
+                768: {
+                    items: 6
+                },
+                //Large
+                992: {
+                    items: 8
+                },
+                //Extra large
+                1200: {
+                    items: 10
+                },
+                //Extra extra large
+                1400: {
+                    items: 11
+                }
             }
-        }
-    })
-
-    $('#new-arrivals-product').owlCarousel({
-        loop: true,
-        autoplay: false,
-        margin: 20,
-        nav: true,
-        navText: ["<i class='czi-arrow-{{Session::get('direction') === "
-            rtl " ? 'right' : 'left'}}'></i>", "<i class='czi-arrow-{{Session::get('direction') === "
-            rtl " ? 'left' : 'right'}}'></i>"
-        ],
-        dots: false,
-        autoplayHoverPause: true,
-        '{{session('
-        direction ')}}': true,
-        // center: true,
-        responsive: {
-            //X-Small
-            0: {
-                items: 1
-            },
-            360: {
-                items: 1
-            },
-            375: {
-                items: 1
-            },
-            540: {
-                items: 2
-            },
-            //Small
-            576: {
-                items: 2
-            },
-            //Medium
-            768: {
-                items: 2
-            },
-            //Large
-            992: {
-                items: 2
-            },
-            //Extra large
-            1200: {
-                items: 4
-            },
-            //Extra extra large
-            1400: {
-                items: 4
-            }
-        }
-    })
-</script>
-<script>
-    $('#featured_products_list').owlCarousel({
-        loop: true,
-        autoplay: false,
-        margin: 20,
-        nav: true,
-        navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
-        dots: false,
-        autoplayHoverPause: true,
-        '{{session('
-        direction ')}}': false,
-        // center: true,
-        responsive: {
-            //X-Small
-            0: {
-                items: 1
-            },
-            360: {
-                items: 1
-            },
-            375: {
-                items: 1
-            },
-            540: {
-                items: 2
-            },
-            //Small
-            576: {
-                items: 2
-            },
-            //Medium
-            768: {
-                items: 3
-            },
-            //Large
-            992: {
-                items: 4
-            },
-            //Extra large
-            1200: {
-                items: 5
-            },
-            //Extra extra large
-            1400: {
-                items: 5
-            }
-        }
-    });
-</script>
-<script>
-    $('#main_section_banner').owlCarousel({
-        loop: true,
-        autoplay: false,
-        margin: 20,
-        nav: true,
-        navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
-        dots: false,
-        autoplayHoverPause: true,
-        '{{session('
-        direction ')}}': false,
-        // center: true,
-        responsive: {
-            //X-Small
-            0: {
-                items: 1
-            },
-            360: {
-                items: 1
-            },
-            375: {
-                items: 1
-            },
-            540: {
-                items: 1
-            },
-            //Small
-            576: {
-                items: 1
-            },
-            //Medium
-            768: {
-                items: 2
-            },
-            //Large
-            992: {
-                items: 2
-            },
-            //Extra large
-            1200: {
-                items: 2
-            },
-            //Extra extra large
-            1400: {
-                items: 3
-            }
-        }
-    });
-</script>
-<script>
-    $('#footer_banner_list').owlCarousel({
-        loop: true,
-        autoplay: false,
-        margin: 20,
-        nav: true,
-        navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
-        dots: false,
-        autoplayHoverPause: true,
-        '{{session('
-        direction ')}}': false,
-        // center: true,
-        responsive: {
-            //X-Small
-            0: {
-                items: 1
-            },
-            360: {
-                items: 1
-            },
-            375: {
-                items: 1
-            },
-            540: {
-                items: 2
-            },
-            //Small
-            576: {
-                items: 2
-            },
-            //Medium
-            768: {
-                items: 3
-            },
-            //Large
-            992: {
-                items: 4
-            },
-            //Extra large
-            1200: {
-                items: 5
-            },
-            //Extra extra large
-            1400: {
-                items: 5
-            }
-        }
-    });
-</script>
-<script>
-    $('#brands-slider').owlCarousel({
-        loop: false,
-        autoplay: false,
-        margin: 10,
-        nav: false,
-        '{{session('
-        direction ')}}': true,
-        dots: true,
-        autoplayHoverPause: true,
-        // center: true,
-        responsive: {
-            //X-Small
-            0: {
-                items: 4
-            },
-            360: {
-                items: 5
-            },
-            375: {
-                items: 5
-            },
-            540: {
-                items: 5
-            },
-            //Small
-            576: {
-                items: 6
-            },
-            //Medium
-            768: {
-                items: 7
-            },
-            //Large
-            992: {
-                items: 9
-            },
-            //Extra large
-            1200: {
-                items: 11
-            },
-            //Extra extra large
-            1400: {
-                items: 12
-            }
-        }
-    })
-</script>
-
-<script>
-    $('#category-slider, #top-seller-slider').owlCarousel({
-        loop: false,
-        autoplay: false,
-        margin: 20,
-        nav: false,
-        // navText: ["<i class='czi-arrow-left'></i>","<i class='czi-arrow-right'></i>"],
-        dots: true,
-        autoplayHoverPause: true,
-        '{{session('
-        direction ')}}': true,
-        // center: true,
-        responsive: {
-            //X-Small
-            0: {
-                items: 2
-            },
-            360: {
-                items: 3
-            },
-            375: {
-                items: 3
-            },
-            540: {
-                items: 4
-            },
-            //Small
-            576: {
-                items: 5
-            },
-            //Medium
-            768: {
-                items: 6
-            },
-            //Large
-            992: {
-                items: 8
-            },
-            //Extra large
-            1200: {
-                items: 10
-            },
-            //Extra extra large
-            1400: {
-                items: 11
-            }
-        }
-    })
-</script>
-@endpush
+        })
+    </script>
+    @endpush

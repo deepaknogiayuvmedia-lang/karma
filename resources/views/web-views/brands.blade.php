@@ -20,6 +20,11 @@
     <div class="container pb-5 mb-2 mb-md-4 rtl" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
                                   
         <div class="row">
+            <div class="col-lg-12 py-5 ">
+                  <div class="text-capitalize container text-center">
+            <span class="__text-50px font-semibold fs-4"> All Brands  </span>
+        </div>
+            </div>
             <!-- Content  -->
             <section class="col-lg-12">
                 <!-- Products grid-->

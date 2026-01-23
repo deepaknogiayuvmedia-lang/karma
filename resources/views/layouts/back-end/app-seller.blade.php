@@ -12,7 +12,7 @@
     <!--to make http ajax request to https-->
     <!--    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
     <!-- Favicon -->
-    <link rel="shortcut icon" href="">
+    <link rel="shortcut icon" href="{{ asset(env('PUBLIC_STORAGE_PATH').'/company/2026-01-16-696a1a8e76ddb.png') }}">
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <!-- CSS Implementing Plugins -->

@@ -26,7 +26,7 @@
                     @csrf
                     <div class="card-body">
                         <div class="form-group">
-                            <textarea name="about_us" id="editor" cols="30" rows="20" class="form-control">{{$about_us->value}}</textarea>
+                            <textarea name="about_us"  cols="30" rows="20" class="form-control textarea editor-textarea ckeditor">{{$about_us->value}}</textarea>
                         </div>
                         <div class="form-group mb-2">
                             <input class="btn btn--primary btn-block" type="submit" name="btn" value="submit">
@@ -42,10 +42,9 @@
 
 @push('script')
     {{--ck editor--}}
-    <script src="{{asset('/')}}vendor/ckeditor/ckeditor/ckeditor.js"></script>
-    <script src="{{asset('/')}}vendor/ckeditor/ckeditor/adapters/jquery.js"></script>
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
     <script>
-        $('#editor').ckeditor({
+        $('.textarea').ckeditor({
             contentsLangDirection : '{{Session::get('direction')}}',
         });
     </script>

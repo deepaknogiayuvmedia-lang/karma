@@ -284,15 +284,15 @@ Route::get('/deletelead/{id}', [WebController::class, 'deletelead'])->name('dele
 
 
 
-Route::get('/reset-storage-link', function () {
-    $filesystem = new Filesystem;
-    $publicStorage = public_path('storage');
+// Route::get('/reset-storage-link', function () {
+//     $filesystem = new Filesystem;
+//     $publicStorage = public_path('storage');
 
-    if ($filesystem->exists($publicStorage)) {
-        $filesystem->deleteDirectory($publicStorage);
-    }
+//     if ($filesystem->exists($publicStorage)) {
+//         $filesystem->deleteDirectory($publicStorage);
+//     }
 
-    Artisan::call('storage:link');
+//     Artisan::call('storage:link');
 
-    return "Storage symlink recreated.";
-});
+//     return "Storage symlink recreated.";
+// });

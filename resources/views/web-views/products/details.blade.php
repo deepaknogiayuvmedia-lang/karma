@@ -121,7 +121,11 @@
         thead {
             background: {{$web_config['primary_color']}} !important;
         }
+        table{
+            width: 100%
+        }
     </style>
+
 @endpush
 
 @section('content')

@@ -61,7 +61,7 @@
                                         <label class="title-color"
                                             for="{{ $lang }}_description">{{ \App\CPU\translate('description') }}
                                             ({{ strtoupper($lang) }})</label>
-                                        <textarea name="description[]" class="editor textarea w-100" cols="30" rows="10" required>{{ old('details') }}</textarea>
+                                        <textarea name="description[]" class="textarea editor-textarea ckeditor w-100" cols="30" rows="10" required>{{ old('details') }}</textarea>
                                     </div>
                                 </div>
                             @endforeach
@@ -784,6 +784,11 @@
         }
     </script>
 
-    
+     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script>
+        $('.textarea').ckeditor({
+            contentsLangDirection : '{{Session::get('direction')}}',
+        });
+    </script>
     {{-- ck editor --}}
 @endpush

@@ -62,7 +62,7 @@ add new product for admin
                                         <label class="title-color"
                                                for="{{ $lang }}_description">{{ \App\CPU\translate('description') }}
                                             ({{ strtoupper($lang) }})</label>
-                                        <textarea name="description[]" class="textarea w-100 editor-tex tarea" rows="10">{{ old('details') }}</textarea>
+                                        <textarea name="description[]" class="w-100 textarea editor-textarea ckeditor" rows="10">{{ old('details') }}</textarea>
                                     </div>
                                 </div>
                             @endforeach
@@ -346,7 +346,7 @@ add new product for admin
 
                                         <div class="col-md-8 form-group">
                                             <label class="title-color">{{ \App\CPU\translate('Meta Description') }}</label>
-                                            <textarea rows="10" type="text" name="meta_description" class="form-control"></textarea>
+                                            <textarea rows="10" type="text" name="meta_description" class="form-control "></textarea>
                                         </div>
 
                                         <div class="col-md-4 form-group">
@@ -418,7 +418,12 @@ add new product for admin
 
     <script src="{{ asset('public/assets/back-end') }}/js/tags-input.min.js"></script>
     <script src="{{ asset('public/assets/back-end/js/spartan-multi-image-picker.js') }}"></script>
-    <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script>
+        $('.textarea').ckeditor({
+            contentsLangDirection : '{{Session::get('direction')}}',
+        });
+    </script>
     <script>
         $(function() {
             $('#color_switcher').click(function(){
@@ -750,9 +755,9 @@ add new product for admin
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
-                    // for (instance in CKEDITOR.instances) {
-                    //     CKEDITOR.instances[instance].updateElement();
-                    // }
+                    for (instance in CKEDITOR.instances) {
+                        CKEDITOR.instances[instance].updateElement();
+                    }
                     var formData = new FormData(document.getElementById('product_form'));
                     $.ajaxSetup({
                         headers: {
@@ -849,14 +854,4 @@ add new product for admin
         }
     </script>
 
-    {{-- ck editor --}}
-    <script src="{{ asset('/') }}vendor/ckeditor/ckeditor/ckeditor.js"></script>
-    <script src="{{ asset('/') }}vendor/ckeditor/ckeditor/adapters/jquery.js"></script>
-    <script>
-        $('.textarea').ckeditor({
-            contentsLangDirection: '{{ Session::get('direction') }}',
-        });
-    </script>
-
-    {{-- ck editor --}}
 @endpush

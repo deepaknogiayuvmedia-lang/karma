@@ -454,12 +454,28 @@ class ProductController extends Controller
                     }
                 });
             $query_param = ['search' => $request['search']];
+
+            $productssell = Product::where('added_by', 'seller')->where('user_id',  '!=',   \auth('seller')->id())
+                ->where(function ($q) use ($key) {
+                    foreach ($key as $value) {
+                        $q->Where('name', 'like', "%{$value}%");
+                    }
+                });;
         } else {
             $products = Product::where(['added_by' => 'admin']);
+            $pidarray = $products->pluck('id')->toArray();
+            $productssell = Product::where('added_by', 'seller')->where('user_id',  '!=',   \auth('seller')->id())->whereNotIn('pid', $pidarray);
         }
         $products = $products->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($query_param);
+        $productssell = $productssell->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($query_param);
+        // $result = collect($products)->reject(function ($item1) use ($productssell) {
+        //     return collect($productssell)->contains(function ($item2) use ($item1) {
+        //         return $item1['id'] == $item2['pid'] ;
+        //     });
+        // })->values()->all();
 
-        return view('seller-views.product.adminproduct', compact('products', 'search', 'sellerproduct'));
+        // print_r($result);
+        return view('seller-views.product.adminproduct', compact('products', 'search', 'sellerproduct', 'productssell'));
     }
 
     public function stock_limit_list(Request $request, $type)
@@ -1315,7 +1331,7 @@ class ProductController extends Controller
 
             foreach ($data as $key => $value) {
 
-                $seller = Seller::select('f_name', 'l_name','phone')
+                $seller = Seller::select('f_name', 'l_name', 'phone')
                     ->find($value->vendor_id);
 
                 if ($seller) {
@@ -1331,7 +1347,7 @@ class ProductController extends Controller
                 'bidstatus' => $alldata->status,
                 'document' => $alldata->vendor_invoice,
                 'document_url' => asset(env('PUBLIC_STORAGE_PATH') . '/' . $alldata->vendor_invoice),
-               
+
             ]);
         } else {
             return response()->json([

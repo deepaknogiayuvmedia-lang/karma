@@ -316,9 +316,11 @@ class UserProfileController extends Controller
         return back();
     }
 
-    public function single_ticket(Request $request)
-    {
-        $ticket = SupportTicket::where('id', $request->id)->first();
+    public function single_ticket(Request $request , $id)
+    {   
+    // dd( $request->all());
+        $ticket = SupportTicket::where('id', $id)->first();
+        // dd($ticket);
         return view('web-views.users-profile.ticket-view', compact('ticket'));
     }
 

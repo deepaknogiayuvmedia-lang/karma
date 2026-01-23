@@ -73,7 +73,7 @@
                                     <div class="form-group pt-4">
                                         <label class="title-color">{{ \App\CPU\translate('description')}}
                                             ({{strtoupper($lang)}})</label>
-                                        <textarea name="description[]" class="textarea w-100 editor-te xtarea" rows="10"
+                                        <textarea name="description[]" class=" w-100 textarea editor-textarea ckeditor" rows="10"
                                                   required>{!! $translate[$lang]['description']??$product['details'] !!}</textarea>
                                     </div>
                                 </div>
@@ -864,8 +864,8 @@
     </script>
 
     {{--ck editor--}}
-    <script src="{{asset('/')}}vendor/ckeditor/ckeditor/ckeditor.js"></script>
-    <script src="{{asset('/')}}vendor/ckeditor/ckeditor/adapters/jquery.js"></script>
+    {{-- CKEditor 4 Scripts - LOAD BEFORE INIT --}}
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
     <script>
         $('.textarea').ckeditor({
             contentsLangDirection : '{{Session::get('direction')}}',

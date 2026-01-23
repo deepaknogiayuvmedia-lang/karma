@@ -39,7 +39,7 @@
 
                         <div class="card-body">
                             <div class="form-group">
-                                <textarea class="form-control" id="editor"
+                                <textarea class="form-control textarea editor-textarea ckeditor"
                                     name="value">{{ $page_data['content'] }}</textarea>
                             </div>
                             <div class="form-group">
@@ -55,10 +55,9 @@
 
 @push('script')
     {{--ck editor--}}
-    <script src="{{asset('/')}}vendor/ckeditor/ckeditor/ckeditor.js"></script>
-    <script src="{{asset('/')}}vendor/ckeditor/ckeditor/adapters/jquery.js"></script>
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
     <script>
-        $('#editor').ckeditor({
+        $('.textarea').ckeditor({
             contentsLangDirection : '{{Session::get('direction')}}',
         });
     </script>

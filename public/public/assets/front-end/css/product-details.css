@@ -33,7 +33,9 @@
 .cz-preview-item > img {
     width: 100%;
     height: 600px;
+    object-fit: contain;
 }
+
 
 .details {
     

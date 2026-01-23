@@ -147,7 +147,7 @@ Preserve the relative scale, though. */
                                     <div class="form-group pt-4">
                                         <label class="title-color">{{\App\CPU\translate('description')}}
                                             ({{strtoupper($lang)}})</label>
-                                        <textarea name="description[]" id="content" class="textarea editor-texta rea w-100" rows="10"
+                                        <textarea name="description[]"   class="textarea editor-textarea ckeditor w-100" rows="10"
                                                   >{!! $translate[$lang]['description']??$product['details'] !!}</textarea>
                                     </div>
                                 </div>
@@ -455,7 +455,7 @@ Preserve the relative scale, though. */
 
                                 <div class="col-md-8 form-group">
                                     <label class="title-color">{{\App\CPU\translate('Meta Description')}}</label>
-                                    <textarea rows="10" type="text" name="meta_description" class="form-control">{{$product['meta_description']}}</textarea>
+                                    <textarea rows="10" type="text" name="meta_description " class="form-control">{{$product['meta_description']}}</textarea>
                                 </div>
 
                                 <div class="col-md-4 form-group">
@@ -593,7 +593,30 @@ Preserve the relative scale, though. */
 @push('script_2')
     <script src="{{asset('public/assets/back-end')}}/js/tags-input.min.js"></script>
     <script src="{{asset('public/assets/back-end/js/spartan-multi-image-picker.js')}}"></script>
-    <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
+ 
+    {{-- CKEditor 4 Scripts - LOAD BEFORE INIT --}}
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script>
+     // Wait for DOM and CKEditor load
+        $(document).ready(function() {
+            function initCKEditor() {
+                if (typeof CKEDITOR === 'undefined') {
+                    console.error('CKEditor not loaded');
+                    setTimeout(initCKEditor, 500); // Retry
+                    return;
+                }
+                $('.ckeditor').not('.ckeditor-ready').each(function() {
+                    var $this = $(this);
+                    $this.addClass('ckeditor-ready');
+                    CKEDITOR.replace(this, {
+                        contentsLangDirection: '{{ Session::get("direction") }}'
+                    });
+                });
+            }
+            initCKEditor();
+        });
+
+    </script>
     <script>
         var colors = {{ count($product->colors) }};
         var imageCount = {{10-count(json_decode($product->images))}};
@@ -935,11 +958,10 @@ Preserve the relative scale, though. */
             }
         });
     </script>
-
+   
     <script>
-         CKEDITOR.replace('content');
         function check() {
-            for (instance in CKEDITOR.instances) {
+             for (instance in CKEDITOR.instances) {
                 CKEDITOR.instances[instance].updateElement();
             }
             var formData = new FormData(document.getElementById('product_form'));
@@ -1059,13 +1081,7 @@ Preserve the relative scale, though. */
         }
     </script>
 
-    {{--ck editor--}}
-    <script src="{{asset('/')}}vendor/ckeditor/ckeditor/ckeditor.js"></script>
-    <script src="{{asset('/')}}vendor/ckeditor/ckeditor/adapters/jquery.js"></script>
-    <script>
-        $('.textarea').ckeditor({
-            contentsLangDirection : '{{Session::get('direction')}}',
-        });
-    </script>
+   
+   
     {{--ck editor--}}
 @endpush

@@ -8,7 +8,7 @@
     <meta property="og:url" content="{{env('APP_URL')}}">
     <meta property="og:description" content="{!! substr($web_config['about']->value,0,100) !!}">
 
-    <meta property="twitter:card" content="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{$web_config['web_logo'] vis Mohammad Akram
+    <meta property="twitter:card" content="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{$web_config['web_logo']}}"/>
     <meta property="twitter:title" content="{{$web_config['name']->value}}"/>
     <meta property="twitter:url" content="{{env('APP_URL')}}">
     <meta property="twitter:description" content="{!! substr($web_config['about']->value,0,100) !!}">

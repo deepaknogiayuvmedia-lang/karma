@@ -209,7 +209,7 @@
                                 $(".msg_history").prepend(`
                                       <div class="incoming_msg" id="incoming_msg">
                                         <div class="incoming_msg_img" id="">
-                                          <img src="{{ asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$element.image) }}" class="__rounded-10" alt="">
+                                          <img src="{{ asset(env('PUBLIC_STORAGE_PATH').'/profile/')}}${element.image}" class="__rounded-10" alt="">
                                         </div>
                                         <div class="received_msg">
                                           <div class="received_withd_msg">

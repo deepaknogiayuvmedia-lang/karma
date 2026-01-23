@@ -3196,4 +3196,6 @@
   ' Order is already delivered  You can not change it!!' => ' Order is already delivered  You can not change it!!',
   ' Before delivered you need to make payment status paid!' => ' Before delivered you need to make payment status paid!',
   ' waiting_for_location ' => ' waiting for location ',
+  'biddings' => 'Biddings',
+  'type_something!' => 'Type something!',
 );
