@@ -5940,3 +5940,13 @@ a {
 .cke_notifications_area{
     display: none;
 }
+    .navbar-sticky.navbar-stuck {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        -webkit-animation: navbar-show .25s;
+        animation: navbar-show .25s;
+        box-shadow: 0 0.25rem 0.5625rem -0.0625rem rgba(0, 0, 0, 0.03), 0 0.275rem 1.25rem -0.0625rem rgba(0, 0, 0, 0.05);
+        z-index: 1030;
+    }

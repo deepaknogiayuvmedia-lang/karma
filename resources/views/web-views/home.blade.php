@@ -1415,11 +1415,11 @@
                      margin: 10,
                 },
                 360: {
-                    items: 1 ,
+                    items: 2 ,
                      margin: 10,
                 },
                 375: {
-                    items:1 ,
+                    items:2 ,
                      margin: 10,
                 },
                 425: {
@@ -1473,11 +1473,11 @@
                      margin: 10,
                 },
                 360: {
-                    items: 1 ,
+                    items: 2,
                      margin: 10,
                 },
                 375: {
-                    items:1 ,
+                    items:2 ,
                      margin: 10,
                 },
                 425: {
