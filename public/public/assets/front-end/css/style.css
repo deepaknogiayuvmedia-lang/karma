@@ -112,6 +112,10 @@ a {
     height: 200px;
     width: 200px;
     max-width: none;
+    @media (width< 765px) {
+        height: 150px;
+    width: 150px;
+    }
 }
 /* 
 .product-single-hover:hover .single-product-details {
@@ -2535,7 +2539,7 @@ a {
 }
 
 .__inline-12 {
-    height: 38px !important;
+    height: 72px !important;
     width: auto;
 }
 

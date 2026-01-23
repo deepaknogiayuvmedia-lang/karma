@@ -33,10 +33,12 @@ class UserProfileController extends Controller
     use CommonTrait;
     public function user_account(Request $request)
     {
+       
         if (auth('customer')->check()) {
             $customerDetail = User::where('id', auth('customer')->id())->first();
             return view('web-views.users-profile.account-profile', compact('customerDetail'));
         } else {
+             
             return redirect()->route('home');
         }
     }

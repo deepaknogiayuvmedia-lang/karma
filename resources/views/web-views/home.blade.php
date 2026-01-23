@@ -480,33 +480,35 @@
                                         </a>
                                     </div>
                                 </div>
-                                <div class="row mt-3">
-                                    @foreach($categories as $key=>$category)
+                               <div class="carousel-wrap ">
+                                    <div class=" mt-3 owl-carousel owl-theme" id="categorylist_slider">
+                                            @foreach($categories as $key=>$category)
 
-                                    @if ($key<12)
-                                        <div class="text-center  __cate-item col-lg-2 col-6">
-                                        <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
-                                            <div class="__img overflow-hidden rounded-circle">
-                                                <img
-                                                    onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/category/'.$category->icon)}}"
-                                                    alt="{{$category->name}}">
-                                            </div>
-                                            <p class="text-center  mt-2">{{Str::limit($category->name, 12)}}</p>
-                                        </a>
+                                            @if ($key<12)
+                                                <div class="text-center  __cate-item ">
+                                                <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
+                                                    <div class="__img overflow-hidden rounded-circle">
+                                                        <img
+                                                            onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                                            src="{{asset(env('PUBLIC_STORAGE_PATH').'/category/'.$category->icon)}}"
+                                                            alt="{{$category->name}}">
+                                                    </div>
+                                                    <p class="text-center  mt-2">{{Str::limit($category->name, 12)}}</p>
+                                                </a>
+                                        </div>
+                                        @endif
+                                        @endforeach
+                                    </div>
                                 </div>
-                                @endif
-
-                                @endforeach
+                            
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            </div>
             @else
-            <div class="col-md-12 mb-5">
-                <div class="card h-100 pb-4">
+            <div class=" container my-5">
+                <div class="card border-0 h-100 pb-4">
                     <div class="card-body">
                         <div class="row d-flex justify-content-between">
                             <div
@@ -521,22 +523,25 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="row mt-3">
-                            @foreach($categories as $key=>$category)
-                            @if ($key<6)
-                                <div class="text-center __cate-item">
-                                <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
-                                    <div class="__img">
-                                        <img
-                                            onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                            src="{{asset(env('PUBLIC_STORAGE_PATH').'/category/'.$category->icon)}}"
-                                            alt="{{$category->name}}">
-                                        <p class="text-center small mt-1">{{Str::limit($category->name, 12)}}</p>
+                       <div class="carousel-wrap ">
+                            <div class=" mt-3 owl-carousel owl-theme" id="categorylist_slider">
+                                @foreach($categories as $key=>$category)
+                                @if ($key<6)
+                                    <div class="text-center __cate-item">
+                                        <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
+                                            <div class="__img">
+                                                <img
+                                                    onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/category/'.$category->icon)}}"
+                                                    alt="{{$category->name}}">
+                                                <p class="text-center small mt-1">{{Str::limit($category->name, 12)}}</p>
+                                            </div>
+                                        </a>
                                     </div>
-                                </a>
+                                @endif
+                                @endforeach 
+                            </div>
                         </div>
-                        @endif
-                        @endforeach
                     </div>
                 </div>
             </div>
@@ -1445,6 +1450,64 @@
                 //Extra extra large
                 1400: {
                     items: 5
+                }
+            }
+        });
+    </script>
+    <script>
+        $('#categorylist_slider').owlCarousel({
+            loop: true,
+            autoplay: true,
+            margin: 50,
+            nav: true,
+            navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
+            dots: false,
+            autoplayHoverPause: true,
+            '{{session('
+            direction ')}}': true,
+            // center: true,
+            responsive: {
+                //X-Small
+                0: {
+                    items: 1,
+                     margin: 10,
+                },
+                360: {
+                    items: 1 ,
+                     margin: 10,
+                },
+                375: {
+                    items:1 ,
+                     margin: 10,
+                },
+                425: {
+                    items:2 ,
+                     margin: 10,
+                },
+                540: {
+                    items: 2,
+                     margin: 10,
+                },
+                //Small
+                576: {
+                    items: 2,
+                     margin: 10,
+                },
+                //Medium
+                768: {
+                    items: 3
+                },
+                //Large
+                992: {
+                    items: 4
+                },
+                //Extra large
+                1200: {
+                    items: 6
+                },
+                //Extra extra large
+                1400: {
+                    items: 6
                 }
             }
         });

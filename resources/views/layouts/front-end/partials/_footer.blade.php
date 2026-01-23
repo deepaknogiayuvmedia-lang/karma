@@ -76,6 +76,39 @@
 
     <footer class="page-footer font-small mdb-color rtl">
         
+        <!-- mobile app footer start -->
+
+        <div class="d-md-none position-fixed bottom-0 px-4 w-100 py-4 text-center " style="z-index: 99; bottom:0;background-color: #00695c;">
+            <div class="row row-cols-5">
+                <div class="icon col">
+                    <a href="{{ route('home') }}" class="icon link ">
+                        <i class="navbar-tool-icon text-light czi-home" style="font-size:30px"></i>
+                        
+                    </a>
+                </div>
+                <div class="icon col">
+                    <a href="{{ route('categories') }}" class="icon link">
+                        <i class="navbar-tool-icon text-light czi-filter" style="font-size:30px"></i>
+                    </a>
+                </div>
+                <div class="icon col">
+                    <a href="{{ route('brands') }}" class="icon link">
+                      <i class="navbar-tool-icon text-light czi-bookmark" style="font-size:30px"></i>
+                    </a>
+                </div>
+                <div class="icon col">
+                    <a  href="{{route('shop-cart')}}" class="icon link">
+                       <i class="navbar-tool-icon text-light czi-cart" style="font-size:30px"></i>
+                    </a>
+                </div>
+                <div class="icon col">
+                    <a href="{{ route('user-account') }}" class="icon link">
+                        <i class="navbar-tool-icon text-light czi-user" style="font-size:30px"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- mobile app footer end -->
          <!-- Grid row -->
         <div style="background: #00695c;">
             <div class="container">

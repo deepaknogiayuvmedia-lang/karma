@@ -143,7 +143,7 @@
 
 
     <div class="navbar-sticky bg-light mobile-head">
-        <div class="navbar navbar-expand-md navbar-light">
+        <div class="navbar px-3 navbar-expand-md navbar-light">
             <div class="container ">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
