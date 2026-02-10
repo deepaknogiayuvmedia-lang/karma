@@ -785,9 +785,9 @@
                                 </div>
                             </div>
 
-                            <div class="row mt-0 g-3">
+                            <div class="row mt-0 g-3 row-cols-xxl-5 row-cols-xl-4">
                                 @foreach($latest_products as $product)
-                                <div class="col-xl-3 col-sm-4 col-md-6 col-lg-4 col-6">
+                                <div class=" col-sm-4 col-md-6 col-lg-4 col-6">
                                     <div>
                                         @include('web-views.partials._single-product',['product'=>$product,'decimal_point_settings'=>$decimal_point_settings])
                                     </div>
@@ -828,9 +828,9 @@
 
 {{--brands--}}
 @if($brand_setting)
-<section class=" rtl mt-3" style="background: rgb(234 245 241 / 10);">
+<section class=" rtl mt-3 py-4" style="background: rgb(234 245 241 / 10);">
     <!-- Heading-->
-    <div class="container py-4">
+    <div class="container ">
 
 
         <div class="section-header pb-3  px-5 Featured Products">
@@ -843,9 +843,10 @@
                     <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
                 </a>
             </div>
-        </div>
-        <!-- Grid-->
-        <div class="mt-sm-3  brand-slider px-5">
+        </div><!-- Grid-->
+    </div>
+    <div class="container-fluid ">
+        <div class="mt-sm-3  brand-slider">
             <div class="owl-carousel owl-theme pb-5 pt-2" id="brands-slider">
                 @foreach($brands as $brand)
                 <div class="text-center">
@@ -1138,7 +1139,7 @@
                 </a>
             </div>
             <div class="col-md-10 col-12 ">
-                <div class="row g-2">
+                <div class="row g-2 row-cols-xxl-5">
                     @foreach($category['products'] as $key=>$product)
                     @if ($key<4)
                         <div class="col-md-3 col-sm-4 col-6">
@@ -1223,7 +1224,7 @@
                     <div class="carousel-wrap p-1">
                         <div class="owl-carousel owl-theme " id="footer_banner_list">
                             @foreach(\App\Model\Banner::where('banner_type','Footer Banner')->where('published',1)->orderBy('id','desc')->get() as $banner)
-                            <div class="col-md-6">
+                            <div class="col-md-12">
 
 
                                 <a href="{{$banner->url}}" class="d-block">
@@ -1387,20 +1388,20 @@
                 },
                 //Extra large
                 1200: {
-                    items: 4
+                    items: 3
                 },
                 //Extra extra large
                 1400: {
-                    items: 4
+                    items:4
                 }
             }
         })
-    </script>
-    <script>
+   
+    
         $('#featured_products_list').owlCarousel({
             loop: true,
             autoplay: true,
-            margin: 50,
+            margin: 20,
             nav: true,
             navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
             dots: false,
@@ -1449,12 +1450,11 @@
                 },
                 //Extra extra large
                 1400: {
-                    items: 5
+                    items: 6
                 }
             }
         });
-    </script>
-    <script>
+   
         $('#categorylist_slider').owlCarousel({
             loop: true,
             autoplay: true,
@@ -1503,16 +1503,15 @@
                 },
                 //Extra large
                 1200: {
-                    items: 6
+                    items: 7
                 },
                 //Extra extra large
                 1400: {
-                    items: 6
+                    items:7
                 }
             }
         });
-    </script>
-    <script>
+ 
         $('#main_section_banner').owlCarousel({
             loop: true,
             autoplay: false,
@@ -1560,12 +1559,11 @@
                 }
             }
         });
-    </script>
-    <script>
+    
         $('#footer_banner_list').owlCarousel({
             loop: true,
             autoplay: false,
-            margin: 20,
+            margin: 50,
             nav: true,
             navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
             dots: false,
@@ -1593,24 +1591,23 @@
                 },
                 //Medium
                 768: {
-                    items: 3
+                    items: 1
                 },
                 //Large
                 992: {
-                    items: 4
+                    items: 1
                 },
                 //Extra large
                 1200: {
-                    items: 5
-                },
+                    items:4
+    },
                 //Extra extra large
                 1400: {
-                    items: 5
+                    items:4
                 }
             }
         });
-    </script>
-    <script>
+    
         $('#brands-slider').owlCarousel({
             loop: true,
             autoplay: true,
@@ -1657,9 +1654,7 @@
                 }
             }
         })
-    </script>
-
-    <script>
+    
         $('#category-slider, #top-seller-slider').owlCarousel({
             loop: false,
             autoplay: false,

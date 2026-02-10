@@ -3198,4 +3198,11 @@
   ' waiting_for_location ' => ' waiting for location ',
   'biddings' => 'Biddings',
   'type_something!' => 'Type something!',
+  'Full Address' => 'Full Address',
+  'Vendor' => 'Vendor',
+  'Address Name' => 'Address Name',
+  'Office / Warehouse / Home' => 'Office / Warehouse / Home',
+  'Street  Area  Building' => 'Street  Area  Building',
+  'Set as default' => 'Set as default',
+  'Your' => 'Your',
 );

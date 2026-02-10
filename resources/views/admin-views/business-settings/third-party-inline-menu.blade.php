@@ -8,5 +8,6 @@
         <li class="{{ Request::is('admin/business-settings/fcm-index') ?'active':'' }}"><a href="{{route('admin.business-settings.fcm-index')}}">{{\App\CPU\translate('Push_Notification_Setup')}}</a></li>
         <li class="{{ Request::is('admin/social-login/view') ?'active':'' }}"><a href="{{route('admin.social-login.view')}}">{{\App\CPU\translate('Social_Media_Login')}}</a></li>
         <li class="{{ Request::is('admin/social-media-chat/view') ?'active':'' }}"><a href="{{route('admin.social-media-chat.view')}}">{{\App\CPU\translate('Social_Media_Chat')}}</a></li>
+        <li class="{{ Request::is('admin/business-settings/shipping-method/3rd-party-shipping-method') ?'active':'' }}"><a href="{{route('admin.business-settings.shipping-method.shipping-method-3rd-party')}}">{{\App\CPU\translate('Shipping Method')}}</a></li>
     </ul>
 </div>

@@ -124,4 +124,9 @@ class ShippingMethodController extends Controller
         return response()->json();
     }
 
+    public function shipping_method_3rd_party() {
+        return view('admin-views.business-settings.shiping-method');
+    }  
+        
+
 }

@@ -399,6 +399,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
                 Route::post('status-update', 'ShippingMethodController@status_update')->name('status-update');
                 Route::get('setting', 'ShippingMethodController@setting')->name('setting');
                 Route::post('shipping-store','ShippingMethodController@shippingStore')->name('shipping-store');
+                Route::get('3rd-party-shipping-method', 'ShippingMethodController@shipping_method_3rd_party')->name('shipping-method-3rd-party');
             });
 
             Route::group(['prefix' => 'shipping-type', 'as' => 'shipping-type.','middleware'=>['module:system_settings']], function () {

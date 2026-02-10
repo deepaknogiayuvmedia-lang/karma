@@ -45,9 +45,9 @@
             </div>
         </div>
         <div class="single-product-details">
-            <div class="text-{{Session::get('direction') === "rtl" ? 'right pr-3' : 'left pl-3'}}">
+            <div class="text-{{Session::get('direction') === "rtl" ? 'right px-3' : 'left px-3'}}">
                 <a href="{{route('product',$product->slug)}}">
-                    {{ Str::limit($product['name'], 23) }}
+                    {{ Str::limit($product['name'], 100) }}
                 </a>
             </div>
             <div class="rating-show justify-content-between text-center">
@@ -87,7 +87,6 @@
                 </div>
                 @endif
             </div>
-
         </div>
 
     </div>

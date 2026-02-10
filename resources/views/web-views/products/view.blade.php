@@ -299,7 +299,7 @@
                     </div>
                 </div>
                 @if (count($products) > 0)
-                    <div class="row mt-3" id="ajax-products">
+                    <div class="row mt-3 row-cols-xxl-5" id="ajax-products">
                         @include('web-views.products._ajax-products',['products'=>$products,'decimal_point_settings'=>$decimal_point_settings])
                     </div>
                 @else

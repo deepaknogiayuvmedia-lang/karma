@@ -61,7 +61,7 @@
                 </span> 
             </div> -->
             <div class="justify-content-between te xt-center px-3">
-                <div class="product-price te xt-center">
+                <div class="product-price d-flex justify-content-between justify-content-lg-start gap-3 align-items-center te xt-center">
 
                     <span class="text-accent">
                         {{\App\CPU\Helpers::currency_converter(

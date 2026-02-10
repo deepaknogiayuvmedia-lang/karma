@@ -281,18 +281,3 @@ Route::get('/{product}/thankyou', 'SugoPlusController@thankyoupage')->name('than
 
 //delete lead
 Route::get('/deletelead/{id}', [WebController::class, 'deletelead'])->name('deletelead');
-
-
-
-// Route::get('/reset-storage-link', function () {
-//     $filesystem = new Filesystem;
-//     $publicStorage = public_path('storage');
-
-//     if ($filesystem->exists($publicStorage)) {
-//         $filesystem->deleteDirectory($publicStorage);
-//     }
-
-//     Artisan::call('storage:link');
-
-//     return "Storage symlink recreated.";
-// });

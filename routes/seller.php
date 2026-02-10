@@ -11,6 +11,7 @@
 |
  */
 
+use App\Model\Shop;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'], function () {
@@ -196,6 +197,7 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
             Route::post('update/{id}', 'ShopController@update')->name('update');
             Route::post('vacation-add/{id}', 'ShopController@vacation_add')->name('vacation-add');
             Route::post('temporary-close', 'ShopController@temporary_close')->name('temporary-close');
+            Route::post('/save-address/{id}','ShopController@save_address')->name('save-address');
         });
 
         Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.'], function () {

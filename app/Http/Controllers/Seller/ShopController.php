@@ -9,6 +9,7 @@ use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ShopController extends Controller
@@ -66,7 +67,8 @@ class ShopController extends Controller
         return redirect()->route('seller.shop.view');
     }
 
-    public function vacation_add(Request $request, $id){
+    public function vacation_add(Request $request, $id)
+    {
         $shop = Shop::find($id);
         $shop->vacation_status = $request->vacation_status == 'on' ? 1 : 0;
         $shop->vacation_start_date = $request->vacation_start_date;
@@ -78,7 +80,8 @@ class ShopController extends Controller
         return redirect()->back();
     }
 
-    public function temporary_close(Request $request){
+    public function temporary_close(Request $request)
+    {
         $shop = Shop::find($request->id);
 
         $shop->temporary_close = $request->status == 'checked' ? 1 : 0;
@@ -87,4 +90,77 @@ class ShopController extends Controller
         return response()->json(['status' => true], 200);
     }
 
+
+    public function save_address(Request $request, $id)
+    {
+        $business = [];
+        $warehouse = [];
+
+
+        // ================= BUSINESS ADDRESS JSON =================
+        $businessAddress = [
+            'address_line1' => $request->business_address_line1,
+            'city'          => $request->business_city,
+            'state'         => $request->business_state,
+            'pincode'       => $request->business_pincode,
+            'country'       => $request->business_country,
+        ];
+
+        // ================= WAREHOUSE ADDRESS JSON =================
+        $warehouseAddress = [
+            'address_line1' => $request->warehouse_address_line1,
+            'city'          => $request->warehouse_city,
+            'state'         => $request->warehouse_state,
+            'pincode'       => $request->warehouse_pincode,
+            'country'       => $request->warehouse_country,
+        ];
+
+        $shop = Shop::find($id);
+
+        $shop->whatsapp_no = $request->whatsapp_number;
+        $shop->gst_no = $request->gst_number;
+        //save certificate
+        if ($request->hasFile('gst_certificate')) {
+
+            // delete old file
+            if (!empty($shop->gst_doc) && Storage::disk('public')->exists('document/' . $shop->gst_doc)) {
+                Storage::disk('public')->delete('document/' . $shop->gst_doc);
+            }
+
+            // new file name
+            $file = $request->file('gst_certificate');
+            $fileName = time() . '_gst.' . $file->getClientOriginalExtension();
+
+            // store file
+            $file->storeAs('document', $fileName, 'public');
+
+            // save in DB
+            $shop->gst_doc = $fileName;
+        }
+        $shop->pen_no = $request->pan_number;
+        if ($request->hasFile('pan_card')) {
+
+            // delete old file
+            if (!empty($shop->pen_doc) && Storage::disk('public')->exists('document/' . $shop->pen_doc)) {
+                Storage::disk('public')->delete('document/' . $shop->pen_doc);
+            }
+
+            // new file name
+            $file = $request->file('pan_card');
+            $fileName = time() . '_pan.' . $file->getClientOriginalExtension();
+
+            // store file
+            $file->storeAs('document', $fileName, 'public');
+
+            // save in DB
+            $shop->pen_doc = $fileName;
+        }
+        $shop->business_address = json_encode($businessAddress);
+        $shop->wherehouse        = json_encode($warehouseAddress);
+
+        $shop->save();
+
+        Toastr::success('Shop address updated successfully!');
+        return redirect()->back();
+    }
 }

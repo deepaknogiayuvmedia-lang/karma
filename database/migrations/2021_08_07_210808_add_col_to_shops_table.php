@@ -13,7 +13,7 @@ class AddColToShopsTable extends Migration
      */
     public function up()
     {
-        Schema::table('shops', function (Blueprint $table) {
+        Schema::table('shops', callback: function (Blueprint $table) {
             $table->string('banner');
         });
     }

@@ -25,7 +25,6 @@
         <div class="row gx-2 gx-lg-3 mt-2">
         @php($map_api_key=\App\CPU\Helpers::get_business_settings('map_api_key'))
         @php($map_api_key_server=\App\CPU\Helpers::get_business_settings('map_api_key_server'))
-
             <div class="col-sm-12 col-lg-12 mb-3 mb-lg-2">
                 <div class="card">
                     <div class="card-body">

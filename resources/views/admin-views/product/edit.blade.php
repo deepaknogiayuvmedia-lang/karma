@@ -441,7 +441,7 @@ Preserve the relative scale, though. */
                             </div>
                         </div>
                     </div>
-
+                   
                     <div class="card mt-2 mb-2 rest-part">
                         <div class="card-header">
                             <h4 class="mb-0">{{\App\CPU\translate('seo_section')}}</h4>
@@ -455,9 +455,9 @@ Preserve the relative scale, though. */
 
                                 <div class="col-md-8 form-group">
                                     <label class="title-color">{{\App\CPU\translate('Meta Description')}}</label>
-                                    <textarea rows="10" type="text" name="meta_description " class="form-control">{{$product['meta_description']}}</textarea>
+                                    <textarea rows="10" type="text" name="meta_description" class="form-control">{{$product['meta_description']}}</textarea>
                                 </div>
-
+ <!-- {{ dump($product) }} -->
                                 <div class="col-md-4 form-group">
                                     <div class="">
                                         <label class="title-color">{{\App\CPU\translate('Meta Image')}}</label>
@@ -613,7 +613,7 @@ Preserve the relative scale, though. */
                     });
                 });
             }
-            initCKEditor();
+          
         });
 
     </script>

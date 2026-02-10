@@ -937,10 +937,10 @@
             <!-- Grid-->
 
             <!-- Product-->
-            <div class="row mt-4">
+            <div class="row mt-4 row-cols-xl-6 row-cols-lg-4 row-cols-md-3 row-cols-2">
                 @if (count($relatedProducts)>0)
                     @foreach($relatedProducts as $key => $relatedProduct)
-                        <div class="col-xl-2 col-sm-3 col-6 mb-4">
+                        <div class=" p-3 mb-4">
                             @include('web-views.partials._single-product',['product'=>$relatedProduct,'decimal_point_settings'=>$decimal_point_settings])
                         </div>
                     @endforeach
