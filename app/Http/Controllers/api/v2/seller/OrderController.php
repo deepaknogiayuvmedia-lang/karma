@@ -250,6 +250,10 @@ class OrderController extends Controller
                 ];
                 Helpers::send_push_notif_to_device($fcm_token, $notif);
             }
+
+            if (isset($order->customer) && $order->customer->phone) {
+                Helpers::send_whatsapp_notification($order->customer->phone, $request->order_status, $order->id);
+            }
         } catch (\Exception $e) {
             return response()->json([]);
         }

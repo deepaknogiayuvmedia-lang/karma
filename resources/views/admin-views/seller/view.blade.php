@@ -326,6 +326,58 @@
                         </div>
                     </div>
                 </div>
+            </div>  
+            @php        
+                $wherehouse = json_decode($seller->shop->wherehouse, true);
+                
+            @endphp
+            <div class="col-md-6 mt-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">{{\App\CPU\translate('WhereHouse_Info')}}</h5>
+                          @if($seller->shop->status=='Pending')
+                            <form class="d-inline-block" action="{{route('admin.sellers.addressupdateStatus')}}" method="POST">
+                                @csrf
+                                <input type="hidden" name="id" value="{{$seller->shop->id}}">
+                                <input type="hidden" name="status" value="approved">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-success">{{\App\CPU\translate('approve')}}</button>
+                            </form>
+                        @endif
+                    </div>
+                    <div class="card-body">
+                        <div class="flex-start">
+                            <div><h6>{{\App\CPU\translate('address')}} : </h6></div>
+                            <div class="mx-1">
+                                <h6>{{$wherehouse['address_line1'] ? $wherehouse['address_line1'] : \App\CPU\translate('No Data found')}}</h6>
+                            </div>
+                        </div>
+                        <div class="flex-start">
+                            <div><h6>{{\App\CPU\translate('City')}} : </h6></div>
+                            <div class="mx-1">
+                                <h6>{{$wherehouse['city'] ? $wherehouse['city'] : \App\CPU\translate('No Data found')}}</h6>
+                            </div>
+                        </div>
+                        <div class="flex-start">
+                            <div><h6>{{\App\CPU\translate('state')}} : </h6></div>
+                            <div class="mx-1">
+                                <h6>{{$wherehouse['state'] ? $wherehouse['state'] : \App\CPU\translate('No Data found')}}</h6>
+                            </div>
+                        </div>
+                        <div class="flex-start">
+                            <div><h6>{{\App\CPU\translate('Pin Code')}} : </h6></div>
+                            <div class="mx-1">
+                                <h6>{{$wherehouse['pincode'] ? $wherehouse['pincode'] : \App\CPU\translate('No Data found')}}</h6>
+                            </div>
+                        </div>
+                        <div class="flex-start">
+                            <div><h6>{{\App\CPU\translate('Country')}} : </h6></div>
+                            <div class="mx-1">
+                                <h6>{{$wherehouse['country'] ? $wherehouse['country'] : \App\CPU\translate('No Data found')}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

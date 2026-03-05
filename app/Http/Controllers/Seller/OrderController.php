@@ -325,6 +325,13 @@ class OrderController extends Controller
             }
         }
 
+        if (isset($order->customer) && $order->customer->phone) {
+            try {
+                Helpers::send_whatsapp_notification($order->customer->phone, $request->order_status, $order->id);
+            } catch (\Exception $e) {
+            }
+        }
+
         try {
             $fcm_token_delivery_man = $order->delivery_man->fcm_token;
             if ($request->order_status == 'canceled' && $value != null && !empty($fcm_token_delivery_man)) {

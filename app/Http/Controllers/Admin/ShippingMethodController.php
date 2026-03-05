@@ -125,8 +125,21 @@ class ShippingMethodController extends Controller
     }
 
     public function shipping_method_3rd_party() {
-        return view('admin-views.business-settings.shiping-method');
+        $config = \App\CPU\Helpers::get_shipping_config();
+        return view('admin-views.business-settings.shiping-method', compact('config'));
     }  
-        
 
+    public function third_party_shipping_store(Request $request) {
+        \App\Model\ThirdPartyShippingMethod::updateOrCreate(
+            ['user_id' => auth('admin')->id()],
+            [
+                'api_key' => $request->api_key,
+                'api_secret' => $request->api_secret,
+                'status' => $request->status ? 1 : 0,
+            ]
+        );
+
+        Toastr::success('Shipping Method Updated Successfully!');
+        return back();
+    }
 }

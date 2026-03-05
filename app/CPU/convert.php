@@ -13,7 +13,7 @@ class Convert
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
             $default = Currency::find(Helpers::get_business_settings('system_default_currency'));
-            $usd = Currency::where('code', 'USD')->first()->exchange_rate ?? 1;
+            $usd = Currency::where('code', 'INR')->first()->exchange_rate ?? 1;
             $rate = $default['exchange_rate'] / $usd;
             $value = floatval($amount) / floatval($rate);
         } else {
@@ -28,7 +28,7 @@ class Convert
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
             $default = Currency::find(Helpers::get_business_settings('system_default_currency'));
-            $usd = Currency::where('code', 'USD')->first()->exchange_rate ?? 1;
+            $usd = Currency::where('code', 'INR')->first()->exchange_rate ?? 1;
             $rate = $default['exchange_rate'] / $usd;
             $value = floatval($amount) * floatval($rate);
         } else {
@@ -42,7 +42,7 @@ class Convert
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
             $bdt = Currency::where(['code' => 'BDT'])->first()->exchange_rate ?? 1;
-            $usd = Currency::where('code', 'USD')->first()->exchange_rate ?? 1;
+            $usd = Currency::where('code', 'INR')->first()->exchange_rate ?? 1;
             $rate = $bdt / $usd;
             $value = floatval($amount) / floatval($rate);
         } else {
@@ -57,7 +57,7 @@ class Convert
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
             $bdt = Currency::where(['code' => 'BDT'])->first()->exchange_rate ?? 1;
-            $usd = Currency::where('code', 'USD')->first()->exchange_rate ?? 1;
+            $usd = Currency::where('code', 'INR')->first()->exchange_rate ?? 1;
             $rate = $usd / $bdt;
             $value = floatval($amount) / floatval($rate);
         } else {
@@ -72,7 +72,7 @@ class Convert
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
             $myr = Currency::where(['code' => 'MYR'])->first()->exchange_rate ?? 1;
-            $usd = Currency::where('code', 'USD')->first()->exchange_rate ?? 1;
+            $usd = Currency::where('code', 'INR')->first()->exchange_rate ?? 1;
             $rate = $usd / $myr;
             $value = floatval($amount) / floatval($rate);
         } else {
@@ -87,7 +87,7 @@ class Convert
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
             $zar = Currency::where(['code' => 'ZAR'])->first()->exchange_rate ?? 1;
-            $usd = Currency::where('code', 'USD')->first()->exchange_rate ?? 1;
+            $usd = Currency::where('code', 'INR')->first()->exchange_rate ?? 1;
             $rate = $usd / $zar;
             $value = floatval($amount) / floatval($rate);
         } else {
@@ -102,7 +102,7 @@ class Convert
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
             $inr = Currency::where(['code' => 'INR'])->first()->exchange_rate ?? 1;
-            $usd = Currency::where('code', 'USD')->first()->exchange_rate ?? 1;
+            $usd = Currency::where('code', 'INR')->first()->exchange_rate ?? 1;
             $rate = $usd / $inr;
             $value = floatval($amount) / floatval($rate);
         } else {
@@ -117,7 +117,7 @@ class Convert
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
             $egp = Currency::where(['code' => 'EGP'])->first()->exchange_rate ?? 1;
-            $usd = Currency::where('code', 'USD')->first()->exchange_rate ?? 1;
+            $usd = Currency::where('code', 'INRs')->first()->exchange_rate ?? 1;
             $rate = $usd / $egp;
             $value = floatval($amount) / floatval($rate);
         } else {

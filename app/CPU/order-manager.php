@@ -579,6 +579,11 @@ class OrderManager
                 Helpers::send_push_notif_to_device($seller_fcm_token, $data);
             }
 
+            if (isset($user->phone) && $user->phone) {
+                $status = ($data['payment_method'] != 'cash_on_delivery' && $or['payment_method'] != 'offline_payment') ? 'confirmed' : 'pending';
+                Helpers::send_whatsapp_notification($user->phone, $status, $order_id);
+            }
+
             $emailServices_smtp = Helpers::get_business_settings('mail_config');
             if ($emailServices_smtp['status'] == 0) {
                 $emailServices_smtp = Helpers::get_business_settings('mail_config_sendgrid');

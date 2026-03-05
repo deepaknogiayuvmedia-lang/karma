@@ -242,6 +242,7 @@ class OrderController extends Controller
 
     public function status(Request $request)
     {
+        
         $user_id = auth('admin')->id();
 
         $order = Order::find($request->id);
@@ -255,7 +256,6 @@ class OrderController extends Controller
         $loyalty_point_status = Helpers::get_business_settings('loyalty_point_status');
 
         if($request->order_status=='delivered' && $order->payment_status !='paid'){
-
             return response()->json(['payment_status'=>0],200);
         }
         $fcm_token = isset($order->customer) ? $order->customer->cm_firebase_token : null;
@@ -271,6 +271,14 @@ class OrderController extends Controller
                     ];
                     Helpers::send_push_notif_to_device($fcm_token, $data);
                 }
+            } catch (\Exception $e) {
+            }
+        }
+
+        if (isset($order->customer) && $order->customer->phone) {
+            
+            try {
+                \App\CPU\Helpers::send_whatsapp_notification($order->customer->phone, $request->order_status, $order->id);
             } catch (\Exception $e) {
             }
         }
@@ -607,14 +615,14 @@ class OrderController extends Controller
             'username' => 'admin@herbanix.com',
             'password' => '$herbanix$',
         ]);
-        dd($response);
+        // dd($response);
         // Handle the response as needed
         $responseData = $response->json();
         $orderIdJson = $request->input('orderId');
         $orderIds = json_decode($orderIdJson, true);
         foreach ($orderIds as $orderId) {
             $orders = Order::with(['customer'])->where('id'==$orderId['value']);
-            dd($orders);
+            // dd($orders);
             // // Sample data array
             // $orderDetails =  [
             //     "clientDetails" => [
@@ -773,5 +781,33 @@ class OrderController extends Controller
         }
         // Toastr::success(__('updated_successfully!'));
         // return back();
+    }
+    public function assign_delhivery(Request $request)
+    {
+        $order_id = $request->order_id;
+        $order = Order::find($order_id);
+        
+        if (!$order) {
+            Toastr::error('Order not found!');
+            return back();
+        }
+
+        $result = \App\CPU\Delhivery::create_shipment($order_id);
+
+        if ($result['status'] == 'success') {
+            $order->delivery_type = 'third_party_delivery';
+            $order->delivery_service_name = 'Delhivery';
+            $order->third_party_delivery_tracking_id = $result['waybill'];
+            $order->delivery_man_id = null;
+            $order->deliveryman_charge = 0;
+            $order->expected_delivery_date = null;
+            $order->save();
+
+            Toastr::success('Order assigned to Delhivery successfully! Tracking ID: ' . $result['waybill']);
+        } else {
+            Toastr::error('Delhivery Error: ' . $result['message']);
+        }
+
+        return back();
     }
 }

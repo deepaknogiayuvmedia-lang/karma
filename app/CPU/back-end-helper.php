@@ -16,7 +16,7 @@ class BackEndHelper
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
             $default = Currency::find(BusinessSetting::where(['type' => 'system_default_currency'])->first()->value);
-            $usd = Currency::where('code', 'USD')->first()->exchange_rate;
+            $usd = Currency::where('code', 'INR')->first()->exchange_rate;
             $rate = $default['exchange_rate'] / $usd;
             $value = floatval($amount) / floatval($rate);
         } else {
@@ -37,19 +37,19 @@ class BackEndHelper
                 $default = Currency::find(Helpers::get_business_settings('system_default_currency'))->exchange_rate;
                 session()->put('default', $default);
             }
-
-            if (session()->has('usd')) {
-                $usd = session('usd');
+            // dump($default);
+            if (session()->has('inr')) {
+                $usd = session('inr');
             } else {
-                $usd = Currency::where('code', 'USD')->first()->exchange_rate;
-                session()->put('usd', $usd);
+                $usd = Currency::where('code', 'INR')->first()->exchange_rate;
+                session()->put('inr', $usd);
             }
 
             $rate = $default / $usd;
             $value = floatval($amount) * floatval($rate);
         } else {
             $value = floatval($amount);
-        }
+        }   
 
         return round($value, 2);
     }
@@ -71,6 +71,17 @@ class BackEndHelper
         }
         return $string;
     }
+    
+    public static function currency_set_symbol()
+    {
+        $decimal_point_settings = Helpers::get_business_settings('decimal_point_settings');
+        $position = Helpers::get_business_settings('currency_symbol_position');
+       
+        $string = currency_symbol();
+      
+        return $string;
+    }
+    
 
     public static function currency_code()
     {

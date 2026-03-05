@@ -144,7 +144,7 @@ class Helpers
     {
         $config = null;
         $check = ['currency_model', 'currency_symbol_position', 'system_default_currency', 'language', 'company_name', 'decimal_point_settings'];
-
+        // dump($name);
         if (in_array($name, $check) == true && session()->has($name)) {
             $config = session($name);
         } else {
@@ -160,6 +160,7 @@ class Helpers
                 session()->put($name, $config);
             }
         }
+
         return $config;
     }
 
@@ -185,7 +186,7 @@ class Helpers
 
     public static function get_image_path($type)
     {
-        $path = asset(env('PUBLIC_STORAGE_PATH').'/brand');
+        $path = asset(env('PUBLIC_STORAGE_PATH') . '/brand');
         return $path;
     }
 
@@ -210,7 +211,7 @@ class Helpers
         if ((is_array($data['attributes']) ? $data['attributes'] : json_decode($data['attributes'])) != null) {
             $attributes_arr = is_array($data['attributes']) ? $data['attributes'] : json_decode($data['attributes']);
             foreach ($attributes_arr as $attribute) {
-                $attributes[] = (integer)$attribute;
+                $attributes[] = (int)$attribute;
             }
         }
         $data['attributes'] = $attributes;
@@ -219,9 +220,9 @@ class Helpers
         foreach ($variation_arr as $var) {
             $variation[] = [
                 'type' => $var['type'],
-                'price' => (double)$var['price'],
+                'price' => (float)$var['price'],
                 'sku' => $var['sku'],
-                'qty' => (integer)$var['qty'],
+                'qty' => (int)$var['qty'],
             ];
         }
         $data['variation'] = $variation;
@@ -232,7 +233,7 @@ class Helpers
 
     public static function product_data_formatting($data, $multi_data = false)
     {
-        if($data) {
+        if ($data) {
             $storage = [];
             if ($multi_data == true) {
                 foreach ($data as $item) {
@@ -308,11 +309,11 @@ class Helpers
     {
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
-            if (session()->has('usd')) {
-                $usd = session('usd');
+            if (session()->has('inr')) {
+                $usd = session('inr');
             } else {
-                $usd = Currency::where(['code' => 'USD'])->first()->exchange_rate;
-                session()->put('usd', $usd);
+                $usd = Currency::where(['code' => 'INR'])->first()->exchange_rate;
+                session()->put('inr', $usd);
             }
             $my_currency = \session('currency_exchange_rate');
             $rate = $my_currency / $usd;
@@ -394,14 +395,14 @@ class Helpers
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
             Helpers::currency_load();
-            $code = session('currency_code') == null ? 'USD' : session('currency_code');
-            if($code == 'USD'){
+            $code = session('currency_code') == null ? 'INR' : session('currency_code');
+            if ($code == 'INR') {
                 return $price;
             }
             $currency = Currency::where('code', $code)->first();
             $price = floatval($price) / floatval($currency->exchange_rate);
 
-            $usd_currency = Currency::where('code', 'USD')->first();
+            $usd_currency = Currency::where('code', 'INR')->first();
             $price = $usd_currency->exchange_rate < 1 ? (floatval($price) * floatval($usd_currency->exchange_rate)) : (floatval($price) / floatval($usd_currency->exchange_rate));
         } else {
             $price = floatval($price);
@@ -455,7 +456,8 @@ class Helpers
     {
         $key = BusinessSetting::where(['type' => 'push_notification_key'])->first()->value;
         $url = "https://fcm.googleapis.com/fcm/send";
-        $header = array("authorization: key=" . $key . "",
+        $header = array(
+            "authorization: key=" . $key . "",
             "content-type: application/json"
         );
 
@@ -501,16 +503,186 @@ class Helpers
         return $result;
     }
 
+    public static function send_whatsapp_notification($phone, $status, $order_id = null)
+    {
+        $config = self::get_whatsapp_config();
+
+        if (!$config || !$config->access_token || !$config->phone_number_id) {
+            return [
+                'status'  => 0,
+                'message' => 'WhatsApp configuration missing'
+            ];
+        }
+
+        // Map order status → template "type" value stored in JSON
+      
+
+       
+
+        // Load templates from JSON and find the one matching the type
+        $json      = file_get_contents(base_path('whatsapp_templates.json'));
+        $templates = json_decode($json, true) ?? [];
+        $template  = collect($templates)->firstWhere('type', $status);
+
+        if (!$template) {
+            return [
+                'status'  => 0,
+                'message' => 'No WhatsApp template found in JSON for type: ' . $status
+            ];
+        }
+       
+        // Fetch order + relations for building template parameters
+        $order = null;
+        if ($order_id) {
+            $order = \App\Model\Order::with(['customer', 'details.product', 'shippingAddress'])->find($order_id);
+        }
+        // dump($template);
+        // Clean phone number - keep digits only
+        $phone = preg_replace('/[^0-9]/', '', $phone);
+
+        // Auto-add India country code if 10-digit number
+        if (strlen($phone) === 10) {
+            $phone = '91' . $phone;
+        }
+
+        // Remove leading zero (e.g. 0XXXXXXXXXX → 91XXXXXXXXXX)
+        if (strlen($phone) === 11 && $phone[0] === '0') {
+            $phone = '91' . substr($phone, 1);
+        }
+
+        // Validate phone is not empty
+        if (empty($phone)) {
+            return [
+                'status'  => 0,
+                'message' => 'Phone number is empty or invalid'
+            ];
+        }
+
+        $url = "https://graph.facebook.com/v25.0/{$config->phone_number_id}/messages";
+
+        $body = [
+            "messaging_product" => "whatsapp",
+            "to"                => $phone,
+            "type"              => "template",
+            "template"          => [
+                "name"     => $template['name'],
+                "language" => [
+                    "code" => $template['language']
+                ]
+            ]
+        ];
+        // Build named parameters from order data based on each template's variables
+        if ($order) {
+            $customer_name = trim(($order->customer->f_name ?? '') . ' ' . ($order->customer->l_name ?? '')) ?: 'Customer';
+            $first_detail  = $order->details->first();
+            $product_name  = $first_detail?->product?->name ?? 'Product';
+            $qty           = $order->details->sum('qty');
+            $order_amount  = '₹' . number_format($order->order_amount, 2);
+            $shop_name     = self::get_business_settings('company_name') ?? 'Our Store';
+            $delivery_date = $order->expected_delivery_date
+                             ? date('d M Y', strtotime($order->expected_delivery_date))
+                             : 'Soon';
+            $address      = $order->shippingAddress?->address ?? 'N/A';
+            $order_id_str = (string)$order->id;
+
+            /*
+             * Parameter maps per template name
+             * order_confirmation_2 : name, p_name, qty, o_id, d_address, d_date, category, ps_name
+             * packaging_order      : name, o_id, p_name, qty, d_date, s_name
+             * order_cancelled      : name, id, amount
+             * order_recovery       : name, s_name, email
+             */
+            $param_map = [
+                'order_confirmation_2' => [
+                    ['parameter_name' => 'name',      'text' => $customer_name],
+                    ['parameter_name' => 'p_name',    'text' => $product_name],
+                    ['parameter_name' => 'qty',       'text' => (string)$qty],
+                    ['parameter_name' => 'o_id',      'text' => '#' . $order_id_str],
+                    ['parameter_name' => 'd_address', 'text' => $address],
+                    ['parameter_name' => 'd_date',    'text' => $delivery_date],
+                    ['parameter_name' => 'category',  'text' => 'Order'],
+                    ['parameter_name' => 'ps_name',   'text' => $shop_name],
+                ],
+                'packaging_order' => [
+                    ['parameter_name' => 'name',   'text' => $customer_name],
+                    ['parameter_name' => 'o_id',   'text' => '#' . $order_id_str],
+                    ['parameter_name' => 'p_name', 'text' => $product_name],
+                    ['parameter_name' => 'qty',    'text' => (string)$qty],
+                    ['parameter_name' => 'd_date', 'text' => $delivery_date],
+                    ['parameter_name' => 's_name', 'text' => $shop_name],
+                ],
+                'order_cancelled' => [
+                    ['parameter_name' => 'name',   'text' => $customer_name],
+                    ['parameter_name' => 'id',     'text' => '#' . $order_id_str],
+                    ['parameter_name' => 'amount', 'text' => $order_amount],
+                ],
+                'order_recovery' => [
+                    ['parameter_name' => 'name',   'text' => $customer_name],
+                    ['parameter_name' => 's_name', 'text' => $shop_name],
+                    ['parameter_name' => 'email',  'text' => $order->customer?->email ?? ''],
+                ],
+            ];
+
+            if (isset($param_map[$template['name']])) {
+                $parameters = array_map(
+                    fn($p) => array_merge(['type' => 'text'], $p),
+                    $param_map[$template['name']]
+                );
+                $body['template']['components'] = [
+                    [
+                        'type'       => 'body',
+                        'parameters' => $parameters,
+                    ]
+                ];
+            }
+        }
+            // dump($body);
+        try {
+            $response = \Illuminate\Support\Facades\Http::withToken($config->access_token)
+                ->post($url, $body);
+
+            \Illuminate\Support\Facades\Log::info('WhatsApp Send Request', [
+                'url'  => $url,
+                'body' => $body,
+            ]);
+            //  dd($response);
+            if ($response->successful()) {
+                \Illuminate\Support\Facades\Log::info('WhatsApp Send Success', $response->json());
+                return [
+                    'status'  => 1,
+                    'message' => 'WhatsApp message sent successfully',
+                    'data'    => $response->json()
+                ];
+            } else {
+                \Illuminate\Support\Facades\Log::error('WhatsApp Send Failed', [
+                    'http_status' => $response->status(),
+                    'response'    => $response->json(),
+                ]);
+                return [
+                    'status'  => 0,
+                    'message' => 'WhatsApp API Error: ' . ($response->json()['error']['message'] ?? 'Unknown error'),
+                    'data'    => $response->json()
+                ];
+            }
+        } catch (\Exception $e) {
+            return [
+                'status'  => 0,
+                'message' => 'Exception: ' . $e->getMessage()
+            ];
+        }
+    }
+
     public static function send_push_notif_to_topic($data)
     {
         $key = BusinessSetting::where(['type' => 'push_notification_key'])->first()->value;
 
         $url = "https://fcm.googleapis.com/fcm/send";
-        $header = ["authorization: key=" . $key . "",
+        $header = [
+            "authorization: key=" . $key . "",
             "content-type: application/json",
         ];
 
-        $image = asset(env('PUBLIC_STORAGE_PATH').'/notification') . '/' . $data['image'];
+        $image = asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $data['image'];
         $postdata = '{
             "to" : "/topics/sixvalley",
             "data" : {
@@ -573,7 +745,8 @@ class Helpers
             $objects = scandir($dir);
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
-                    if (filetype($dir . "/" . $object) == "dir") Helpers::remove_dir($dir . "/" . $object); else unlink($dir . "/" . $object);
+                    if (filetype($dir . "/" . $object) == "dir") Helpers::remove_dir($dir . "/" . $object);
+                    else unlink($dir . "/" . $object);
                 }
             }
             reset($objects);
@@ -725,6 +898,24 @@ class Helpers
         $mpdf->WriteHTML($mpdf_view);
         $mpdf->Output($file_prefix . $file_postfix . '.pdf', 'D');
     }
+
+    public static function get_whatsapp_config()
+    {
+        $whatsapp = \App\Model\WhatsAppSetting::where('user_id', auth('admin')->id())->first();
+        if (!$whatsapp) {
+            $whatsapp = \App\Model\WhatsAppSetting::first();
+        }
+        return $whatsapp;
+    }
+
+    public static function get_shipping_config()
+    {
+        $config = \App\Model\ThirdPartyShippingMethod::where('user_id', auth('admin')->id())->first();
+        if (!$config) {
+            $config = \App\Model\ThirdPartyShippingMethod::first();
+        }
+        return $config;
+    }
 }
 
 
@@ -777,12 +968,13 @@ function auto_translator($q, $sl, $tl)
 {
     $res = file_get_contents("https://translate.googleapis.com/translate_a/single?client=gtx&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&sl=" . $sl . "&tl=" . $tl . "&hl=hl&q=" . urlencode($q), $_SERVER['DOCUMENT_ROOT'] . "/transes.html");
     $res = json_decode($res);
-    return str_replace('_',' ',$res[0][0][0]);
+    return str_replace('_', ' ', $res[0][0][0]);
 }
 
 function getLanguageCode(string $country_code): string
 {
-    $locales = array('af-ZA',
+    $locales = array(
+        'af-ZA',
         'am-ET',
         'ar-AE',
         'ar-BH',
@@ -929,10 +1121,11 @@ function getLanguageCode(string $country_code): string
         'zh-HK',
         'zh-MO',
         'zh-SG',
-        'zh-TW');
+        'zh-TW'
+    );
 
     foreach ($locales as $locale) {
-        $locale_region = explode('-',$locale);
+        $locale_region = explode('-', $locale);
         if (strtoupper($country_code) == $locale_region[1]) {
             return $locale_region[0];
         }

@@ -127,6 +127,7 @@ class Product extends Model
     }
 
 
+    
     public function order_delivered()
     {
         return $this->hasMany(OrderDetail::class, 'product_id')

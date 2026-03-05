@@ -184,7 +184,7 @@
                                     </td>
                                     <td>
                                         <div class="d-flex gap-10 justify-content-center">
-                                            @if($data->code!='USD')
+                                            @if($data->code!='INR')
                                                 <a  title="{{\App\CPU\translate('Edit')}}"
                                                     type="button" class="btn btn-outline--primary btn-sm btn-xs edit"
                                                     href="{{route('admin.currency.edit',[$data->id])}}">

@@ -1,4 +1,3 @@
-add new product for admin
 @extends('layouts.back-end.app')
 
 @section('title', \App\CPU\translate('Product Add '))
@@ -14,8 +13,8 @@ add new product for admin
         <!-- Page Title -->
         <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
             <h2 class="h1 mb-0 d-flex gap-2">
-                <img src="{{asset('/public/assets/back-end/img/inhouse-product-list.png')}}" alt=""> 
-                {{\App\CPU\translate('Add')}} {{\App\CPU\translate('New')}} {{\App\CPU\translate('Product ')}}
+                <img src="{{ asset('/public/assets/back-end/img/inhouse-product-list.png') }}" alt="">
+                {{ \App\CPU\translate('Add') }} {{ \App\CPU\translate('New') }} {{ \App\CPU\translate('Product ') }}
             </h2>
         </div>
         <!-- End Page Title -->
@@ -24,8 +23,8 @@ add new product for admin
         <div class="row">
             <div class="col-md-12">
                 <form class="product-form" action="{{ route('admin.product.store') }}" method="POST"
-                      style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};"
-                      enctype="multipart/form-data" id="product_form">
+                    style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};"
+                    enctype="multipart/form-data" id="product_form">
                     @csrf
                     <div class="card">
                         <div class="px-4 pt-3">
@@ -38,8 +37,8 @@ add new product for admin
                                 @foreach (json_decode($language) as $lang)
                                     <li class="nav-item">
                                         <a class="nav-link text-capitalize lang_link {{ $lang == $default_lang ? 'active' : '' }}"
-                                           href="#"
-                                           id="{{ $lang }}-link">{{ \App\CPU\Helpers::get_language_name($lang) . '(' . strtoupper($lang) . ')' }}</a>
+                                            href="#"
+                                            id="{{ $lang }}-link">{{ \App\CPU\Helpers::get_language_name($lang) . '(' . strtoupper($lang) . ')' }}</a>
                                     </li>
                                 @endforeach
                             </ul>
@@ -48,19 +47,36 @@ add new product for admin
                         <div class="card-body">
                             @foreach (json_decode($language) as $lang)
                                 <div class="{{ $lang != $default_lang ? 'd-none' : '' }} lang_form"
-                                     id="{{ $lang }}-form">
-                                    <div class="form-group">
-                                        <label class="title-color"
-                                               for="{{ $lang }}_name">{{ \App\CPU\translate('name') }}
-                                            ({{ strtoupper($lang) }})
-                                        </label>
-                                        <input type="text" {{ $lang == $default_lang ? 'required' : '' }} name="name[]"
-                                               id="{{ $lang }}_name" class="form-control" placeholder="New Product">
+                                    id="{{ $lang }}-form">
+
+                                    <div class="row">
+                                        <div class="col-md-6 form-group">
+                                            <div class="form-group">
+                                                <label class="title-color"
+                                                    for="{{ $lang }}_name">{{ \App\CPU\translate('name') }}
+                                                    ({{ strtoupper($lang) }})
+                                                </label>
+                                                <input type="text" {{ $lang == $default_lang ? 'required' : '' }}
+                                                    name="name[]" id="{{ $lang }}_name" class="form-control"
+                                                    placeholder="New Product">
+                                            </div>
+                                            <input type="hidden" name="lang[]" value="{{ $lang }}">
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label class="title-color"
+                                                for="{{ $lang }}_name">{{ \App\CPU\translate('Product Register Name') }}<span
+                                                    class="text-danger">*</span>
+                                                ({{ strtoupper($lang) }})</label>
+                                            <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="prn[]"
+                                                id="prn_name" value="{{ $product->tally_name ?? '' }}"
+                                                class="form-control"
+                                                placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
+                                        </div>
                                     </div>
-                                    <input type="hidden" name="lang[]" value="{{ $lang }}">
+
                                     <div class="form-group pt-4">
                                         <label class="title-color"
-                                               for="{{ $lang }}_description">{{ \App\CPU\translate('description') }}
+                                            for="{{ $lang }}_description">{{ \App\CPU\translate('description') }}
                                             ({{ strtoupper($lang) }})</label>
                                         <textarea name="description[]" class="w-100 textarea editor-textarea ckeditor" rows="10">{{ old('details') }}</textarea>
                                     </div>
@@ -78,25 +94,33 @@ add new product for admin
                                 <div class="row">
                                     <div class="col-md-4">
 
-                                        <label for="name" class="title-color">{{ \App\CPU\translate('product_type') }} </label>
+                                        <label for="name" class="title-color">{{ \App\CPU\translate('product_type') }}
+                                        </label>
                                         <select name="product_type" id="product_type" class="form-control" required>
                                             <option value="physical" selected>{{ \App\CPU\translate('physical') }}</option>
-                                            @if($digital_product_setting)
+                                            @if ($digital_product_setting)
                                                 <option value="digital">{{ \App\CPU\translate('digital') }}</option>
                                             @endif
                                         </select>
                                     </div>
                                     <div class="col-md-4" id="digital_product_type_show">
-                                        <label for="digital_product_type" class="title-color">{{ \App\CPU\translate("digital_product_type") }}</label>
-                                        <select name="digital_product_type" id="digital_product_type" class="form-control" required>
-                                            <option value="{{ old('category_id') }}" selected disabled>---{{ \App\CPU\translate('Select') }}---</option>
-                                            <option value="ready_after_sell">{{ \App\CPU\translate("Ready After Sell") }}</option>
-                                            <option value="ready_product">{{ \App\CPU\translate("Ready Product") }}</option>
+                                        <label for="digital_product_type"
+                                            class="title-color">{{ \App\CPU\translate('digital_product_type') }}</label>
+                                        <select name="digital_product_type" id="digital_product_type" class="form-control"
+                                            required>
+                                            <option value="{{ old('category_id') }}" selected disabled>
+                                                ---{{ \App\CPU\translate('Select') }}---</option>
+                                            <option value="ready_after_sell">{{ \App\CPU\translate('Ready After Sell') }}
+                                            </option>
+                                            <option value="ready_product">{{ \App\CPU\translate('Ready Product') }}
+                                            </option>
                                         </select>
                                     </div>
                                     <div class="col-md-4" id="digital_file_ready_show">
-                                        <label for="digital_file_ready" class="title-color">{{ \App\CPU\translate("ready_product_upload") }}</label>
-                                        <input type="file" name="digital_file_ready" id="digital_file_ready" class="form-control">
+                                        <label for="digital_file_ready"
+                                            class="title-color">{{ \App\CPU\translate('ready_product_upload') }}</label>
+                                        <input type="file" name="digital_file_ready" id="digital_file_ready"
+                                            class="form-control">
                                         <div class="mt-1 text-info">File type: jpg, jpeg, png, gif, zip, pdf</div>
                                     </div>
                                 </div>
@@ -105,11 +129,13 @@ add new product for admin
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label for="name" class="title-color">{{ \App\CPU\translate('Category') }}</label>
+                                        <label for="name"
+                                            class="title-color">{{ \App\CPU\translate('Category') }}</label>
                                         <select class="js-example-basic-multiple form-control" name="category_id"
-                                                onchange="getRequest('{{ url('/') }}/admin/product/get-categories?parent_id='+this.value,'sub-category-select','select')"
-                                                required>
-                                            <option value="{{ old('category_id') }}" selected disabled>---{{ \App\CPU\translate('Select') }}---</option>
+                                            onchange="getRequest('{{ url('/') }}/admin/product/get-categories?parent_id='+this.value,'sub-category-select','select')"
+                                            required>
+                                            <option value="{{ old('category_id') }}" selected disabled>
+                                                ---{{ \App\CPU\translate('Select') }}---</option>
                                             @foreach ($cat as $c)
                                                 <option value="{{ $c['id'] }}"
                                                     {{ old('name') == $c['id'] ? 'selected' : '' }}>
@@ -119,16 +145,18 @@ add new product for admin
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="name" class="title-color">{{ \App\CPU\translate('Sub Category') }}</label>
+                                        <label for="name"
+                                            class="title-color">{{ \App\CPU\translate('Sub Category') }}</label>
                                         <select class="js-example-basic-multiple form-control" name="sub_category_id"
-                                                id="sub-category-select"
-                                                onchange="getRequest('{{ url('/') }}/admin/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
+                                            id="sub-category-select"
+                                            onchange="getRequest('{{ url('/') }}/admin/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="name" class="title-color">{{ \App\CPU\translate('Sub Sub Category') }}</label>
+                                        <label for="name"
+                                            class="title-color">{{ \App\CPU\translate('Sub Sub Category') }}</label>
                                         <select class="js-example-basic-multiple form-control" name="sub_sub_category_id"
-                                                id="sub-sub-category-select">
+                                            id="sub-sub-category-select">
 
                                         </select>
                                     </div>
@@ -139,18 +167,20 @@ add new product for admin
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="title-color"
-                                                   for="exampleFormControlInput1">{{ \App\CPU\translate('product_code_sku') }}
+                                                for="exampleFormControlInput1">{{ \App\CPU\translate('product_code_sku') }}
                                                 <span class="text-danger">*</span>
-                                                <a class="style-one-pro cursor-pointer" onclick="document.getElementById('generate_number').value = getRndInteger()">{{ \App\CPU\translate('generate') }}
+                                                <a class="style-one-pro cursor-pointer"
+                                                    onclick="document.getElementById('generate_number').value = getRndInteger()">{{ \App\CPU\translate('generate') }}
                                                     {{ \App\CPU\translate('code') }}</a></label>
                                             <input type="text" minlength="6" id="generate_number" name="code"
-                                                   class="form-control" value="{{ old('code') }}"
-                                                   placeholder="{{ \App\CPU\translate('code') }}" required>
+                                                class="form-control" value="{{ old('code') }}"
+                                                placeholder="{{ \App\CPU\translate('code') }}" required>
                                         </div>
                                     </div>
-                                    @if($brand_setting)
+                                    @if ($brand_setting)
                                         <div class="col-md-4">
-                                            <label for="name" class="title-color">{{ \App\CPU\translate('Brand') }}</label>
+                                            <label for="name"
+                                                class="title-color">{{ \App\CPU\translate('Brand') }}</label>
                                             <select
                                                 class="js-example-basic-multiple js-states js-example-responsive form-control"
                                                 name="brand_id" required>
@@ -164,10 +194,12 @@ add new product for admin
                                     @endif
 
                                     <div class="col-md-4 physical_product_show">
-                                        <label for="name" class="title-color">{{ \App\CPU\translate('Unit') }}</label>
+                                        <label for="name"
+                                            class="title-color">{{ \App\CPU\translate('Unit') }}</label>
                                         <select class="js-example-basic-multiple form-control" name="unit">
                                             @foreach (\App\CPU\Helpers::units() as $x)
-                                                <option value="{{ $x }}" {{ old('unit') == $x ? 'selected' : '' }}>
+                                                <option value="{{ $x }}"
+                                                    {{ old('unit') == $x ? 'selected' : '' }}>
                                                     {{ $x }}</option>
                                             @endforeach
                                         </select>
@@ -187,8 +219,8 @@ add new product for admin
                                                     {{ \App\CPU\translate('Colors') }} :
                                                 </label>
                                                 <label class="switcher">
-                                                    <input type="checkbox" class="switcher_input" id="color_switcher" value="{{ old('colors_active') }}"
-                                                           name="colors_active">
+                                                    <input type="checkbox" class="switcher_input" id="color_switcher"
+                                                        value="{{ old('colors_active') }}" name="colors_active">
                                                     <span class="switcher_control"></span>
                                                 </label>
                                             </div>
@@ -234,43 +266,42 @@ add new product for admin
                                         <div class="col-md-6 form-group">
                                             <label class="title-color">{{ \App\CPU\translate('Unit price') }}</label>
                                             <input type="number" min="0" step="0.01"
-                                                   placeholder="{{ \App\CPU\translate('Unit price') }}" name="unit_price"
-                                                   value="{{ old('unit_price') }}" class="form-control" required>
+                                                placeholder="{{ \App\CPU\translate('Unit price') }}" name="unit_price"
+                                                value="{{ old('unit_price') }}" class="form-control" required>
                                         </div>
                                         <div class="col-md-6 form-group">
                                             <label class="title-color">{{ \App\CPU\translate('Purchase price') }}</label>
                                             <input type="number" min="0" step="0.01"
-                                                   placeholder="{{ \App\CPU\translate('Purchase price') }}"
-                                                   value="{{ old('purchase_price') }}" name="purchase_price"
-                                                   class="form-control" required>
+                                                placeholder="{{ \App\CPU\translate('Purchase price') }}"
+                                                value="{{ old('purchase_price') }}" name="purchase_price"
+                                                class="form-control" required>
                                         </div>
                                         <div class="col-md-4 form-group">
                                             <label class="title-color">{{ \App\CPU\translate('Tax') }}</label>
                                             <label class="text-info">{{ \App\CPU\translate('Percent') }} ( % )</label>
                                             <input type="number" min="0" value="0" step="0.01"
-                                                   placeholder="{{ \App\CPU\translate('Tax') }}" name="tax"
-                                                   value="{{ old('tax') }}" class="form-control">
+                                                placeholder="{{ \App\CPU\translate('Tax') }}" name="tax"
+                                                value="{{ old('tax') }}" class="form-control">
                                             <input name="tax_type" value="percent" class="d-none">
                                         </div>
 
                                         <div class="col-md-2 form-group">
                                             <label class="title-color">{{ \App\CPU\translate('Tax_Model') }}</label>
                                             <select name="tax_model" class="form-control" required>
-                                                <option value="include">{{ \App\CPU\translate("include") }}</option>
-                                                <option value="exclude">{{ \App\CPU\translate("exclude") }}</option>
+                                                <option value="include">{{ \App\CPU\translate('include') }}</option>
+                                                <option value="exclude">{{ \App\CPU\translate('exclude') }}</option>
                                             </select>
                                         </div>
 
                                         <div class="col-md-4 form-group">
                                             <label class="title-color">{{ \App\CPU\translate('Discount') }}</label>
-                                            <input type="number" min="0" value="0"
-                                                   step="0.01" placeholder="{{ \App\CPU\translate('Discount') }}"
-                                                   name="discount" class="form-control" required>
+                                            <input type="number" min="0" value="0" step="0.01"
+                                                placeholder="{{ \App\CPU\translate('Discount') }}" name="discount"
+                                                class="form-control" required>
                                         </div>
                                         <div class="col-md-2 form-group">
                                             <label class="title-color">{{ \App\CPU\translate('Discount_Type') }}</label>
-                                            <select class="form-control"
-                                                    name="discount_type">
+                                            <select class="form-control" name="discount_type">
                                                 <option value="flat">{{ \App\CPU\translate('Flat') }}</option>
                                                 <option value="percent">{{ \App\CPU\translate('Percent') }}</option>
                                             </select>
@@ -282,21 +313,21 @@ add new product for admin
                                             <label class="title-color">{{ \App\CPU\translate('total') }}
                                                 {{ \App\CPU\translate('Quantity') }}</label>
                                             <input type="number" min="0" value="0" step="1"
-                                                   placeholder="{{ \App\CPU\translate('Quantity') }}" name="current_stock"
-                                                   class="form-control" required>
+                                                placeholder="{{ \App\CPU\translate('Quantity') }}" name="current_stock"
+                                                class="form-control" required>
                                         </div>
                                         <div class="col-md-3 form-group" id="minimum_order_qty">
                                             <label class="title-color">
                                                 {{ \App\CPU\translate('minimum_order_quantity') }}</label>
                                             <input type="number" min="1" value="1" step="1"
-                                                   placeholder="{{ \App\CPU\translate('minimum_order_quantity') }}" name="minimum_order_qty"
-                                                   class="form-control" required>
+                                                placeholder="{{ \App\CPU\translate('minimum_order_quantity') }}"
+                                                name="minimum_order_qty" class="form-control" required>
                                         </div>
                                         <div class="col-md-3 form-group physical_product_show" id="shipping_cost">
                                             <label class="title-color">{{ \App\CPU\translate('shipping_cost') }} </label>
                                             <input type="number" min="0" value="0" step="1"
-                                                   placeholder="{{ \App\CPU\translate('shipping_cost') }}" name="shipping_cost"
-                                                   class="form-control" required>
+                                                placeholder="{{ \App\CPU\translate('shipping_cost') }}"
+                                                name="shipping_cost" class="form-control" required>
                                         </div>
                                         <div class="col-md-3 form-group physical_product_show" id="shipping_cost_multy">
                                             <div>
@@ -325,8 +356,10 @@ add new product for admin
                                     <div class="row g-2">
                                         <div class="col-12">
                                             <div class="form-group">
-                                                <label class="title-color">{{ \App\CPU\translate('search_tags') }}</label>
-                                                <input type="text" class="form-control" name="tags" data-role="tagsinput">
+                                                <label
+                                                    class="title-color">{{ \App\CPU\translate('search_tags') }}</label>
+                                                <input type="text" class="form-control" name="tags"
+                                                    data-role="tagsinput">
                                             </div>
                                         </div>
                                     </div>
@@ -345,7 +378,8 @@ add new product for admin
                                         </div>
 
                                         <div class="col-md-8 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Meta Description') }}</label>
+                                            <label
+                                                class="title-color">{{ \App\CPU\translate('Meta Description') }}</label>
                                             <textarea rows="10" type="text" name="meta_description" class="form-control "></textarea>
                                         </div>
 
@@ -366,19 +400,22 @@ add new product for admin
                                     <div class="row">
                                         <div class="col-md-12 mb-4">
                                             <div class="mb-2">
-                                                <label class="title-color">{{ \App\CPU\translate('Youtube video link hello')  }} </label>
+                                                <label
+                                                    class="title-color">{{ \App\CPU\translate('Youtube video link hello') }}
+                                                </label>
                                                 <span class="text-info"> (
-                                            {{ \App\CPU\translate('optional, please provide embed link not direct link') }}.
-                                            )</span>
+                                                    {{ \App\CPU\translate('optional, please provide embed link not direct link') }}.
+                                                    )</span>
                                             </div>
                                             <input type="text" name="video_link"
-                                                   placeholder="{{ \App\CPU\translate('EX') }} : https://www.youtube.com/embed/5R06LRdUCSE"
-                                                   class="form-control" required>
+                                                placeholder="{{ \App\CPU\translate('EX') }} : https://www.youtube.com/embed/5R06LRdUCSE"
+                                                class="form-control" required>
                                         </div>
 
                                         <div class="col-md-8 form-group">
                                             <div class="mb-2">
-                                                <label class="title-color">{{ \App\CPU\translate('Upload product images') }}</label>
+                                                <label
+                                                    class="title-color">{{ \App\CPU\translate('Upload product images') }}</label>
                                                 <span class="text-info">* ( {{ \App\CPU\translate('ratio') }} 1:1)</span>
                                             </div>
                                             <div id="color_wise_image" class="row g-2 mb-4">
@@ -391,8 +428,10 @@ add new product for admin
 
                                         <div class="col-md-4 form-group">
                                             <div class="mb-2">
-                                                <label for="name" class="title-color text-capitalize">{{ \App\CPU\translate('Upload thumbnail') }}</label>
-                                                <span class="text-info">* ( {{ \App\CPU\translate('ratio') }} 1:1 )</span>
+                                                <label for="name"
+                                                    class="title-color text-capitalize">{{ \App\CPU\translate('Upload thumbnail') }}</label>
+                                                <span class="text-info">* ( {{ \App\CPU\translate('ratio') }} 1:1
+                                                    )</span>
                                             </div>
                                             <div>
                                                 <div class="row" id="thumbnail"></div>
@@ -403,8 +442,10 @@ add new product for admin
                             </div>
 
                             <div class="row justify-content-end gap-3 mt-3">
-                                <button type="reset" class="btn btn-secondary">{{ \App\CPU\translate('reset') }}</button>
-                                <button type="button" onclick="check()" class="btn btn--primary">{{ \App\CPU\translate('Submit') }}</button>
+                                <button type="reset"
+                                    class="btn btn-secondary">{{ \App\CPU\translate('reset') }}</button>
+                                <button type="button" onclick="check()"
+                                    class="btn btn--primary">{{ \App\CPU\translate('Submit') }}</button>
                             </div>
                         </div>
                     </div>
@@ -415,18 +456,17 @@ add new product for admin
 @endsection
 
 @push('script')
-
     <script src="{{ asset('public/assets/back-end') }}/js/tags-input.min.js"></script>
     <script src="{{ asset('public/assets/back-end/js/spartan-multi-image-picker.js') }}"></script>
     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
     <script>
         $('.textarea').ckeditor({
-            contentsLangDirection : '{{Session::get('direction')}}',
+            contentsLangDirection: '{{ Session::get('direction') }}',
         });
     </script>
     <script>
         $(function() {
-            $('#color_switcher').click(function(){
+            $('#color_switcher').click(function() {
                 var checkBoxes = $("#color_switcher");
                 if ($('#color_switcher').prop('checked')) {
                     $('#color_wise_image').show();
@@ -612,36 +652,35 @@ add new product for admin
 
         $('#colors-selector').on('change', function() {
             update_sku();
-            $('#color_switcher').prop('checked')
-            {
+            if ($('#color_switcher').prop('checked')) {
                 color_wise_image($('#colors-selector'));
             }
         });
 
-        function color_wise_image(t){
+        function color_wise_image(t) {
             let colors = t.val();
             $('#color_wise_image').html('')
-            $.each(colors, function(key, value){
-                let value_id = value.replace('#','');
-                let color= "color_image_"+value_id;
+            $.each(colors, function(key, value) {
+                let value_id = value.replace('#', '');
+                let color = "color_image_" + value_id;
 
                 let html = ` <div class='col-6 col-md-6 col-lg-4'> <label style='border: 2px dashed #ddd; border-radius: 3px; cursor: pointer; text-align: center; overflow: hidden; padding: 5px; margin-top: 5px; margin-bottom : 5px; position : relative; display: flex; align-items: center; margin: auto; justify-content: center; flex-direction: column;'>
                                 <span class="upload--icon" style="background: ${value}">
                                 <i class="tio-edit"></i>
-                                    <input type="file" name="`+color+`" id="`+value_id+`" class="d-none" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*" required="">
+                                    <input type="file" name="` + color + `" id="` + value_id + `" class="d-none" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*" required="">
                                 </span>
                                 <img src="{{ asset('public/assets/back-end/img/400x400/img2.jpg') }}" style="object-fit: cover;aspect-ratio:1"  alt="public/img">
                               </label> </div>`;
                 $('#color_wise_image').append(html)
 
-                $("#color_wise_image input[type='file']").each(function () {
+                $("#color_wise_image input[type='file']").each(function() {
 
                     var $this = $(this).closest('label');
 
                     function proPicURL(input) {
                         if (input.files && input.files[0]) {
                             var uploadedFile = new FileReader();
-                            uploadedFile.onload = function (e) {
+                            uploadedFile.onload = function(e) {
                                 $this.find('img').attr('src', e.target.result);
                                 $this.fadeIn(300);
                             };
@@ -649,15 +688,15 @@ add new product for admin
                         }
                     }
                     $(this)
-                        .on("change", function () {
+                        .on("change", function() {
                             proPicURL(this);
                         });
                 });
             });
         }
 
-        function color_image_package(color){
-            $("#"+color).spartanMultiImagePicker({
+        function color_image_package(color) {
+            $("#" + color).spartanMultiImagePicker({
                 fieldName: 'color_images',
                 maxCount: 1,
                 rowHeight: 'auto',
@@ -695,7 +734,7 @@ add new product for admin
 
         $('input[name="unit_price"]').on('keyup', function() {
             let product_type = $('#product_type').val();
-            if(product_type === 'physical') {
+            if (product_type === 'physical') {
                 update_sku();
             }
         });
@@ -769,7 +808,7 @@ add new product for admin
                         data: formData,
                         contentType: false,
                         processData: false,
-                        success: function (data) {
+                        success: function(data) {
                             // console.log(data.errors);
                             // return false;
                             if (data.errors) {
@@ -812,38 +851,38 @@ add new product for admin
             }
         })
 
-        $(document).ready(function(){
+        $(document).ready(function() {
             product_type();
             digital_product_type();
 
-            $('#product_type').change(function(){
+            $('#product_type').change(function() {
                 product_type();
             });
 
-            $('#digital_product_type').change(function(){
+            $('#digital_product_type').change(function() {
                 digital_product_type();
             });
 
             $('#color_wise_image').hide();
         });
 
-        function product_type(){
+        function product_type() {
             let product_type = $('#product_type').val();
 
-            if(product_type === 'physical'){
+            if (product_type === 'physical') {
                 $('#digital_product_type_show').hide();
                 $('#digital_file_ready_show').hide();
                 $('.physical_product_show').show();
                 $('#digital_product_type').val($('#digital_product_type option:first').val());
                 $('#digital_file_ready').val('');
-            }else if(product_type === 'digital'){
+            } else if (product_type === 'digital') {
                 $('#digital_product_type_show').show();
                 $('.physical_product_show').hide();
 
             }
         }
 
-        function digital_product_type(){
+        function digital_product_type() {
             let digital_product_type = $('#digital_product_type').val();
             if (digital_product_type === 'ready_product') {
                 $('#digital_file_ready_show').show();
@@ -853,5 +892,4 @@ add new product for admin
             }
         }
     </script>
-
 @endpush

@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use App\Model\Review;
 use App\Model\OrderTransaction;
 use App\Model\DeliveryMan;
+use App\Model\Shop;
 use Rap2hpoutre\FastExcel\FastExcel;
 
 class SellerController extends Controller
@@ -350,4 +351,46 @@ class SellerController extends Controller
     {
         return view('admin-views.seller.add-new-seller');
     }
+
+    public function addressupdateStatus(Request $request)
+    {
+        $shop = Shop::where('seller_id', $request->id)->first();
+        $seller = Seller::find($request->id);
+        if (!$shop) {
+            Toastr::error('Shop not found!');
+            return back();
+        }
+        $wherehouse = json_decode($shop->wherehouse);
+        if (!$wherehouse) {
+            Toastr::error('Warehouse details not found for this shop!');
+            return back();
+        }
+
+        $data = [
+            'name' => $shop->name,
+            'address' => $wherehouse->address_line1,
+            'pin' => $wherehouse->pin,
+            'phone' => $shop->contact,
+            'city' => $wherehouse->city ?? '',
+            'state' => $wherehouse->state ?? '',
+            'country' => 'India',
+            'email' => $seller->email ?? '',
+            'registered_name' => $shop->name,
+            'return_address' => $wherehouse->address_line1,
+            'return_pin' =>  $wherehouse->pin,
+            'return_city' => $wherehouse->city ?? '',
+            'return_state' => $wherehouse->state ?? '',
+            'return_country' => 'India',
+        ];
+
+        $result = \App\CPU\Delhivery::wherehouse_creation($data);
+
+        if ($result['status'] == 'success') {
+            Toastr::success('Delhivery Warehouse Created/Updated Successfully!');
+        } else {
+            Toastr::error('Delhivery API Error: ' . $result['message']);
+        }
+        return back();
+    }
+    
 }

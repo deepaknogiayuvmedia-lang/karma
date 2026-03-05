@@ -19,6 +19,8 @@
     <tbody>
     @endif
     @foreach ($combinations as $key => $combination)
+
+        @if($combination['qty'] < 10)
         <tr>
             <td>
                 <label for="" class="control-label">{{ $combination['type'] }}</label>
@@ -40,6 +42,7 @@
                        required>
             </td>
         </tr>
+        @endif
     @endforeach
     </tbody>
 </table>

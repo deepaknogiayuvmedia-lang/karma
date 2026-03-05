@@ -61,7 +61,7 @@ class Review extends Model
     {
         parent::boot();
         static::addGlobalScope('active', function (Builder $builder) {
-            if(str_contains(url()->current(), url('/').'/admin') || str_contains(url()->current(), url('/').'/seller') || str_contains(url()->current(), url('/').'/api/v2'))
+            if(strpos(url()->current(), url('/').'/admin') !== false || strpos(url()->current(), url('/').'/seller') !== false || strpos(url()->current(), url('/').'/api/v2') !== false)
             {
                 $builder;
             }else{

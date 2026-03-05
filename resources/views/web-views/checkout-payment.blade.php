@@ -164,7 +164,7 @@
 
                             @php($config=\App\CPU\Helpers::get_business_settings('razor_pay'))
                             @php($inr=\App\Model\Currency::where(['symbol'=>'₹'])->first())
-                            @php($usd=\App\Model\Currency::where(['code'=>'USD'])->first())
+                            @php($usd=\App\Model\Currency::where(['code'=>'INR'])->first())
                             @if(isset($inr) && isset($usd) && $config['status'])
 
                                 <div class="col-sm-6">
@@ -241,7 +241,7 @@
                             @endif
 
                             @php($myr=\App\Model\Currency::where(['code'=>'MYR'])->first())
-                            @php($usd=\App\Model\Currency::where(['code'=>'usd'])->first())
+                            @php($usd=\App\Model\Currency::where(['code'=>'inr'])->first())
                             @php($config=\App\CPU\Helpers::get_business_settings('senang_pay'))
                             @if(isset($myr) && isset($usd) && $config['status'])
                                 <div class="col-sm-6">

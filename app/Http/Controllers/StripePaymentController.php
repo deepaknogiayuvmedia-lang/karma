@@ -22,7 +22,7 @@ class StripePaymentController extends Controller
     {
         $currency_model = Helpers::get_business_settings('currency_model');
         if ($currency_model == 'multi_currency') {
-            $currency_code = 'USD';
+            $currency_code = 'INR';
         } else {
             $default = BusinessSetting::where(['type' => 'system_default_currency'])->first()->value;
             $currency_code = Currency::find($default)->code;

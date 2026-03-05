@@ -301,6 +301,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('verification/{id}', 'SellerController@view')->name('verification');
             Route::get('view/{id}/{tab?}', 'SellerController@view')->name('view');
             Route::post('update-status', 'SellerController@updateStatus')->name('updateStatus');
+            Route::post('addressupdate-status', 'SellerController@addressupdateStatus')->name('addressupdateStatus');
             Route::post('withdraw-status/{id}', 'SellerController@withdrawStatus')->name('withdraw_status');
             Route::get('withdraw_list', 'SellerController@withdraw')->name('withdraw_list');
             Route::get('withdraw-list-export-excel', 'SellerController@withdraw_list_export_excel')->name('withdraw-list-export-excel');
@@ -400,6 +401,22 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
                 Route::get('setting', 'ShippingMethodController@setting')->name('setting');
                 Route::post('shipping-store','ShippingMethodController@shippingStore')->name('shipping-store');
                 Route::get('3rd-party-shipping-method', 'ShippingMethodController@shipping_method_3rd_party')->name('shipping-method-3rd-party');
+                Route::post('3rd-party-shipping-method-store', 'ShippingMethodController@third_party_shipping_store')->name('third-party-shipping-method-store');
+                Route::post('3rd-party-shipping-method-warehouse-store', 'ShippingMethodController@warehouse_store')->name('third-party-shipping-method-warehouse-store');
+            });
+            // whatsapp route 
+            Route::group(['prefix' => 'whatsapp', 'as' => 'whatsapp.','middleware'=>['module:system_settings']], function () {
+                Route::get('index', 'WhatsAppController@index')->name('index');
+                Route::post('store', 'WhatsAppController@store')->name('store');
+
+                // Test route - remove in production
+                Route::get('test-send', function(\Illuminate\Http\Request $request) {
+                    $phone  = 917688927161  ;
+                    $status = $request->get('status', 'delivered');
+                    $order_id = $request->get('order_id', null);
+                    $result = \App\CPU\Helpers::send_whatsapp_notification($phone, $status, $order_id);
+                    return response()->json($result);
+                })->name('test-send');
             });
 
             Route::group(['prefix' => 'shipping-type', 'as' => 'shipping-type.','middleware'=>['module:system_settings']], function () {
@@ -546,7 +563,15 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
                 Route::delete('zip-code-delete', 'DeliveryRestrictionController@zipCodeDelete')->name('zip-code-delete');
                 Route::post('zipcode-restriction-status-change', 'BusinessSettingsController@zipcodeRestrictionStatusChange')->name('zipcode-restriction-status-change');
             });
-
+            Route::group(['prefix' => 'whatsapp', 'as' => 'whatsapp.'], function () {
+                Route::get('index', 'WhatsAppController@index')->name('index');
+                Route::post('store', 'WhatsAppController@store')->name('store');
+                Route::get('templete', 'WhatsAppController@templete')->name('templete');
+                Route::post('templete-store', 'WhatsAppController@templete_store')->name('templete-store');
+                Route::get('sync-templates', 'WhatsAppController@sync_templates')->name('sync-templates');
+                Route::post('update-template-type', 'WhatsAppController@update_template_type')->name('update-template-type');
+                Route::post('status', 'WhatsAppController@status')->name('status');
+            });
         });
 
         Route::group(['prefix' => 'system-settings', 'as' => 'system-settings.'], function () {
@@ -573,6 +598,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('update-deliver-info','OrderController@update_deliver_info')->name('update-deliver-info');
             Route::get('add-delivery-man/{order_id}/{d_man_id}', 'OrderController@add_delivery_man')->name('add-delivery-man');
 
+            Route::post('assign-delhivery','OrderController@assign_delhivery')->name('assign-delhivery');
             Route::get('export-order-data/{status}', 'OrderController@bulk_export_data')->name('order-bulk-export');
         });
         
@@ -672,9 +698,14 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('/image-upload', 'FileManagerController@upload')->name('image-upload');
             Route::delete('/delete/{file_path}', 'FileManagerController@destroy')->name('destroy');
         });
+
+        
     });
 
     //for test
 
     /*Route::get('login', 'testController@login')->name('login');*/
+
+    // whatsapp route 
+   
 });

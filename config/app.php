@@ -180,6 +180,7 @@ return [
         App\Providers\MailConfigServiceProvider::class,
         \App\Providers\PaymentConfigProvider::class,
         \App\Providers\ConfigServiceProvider::class,
+        App\Providers\WhatsAppServiceProvider::class,
         Laravelpkg\Laravelchk\LaravelchkServiceProvider::class,
        /* Amirami\Localizator\ServiceProvider::class*/
     ],

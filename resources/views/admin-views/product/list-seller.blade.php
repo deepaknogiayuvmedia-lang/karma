@@ -60,7 +60,7 @@
                                 <tbody>
                                 @foreach($pro as $k=>$p)
                                     <tr>
-                                        <th scope="row">{{$k+1}}</th>
+                                        <th scope="row">{{ $loop->iteration }}</th>
                                         <td>
                                             <a href="{{route('admin.product.view',[$p['id']])}}">
                                                 {{substr($p['name'],0,20)}}{{strlen($p['name'])>20?'...':''}}
@@ -155,9 +155,9 @@
                 success: function (data) {
                     console.log(data)
                     if (data.success == true) {
-                        toastr.success('{{\App\CPU\translate('Status updated successfully')}}');
+                        toastr.success('{{\App\CPU\translate('Stock updated successfully')}}');
                     } else {
-                        toastr.error('{{\App\CPU\translate('Status updated failed. Product must be approved')}}');
+                        toastr.error('{{\App\CPU\translate('Stock updated failed. Product must be approved')}}');
                         location.reload();
                     }
                 }
