@@ -824,7 +824,7 @@
                                         CloseButton: true,
                                         ProgressBar: true
                                     });
-                                $('#product_form').submit();
+                                window.location.href = '{{ route('admin.product.list', ['in_house']) }}';
                             }
                         }
                     });

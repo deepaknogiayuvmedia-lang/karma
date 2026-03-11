@@ -26,6 +26,8 @@ use Illuminate\Support\Str;
 use Rap2hpoutre\FastExcel\FastExcel;
 use function App\CPU\translate;
 use App\Model\Cart;
+use App\Model\Order;
+use App\Model\OrderDetail;
 
 class ProductController extends BaseController
 {
@@ -148,12 +150,36 @@ class ProductController extends BaseController
             });
         }
 
-        $p = new Product();
+        if ($validator->fails()) {
+            return response()->json(['errors' => Helpers::error_processor($validator)]);
+        }
+
+        if (Product::where('code', $request->code)->exists()) {
+            Toastr::error(translate('Product with this code already exists!'));
+            return back();
+        }
+
+        $p11 = new Product();
+        try {
+            $p11->save();
+        } catch (\Exception $e) {
+            if (str_contains($e->getMessage(), 'Duplicate entry') || str_contains($e->getMessage(), 'UNIQUE constraint failed')) {
+                Toastr::error(translate('Product with this code already exists!'));
+                return back();
+            }
+            throw $e;
+        }
+        if (!$p11) {
+            Toastr::error(translate('Product creation failed!'));
+            return back();
+        }
+        $p = Product::find($p11->id);
+
         $p->user_id  = auth('admin')->id();
         $p->added_by = "admin";
         $p->name     = $request->name[array_search('en', $request->lang)];
         $p->tally_name = $request->prn[0];
-        $p->code     = $request->code;
+        $p->code     = $request->code;  // Removed since already set
         $p->slug     = Str::slug($request->name[array_search('en', $request->lang)], '-') . '-' . Str::random(6);
 
         $product_images = [];
@@ -183,33 +209,33 @@ class ProductController extends BaseController
         $category = [];
         $categoryName = null;
         if ($request->category_id != null) {
-            $categoryName = Category::find($request->category_id)?->name ?? $request->category_id;
-            $response = Tallymethod::createGroup($categoryName);
-            // dd( $response);
-            if (Tallymethod::isSuccess($response)) {
-                array_push($category, [
 
-                    'id' => $request->category_id,
-                    'position' => 1,
-                ]);
-            } else {
-                Toastr::error(translate('Tally group creation failed for category: ') . $categoryName);
-                return back();
-            }
+            array_push($category, [
+
+                'id' => $request->category_id,
+                'position' => 1,
+            ]);
         }
         if ($request->sub_category_id != null) {
+
             array_push($category, [
                 'id' => $request->sub_category_id,
                 'position' => 2,
             ]);
         }
         if ($request->sub_sub_category_id != null) {
+
             array_push($category, [
                 'id' => $request->sub_sub_category_id,
                 'position' => 3,
             ]);
         }
-
+        $categoryName = Category::find($category[count($category) - 1]['id'])?->name ?? $request->sub_sub_category_id;
+        $response = Tallymethod::createGroup($categoryName);
+        if (!Tallymethod::isSuccess($response)) {
+            Toastr::error(translate('Tally group creation failed for sub sub category: ') . $categoryName);
+            return back();
+        }
         $p->category_ids         = json_encode($category);
         $p->brand_id             = $request->brand_id;
         $p->unit                 = $request->product_type == 'physical' ? $request->unit : null;
@@ -285,8 +311,8 @@ class ProductController extends BaseController
                 $item['price'] = BackEndHelper::currency_to_usd(abs($request['price_' . str_replace('.', '_', $str)]));
                 $item['sku'] = $request['sku_' . str_replace('.', '_', $str)];
                 $item['qty'] = abs($request['qty_' . str_replace('.', '_', $str)]);
-                
-                $response = Tallymethod::createOrAlterItem($p->tally_name . '-' . $str, $categoryName, $item['qty'], $unit, $item['price']);
+
+                $response = Tallymethod::createOrAlterItem($p->tally_name . '-' . $str . '-' . $p->id, $categoryName, $item['qty'], $unit, $item['price']);
                 if (!Tallymethod::isSuccess($response)) {
                     Toastr::error(translate('Tally item creation failed for item: ') . $p->tally_name . '-' . $str);
                     return back();
@@ -320,80 +346,79 @@ class ProductController extends BaseController
         $p->shipping_cost     = $request->product_type == 'physical' ? BackEndHelper::currency_to_usd($request->shipping_cost) : 0;
         $p->multiply_qty      = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
 
-        if ($request->ajax()) {
-            return response()->json([], 200);
-        } else {
-            if ($request->file('images')) {
-                foreach ($request->file('images') as $img) {
-                    $image_name = ImageManager::upload('product/', 'png', $img);
-                    $product_images[] = $image_name;
-                    if ($request->has('colors_active')) {
-                        $color_image_serial[] = [
-                            'color' => null,
-                            'image_name' => $image_name,
-                        ];
-                    } else {
-                        $color_image_serial = [];
-                    }
+        // if ($request->ajax()) {
+
+        //     return response()->json([], 200);
+        // } else {
+        if ($request->file('images')) {
+            foreach ($request->file('images') as $img) {
+                $image_name = ImageManager::upload('product/', 'png', $img);
+                $product_images[] = $image_name;
+                if ($request->has('colors_active')) {
+                    $color_image_serial[] = [
+                        'color' => null,
+                        'image_name' => $image_name,
+                    ];
+                } else {
+                    $color_image_serial = [];
                 }
             }
-            $p->color_image = json_encode($color_image_serial);
-            $p->images = json_encode($product_images);
-            $p->thumbnail = ImageManager::upload('product/thumbnail/', 'png', $request->image);
-
-            if ($request->product_type == 'digital' && $request->digital_product_type == 'ready_product') {
-                $p->digital_file_ready = ImageManager::upload('product/digital-product/', $request->digital_file_ready->getClientOriginalExtension(), $request->digital_file_ready);
-            }
-
-            $p->meta_title       = $request->meta_title;
-            $p->meta_description = $request->meta_description;
-            $p->meta_image       = ImageManager::upload('product/meta/', 'png', $request->meta_image);
-            $p->save();
-
-            // Sync with Tally
-
-
-            $tag_ids = [];
-            if ($request->tags != null) {
-                $tags = explode(",", $request->tags);
-            }
-            if (isset($tags)) {
-                foreach ($tags as $key => $value) {
-                    $tag = Tag::firstOrNew(
-                        ['tag' => trim($value)]
-                    );
-                    $tag->save();
-                    $tag_ids[] = $tag->id;
-                }
-            }
-            $p->tags()->sync($tag_ids);
-
-            $data = [];
-            foreach ($request->lang as $index => $key) {
-                if ($request->name[$index] && $key != 'en') {
-                    array_push($data, array(
-                        'translationable_type' => 'App\Model\Product',
-                        'translationable_id' => $p->id,
-                        'locale' => $key,
-                        'key' => 'name',
-                        'value' => $request->name[$index],
-                    ));
-                }
-                if ($request->description[$index] && $key != 'en') {
-                    array_push($data, array(
-                        'translationable_type' => 'App\Model\Product',
-                        'translationable_id' => $p->id,
-                        'locale' => $key,
-                        'key' => 'description',
-                        'value' => $request->description[$index],
-                    ));
-                }
-            }
-            Translation::insert($data);
-
-            Toastr::success(translate('Product added successfully!'));
-            return redirect()->route('admin.product.list', ['in_house']);
         }
+        $p->color_image = json_encode($color_image_serial);
+        $p->images = json_encode($product_images);
+        $p->thumbnail = ImageManager::upload('product/thumbnail/', 'png', $request->image);
+
+        if ($request->product_type == 'digital' && $request->digital_product_type == 'ready_product') {
+            $p->digital_file_ready = ImageManager::upload('product/digital-product/', $request->digital_file_ready->getClientOriginalExtension(), $request->digital_file_ready);
+        }
+
+        $p->meta_title       = $request->meta_title;
+        $p->meta_description = $request->meta_description;
+        $p->meta_image       = ImageManager::upload('product/meta/', 'png', $request->meta_image);
+        $p->save();
+        // Sync with Tally
+        $tag_ids = [];
+        if ($request->tags != null) {
+            $tags = explode(",", $request->tags);
+        }
+        if (isset($tags)) {
+            foreach ($tags as $key => $value) {
+                $tag = Tag::firstOrNew(
+                    ['tag' => trim($value)]
+                );
+                $tag->save();
+                $tag_ids[] = $tag->id;
+            }
+        }
+        $p->tags()->sync($tag_ids);
+
+        $data = [];
+        foreach ($request->lang as $index => $key) {
+            if ($request->name[$index] && $key != 'en') {
+                array_push($data, array(
+                    'translationable_type' => 'App\Model\Product',
+                    'translationable_id' => $p->id,
+                    'locale' => $key,
+                    'key' => 'name',
+                    'value' => $request->name[$index],
+                ));
+            }
+            if ($request->description[$index] && $key != 'en') {
+                array_push($data, array(
+                    'translationable_type' => 'App\Model\Product',
+                    'translationable_id' => $p->id,
+                    'locale' => $key,
+                    'key' => 'description',
+                    'value' => $request->description[$index],
+                ));
+            }
+        }
+        Translation::insert($data);
+
+        Toastr::success(translate('Product added successfully!'));
+        return response()->json([], 200);
+
+        // }    
     }
 
     function list(Request $request, $type)
@@ -559,13 +584,16 @@ class ProductController extends BaseController
         $product = Product::find($request->data['id']);
 
         $variations = json_decode($product->variation, true) ?? [];
-        $categoryName =  json_decode($product->category_ids, true)[0]['id'] ?? null;
+        $categories = json_decode($product->category_ids, true);
+
+        $categoryName = $categories[count($categories) - 1]['id'] ?? null;
         $categoryName = Category::find($categoryName)?->name ?? $categoryName;
-        
+
         $stock_count = 0;
         if ($product) {
             foreach ($variations as $key => &$item) {
                 if ($item['type'] == $request->data['variation']) {
+
                     $item['type'] = $request->data['variation'];
                     $item['price'] = BackEndHelper::currency_to_usd(abs($request->data['price']));
                     $item['qty'] = abs($request->data['qty']);
@@ -575,12 +603,15 @@ class ProductController extends BaseController
                         Toastr::error(translate('Tally unit creation failed for unit: ') . $unit);
                         return back();
                     }
-                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $item['type'], $categoryName, $item['qty'], $unit, $item['price']);
+                    $order_pending_qty = OrderDetail::where('product_id', $request->data['id'])->where('delivery_status', 'pending')->where('variant', $item['type'])->sum('qty');
+                    // dd($order_pending_qty);
+                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $item['type'] . '-' . $request->data['id'], $categoryName, $item['qty'] + $order_pending_qty, $unit, $item['price']);
                     if (!Tallymethod::isSuccess($response)) {
                         Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name . '-' . $item['type']);
                         return back();
                     }
                 }
+
                 $stock_count += $item['qty'];
             }
         }
@@ -846,18 +877,11 @@ class ProductController extends BaseController
         $categoryName = null;
         $category = [];
         if ($request->category_id != null) {
-            $categoryName = Category::find($request->category_id)?->name ?? $request->category_id;
-            $response = Tallymethod::createGroup($categoryName);
-            if (Tallymethod::isSuccess($response)) {
-                array_push($category, [
+            array_push($category, [
 
-                    'id' => $request->category_id,
-                    'position' => 1,
-                ]);
-            } else {
-                Toastr::error(translate('Tally group creation failed for category: ') . $categoryName);
-                return back();
-            }
+                'id' => $request->category_id,
+                'position' => 1,
+            ]);
         }
         if ($request->sub_category_id != null) {
             array_push($category, [
@@ -872,6 +896,12 @@ class ProductController extends BaseController
             ]);
         }
 
+        $categoryName = Category::find($category[count($category) - 1]['id'])?->name ?? $request->sub_sub_category_id;
+        $response = Tallymethod::createGroup($categoryName);
+        if (!Tallymethod::isSuccess($response)) {
+            Toastr::error(translate('Tally group creation failed for sub sub category: ') . $categoryName);
+            return back();
+        }
         $product->product_type          = $request->product_type;
         $product->category_ids          = json_encode($category);
 
@@ -948,8 +978,9 @@ class ProductController extends BaseController
                 $item['price'] = BackEndHelper::currency_to_usd(abs($request['price_' . str_replace('.', '_', $str)]));
                 $item['sku'] = $request['sku_' . str_replace('.', '_', $str)];
                 $item['qty'] = abs($request['qty_' . str_replace('.', '_', $str)]);
+                $order_pending_qty = OrderDetail::where('product_id', $product->id)->where('delivery_status', 'pending')->where('variant', $item['type'])->sum('qty');
                 // tally product update
-                $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $str, $categoryName, $item['qty'], $unit, $item['price']);
+                $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $str . '-' . $product->id, $categoryName, $item['qty'] + $order_pending_qty, $unit, $item['price']);
                 if (!Tallymethod::isSuccess($response)) {
                     Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name . '-' . $str);
                     return back();
@@ -1026,7 +1057,7 @@ class ProductController extends BaseController
                 $product->meta_image = ImageManager::update('product/meta/', $product->meta_image, 'png', $request->file('meta_image'));
             }
             // Sync with Tally
-            $product;
+
             // Always update SQL
             $product->save();
 
@@ -1114,7 +1145,32 @@ class ProductController extends BaseController
     public function delete($id)
     {
         $product = Product::find($id);
-        // if (!(TallyCategory::deleteStockItem($product))) {
+        $variant = json_decode($product->variation, true);
+        $categories = json_decode($product->category_ids, true);
+
+        $categoryName = $categories[count($categories) - 1]['id'] ?? null;
+        $categoryName = Category::find($categoryName)?->name ?? $categoryName;
+        if (count($variant) > 0) {
+            foreach ($variant as $item) {
+                $order_pending_qty = OrderDetail::where('product_id', $product->id)->where('delivery_status', 'pending')->where('variant', $item['type'])->sum('qty');
+                $unit =  $unit = preg_replace('/[^a-zA-Z]/', '', $item['type']);
+                if ($order_pending_qty > 0) {
+                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $item['type'] . '-' . $product->id, $categoryName, $order_pending_qty, $unit, $item['price']);
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('You can not delete this product because there are pending orders for this product variant: ') . $item['type']);
+                        return back();
+                    }
+                } else {
+                    $response = Tallymethod::deleteItem($product->tally_name . '-' . $item['type'] . '-' . $product->id);
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally item deletion failed for item: ') . $product->tally_name . '-' . $item['type']);
+                        return back();
+                    }
+                }
+            }
+        }
+
+
         $translation = Translation::where('translationable_type', 'App\Model\Product')
             ->where('translationable_id', $id);
         $translation->delete();
@@ -1133,7 +1189,6 @@ class ProductController extends BaseController
 
         Toastr::success('Product removed successfully!');
         return back();
-        // }
     }
 
     public function bulk_import_index()
@@ -1248,7 +1303,6 @@ class ProductController extends BaseController
 
     public function barcode(Request $request, $id)
     {
-
         if ($request->limit > 270) {
             Toastr::warning(translate('You can not generate more than 270 barcode'));
             return back();

@@ -170,6 +170,7 @@
                                 </thead>
 
                                 <tbody>
+
                                     @php($subtotal = 0)
                                     @php($total = 0)
                                     @php($shipping = 0)
@@ -178,18 +179,19 @@
                                     @php($row = 0)
 
                                     @foreach ($order->details as $key => $detail)
-                                        @if ($detail->product_all_status)
+                                        @php($product_details = json_decode($detail->product_details, true))
+                                        @if ($product_details)
                                             <tr>
                                                 <td>{{ ++$row }}</td>
                                                 <td>
                                                     <div class="media align-items-center gap-10">
                                                         <img class="avatar avatar-60 rounded"
                                                             onerror="this.src='{{ asset('public/assets/back-end/img/160x160/img2.jpg') }}'"
-                                                            src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $detail->product_all_status['thumbnail'] }}"
+                                                            src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product_details['thumbnail'] }}"
                                                             alt="Image Description">
                                                         <div>
                                                             <h6 class="title-color">
-                                                                {{ substr($detail->product_all_status['name'], 0, 30) }}{{ strlen($detail->product_all_status['name']) > 10 ? '...' : '' }}
+                                                                {{ substr($product_details['name'], 0, 30) }}{{ strlen($product_details['name']) > 10 ? '...' : '' }}
                                                             </h6>
                                                             <div><strong>{{ \App\CPU\translate('Price') }} :</strong>
                                                                 {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($detail['price'])) }}
@@ -198,7 +200,7 @@
                                                                 {{ $detail->qty }}</div>
                                                         </div>
                                                     </div>
-                                                    @if ($detail->product_all_status->digital_product_type == 'ready_after_sell')
+                                                    @if (isset($product_details['digital_product_type']) && $product_details['digital_product_type'] == 'ready_after_sell')
                                                         <button type="button" class="btn btn-sm btn--primary mt-2"
                                                             title="File Upload" data-toggle="modal"
                                                             data-target="#fileUploadModal-{{ $detail->id }}"
@@ -211,7 +213,7 @@
                                                 <td>{{ $detail['variant'] }}</td>
                                                 <td>
                                                     {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($detail['tax'])) }}
-                                                    @if ($detail->product_all_status->tax_model == 'include')
+                                                    @if (isset($product_details['tax_model']) && $product_details['tax_model'] == 'include')
                                                         <span class="ml-2" data-toggle="tooltip" data-placement="top"
                                                             title="{{ \App\CPU\translate('tax_included') }}">
                                                             <img class="info-img"
@@ -233,8 +235,7 @@
                                         @endif
                                         @php($sellerId = $detail->seller_id)
 
-                                        @if (isset($detail->product_all_status->digital_product_type) &&
-                                                $detail->product_all_status->digital_product_type == 'ready_after_sell')
+                                        @if (isset($product_details['digital_product_type']) && $product_details['digital_product_type'] == 'ready_after_sell')
                                             <div class="modal fade" id="fileUploadModal-{{ $detail->id }}" tabindex="-1"
                                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">

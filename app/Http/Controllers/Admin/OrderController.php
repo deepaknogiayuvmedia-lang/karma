@@ -169,7 +169,7 @@ class OrderController extends Controller
         $company_web_logo =BusinessSetting::where('type', 'company_web_logo')->first()->value;
 
         $order = Order::with('details.product_all_status', 'shipping', 'seller.shop')->where(['id' => $id])->first();
-
+        // dd(Order::with('details.product_all_status', 'shipping', 'seller.shop')->first());
         $physical_product = false;
         foreach($order->details as $product){
             if(isset($product->product) && $product->product->product_type == 'physical'){
@@ -251,7 +251,7 @@ class OrderController extends Controller
         {
             return response()->json(['customer_status'=>0],200);
         }
-
+        
         $wallet_status = Helpers::get_business_settings('wallet_status');
         $loyalty_point_status = Helpers::get_business_settings('loyalty_point_status');
 
