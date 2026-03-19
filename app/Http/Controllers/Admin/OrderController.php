@@ -242,16 +242,18 @@ class OrderController extends Controller
 
     public function status(Request $request)
     {
-        
+        $tally_qty_dec = ['confirmed','processing','out_for_delivery','delivered'];
+        $tally_qty_inc = ['returned','failed','canceled','pending'];   
+          
         $user_id = auth('admin')->id();
 
         $order = Order::find($request->id);
-
+        $order_detail = OrderDetail::where('order_id', $order->id)->get();
         if(!isset($order->customer))
         {
             return response()->json(['customer_status'=>0],200);
         }
-        
+            
         $wallet_status = Helpers::get_business_settings('wallet_status');
         $loyalty_point_status = Helpers::get_business_settings('loyalty_point_status');
 
@@ -274,7 +276,7 @@ class OrderController extends Controller
             } catch (\Exception $e) {
             }
         }
-
+        
         if (isset($order->customer) && $order->customer->phone) {
             
             try {
@@ -302,6 +304,31 @@ class OrderController extends Controller
 
         $order->order_status = $request->order_status;
         OrderManager::stock_update_on_order_status_change($order, $request->order_status);
+
+        if ($request->order_status == 'out_for_delivery' && $order->third_party_delivery_tracking_id == null) {
+            $result = \App\CPU\shepping::CreateShipment($order->id);
+            if ($result['status'] == 'success') {
+                // dd($result);
+            
+                $order->delivery_type = 'third_party_delivery';
+                $order->delivery_service_name = 'Delhivery';
+                $order->third_party_delivery_tracking_id = $result['waybill'];
+                Toastr::success('Shipment created successfully on Delhivery!');
+            } else {
+                Toastr::error('Delhivery Shipment Error: ' . ($result['message'] ?? 'Unknown error'));
+            }
+        }
+
+        // Cancel Delhivery shipment when order is canceled or returned
+        if (in_array($request->order_status, ['canceled', 'returned']) && $order->third_party_delivery_tracking_id != null && $order->delivery_service_name == 'Delhivery') {
+            $cancel_result = \App\CPU\shepping::CancelShipment($order->third_party_delivery_tracking_id, $order->id);
+            if ($cancel_result['status'] == 'success') {
+                Toastr::success('Delhivery shipment cancelled successfully!');
+            } else {
+                Toastr::warning('Delhivery cancellation failed: ' . ($cancel_result['message'] ?? 'Unknown error'));
+            }
+        }
+
         $order->save();
 
         if($loyalty_point_status == 1)

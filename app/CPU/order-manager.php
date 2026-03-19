@@ -90,6 +90,9 @@ class OrderManager
             foreach ($order->details as $detail) {
                 if ($detail['is_stock_decreased'] == 1) {
                     $product = Product::find($detail['product_id']);
+                    if(!$product){
+                        continue;
+                    }
                     $type = $detail['variant'];
                     $var_store = [];
                     foreach (json_decode($product['variation'], true) as $var) {

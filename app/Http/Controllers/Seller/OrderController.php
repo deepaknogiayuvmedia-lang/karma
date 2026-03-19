@@ -352,6 +352,26 @@ class OrderController extends Controller
         $order->order_status = $request->order_status;
         OrderManager::stock_update_on_order_status_change($order, $request->order_status);
 
+        if ($request->order_status == 'out_for_delivery' && $order->third_party_delivery_tracking_id == null) {
+            $result = \App\CPU\shepping::CreateShipment($order->id);
+            if ($result['status'] == 'success') {
+                $order->delivery_type = 'third_party_delivery';
+                $order->delivery_service_name = 'Delhivery';
+                $order->third_party_delivery_tracking_id = $result['waybill'];
+            }
+        }
+
+        // Cancel Delhivery shipment when order is canceled or returned
+        if (in_array($request->order_status, ['canceled', 'returned']) && $order->third_party_delivery_tracking_id != null && $order->delivery_service_name == 'Delhivery') {
+            $cancel_result = \App\CPU\shepping::CancelShipment($order->third_party_delivery_tracking_id, $order->id);
+            dd($cancel_result);
+            if ($cancel_result['status'] == 'success') {
+                Toastr::success('Delhivery shipment cancelled successfully!');
+            } else {
+                Toastr::warning('Delhivery cancellation failed: ' . ($cancel_result['message'] ?? 'Unknown error'));
+            }
+        }
+
         if ($request->order_status == 'delivered' && $order['seller_id'] != null) {
             OrderManager::wallet_manage_on_order_status_change($order, 'seller');
             OrderDetail::where('order_id', $order->id)->update(

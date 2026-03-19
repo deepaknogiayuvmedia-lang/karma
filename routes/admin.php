@@ -57,6 +57,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('update/{id}', 'ProfileController@edit')->name('update');
             Route::post('update/{id}', 'ProfileController@update');
             Route::post('settings-password', 'ProfileController@settings_password_update')->name('settings-password');
+            Route::post('whereHouse', 'ProfileController@whereHouse')->name('whereHouse');  
         });
 
         Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.','middleware'=>['module:user_section']], function () {
@@ -302,6 +303,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('view/{id}/{tab?}', 'SellerController@view')->name('view');
             Route::post('update-status', 'SellerController@updateStatus')->name('updateStatus');
             Route::post('addressupdate-status', 'SellerController@addressupdateStatus')->name('addressupdateStatus');
+            Route::post('address-delete', 'SellerController@deleteWarehouse')->name('address-delete');
             Route::post('withdraw-status/{id}', 'SellerController@withdrawStatus')->name('withdraw_status');
             Route::get('withdraw_list', 'SellerController@withdraw')->name('withdraw_list');
             Route::get('withdraw-list-export-excel', 'SellerController@withdraw_list_export_excel')->name('withdraw-list-export-excel');
@@ -346,7 +348,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('bulk-export', 'ProductController@bulk_export_data')->name('bulk-export');
             Route::get('barcode/{id}', 'ProductController@barcode')->name('barcode');
             Route::get('barcode/generate', 'ProductController@barcode_generate')->name('barcode.generate');
-          
+            Route::get('sysc-tally', 'ProductController@sysc_tally')->name('sysc-tally');
+            Route::get('sysc-web', 'ProductController@sysc_web')->name('sysc-web');
         });
 
         Route::group(['prefix' => 'transaction', 'as' => 'transaction.' ,'middleware'=>['module:report']], function () {

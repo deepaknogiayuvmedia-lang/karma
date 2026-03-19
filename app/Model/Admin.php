@@ -8,7 +8,18 @@ use Illuminate\Notifications\Notifiable;
 
 class Admin extends Authenticatable
 {
-    use Notifiable;
+    protected $fillable = [
+        'name',
+        'phone',
+        'email',
+        'image',
+        'password',
+        'wherehouse',
+    ];
+
+    protected $casts = [
+        'wherehouse' => 'array',
+    ];
 
     public function role(){
         return $this->belongsTo(AdminRole::class,'admin_role_id');

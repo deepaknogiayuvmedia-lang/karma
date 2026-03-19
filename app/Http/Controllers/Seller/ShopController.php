@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\CPU\shepping;
 
 class ShopController extends Controller
 {
@@ -103,7 +104,7 @@ class ShopController extends Controller
             'city'          => $request->business_city,
             'state'         => $request->business_state,
             'pincode'       => $request->business_pincode,
-            'country'       => $request->business_country,
+            'country'       => 'India',
         ];
 
         // ================= WAREHOUSE ADDRESS JSON =================
@@ -112,7 +113,7 @@ class ShopController extends Controller
             'city'          => $request->warehouse_city,
             'state'         => $request->warehouse_state,
             'pincode'       => $request->warehouse_pincode,
-            'country'       => $request->warehouse_country,
+            'country'       => 'India',
         ];
 
         $shop = Shop::find($id);
@@ -121,46 +122,98 @@ class ShopController extends Controller
         $shop->gst_no = $request->gst_number;
         //save certificate
         if ($request->hasFile('gst_certificate')) {
-
             // delete old file
             if (!empty($shop->gst_doc) && Storage::disk('public')->exists('document/' . $shop->gst_doc)) {
                 Storage::disk('public')->delete('document/' . $shop->gst_doc);
             }
-
             // new file name
             $file = $request->file('gst_certificate');
             $fileName = time() . '_gst.' . $file->getClientOriginalExtension();
-
             // store file
             $file->storeAs('document', $fileName, 'public');
-
             // save in DB
             $shop->gst_doc = $fileName;
         }
         $shop->pen_no = $request->pan_number;
         if ($request->hasFile('pan_card')) {
-
             // delete old file
             if (!empty($shop->pen_doc) && Storage::disk('public')->exists('document/' . $shop->pen_doc)) {
                 Storage::disk('public')->delete('document/' . $shop->pen_doc);
             }
-
             // new file name
             $file = $request->file('pan_card');
             $fileName = time() . '_pan.' . $file->getClientOriginalExtension();
-
             // store file
             $file->storeAs('document', $fileName, 'public');
-
             // save in DB
             $shop->pen_doc = $fileName;
         }
         $shop->business_address = json_encode($businessAddress);
         $shop->wherehouse        = json_encode($warehouseAddress);
-
         $shop->save();
-
-        Toastr::success('Shop address updated successfully!');
         return redirect()->back();
+    }
+
+    public function addressupdate(Request $request, $id)
+    {
+       
+       $business = [];
+        $warehouse = [];
+        // ================= BUSINESS ADDRESS JSON =================
+        $businessAddress = [
+            'address_line1' => $request->business_address_line1,
+            'city'          => $request->business_city,
+            'state'         => $request->business_state,
+            'pincode'       => $request->business_pincode,
+            'country'       => 'India',
+        ];
+
+        // ================= WAREHOUSE ADDRESS JSON =================
+        $warehouseAddress = [
+            'address_line1' => $request->warehouse_address_line1,
+            'city'          => $request->warehouse_city,
+            'state'         => $request->warehouse_state,
+            'pincode'       => $request->warehouse_pincode,
+            'country'       => 'India',
+        ];
+        $shop = Shop::find($id);
+           $shop->whatsapp_no = $request->whatsapp_number;
+        $shop->gst_no = $request->gst_number;
+        //save certificate
+        if ($request->hasFile('gst_certificate')) {
+            // delete old file
+            if (!empty($shop->gst_doc) && Storage::disk('public')->exists('document/' . $shop->gst_doc)) {
+                Storage::disk('public')->delete('document/' . $shop->gst_doc);
+            }
+            // new file name
+            $file = $request->file('gst_certificate');
+            $fileName = time() . '_gst.' . $file->getClientOriginalExtension();
+            // store file
+            $file->storeAs('document', $fileName, 'public');
+            // save in DB
+            $shop->gst_doc = $fileName;
+        }
+        $shop->pen_no = $request->pan_number;
+        if ($request->hasFile('pan_card')) {
+            // delete old file
+            if (!empty($shop->pen_doc) && Storage::disk('public')->exists('document/' . $shop->pen_doc)) {
+                Storage::disk('public')->delete('document/' . $shop->pen_doc);
+            }
+            // new file name
+            $file = $request->file('pan_card');
+            $fileName = time() . '_pan.' . $file->getClientOriginalExtension();
+            // store file
+            $file->storeAs('document', $fileName, 'public');
+            // save in DB
+            $shop->pen_doc = $fileName;
+        }
+        $shop->business_address = json_encode($businessAddress);
+        $new_warehouse_address = json_encode($warehouseAddress);
+        if ($shop->wherehouse != $new_warehouse_address) {
+            $shop->wherehouse = $new_warehouse_address;
+            $shop->status = 'update';
+        }
+        $shop->save();
+        return redirect()->back()->with('success', 'Address updated successfully!');
     }
 }

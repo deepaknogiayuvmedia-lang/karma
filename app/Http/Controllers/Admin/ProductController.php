@@ -28,6 +28,8 @@ use function App\CPU\translate;
 use App\Model\Cart;
 use App\Model\Order;
 use App\Model\OrderDetail;
+use App\Model\Tempproduct;
+
 
 class ProductController extends BaseController
 {
@@ -1175,13 +1177,16 @@ class ProductController extends BaseController
             ->where('translationable_id', $id);
         $translation->delete();
 
-        Cart::where('product_id', $product->id)->delete();
-        Wishlist::where('product_id', $product->id)->delete();
+        
 
-        foreach (json_decode($product['images'], true) as $image) {
-            ImageManager::delete('/product/' . $image);
+        if(Product::where(['pid' => $id])->get()){
+            Cart::where('product_id', $product->id)->delete();
+        Wishlist::where('product_id', $product->id)->delete();
+            foreach (json_decode($product['images'], true) as $image) {
+                ImageManager::delete('/product/' . $image);
+            }
+            ImageManager::delete('/product/thumbnail/' . $product['thumbnail']);
         }
-        ImageManager::delete('/product/thumbnail/' . $product['thumbnail']);
         $product->delete();
 
         FlashDealProduct::where(['product_id' => $id])->delete();
@@ -1310,5 +1315,117 @@ class ProductController extends BaseController
         $product = Product::findOrFail($id);
         $limit =  $request->limit ?? 4;
         return view('admin-views.product.barcode', compact('product', 'limit'));
+    }
+
+    public function sysc_tally()
+    {
+        // dd('sysc tally'); 
+        $products = Product::where(['added_by' => 'admin'])->get();
+        
+        foreach ($products as $product) {
+            $category_ids = json_decode($product->category_ids, true);
+            $category = Category::where('id', $category_ids[count($category_ids) - 1]['id'])->first();
+            $variation = json_decode($product->variation, true);
+            foreach($variation as $key => $value){
+                $order_pending_qty = OrderDetail::where('product_id', $product->id)->where('delivery_status', 'pending')->where('variant', $value['type'])->sum('qty');
+                $unit =  preg_replace('/[^a-zA-Z]/', '', $value['type']);
+                // dump($unit);
+                $response = Tallymethod::updateOpeningStock($product->tally_name.'-'.$value['type'].'-'.$product->id, $category->name,$value['qty']+$order_pending_qty, $unit, $value['price']);
+                if (!Tallymethod::isSuccess($response)) {
+                    Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name);
+                    return back();
+                }
+            }
+        }
+        Toastr::success(translate('Tally item creation successful'));
+        return response()->json(['success' => true]);
+    }
+
+    public function sysc_web()
+    {
+        Tempproduct::truncate();
+        $response = Tallymethod::exportStockSummary();
+        
+       if (preg_match('/<ENVELOPE>.*?<\/ENVELOPE>/s', $response, $matches)) {
+            $cleanXml = $matches[0];
+            libxml_use_internal_errors(true);
+            $xmlObject = simplexml_load_string($cleanXml);
+
+            if ($xmlObject) {
+                $count = count($xmlObject->DSPACCNAME);
+
+                for ($i = 0; $i < $count; $i++) {
+
+                    $nameNode = $xmlObject->DSPACCNAME[$i];
+                    $nameFromTally = (string) $nameNode->DSPDISPNAME;
+                    $stockNode = $xmlObject->DSPSTKINFO[$i]->DSPSTKCL ?? null;
+
+                    if (! $stockNode) {
+                        continue;
+                    }
+
+                    $closingBalance = (string) $stockNode->DSPCLQTY;
+                    $rate = (string) $stockNode->DSPCLRATE;
+                    
+                    // Extract Product ID from name (Example: Redmi TV-49)
+                    if (preg_match('/-(\d+)$/', $nameFromTally, $matchesId)) {
+                        $reversed = strrev($nameFromTally);
+                        // 3 parts me tod do (kyunki last 2 '-' chahiye)
+                        $matchesArray = explode('-', $reversed, 3);
+                        $matchesArray = array_map('strrev', $matchesArray);
+                        
+                        $productId = $matchesArray[0];
+                        $variant = $matchesArray[1] ?? null;
+                        $tally_name = $matchesArray[2] ?? null;
+
+                        $qtyFromTally = (double) preg_replace('/[^0-9.\-]/', '', $closingBalance);
+                        $rateFromTally = (double) preg_replace('/[^0-9.\-]/', '', $rate);
+                        $unit = preg_replace('/[^a-zA-Z]/', '', $closingBalance);
+                        
+                        $product = Product::find($productId);
+                        if ($product) {
+                            $variation = json_decode($product->variation, true);
+                            $foundVariant = null;
+                            if ($variation) {
+                                foreach ($variation as $v) {
+                                    if ($v['type'] == $variant) {
+                                        $foundVariant = $v;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            if ($foundVariant) {
+                                // Web Qty includes stock + pending orders
+                                $order_pending_qty = OrderDetail::where('product_id', $productId)
+                                    ->where('delivery_status', 'pending')
+                                    ->where('variant', $variant)
+                                    ->sum('qty');
+                                
+                                $webQtyTotal = (double)$foundVariant['qty'] + (double)$order_pending_qty;
+                                $webPrice = (double)$foundVariant['price'];
+                                
+                                // Convert web price to current currency for comparison with Tally rate
+                                $currentWebPrice = (double)BackEndHelper::usd_to_currency($webPrice);
+                                
+                                // If mismatch, add to staging table
+                                if ($webQtyTotal != $qtyFromTally || $currentWebPrice != $rateFromTally) {
+                                    Tempproduct::create([
+                                        'product_id' => $productId,
+                                        'tally_name' => $tally_name,
+                                        'variant' => $variant,
+                                        'qty' => $qtyFromTally,
+                                        'rate' => $rateFromTally,
+                                        'unit' => $unit,
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return response()->json(['success' => true, 'message' => 'Synced to Web successfully!']);
     }
 }

@@ -18,6 +18,7 @@ use App\Model\OrderTransaction;
 use App\Model\DeliveryMan;
 use App\Model\Shop;
 use Rap2hpoutre\FastExcel\FastExcel;
+use App\CPU\shepping;
 
 class SellerController extends Controller
 {
@@ -369,7 +370,7 @@ class SellerController extends Controller
         $data = [
             'name' => $shop->name,
             'address' => $wherehouse->address_line1,
-            'pin' => $wherehouse->pin,
+            'pin' => $wherehouse->pincode,
             'phone' => $shop->contact,
             'city' => $wherehouse->city ?? '',
             'state' => $wherehouse->state ?? '',
@@ -377,17 +378,27 @@ class SellerController extends Controller
             'email' => $seller->email ?? '',
             'registered_name' => $shop->name,
             'return_address' => $wherehouse->address_line1,
-            'return_pin' =>  $wherehouse->pin,
+            'return_pin' => $wherehouse->pincode,
             'return_city' => $wherehouse->city ?? '',
             'return_state' => $wherehouse->state ?? '',
             'return_country' => 'India',
         ];
 
-        $result = \App\CPU\Delhivery::wherehouse_creation($data);
+        if ($shop->status == 'update') {
+            $result = shepping::UpdateWhereHouse($data);
+            $success_msg = 'Delhivery Warehouse Updated Successfully!';
+        } else {
+            $result = shepping::CreateWhereHouse($data);
+            $success_msg = 'Delhivery Warehouse Created Successfully!';
+        }
 
         if ($result['status'] == 'success') {
-            Toastr::success('Delhivery Warehouse Created/Updated Successfully!');
+            $shop->status = 'approved';
+            $shop->save();
+            Toastr::success($success_msg);
         } else {
+            // $shop->status = 'Pending'; // Better not to reset if it failed? Or keep as is.
+            // $shop->save();
             Toastr::error('Delhivery API Error: ' . $result['message']);
         }
         return back();

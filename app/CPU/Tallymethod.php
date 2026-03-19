@@ -226,38 +226,6 @@ class Tallymethod
     return self::send($xml);
   }
 
-  public static function  ($name)
-  {
-    $xml = '
-    <ENVELOPE>
-     <HEADER>
-      <TALLYREQUEST>Export Data</TALLYREQUEST>
-     </HEADER>
-     <BODY>
-      <EXPORTDATA>
-       <REQUESTDESC>
-        <REPORTNAME>Stock Item</REPORTNAME>
-        <STATICVARIABLES>
-          <SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>
-          <SVSTOCKITEM>' . $name . '</SVSTOCKITEM>
-        </STATICVARIABLES>
-       </REQUESTDESC>
-      </EXPORTDATA>
-     </BODY>
-    </ENVELOPE>';
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://localhost:9000");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
-
-    $response = curl_exec($ch);
-    curl_close($ch);
-    
-    return $response;
-  }
-
   public static function checkTallyStatus()
   {
     $xml = '

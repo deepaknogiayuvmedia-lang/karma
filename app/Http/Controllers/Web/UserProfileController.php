@@ -398,6 +398,7 @@ class UserProfileController extends Controller
     public function track_order_result(Request $request)
     {
         $user =  auth('customer')->user();
+       
         if(!isset($user)){
             $user_id = User::where('phone',$request->phone_number)->first()->id;
             $orderDetails = Order::where('id',$request['order_id'])->whereHas('details',function ($query) use($user_id){
@@ -406,13 +407,15 @@ class UserProfileController extends Controller
 
         }else{
             if($user->phone == $request->phone_number){
-                $orderDetails = Order::where('id',$request['order_id'])->whereHas('details',function ($query){
+                 
+                $orderDetails = Order::where('third_party_delivery_tracking_id',$request['order_id'])->whereHas('details',function ($query){
                     $query->where('customer_id',auth('customer')->id());
                 })->first();
+                // dd($orderDetails);
             }
             if($request->from_order_details==1)
             {
-                $orderDetails = Order::where('id',$request['order_id'])->whereHas('details',function ($query){
+                $orderDetails = Order::where('third_party_delivery_tracking_id',$request['order_id'])->whereHas('details',function ($query){
                     $query->where('customer_id',auth('customer')->id());
                 })->first();
             }
@@ -421,7 +424,11 @@ class UserProfileController extends Controller
 
 
         if (isset($orderDetails)){
-            return view('web-views.order-tracking', compact('orderDetails'));
+            $tracking_info = null;
+            if ($orderDetails->third_party_delivery_tracking_id) {
+                $tracking_info = \App\CPU\shepping::track_shipment($orderDetails->third_party_delivery_tracking_id);
+            }
+            return view('web-views.order-tracking', compact('orderDetails', 'tracking_info'));
         }
 
         return redirect()->route('track-order.index')->with('Error', \App\CPU\translate('Invalid Order Id or Phone Number'));
@@ -432,7 +439,12 @@ class UserProfileController extends Controller
         $orderDetails = OrderManager::track_order(Order::where('customer_id', auth('customer')->id())->latest()->first()->id);
 
         if ($orderDetails != null) {
-            return view('web-views.order-tracking', compact('orderDetails'));
+            $tracking_info = null;
+            if ($orderDetails->third_party_delivery_tracking_id) {
+                $tracking_info = \App\CPU\shepping::track_shipment($orderDetails->third_party_delivery_tracking_id);
+                
+            }
+            return view('web-views.order-tracking', compact('orderDetails', 'tracking_info'));
         } else {
             return redirect()->route('track-order.index')->with('Error', \App\CPU\translate('Invalid Order Id or Phone Number'));
         }
