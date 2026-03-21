@@ -46,6 +46,8 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
         });
 
         Route::group(['prefix' => 'product', 'as' => 'product.'], function () {
+            Route::get('sysc_tally', 'ProductController@sysc_tally')->name('sysc_tally');
+            Route::get('sysc_web', 'ProductController@sysc_web')->name('sysc_web');
             Route::post('image-upload', 'ProductController@imageUpload')->name('image-upload');
             Route::get('remove-image', 'ProductController@remove_image')->name('remove-image');
             Route::get('add-new', 'ProductController@add_new')->name('add-new');
@@ -200,6 +202,10 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
             Route::post('/save-address/{id}','ShopController@save_address')->name('save-address');
             Route::post('address-update/{id}', 'ShopController@addressupdate')->name('address-update');
             Route::post('address-delete', 'ShopController@deleteWarehouse')->name('address-delete');
+
+            Route::get('tally-companies', 'ShopController@tallyCompanies')->name('tally-companies');
+            Route::get('tally-companies/select-company/{company}', 'ShopController@selectTallyCompany')->name('tally-companies.select-company');
+            Route::post('tally-companies/toggle-sync', 'ShopController@toggleTallySync')->name('tally-companies.toggle-sync');
         });
 
         Route::group(['prefix' => 'withdraw', 'as' => 'withdraw.'], function () {

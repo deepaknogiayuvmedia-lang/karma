@@ -31,6 +31,9 @@
         <li class="{{ Request::is('admin/business-settings/templete') ? 'active' : '' }}"><a
                 href="{{ route('admin.business-settings.whatsapp.templete') }}">{{ \App\CPU\translate('WhatsApp Template') }}</a>
         </li>
+        <li class="{{ Request::is('admin/business-settings/tally-companies') ? 'active' : '' }}"><a
+                href="{{ route('admin.business-settings.tally-companies') }}">{{ \App\CPU\translate('Tally Companies') }}</a>
+        </li>
     </ul>
 </div>
 

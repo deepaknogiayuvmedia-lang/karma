@@ -79,6 +79,8 @@ class ProductController extends BaseController
 
     public function store(Request $request)
     {
+        $adminId = auth('admin')->id();
+        
         $validator = Validator::make($request->all(), [
             'name'                 => 'required',
             'category_id'          => 'required',
@@ -233,10 +235,12 @@ class ProductController extends BaseController
             ]);
         }
         $categoryName = Category::find($category[count($category) - 1]['id'])?->name ?? $request->sub_sub_category_id;
-        $response = Tallymethod::createGroup($categoryName);
-        if (!Tallymethod::isSuccess($response)) {
-            Toastr::error(translate('Tally group creation failed for sub sub category: ') . $categoryName);
-            return back();
+        if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+            $response = Tallymethod::createGroup($categoryName,auth('admin')->id());
+            if (!Tallymethod::isSuccess($response)) {
+                Toastr::error(translate('Tally group creation failed for sub sub category: ') . $categoryName);
+                return back();
+            }
         }
         $p->category_ids         = json_encode($category);
         $p->brand_id             = $request->brand_id;
@@ -302,22 +306,24 @@ class ProductController extends BaseController
                 $unit = preg_replace('/[^a-zA-Z]/', '', $str);
                 if ($oldunit != $unit) {
                     $oldunit = $unit;
-                    $response = Tallymethod::createUnit($oldunit);
-                    if (!Tallymethod::isSuccess($response)) {
-                        Toastr::error(translate('Tally unit creation failed for unit: ') . $oldunit);
-                        return back();
-                    }
-                    // dump($oldunit);
+                    if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                        $response = Tallymethod::createUnit($oldunit,auth('admin')->id());
+                        if (!Tallymethod::isSuccess($response)) {
+                            Toastr::error(translate('Tally unit creation failed for unit: ') . $oldunit);
+                            return back();
+                        }
+                    }   
                 }
                 $item['type'] = $str;
                 $item['price'] = BackEndHelper::currency_to_usd(abs($request['price_' . str_replace('.', '_', $str)]));
                 $item['sku'] = $request['sku_' . str_replace('.', '_', $str)];
                 $item['qty'] = abs($request['qty_' . str_replace('.', '_', $str)]);
-
-                $response = Tallymethod::createOrAlterItem($p->tally_name . '-' . $str . '-' . $p->id, $categoryName, $item['qty'], $unit, $item['price']);
-                if (!Tallymethod::isSuccess($response)) {
-                    Toastr::error(translate('Tally item creation failed for item: ') . $p->tally_name . '-' . $str);
-                    return back();
+                if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                    $response = Tallymethod::createOrAlterItem($p->tally_name . '-' . $str . '-' . $p->id, $categoryName, $item['qty'], $unit, $item['price'],auth('admin')->id());
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally item creation failed for item: ') . $p->tally_name . '-' . $str);
+                        return back();
+                    }
                 }
                 array_push($variations, $item);
                 $stock_count += $item['qty'];
@@ -899,10 +905,12 @@ class ProductController extends BaseController
         }
 
         $categoryName = Category::find($category[count($category) - 1]['id'])?->name ?? $request->sub_sub_category_id;
-        $response = Tallymethod::createGroup($categoryName);
-        if (!Tallymethod::isSuccess($response)) {
-            Toastr::error(translate('Tally group creation failed for sub sub category: ') . $categoryName);
-            return back();
+        if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+            $response = Tallymethod::createGroup($categoryName,auth('admin')->id());
+            if (!Tallymethod::isSuccess($response)) {
+                Toastr::error(translate('Tally group creation failed for sub sub category: ') . $categoryName);
+                return back();
+            }
         }
         $product->product_type          = $request->product_type;
         $product->category_ids          = json_encode($category);
@@ -968,10 +976,12 @@ class ProductController extends BaseController
                 $unit = preg_replace('/[^a-zA-Z]/', '', $str);
                 if ($oldunit != $unit) {
                     $oldunit = $unit;
-                    $response = Tallymethod::createUnit($oldunit);
-                    if (!Tallymethod::isSuccess($response)) {
-                        Toastr::error(translate('Tally unit creation failed for unit: ') . $oldunit);
-                        return back();
+                    if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                        $response = Tallymethod::createUnit($oldunit,auth('admin')->id());
+                        if (!Tallymethod::isSuccess($response)) {
+                            Toastr::error(translate('Tally unit creation failed for unit: ') . $oldunit);
+                            return back();
+                        }
                     }
                     // dump($oldunit);
                 }
@@ -982,10 +992,12 @@ class ProductController extends BaseController
                 $item['qty'] = abs($request['qty_' . str_replace('.', '_', $str)]);
                 $order_pending_qty = OrderDetail::where('product_id', $product->id)->where('delivery_status', 'pending')->where('variant', $item['type'])->sum('qty');
                 // tally product update
-                $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $str . '-' . $product->id, $categoryName, $item['qty'] + $order_pending_qty, $unit, $item['price']);
-                if (!Tallymethod::isSuccess($response)) {
-                    Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name . '-' . $str);
-                    return back();
+                if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $str . '-' . $product->id, $categoryName, $item['qty'] + $order_pending_qty, $unit, $item['price'],auth('admin')->id());
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name . '-' . $str);
+                        return back();
+                    }
                 }
                 array_push($variations, $item);
                 $stock_count += $item['qty'];
@@ -1319,6 +1331,11 @@ class ProductController extends BaseController
 
     public function sysc_tally()
     {
+        $adminId = auth('admin')->id();
+        if (!\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+             return response()->json(['success' => false, 'message' => translate('Tally synchronization is disabled.')]);
+        }
+
         // dd('sysc tally'); 
         $products = Product::where(['added_by' => 'admin'])->get();
         
@@ -1330,10 +1347,23 @@ class ProductController extends BaseController
                 $order_pending_qty = OrderDetail::where('product_id', $product->id)->where('delivery_status', 'pending')->where('variant', $value['type'])->sum('qty');
                 $unit =  preg_replace('/[^a-zA-Z]/', '', $value['type']);
                 // dump($unit);
-                $response = Tallymethod::updateOpeningStock($product->tally_name.'-'.$value['type'].'-'.$product->id, $category->name,$value['qty']+$order_pending_qty, $unit, $value['price']);
-                if (!Tallymethod::isSuccess($response)) {
-                    Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name);
-                    return back();
+                if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                    $response = Tallymethod::createGroup($category->name,auth('admin')->id());
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally group creation failed for item: ') . $product->tally_name);
+                        return back();
+                    }
+                    
+                    $response = Tallymethod::createUnit($unit,auth('admin')->id());
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally unit creation failed for item: ') . $product->tally_name);
+                        return back();
+                    }
+                    $response = Tallymethod::updateOpeningStock($product->tally_name.'-'.$value['type'].'-'.$product->id, $category->name,$value['qty']+$order_pending_qty, $unit, $value['price'],auth('admin')->id());
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name);
+                        return back();
+                    }
                 }
             }
         }
@@ -1343,8 +1373,14 @@ class ProductController extends BaseController
 
     public function sysc_web()
     {
+        $adminId = auth('admin')->id();
+        if (!\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+            Toastr::warning(translate('Tally synchronization is disabled.'));
+            return back();
+        }
+
         Tempproduct::truncate();
-        $response = Tallymethod::exportStockSummary();
+        $response = Tallymethod::exportStockSummary($adminId);
         
        if (preg_match('/<ENVELOPE>.*?<\/ENVELOPE>/s', $response, $matches)) {
             $cleanXml = $matches[0];

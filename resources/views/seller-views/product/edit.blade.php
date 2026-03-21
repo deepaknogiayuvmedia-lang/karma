@@ -61,13 +61,25 @@
                                 }
                                 ?>
                                 <div class="{{$lang != 'en'? 'd-none':''}} lang_form" id="{{$lang}}-form">
-                                    <div class="form-group">
-                                        <label class="title-color" for="{{$lang}}_name">{{ \App\CPU\translate('Name')}}
-                                            ({{strtoupper($lang)}})</label>
-                                        <input type="text" {{$lang == 'en'? 'required':''}} name="name[]"
-                                               id="{{$lang}}_name"
-                                               value="{{$translate[$lang]['name']??$product['name']}}"
-                                               class="form-control" placeholder="New Product" required>
+                                    <div class="row">
+                                        <div class="col-md-6 form-group">
+                                            <label class="title-color" for="{{$lang}}_name">{{ \App\CPU\translate('Name')}}
+                                                ({{strtoupper($lang)}})</label>
+                                            <input type="text" {{$lang == 'en'? 'required':''}} name="name[]"
+                                                id="{{$lang}}_name"
+                                                value="{{$translate[$lang]['name']??$product['name']}}"
+                                                class="form-control" placeholder="New Product" required>
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label class="title-color"
+                                                for="{{ $lang }}_name">{{ \App\CPU\translate('Product Register Name') }}<span
+                                                    class="text-danger">*</span>
+                                                ({{ strtoupper($lang) }})</label>
+                                            <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="prn[]"
+                                                id="prn_name" value="{{ $product->tally_name ?? '' }}"
+                                                class="form-control"
+                                                placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
+                                        </div>
                                     </div>
                                     <input type="hidden" name="lang[]" value="{{$lang}}">
                                     <div class="form-group pt-4">

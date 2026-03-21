@@ -1077,4 +1077,45 @@ class BusinessSettingsController extends Controller
     }
 
 
+    public function tallyCompanies()
+    {
+        $fetched_companies = \App\CPU\Tallymethod::getAllCompanies();
+        
+        if (count($fetched_companies) > 0) {
+            foreach ($fetched_companies as $company_name) {
+                // Use updateOrInsert or find and create to avoid duplicates
+                DB::table('tally_companies')->updateOrInsert(
+                    ['company_name' => $company_name, 'seller_id' => auth('admin')->id()],
+                    ['updated_at' => now()]
+                );
+            }
+        }
+        
+        $companies = DB::table('tally_companies')->where('seller_id', auth('admin')->id())->get();
+        $active_company_obj = DB::table('tally_companies')->where(['seller_id' => auth('admin')->id(), 'status' => 1])->first();
+        $active_company = $active_company_obj ? $active_company_obj->company_name : null;
+        $tallyConnected = $companies->count() > 0;
+        
+        return view('admin-views.business-settings.tally-companies', compact('companies', 'tallyConnected', 'active_company'));
+    }
+
+    public function selectTallyCompany($company)
+    {
+        DB::table('tally_companies')->where('seller_id', auth('admin')->id())->update(['status' => 0]);
+        DB::table('tally_companies')->where(['seller_id' => auth('admin')->id(), 'company_name' => $company])->update(['status' => 1]);
+        
+        Toastr::success('Tally Company selected successfully!');
+        return back();
+    }
+
+    public function toggleTallySync(Request $request)
+    {
+        $admin = \App\Model\Admin::find(auth('admin')->id());
+        $admin->tally_sync = $request->tally_sync == 1 ? 1 : 0;
+        $admin->save();
+
+        Toastr::success('Tally synchronization toggled successfully!');
+        return back();
+    }
+
 }

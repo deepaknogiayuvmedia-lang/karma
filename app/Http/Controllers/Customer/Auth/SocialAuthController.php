@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Session;
+use  App\CPU\ImageManager;
 
 class SocialAuthController extends Controller
 {
@@ -24,9 +25,10 @@ class SocialAuthController extends Controller
     public function handleProviderCallback($service)
     {
         $user_data = Socialite::driver($service)->stateless()->user();
-
+        // dd($user_data['picture']);
         $user = User::where('email', $user_data->getEmail())->first();
-
+        $user_img = $user_data['picture'];
+        $user_img = ImageManager::update('profile/', $user_img, 'png', $user_img);
         $name = explode(' ', $user_data['name']);
         if (count($name) > 1) {
             $fast_name = implode(" ", array_slice($name, 0, -1));
@@ -46,6 +48,7 @@ class SocialAuthController extends Controller
                 'is_active' => 1,
                 'login_medium' => $service,
                 'social_id' => $user_data->id,
+                'image' => $user_img,
                 'is_phone_verified' => 0,
                 'is_email_verified' => 1,
                 'temporary_token' => Str::random(40)

@@ -17,7 +17,7 @@ class SocialAuthController extends Controller
     public function social_login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'token' => 'required',
+            'token' => 'required',  
             'unique_id' => 'required',
             'email' => 'required',
             'medium' => 'required|in:google,facebook,apple',

@@ -135,7 +135,7 @@ class ProductManager
     public static function search_products_web($name, $limit = 10, $offset = 1)
     {
         $key = explode(' ', $name);
-        $paginator = Product::active()->with(['rating','tags'])->where(function ($q) use ($key) {
+        $paginator = Product::active()->with(['rating','tags'])->lowestPricePerPid()->where(function ($q) use ($key) {
             foreach ($key as $value) {
                 $q->orWhere('name', 'like', "%{$value}%")
                 ->orWhereHas('tags',function($query)use($value){
@@ -182,7 +182,7 @@ class ProductManager
             })
             ->pluck('translationable_id');
 
-        $paginator = Product::with('tags')->WhereIn('id', $product_ids)->paginate($limit, ['*'], 'page', $offset);
+        $paginator = Product::with('tags')->lowestPricePerPid()->WhereIn('id', $product_ids)->paginate($limit, ['*'], 'page', $offset);
 
         return [
             'total_size' => $paginator->total(),

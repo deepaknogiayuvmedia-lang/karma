@@ -10,6 +10,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\CPU\Tallymethod;
 
 ini_set('memory_limit',-1);
 ini_set('upload_max_filesize','180M');
@@ -97,5 +98,21 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
+    View::composer(
+    ['layouts.back-end.partials._header', 'layouts.back-end.partials-seller._header'],
+    function ($view) {
+        $tally = new Tallymethod();
+
+        $status = $tally->checkTallyStatus();
+
+        $syncStatus = $tally->isSyncEnabled(
+            auth('admin')->user()->id ?? auth('seller')->user()->id
+        );
+
+        $view->with([
+            'tallyStatus' => $status,
+            'tallySyncStatus' => $syncStatus
+        ]);
+    });
     }
 }

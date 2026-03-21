@@ -28,6 +28,11 @@ use Illuminate\Support\Str;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\Model\Cart;
 use App\Model\Seller;
+use App\CPU\Tallymethod;
+use App\Model\OrderDetail;
+use App\Model\Order;
+use App\Model\Tempproduct;
+use App\Model\Wishlist;
 use Nwidart\Modules\Json;
 use stdClass;
 
@@ -209,6 +214,7 @@ class ProductController extends Controller
         $product->user_id = auth('seller')->id();
         $product->added_by = "seller";
         $product->name = $request->name[array_search('en', $request->lang)];
+        $product->tally_name = $request->prn[0];
         $product->slug = Str::slug($request->name[array_search('en', $request->lang)], '-') . '-' . Str::random(6);
 
         $product_images = [];
@@ -256,6 +262,17 @@ class ProductController extends Controller
             ]);
         }
 
+        $category_last = $category[count($category) - 1]['id'];
+        $category_obj = Category::find($category_last);
+        $categoryName = $category_obj ? $category_obj->name : $request->sub_sub_category_id;
+        if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+            $response = Tallymethod::createGroup($categoryName,auth('seller')->id());
+            if (!Tallymethod::isSuccess($response)) {
+                Toastr::error(translate('Tally group creation failed for sub sub category: ') . $categoryName);
+                return back();
+            }
+        }
+
         $product->category_ids          = json_encode($category);
         $product->brand_id              = $request->brand_id;
         $product->unit                  = $request->product_type == 'physical' ? $request->unit : null;
@@ -299,6 +316,7 @@ class ProductController extends Controller
         $combinations = Helpers::combinations($options);
         $variations = [];
         $stock_count = 0;
+        $oldunit = null;
         if (count($combinations[0]) > 0) {
             foreach ($combinations as $key => $combination) {
                 $str = '';
@@ -315,15 +333,38 @@ class ProductController extends Controller
                     }
                 }
                 $item = [];
+                $unit = preg_replace('/[^a-zA-Z]/', '', $str);
+                if ($oldunit != $unit) {
+                    $oldunit = $unit;
+                    if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                        $response = Tallymethod::createUnit($oldunit,auth('seller')->id());
+                        if (!Tallymethod::isSuccess($response)) {
+                            Toastr::error(translate('Tally unit creation failed for unit: ') . $oldunit);
+                        }
+                    }
+                }
                 $item['type'] = $str;
                 $item['price'] = Convert::usd(abs($request['price_' . str_replace('.', '_', $str)]));
                 $item['sku'] = $request['sku_' . str_replace('.', '_', $str)];
                 $item['qty'] = abs($request['qty_' . str_replace('.', '_', $str)]);
+                if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                    $response = Tallymethod::createOrAlterItem($product->tally_name . '-' . $str . '-' . $product->id, $categoryName, $item['qty'], $unit, $item['price'],auth('seller')->id());
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name . '-' . $str);
+                    }
+                }
+
                 array_push($variations, $item);
                 $stock_count += $item['qty'];
             }
         } else {
             $stock_count = (int)$request['current_stock'];
+            // if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+            //     $response = Tallymethod::createOrAlterItem($product->tally_name . '-' . $product->id, $categoryName, $stock_count, $product->unit, $product->unit_price,auth('seller')->id());
+            //     if (!Tallymethod::isSuccess($response)) {
+            //         Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name);
+            //     }
+            // }
         }
 
         if ($validator->errors()->count() > 0) {
@@ -481,46 +522,118 @@ class ProductController extends Controller
     public function stock_limit_list(Request $request, $type)
     {
         $stock_limit = Helpers::get_business_settings('stock_limit');
-        $sort_oqrderQty = $request['sort_oqrderQty'];
-        $query_param = $request->all();
-        $search = $request['search'];
-        $pro = Product::where(['added_by' => 'seller', 'product_type' => 'physical', 'user_id' => auth('seller')->id()])
-            ->where('request_status', 1)
-            ->when($request->has('status') && $request->status != null, function ($query) use ($request) {
-                $query->where('request_status', $request->status);
-            });
+        $sort_oqrderQty = $request->get('sort_oqrderQty');
 
-        if ($request->has('search')) {
-            $key = explode(' ', $request['search']);
+        // build query params for pagination links; keep everything except the page number itself
+        $query_param = $request->except('page');
+
+        $search = $request->get('search');
+        $pro = Product::where(['added_by' => 'seller', 'product_type' => 'physical', 'user_id' => auth('seller')->id()])
+            ->withCount('order_details');
+
+        if ($search) {
+            $key = explode(' ', $search);
             $pro = $pro->where(function ($q) use ($key) {
                 foreach ($key as $value) {
-                    $q->Where('name', 'like', "%{$value}%");
+                    $q->where('name', 'like', "%{$value}%");
                 }
             });
-            $query_param = ['search' => $request['search']];
         }
 
-        $request_status = $request['status'];
+        $request_status = $request->get('status');
 
-        $pro = $pro->withCount('order_details')->when($request->sort_oqrderQty == 'quantity_asc', function ($q) use ($request) {
-            return $q->orderBy('current_stock', 'asc');
-        })
-            ->when($request->sort_oqrderQty == 'quantity_desc', function ($q) use ($request) {
+        $pro = $pro
+            ->when($sort_oqrderQty == 'quantity_asc', function ($q) {
+                return $q->orderBy('current_stock', 'asc');
+            })
+            ->when($sort_oqrderQty == 'quantity_desc', function ($q) {
                 return $q->orderBy('current_stock', 'desc');
             })
-            ->when($request->sort_oqrderQty == 'order_asc', function ($q) use ($request) {
+            ->when($sort_oqrderQty == 'order_asc', function ($q) {
                 return $q->orderBy('order_details_count', 'asc');
             })
-            ->when($request->sort_oqrderQty == 'order_desc', function ($q) use ($request) {
+            ->when($sort_oqrderQty == 'order_desc', function ($q) {
                 return $q->orderBy('order_details_count', 'desc');
             })
-            ->when($request->sort_oqrderQty == 'default', function ($q) use ($request) {
+            ->when($sort_oqrderQty == 'default', function ($q) {
                 return $q->orderBy('id');
-            })->where('current_stock', '<', $stock_limit);
+            });
 
+        // for JavaScript pagination we need ALL rows on the page
+        $pro = $pro->orderBy('id', 'DESC')->get();
+        $paginate_limit = Helpers::pagination_limit();
+        return view('seller-views.product.stock-limit-list', compact(
+            'pro',
+            'search',
+            'request_status',
+            'sort_oqrderQty',
+            'stock_limit',
+            'paginate_limit',
 
-        $products = $pro->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends(['status' => $request['status']])->appends($query_param);
-        return view('seller-views.product.stock-limit-list', compact('products', 'search', 'request_status', 'sort_oqrderQty'));
+        ));
+    }
+
+    public function get_variations(Request $request)
+    {
+        $product = Product::find($request['id']);
+        return response()->json([
+            'view' => view('seller-views.product.partials._update_stock', compact('product'))->render()
+        ]);
+    }
+
+    public function update_quantity(Request $request)
+    {
+        $product = Product::find($request->data['id']);
+
+        $variations = json_decode($product->variation, true) ?? [];
+        $categories = json_decode($product->category_ids, true);
+
+        $categoryName = $categories[count($categories) - 1]['id'] ?? null;
+        $category = Category::find($categoryName);
+        $categoryName = $category ? $category->name : $categoryName;
+
+        $stock_count = 0;
+        if ($product) {
+            foreach ($variations as $key => &$item) {
+                if ($item['type'] == $request->data['variation']) {
+
+                    $item['type'] = $request->data['variation'];
+                    $item['price'] = BackEndHelper::currency_to_usd(abs($request->data['price']));
+                    $item['qty'] = abs($request->data['qty']);
+                    $unit = preg_replace('/[^a-zA-Z]/', '', $item['type']);
+                    $response = Tallymethod::createUnit($unit);
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally unit creation failed for unit: ') . $unit);
+                        return back();
+                    }
+                    $order_pending_qty = OrderDetail::where('product_id', $request->data['id'])
+                        ->whereHas('order', function ($q) {
+                            $q->whereIn('delivery_status', ['pending', 'confirmed', 'processing', 'out_for_delivery']);
+                        })
+                        ->where('variant', $item['type'])->sum('qty');
+
+                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $item['type'] . '-' . $request->data['id'], $categoryName, $item['qty'] + $order_pending_qty, $unit, $item['price']);
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name . '-' . $item['type']);
+                        return back();
+                    }
+                }
+
+                $stock_count += $item['qty'];
+            }
+        }
+
+        if ($stock_count >= 0) {
+            $product->variation = json_encode($variations);
+            $product->current_stock = $stock_count;
+            $product->purchase_price = BackEndHelper::currency_to_usd(abs($request->data['purchase_price']));
+            $product->save();
+            Toastr::success(translate('product_quantity_updated_successfully!'));
+            return response()->json(['success' => true]);
+        } else {
+            Toastr::warning(translate('product_quantity_can_not_be_less_than_0_!'));
+            return response()->json(['success' => false]);
+        }
     }
 
     /**
@@ -560,33 +673,6 @@ class ProductController extends Controller
         return (new FastExcel($data))->download('total_product_stock.xlsx');
     }
 
-    public function update_quantity(Request $request)
-    {
-        $variations = [];
-        $stock_count = $request['current_stock'];
-        if ($request->has('type')) {
-            foreach ($request['type'] as $key => $str) {
-                $item = [];
-                $item['type'] = $str;
-                $item['price'] = BackEndHelper::currency_to_usd(abs($request['price_' . str_replace('.', '_', $str)]));
-                $item['sku'] = $request['sku_' . str_replace('.', '_', $str)];
-                $item['qty'] = abs($request['qty_' . str_replace('.', '_', $str)]);
-                array_push($variations, $item);
-            }
-        }
-
-        $product = Product::find($request['product_id']);
-        if ($stock_count >= 0) {
-            $product->current_stock = $stock_count;
-            $product->variation = json_encode($variations);
-            $product->save();
-            Toastr::success(\App\CPU\translate('product_quantity_updated_successfully!'));
-            return back();
-        } else {
-            Toastr::warning(\App\CPU\translate('product_quantity_can_not_be_less_than_0_!'));
-            return back();
-        }
-    }
 
     public function get_categories(Request $request)
     {
@@ -604,13 +690,6 @@ class ProductController extends Controller
         ]);
     }
 
-    public function get_variations(Request $request)
-    {
-        $product = Product::find($request['id']);
-        return response()->json([
-            'view' => view('seller-views.product.partials._update_stock', compact('product'))->render()
-        ]);
-    }
 
     public function sku_combination(Request $request)
     {
@@ -782,8 +861,10 @@ class ProductController extends Controller
         }
 
         $product->name = $request->name[array_search('en', $request->lang)];
+        $product->tally_name = $request->prn[0];
 
         $category = [];
+        $categoryName = null;
         if ($request->category_id != null) {
             array_push($category, [
                 'id' => $request->category_id,
@@ -801,6 +882,16 @@ class ProductController extends Controller
                 'id' => $request->sub_sub_category_id,
                 'position' => 3,
             ]);
+        }
+        $category_last = $category[count($category) - 1]['id'];
+        $category_obj = Category::find($category_last);
+        $categoryName = $category_obj ? $category_obj->name : $request->sub_sub_category_id;
+        if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+            $response = Tallymethod::createGroup($categoryName,auth('seller')->id());
+            if (!Tallymethod::isSuccess($response)) {
+                Toastr::error(translate('Tally group creation failed for sub sub category: ') . $categoryName);
+                return back();
+            }
         }
 
         $product->product_type          = $request->product_type;
@@ -845,6 +936,7 @@ class ProductController extends Controller
         $combinations = Helpers::combinations($options);
         $variations = [];
         $stock_count = 0;
+        $oldunit = null;
         if (count($combinations[0]) > 0) {
             foreach ($combinations as $key => $combination) {
                 $str = '';
@@ -861,10 +953,30 @@ class ProductController extends Controller
                     }
                 }
                 $item = [];
+                $unit = preg_replace('/[^a-zA-Z]/', '', $str);
+                if ($oldunit != $unit) {
+                    $oldunit = $unit;
+                    if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                        $response = Tallymethod::createUnit($oldunit,auth('seller')->id());
+                        if (!Tallymethod::isSuccess($response)) {
+                            Toastr::error(translate('Tally unit creation failed for unit: ') . $oldunit);
+                            return back();
+                        }
+                    }
+                }
                 $item['type'] = $str;
-                $item['price'] = Convert::usd(abs($request['price_' . str_replace('.', '_', $str)]));
+                $item['price'] = BackEndHelper::currency_to_usd(abs($request['price_' . str_replace('.', '_', $str)]));
                 $item['sku'] = $request['sku_' . str_replace('.', '_', $str)];
                 $item['qty'] = abs($request['qty_' . str_replace('.', '_', $str)]);
+                $order_pending_qty = OrderDetail::where('product_id', $product->id)->where('delivery_status', 'pending')->where('variant', $item['type'])->sum('qty');
+                // tally product update
+                if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $str . '-' . $product->id, $categoryName, $item['qty'] + $order_pending_qty, $unit, $item['price'],auth('seller')->id());
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name . '-' . $str);
+                        return back();
+                    }
+                }
                 array_push($variations, $item);
                 $stock_count += $item['qty'];
             }
@@ -1034,7 +1146,59 @@ class ProductController extends Controller
     public function delete($id)
     {
         $product = Product::find($id);
+        $variant = json_decode($product->variation, true);
+        $categories = json_decode($product->category_ids, true);
+
+        $category_id_last = $categories[count($categories) - 1]['id'] ?? null;
+        $category_obj = Category::find($category_id_last);
+        $categoryName = $category_obj ? $category_obj->name : $category_id_last;
+        
+        if ($variant && count($variant) > 0) {
+            foreach ($variant as $item) {
+                $order_pending_qty = OrderDetail::where('product_id', $product->id)
+                    ->where('variant', $item['type'])
+                    ->whereHas('order', function ($q) {
+                        $q->whereIn('delivery_status', ['pending', 'confirmed', 'processing', 'out_for_delivery']);
+                    })->sum('qty');
+                    
+                $unit = preg_replace('/[^a-zA-Z]/', '', $item['type']);
+                if ($order_pending_qty > 0) {
+                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $item['type'] . '-' . $product->id, $categoryName, $order_pending_qty, $unit, $item['price']);
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('You can not delete this product because there are pending orders for this product variant: ') . $item['type']);
+                        return back();
+                    }
+                } else {
+                    $response = Tallymethod::deleteItem($product->tally_name . '-' . $item['type'] . '-' . $product->id);
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally item deletion failed for item: ') . $product->tally_name . '-' . $item['type']);
+                        return back();
+                    }
+                }
+            }
+        } else {
+            $order_pending_qty = OrderDetail::where('product_id', $product->id)
+                ->whereHas('order', function ($q) {
+                    $q->whereIn('delivery_status', ['pending', 'confirmed', 'processing', 'out_for_delivery']);
+                })->sum('qty');
+
+            if ($order_pending_qty > 0) {
+                $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $product->id, $categoryName, $order_pending_qty, $product->unit, $product->unit_price);
+                if (!Tallymethod::isSuccess($response)) {
+                    Toastr::error(translate('You can not delete this product because there are pending orders for this product.'));
+                    return back();
+                }
+            } else {
+                $response = Tallymethod::deleteItem($product->tally_name . '-' . $product->id);
+                if (!Tallymethod::isSuccess($response)) {
+                    Toastr::error(translate('Tally item deletion failed for item: ') . $product->tally_name);
+                    return back();
+                }
+            }
+        }
+
         Cart::where('product_id', $product->id)->delete();
+        Wishlist::where('product_id', $product->id)->delete();
         foreach (json_decode($product['images'], true) as $image) {
             ImageManager::delete('/product/' . $image);
         }
@@ -1398,5 +1562,167 @@ class ProductController extends Controller
         }
         $biddings = $biddings->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($query_param);
         return view('seller-views.product.winbid', compact('biddings', 'search'));
+    }
+
+    public function sysc_tally()
+    {
+        $sellerId = auth('seller')->id();
+        if (!\App\CPU\Tallymethod::isSyncEnabled($sellerId)) {
+             return response()->json(['success' => false, 'message' => translate('Tally synchronization is disabled.')]);
+        }
+          
+        $products = Product::where(['added_by' => 'seller', 'user_id' => $sellerId])->get();
+        foreach ($products as $product) {
+            $category_ids = json_decode($product->category_ids, true);
+            if (!empty($category_ids)) {
+                $category_last = $category_ids[count($category_ids) - 1]['id'];
+                $category = Category::where('id', $category_last)->first();
+                $categoryName = $category ? $category->name : '';
+            } else {
+                $categoryName = '';
+            }
+
+            $variation = json_decode($product->variation, true);
+            if ($variation) {
+                foreach ($variation as $key => $value) {
+                    $order_pending_qty = OrderDetail::where('product_id', $product->id)
+                        ->where('variant', $value['type'])
+                        ->whereHas('order', function ($q) {
+                            $q->whereIn('delivery_status', ['pending', 'confirmed', 'processing', 'out_for_delivery']);
+                        })->sum('qty');
+
+                    $unit = preg_replace('/[^a-zA-Z]/', '', $value['type']);
+                    if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {    
+                        $response = Tallymethod::createGroup($categoryName,auth('seller')->id());
+                    
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally sync failed for item: ') . $product->tally_name . '-' . $value['type']);
+                    }
+                    $response = Tallymethod::createUnit($unit,auth('seller')->id());
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally sync failed for item: ') . $product->tally_name . '-' . $value['type']);
+                    }
+                    
+                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $value['type'] . '-' . $product->id, $categoryName, $value['qty'] + $order_pending_qty, $unit, $value['price'],auth('seller')->id());
+                    
+                    if (!Tallymethod::isSuccess($response)) {
+                        Toastr::error(translate('Tally sync failed for item: ') . $product->tally_name . '-' . $value['type']);
+                    }
+                }
+                }
+            } else {
+                $order_pending_qty = OrderDetail::where('product_id', $product->id)
+                    ->whereHas('order', function ($q) {
+                        $q->whereIn('delivery_status', ['pending', 'confirmed', 'processing', 'out_for_delivery']);
+                    })->sum('qty');
+                    $unit = preg_replace('/[^a-zA-Z]/', '', $product->unit);
+                    if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                        $response = Tallymethod::createGroup($categoryName,auth('seller')->id());
+                    
+                        if (!Tallymethod::isSuccess($response)) {
+                            Toastr::error(translate('Tally sync failed for item: ') . $product->tally_name . '-' . $product->unit);
+                        }
+                        $response = Tallymethod::createUnit($unit,auth('seller')->id());
+                        if (!Tallymethod::isSuccess($response)) {
+                            Toastr::error(translate('Tally sync failed for item: ') . $product->tally_name . '-' . $product->unit);
+                        }
+                        $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $product->id, $categoryName, $product->current_stock + $order_pending_qty, $product->unit, $product->unit_price,auth('seller')->id());
+                        
+                        if (!Tallymethod::isSuccess($response)) {
+                            Toastr::error(translate('Tally sync failed for item: ') . $product->tally_name);
+                        }
+                    }
+            }
+        }
+        Toastr::success(translate('Tally sync successful'));
+               return response()->json(['success' => true]);
+
+    }
+
+    public function sysc_web()
+    {
+        $sellerId = auth('seller')->id();
+        if (!\App\CPU\Tallymethod::isSyncEnabled($sellerId)) {
+             return response()->json(['success' => false, 'message' => 'Tally synchronization is disabled.']);
+        }
+
+        Tempproduct::truncate();
+        $response = Tallymethod::exportStockSummary($sellerId);
+        
+       if (preg_match('/<ENVELOPE>.*?<\/ENVELOPE>/s', $response, $matches)) {
+            $cleanXml = $matches[0];
+            libxml_use_internal_errors(true);
+            $xmlObject = simplexml_load_string($cleanXml);
+
+            if ($xmlObject) {
+                $count = count($xmlObject->DSPACCNAME);
+
+                for ($i = 0; $i < $count; $i++) {
+
+                    $nameNode = $xmlObject->DSPACCNAME[$i];
+                    $nameFromTally = (string) $nameNode->DSPDISPNAME;
+                    $stockNode = $xmlObject->DSPSTKINFO[$i]->DSPSTKCL ?? null;
+
+                    if (! $stockNode) {
+                        continue;
+                    }
+
+                    $closingBalance = (string) $stockNode->DSPCLQTY;
+                    $rate = (string) $stockNode->DSPCLRATE;
+                    
+                    if (preg_match('/-(\d+)$/', $nameFromTally, $matchesId)) {
+                        $reversed = strrev($nameFromTally);
+                        $matchesArray = explode('-', $reversed, 3);
+                        $matchesArray = array_map('strrev', $matchesArray);
+                        
+                        $productId = $matchesArray[0];
+                        $variant = $matchesArray[1] ?? null;
+                        $tally_name = $matchesArray[2] ?? null;
+
+                        $qtyFromTally = (double) preg_replace('/[^0-9.\-]/', '', $closingBalance);
+                        $rateFromTally = (double) preg_replace('/[^0-9.\-]/', '', $rate);
+                        $unit = preg_replace('/[^a-zA-Z]/', '', $closingBalance);
+                        
+                        $product = Product::find($productId);
+                        if ($product && $product->added_by == 'seller' && $product->user_id == auth('seller')->id()) {
+                            $variation = json_decode($product->variation, true);
+                            $foundVariant = null;
+                            if ($variation) {
+                                foreach ($variation as $v) {
+                                    if ($v['type'] == $variant) {
+                                        $foundVariant = $v;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            if ($foundVariant) {
+                                $order_pending_qty = OrderDetail::where('product_id', $productId)
+                                    ->where('delivery_status', 'pending')
+                                    ->where('variant', $variant)
+                                    ->sum('qty');
+                                
+                                $webQtyTotal = (double)$foundVariant['qty'] + (double)$order_pending_qty;
+                                $webPrice = (double)$foundVariant['price'];
+                                $currentWebPrice = (double)BackEndHelper::usd_to_currency($webPrice);
+                                
+                                if ($webQtyTotal != $qtyFromTally || $currentWebPrice != $rateFromTally) {
+                                    Tempproduct::create([
+                                        'product_id' => $productId,
+                                        'tally_name' => $tally_name,
+                                        'variant' => $variant,
+                                        'qty' => $qtyFromTally,
+                                        'rate' => $rateFromTally,
+                                        'unit' => $unit,
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return response()->json(['success' => true, 'message' => 'Synced to Web successfully!']);
     }
 }

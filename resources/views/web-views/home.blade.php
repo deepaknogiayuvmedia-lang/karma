@@ -698,7 +698,7 @@
                                 </button>
                             </div>
                             @else
-                            @php($product=\App\Model\Product::active()->inRandomOrder()->first())
+                            @php($product=\App\Model\Product::active()->lowestPricePerPid()->inRandomOrder()->first())
                             @if(isset($product))
                             <div class="d-flex justify-content-center align-items-center">
                                 <h1 class="text-white"> {{ \App\CPU\translate('recommended_product') }}</h1>

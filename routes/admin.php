@@ -422,6 +422,11 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
                 })->name('test-send');
             });
 
+            // tally companies route
+            Route::get('tally-companies', 'BusinessSettingsController@tallyCompanies')->name('tally-companies');
+            Route::get('tally-companies/select/{company}', 'BusinessSettingsController@selectTallyCompany')->name('tally-companies.select-company');
+            Route::post('tally-companies/toggle-sync', 'BusinessSettingsController@toggleTallySync')->name('tally-companies.toggle-sync');
+
             Route::group(['prefix' => 'shipping-type', 'as' => 'shipping-type.','middleware'=>['module:system_settings']], function () {
                 Route::post('store', 'ShippingTypeController@store')->name('store');
             });

@@ -477,6 +477,16 @@
                             </a>
                         </li>
 
+                        <li class="navbar-vertical-aside-has-menu {{Request::is('seller/shop/tally-companies')?'active':''}}">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link"
+                               href="{{route('seller.shop.tally-companies')}}">
+                                <i class="tio-settings nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                    {{\App\CPU\translate('Account Software(Tally)')}}
+                                </span>
+                            </a>
+                        </li>
+
                         @php( $shipping_method = \App\CPU\Helpers::get_business_settings('shipping_method'))
                         @if($shipping_method=='sellerwise_shipping')
                             <li class="nav-item {{Request::is('seller/delivery-man*')?'scroll-here':''}}">

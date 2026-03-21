@@ -767,10 +767,7 @@
                         url: "{{ route('seller.orders.status') }}",
                         method: 'POST',
                         data: {
-                            "id": '{{ $order[
-                                '
-                                                                                id '
-                            ] }}',
+                            "id": '{{ $order['id'] }}',
                             "order_status": value
                         },
                         success: function(data) {

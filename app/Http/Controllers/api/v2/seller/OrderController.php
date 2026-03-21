@@ -210,6 +210,7 @@ class OrderController extends Controller
 
     public function order_detail_status(Request $request)
     {
+        dd($request->all());
         $data = Helpers::get_seller_by_token($request);
 
         if ($data['success'] == 1) {

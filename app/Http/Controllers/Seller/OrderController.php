@@ -289,6 +289,7 @@ class OrderController extends Controller
 
     public function status(Request $request)
     {
+        // dd($request->all());
         $order = Order::find($request->id);
 
         if(!isset($order->customer))
@@ -364,7 +365,7 @@ class OrderController extends Controller
         // Cancel Delhivery shipment when order is canceled or returned
         if (in_array($request->order_status, ['canceled', 'returned']) && $order->third_party_delivery_tracking_id != null && $order->delivery_service_name == 'Delhivery') {
             $cancel_result = \App\CPU\shepping::CancelShipment($order->third_party_delivery_tracking_id, $order->id);
-            dd($cancel_result);
+            // dd($cancel_result);
             if ($cancel_result['status'] == 'success') {
                 Toastr::success('Delhivery shipment cancelled successfully!');
             } else {

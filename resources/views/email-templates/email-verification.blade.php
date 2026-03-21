@@ -3,114 +3,115 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{{\App\CPU\translate('Email Verification')}}</title>
+    <title>{{ \App\CPU\translate('Email Verification') }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style type="text/css">
-        /**
-         * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
-         */
-        @media screen {
-            @font-face {
-                font-family: 'Source Sans Pro';
-                font-style: normal;
-                font-weight: 400;
-                src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
-            }
-
-            @font-face {
-                font-family: 'Source Sans Pro';
-                font-style: normal;
-                font-weight: 700;
-                src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff) format('woff');
-            }
-        }
-
-        /**
-         * Avoid browser level font resizing.
-         * 1. Windows Mobile
-         * 2. iOS / OSX
-         */
-        body,
-        table,
-        td,
-        a {
-            -ms-text-size-adjust: 100%; /* 1 */
-            -webkit-text-size-adjust: 100%; /* 2 */
-        }
-
-        /**
-         * Remove extra space added to tables and cells in Outlook.
-         */
-        table,
-        td {
-            mso-table-rspace: 0pt;
-            mso-table-lspace: 0pt;
-        }
-
-        /**
-         * Better fluid images in Internet Explorer.
-         */
-        img {
-            -ms-interpolation-mode: bicubic;
-        }
-
-        /**
-         * Remove blue links for iOS devices.
-         */
-        a[x-apple-data-detectors] {
-            font-family: inherit !important;
-            font-size: inherit !important;
-            font-weight: inherit !important;
-            line-height: inherit !important;
-            color: inherit !important;
-            text-decoration: none !important;
-        }
-
-        /**
-         * Fix centering issues in Android 4.4.
-         */
-        div[style*="margin: 16px 0;"] {
-            margin: 0 !important;
-        }
-
         body {
-            width: 100% !important;
-            height: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
         }
-
-        /**
-         * Collapse table borders to avoid space between cells.
-         */
         table {
             border-collapse: collapse !important;
         }
-
-        a {
-            color: #1a82e2;
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
-
-        img {
-            height: auto;
-            line-height: 100%;
+        .header {
+            background-color: #3f51b5; /* Default primary color */
+            padding: 40px 20px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .content {
+            padding: 40px 30px;
+            text-align: center;
+            color: #333333;
+        }
+        .content p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .otp-box {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 24px;
+            display: inline-block;
+            margin-bottom: 30px;
+            border: 2px dashed #3f51b5;
+        }
+        .otp-code {
+            font-size: 36px;
+            font-weight: 700;
+            color: #3f51b5;
+            letter-spacing: 10px;
+            margin: 0;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #888888;
+        }
+        .footer a {
+            color: #3f51b5;
             text-decoration: none;
-            border: 0;
-            outline: none;
+        }
+        @media screen and (max-width: 600px) {
+            .content {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
-<body style="background-color: #e9ecef;">
-<!-- end preheader -->
-<div class="card">
-    <div class="card-header">
-        {{\App\CPU\translate('Verify your email')}}.
-    </div>
-    <div class="card-body">
-        {{\App\CPU\translate('Token')}} : {{$token}}
-    </div>
-</div>
+<body>
+    <div style="padding: 40px 0;">
+        <div class="container">
+            <div class="header">
+                @php($logo = \App\CPU\Helpers::get_business_settings('company_web_logo'))
+                @if($logo)
+                    <img src="{{ asset(env('PUBLIC_STORAGE_PATH').'/company/'.$logo) }}" alt="Logo" style="max-height: 50px; margin-bottom: 20px;">
+                @endif
+                <h1>{{ \App\CPU\translate('Verify Your Email') }}</h1>
+            </div>
+            <div class="content">
+                <p>{{ \App\CPU\translate('Hello') }},</p>
+                <p>{{ \App\CPU\translate('Please use the following One-Time Password (OTP) to complete your email verification process. This code is valid for a limited time.') }}</p>
+                
+                <div class="otp-box" style="background-color: #f8f9fa; border-radius: 12px; padding: 24px; display: inline-block; margin-bottom: 30px; border: 2px dashed #3f51b5;">
+                    <h2 class="otp-code" style="font-size: 36px; font-weight: 700; color: #3f51b5; letter-spacing: 10px; margin: 0;">{{ $token }}</h2>
+                </div>
 
+                <p style="margin-top:20px; font-size: 14px; color: #666;">
+                    {{ \App\CPU\translate('If you did not request this verification, please ignore this email or contact support if you have concerns.') }}
+                </p>
+            </div>
+            <div class="footer">
+                @php($company_name = \App\CPU\Helpers::get_business_settings('company_name'))
+                <p>&copy; {{ date('Y') }} {{ $company_name }}. {{ \App\CPU\translate('All rights reserved.') }}</p>
+                <p>
+                    <a href="{{ url('/') }}" style="color: #3182ce; text-decoration: none;">{{ \App\CPU\translate('Visit our Website') }}</a>
+                </p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
-

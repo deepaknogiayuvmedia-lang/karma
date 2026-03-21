@@ -67,7 +67,7 @@ class WebController extends Controller
         $home_categories = Category::where('home_status', true)->priority()->get();
         $home_categories->map(function ($data) {
             $id = '"' . $data['id'] . '"';
-            $data['products'] = Product::active()
+            $data['products'] = Product::active()->lowestPricePerPid()
                 ->where('category_ids', 'like', "%{$id}%")
                 /*->whereJsonContains('category_ids', ["id" => (string)$data['id']])*/
                 ->inRandomOrder()->take(12)->get();
@@ -78,14 +78,16 @@ class WebController extends Controller
         //end
 
         //feature products finding based on selling
-        $featured_products = Product::with(['reviews'])->active()
+        $featured_products = Product::with(['reviews'])->active()->lowestPricePerPid()
             ->where('featured', 1)
             ->withCount(['order_details'])->orderBy('order_details_count', 'DESC')
             ->take(12)
             ->get();
         //end
 
-        $latest_products = Product::with(['reviews'])->active()->orderBy('id', 'desc')->take(8)->get();
+        $latest_products = Product::with(['reviews'])->active()->lowestPricePerPid()->orderBy('id', 'desc')->get();
+        
+        
         $categories = Category::where(['position' => 0])->priority()->take(11)->get();
         $brands = Brand::active()->take(15)->get();
         //best sell product
@@ -302,13 +304,13 @@ class WebController extends Controller
                         }
                     }
 
-                    if ($physical_product && $shipping_type == 'order_wise') {
-                        $cart_shipping = CartShipping::where('cart_group_id', $cart->cart_group_id)->first();
-                        if (!isset($cart_shipping)) {
-                            Toastr::info(translate('select_shipping_method_first'));
-                            return redirect('shop-cart');
-                        }
-                    }
+                    // if ($physical_product && $shipping_type == 'order_wise') {
+                    //     $cart_shipping = CartShipping::where('cart_group_id', $cart->cart_group_id)->first();
+                    //     if (!isset($cart_shipping)) {
+                    //         Toastr::info(translate('select_shipping_method_first'));
+                    //         return redirect('shop-cart');
+                    //     }
+                    // }
                 }
             }
         }
@@ -380,13 +382,13 @@ class WebController extends Controller
                             $shipping_type = isset($seller_shipping) == true ? $seller_shipping->shipping_type : 'order_wise';
                         }
                     }
-                    if ($shipping_type == 'order_wise') {
-                        $cart_shipping = CartShipping::where('cart_group_id', $cart->cart_group_id)->first();
-                        if (!isset($cart_shipping)) {
-                            Toastr::info(translate('select_shipping_method_first'));
-                            return redirect('shop-cart');
-                        }
-                    }
+                    // if ($shipping_type == 'order_wise') {
+                    //     $cart_shipping = CartShipping::where('cart_group_id', $cart->cart_group_id)->first();
+                    //     if (!isset($cart_shipping)) {
+                    //         Toastr::info(translate('select_shipping_method_first'));
+                    //         return redirect('shop-cart');
+                    //     }
+                    // }
                 }
             }
         }
@@ -727,7 +729,18 @@ class WebController extends Controller
         if ($product != null) {
             $countOrder = OrderDetail::where('product_id', $product->id)->count();
             $countWishlist = Wishlist::where('product_id', $product->id)->count();
-            $relatedProducts = Product::with(['reviews'])->active()->where('category_ids', $product->category_ids)->where('id', '!=', $product->id)->limit(12)->get();
+            $relatedProducts = Product::with(['reviews'])->active()
+                ->lowestPricePerPid()
+                ->where(function ($query) use ($product) {
+                    $query->where('category_ids', $product->category_ids)
+                        ->orWhere('brand_id', $product->brand_id);
+                })
+                ->where('id', '!=', $product->id)
+                ->when($product->pid, function($query) use ($product) {
+                    return $query->where('pid', '!=', $product->pid);
+                })
+                ->limit(12)
+                ->get();
             $deal_of_the_day = DealOfTheDay::where('product_id', $product->id)->where('status', 1)->first();
             $current_date = date('Y-m-d');
             $seller_vacation_start_date = ($product->added_by == 'seller' && isset($product->seller->shop->vacation_start_date)) ? date('Y-m-d', strtotime($product->seller->shop->vacation_start_date)) : null;
@@ -773,7 +786,7 @@ class WebController extends Controller
         $request['sort_by'] = $request['sort_by'] ?? 'latest';
 
         // Base query (IMPORTANT)
-        $porduct_data = Product::active()->with(['reviews']);
+        $porduct_data = Product::active()->with(['reviews'])->lowestPricePerPid();
         $query = $porduct_data;
 
         // -----------------------------
@@ -949,7 +962,7 @@ class WebController extends Controller
     {
         $request['sort_by'] == null ? $request['sort_by'] == 'latest' : $request['sort_by'];
 
-        $porduct_data = Product::active()->with(['reviews']);
+        $porduct_data = Product::active()->with(['reviews'])->lowestPricePerPid();
 
         if ($request['data_from'] == 'category') {
             $products = $porduct_data->get();

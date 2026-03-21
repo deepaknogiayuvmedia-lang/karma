@@ -216,4 +216,46 @@ class ShopController extends Controller
         $shop->save();
         return redirect()->back()->with('success', 'Address updated successfully!');
     }
+
+    public function tallyCompanies()
+    {
+        $fetched_companies = \App\CPU\Tallymethod::getAllCompanies();
+        $sellerId = auth('seller')->id();
+
+        if (count($fetched_companies) > 0) {
+            foreach ($fetched_companies as $company_name) {
+                DB::table('tally_companies')->updateOrInsert(
+                    ['company_name' => $company_name, 'seller_id' => $sellerId],
+                    ['updated_at' => now()]
+                );
+            }
+        }
+
+        $companies = DB::table('tally_companies')->where(['seller_id' => $sellerId])->get();
+        $active_company_obj = DB::table('tally_companies')->where(['seller_id' => $sellerId, 'status' => 1])->first();
+        $active_company = $active_company_obj ? $active_company_obj->company_name : null;
+        
+
+        return view('seller-views.shop.tally-companies', compact('companies', 'active_company'));
+    }
+
+    public function selectTallyCompany($company)
+    {
+        $sellerId = auth('seller')->id();
+        DB::table('tally_companies')->where(['seller_id' => $sellerId])->update(['status' => 0]);
+        DB::table('tally_companies')->where(['seller_id' => $sellerId, 'company_name' => $company])->update(['status' => 1]);
+
+        Toastr::success('Tally Company selected successfully!');
+        return back();
+    }
+
+    public function toggleTallySync(Request $request)
+    {
+        $seller = \App\Model\Seller::find(auth('seller')->id());
+        $seller->tally_sync = $request->tally_sync == 1 ? 1 : 0;
+        $seller->save();
+
+        Toastr::success('Tally synchronization toggled successfully!');
+        return back();
+    }
 }

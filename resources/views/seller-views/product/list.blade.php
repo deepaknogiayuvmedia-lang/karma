@@ -41,6 +41,32 @@
                                 </form>
                             </div>
                             <div class="col-lg-8 mt-3 mt-lg-0 d-flex flex-wrap gap-3 justify-content-lg-end">
+                                @if(auth('seller')->user()->tally_sync_enabled)
+                                <div>
+                                    <button type="button" class="btn btn-outline--primary" data-toggle="dropdown">
+                                        <i class="tio-download-to"></i>
+                                        {{\App\CPU\translate('Sysc')}}
+                                        <i class="tio-chevron-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li>
+                                            <div onclick="sysc_to_tally(this)"
+                                                data-message-success="{{\App\CPU\translate('Sysc Web to Tally successfully')}}"
+                                                data-message-error="{{\App\CPU\translate('Sysc Web to Tally failed')}}"
+                                                data-url="{{ route('seller.product.sysc_tally') }}" class="dropdown-item">
+                                                {{\App\CPU\translate('Web to Tally')}}</div>
+                                        </li>
+                                        <li>
+                                            <div onclick="sysc_to_tally(this)"
+                                                data-message-success="{{\App\CPU\translate('Sysc Tally to Web successfully')}}"
+                                                data-message-error="{{\App\CPU\translate('Sysc Tally to Web failed')}}"
+                                                data-url="{{ route('seller.product.sysc_web') }}" class="dropdown-item">
+                                                {{\App\CPU\translate('Tally to Web')}}</div>
+                                        </li>
+                                        <div class="dropdown-divider"></div>
+                                    </ul>
+                                </div>
+                                @endif
                                 <div>
                                     <button type="button" class="btn btn-outline--primary" data-toggle="dropdown">
                                         <i class="tio-download-to"></i>
@@ -214,5 +240,21 @@
                 }
             });
         });
+
+        function sysc_to_tally(element) {
+            var url = element.getAttribute('data-url');
+        
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    if (data.success == true) {
+                        toastr.success(element.getAttribute('data-message-success'));
+                    } else {
+                        toastr.error(element.getAttribute('data-message-error'));
+                    }
+                }
+            });
+        }
     </script>
 @endpush

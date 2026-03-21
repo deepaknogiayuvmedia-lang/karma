@@ -110,7 +110,7 @@ class RegisterController extends Controller
             Toastr::success($response);
         }
 
-        if ($email_verification && !$user->is_email_verified) {
+        if ($email_verification ) {
             $emailServices_smtp = Helpers::get_business_settings('mail_config');
             if ($emailServices_smtp['status'] == 0) {
                 $emailServices_smtp = Helpers::get_business_settings('mail_config_sendgrid');
@@ -142,14 +142,14 @@ class RegisterController extends Controller
 
         if ($email_status == 1 || ($email_status == 0 && $phone_status == 0)) {
             if (isset($verify)) {
-                try {
-                    $user->is_email_verified = 1;
-                    $user->save();
-                    $verify->delete();
-                } catch (\Exception $exception) {
-                    Toastr::info('Try again');
-                }
-
+                // try {
+                //     $user->is_email_verified = 1;
+                //     $user->save();
+                //   
+                // } catch (\Exception $exception) {
+                //     Toastr::info('Try again');
+                // }
+                $verify->delete();
                 Toastr::success(translate('verification_done_successfully'));
 
             } else {
@@ -174,7 +174,7 @@ class RegisterController extends Controller
 
         }
 
-        return redirect(route('customer.auth.login'));
+        return redirect(route('home'));
     }
 
     public static function login_process($user, $email, $password)

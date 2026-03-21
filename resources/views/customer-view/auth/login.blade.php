@@ -8,6 +8,7 @@
     </style>
 @endpush
 @section('content')
+
     <div class="container py-4 py-lg-5 my-4"
          style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
         <div class="mx-auto __max-w-620">

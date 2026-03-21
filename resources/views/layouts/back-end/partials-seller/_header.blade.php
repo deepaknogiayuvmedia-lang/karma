@@ -48,7 +48,15 @@
                  style="{{Session::get('direction') === "rtl" ? 'margin-left:unset; margin-right: auto' : 'margin-right:unset; margin-left: auto'}}">
                 <!-- Navbar -->
                 <ul class="navbar-nav align-items-center flex-row">
-
+                    @if ($tallySyncStatus)
+                    <li>
+                        <div class="hs-unfold">
+                            <div>
+                                <span class="badge {{$tallyStatus == 'connected' ? 'badge-success' : 'badge-danger'}} ">{{$tallyStatus == 'connected' ? 'Tally Connected' : 'Tally Disconnected'}}</span>
+                            </div>
+                        </div>
+                    </li>
+                    @endif
                     <li class="nav-item d-none d-md-inline-block">
                         <div class="hs-unfold">
                             <div>
