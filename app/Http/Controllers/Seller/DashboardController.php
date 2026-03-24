@@ -116,6 +116,27 @@ class DashboardController extends Controller
         $data['total_tax_collected'] = $admin_wallet->total_tax_collected ?? 0;
 
         $withdrawal_methods = WithdrawalMethod::ofStatus(1)->get();
+
+        // Price Suggestion Logic (Now reading from pre-calculated fields in DB via Cron Job)
+        $price_suggestions = [];
+        $seller_products_with_suggestions = Product::where('user_id', auth('seller')->id())
+            ->where('added_by', 'seller')
+            ->where('suggested_price', '>', 0)
+            ->get();
+
+        foreach ($seller_products_with_suggestions as $product) {
+            $is_not_approved = $product->request_status != 1;
+            $price_suggestions[] = [
+                'name' => $product->name,
+                'current_price' => $product->unit_price,
+                'lowest_price' => $product->lowest_market_price,
+                'suggested_price' => $product->suggested_price,
+                'id' => $product->id,
+                'status_text' => $is_not_approved ? ($product->request_status == 0 ? 'Pending' : 'Denied') : 'Active'
+            ];
+        }
+        $data['price_suggestions'] = array_slice($price_suggestions, 0, 10);
+
         return view('seller-views.system.dashboard', compact('data', 'seller_data', 'commission_data', 'withdrawal_methods'));
     }
 

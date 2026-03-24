@@ -148,7 +148,7 @@
                     <div class="col-12">
                         <hr>
                     </div>
-                    <div class="col-sm-4 pt-2">
+                    <div class="col-sm-4 pt-2 align-self-start">
                         <div class="d-flex flex-wrap gap-2 ">
                             <h4 class="">{{$product['name']}}</h4>
                         </div>

@@ -21,7 +21,7 @@
                               enctype="multipart/form-data">
                             <div class="row photoHeader g-3">
                                 @csrf
-                                <div class="d-flex mb-3 mb-md-0 align-items-center">
+                                <div class="d-flex mb-3 mb-md-0 px-3 align-it ems-center">
                                     <img id="blah"
                                         class="rounded-circle border __inline-48"
                                         onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"

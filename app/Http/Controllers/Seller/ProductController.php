@@ -265,7 +265,7 @@ class ProductController extends Controller
         $category_last = $category[count($category) - 1]['id'];
         $category_obj = Category::find($category_last);
         $categoryName = $category_obj ? $category_obj->name : $request->sub_sub_category_id;
-        if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+        if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {
             $response = Tallymethod::createGroup($categoryName,auth('seller')->id());
             if (!Tallymethod::isSuccess($response)) {
                 Toastr::error(translate('Tally group creation failed for sub sub category: ') . $categoryName);
@@ -336,7 +336,7 @@ class ProductController extends Controller
                 $unit = preg_replace('/[^a-zA-Z]/', '', $str);
                 if ($oldunit != $unit) {
                     $oldunit = $unit;
-                    if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                    if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {
                         $response = Tallymethod::createUnit($oldunit,auth('seller')->id());
                         if (!Tallymethod::isSuccess($response)) {
                             Toastr::error(translate('Tally unit creation failed for unit: ') . $oldunit);
@@ -347,7 +347,7 @@ class ProductController extends Controller
                 $item['price'] = Convert::usd(abs($request['price_' . str_replace('.', '_', $str)]));
                 $item['sku'] = $request['sku_' . str_replace('.', '_', $str)];
                 $item['qty'] = abs($request['qty_' . str_replace('.', '_', $str)]);
-                if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {
                     $response = Tallymethod::createOrAlterItem($product->tally_name . '-' . $str . '-' . $product->id, $categoryName, $item['qty'], $unit, $item['price'],auth('seller')->id());
                     if (!Tallymethod::isSuccess($response)) {
                         Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name . '-' . $str);
@@ -359,7 +359,7 @@ class ProductController extends Controller
             }
         } else {
             $stock_count = (int)$request['current_stock'];
-            // if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+            // if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {
             //     $response = Tallymethod::createOrAlterItem($product->tally_name . '-' . $product->id, $categoryName, $stock_count, $product->unit, $product->unit_price,auth('seller')->id());
             //     if (!Tallymethod::isSuccess($response)) {
             //         Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name);
@@ -886,7 +886,7 @@ class ProductController extends Controller
         $category_last = $category[count($category) - 1]['id'];
         $category_obj = Category::find($category_last);
         $categoryName = $category_obj ? $category_obj->name : $request->sub_sub_category_id;
-        if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+        if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {
             $response = Tallymethod::createGroup($categoryName,auth('seller')->id());
             if (!Tallymethod::isSuccess($response)) {
                 Toastr::error(translate('Tally group creation failed for sub sub category: ') . $categoryName);
@@ -956,7 +956,7 @@ class ProductController extends Controller
                 $unit = preg_replace('/[^a-zA-Z]/', '', $str);
                 if ($oldunit != $unit) {
                     $oldunit = $unit;
-                    if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                    if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {
                         $response = Tallymethod::createUnit($oldunit,auth('seller')->id());
                         if (!Tallymethod::isSuccess($response)) {
                             Toastr::error(translate('Tally unit creation failed for unit: ') . $oldunit);
@@ -970,7 +970,7 @@ class ProductController extends Controller
                 $item['qty'] = abs($request['qty_' . str_replace('.', '_', $str)]);
                 $order_pending_qty = OrderDetail::where('product_id', $product->id)->where('delivery_status', 'pending')->where('variant', $item['type'])->sum('qty');
                 // tally product update
-                if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {
                     $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $str . '-' . $product->id, $categoryName, $item['qty'] + $order_pending_qty, $unit, $item['price'],auth('seller')->id());
                     if (!Tallymethod::isSuccess($response)) {
                         Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name . '-' . $str);
@@ -1592,7 +1592,7 @@ class ProductController extends Controller
                         })->sum('qty');
 
                     $unit = preg_replace('/[^a-zA-Z]/', '', $value['type']);
-                    if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {    
+                    if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {    
                         $response = Tallymethod::createGroup($categoryName,auth('seller')->id());
                     
                     if (!Tallymethod::isSuccess($response)) {
@@ -1616,7 +1616,7 @@ class ProductController extends Controller
                         $q->whereIn('delivery_status', ['pending', 'confirmed', 'processing', 'out_for_delivery']);
                     })->sum('qty');
                     $unit = preg_replace('/[^a-zA-Z]/', '', $product->unit);
-                    if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
+                    if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {
                         $response = Tallymethod::createGroup($categoryName,auth('seller')->id());
                     
                         if (!Tallymethod::isSuccess($response)) {

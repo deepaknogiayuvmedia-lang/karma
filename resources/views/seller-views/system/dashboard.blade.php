@@ -125,6 +125,83 @@
             </div>
         </div>
 
+        <!-- Price Suggestions -->
+        @if(count($data['price_suggestions']) > 0)
+        <div class="row g-2 mb-3">
+            <div class="col-lg-12">
+                <div class="card h-100">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="d-flex align-items-center text-capitalize gap-10 mb-0">
+                            <i class="tio-money"></i>
+                            {{\App\CPU\translate('Price_Update_Suggestions')}}
+                            <small class="text-muted ml-2">({{\App\CPU\translate('Based_on_lowest_market_price')}})</small>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive datatable-custom">
+                            <table class="table table-hover table-borderless table-thead-bordered table-nowrap table-align-middle card-table w-100"
+                                   style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
+                                <thead class="thead-light thead-50 text-capitalize">
+                                <tr>
+                                    <th>{{\App\CPU\translate('Product')}}</th>
+                                    <th>{{\App\CPU\translate('Status')}}</th>
+                                    <th>{{\App\CPU\translate('Price')}}</th>
+                                    <th>{{\App\CPU\translate('Lowest_Market')}}</th>
+                                    <th>{{\App\CPU\translate('Suggested')}}</th>
+                                    <th>{{\App\CPU\translate('Action')}}</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                @foreach($data['price_suggestions'] as $suggestion)
+                                    <tr>
+                                        <td>
+                                            <a href="{{route('seller.product.edit',[$suggestion['id']])}}" class="title-color hover-c1">
+                                                {{$suggestion['name']}}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            @if($suggestion['status_text'] == 'Denied')
+                                                <span class="badge badge-soft-danger">{{$suggestion['status_text']}}</span>
+                                            @elseif($suggestion['status_text'] == 'Pending')
+                                                <span class="badge badge-soft-warning">{{$suggestion['status_text']}}</span>
+                                            @else
+                                                <span class="badge badge-soft-info">{{$suggestion['status_text']}}</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            {{\App\CPU\BackEndHelper::usd_to_currency($suggestion['current_price'])}}{{\App\CPU\BackEndHelper::currency_symbol()}}
+                                        </td>
+                                        <td>
+                                            <span class="text-danger">
+                                                {{\App\CPU\BackEndHelper::usd_to_currency($suggestion['lowest_price'])}}{{\App\CPU\BackEndHelper::currency_symbol()}}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-success font-weight-bold">
+                                                {{\App\CPU\BackEndHelper::usd_to_currency($suggestion['suggested_price'])}}{{\App\CPU\BackEndHelper::currency_symbol()}}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex justify-content-center">
+                                                <a class="btn btn-outline-info btn-sm square-btn"
+                                                   title="{{\App\CPU\translate('edit')}}"
+                                                   href="{{route('seller.product.edit',[$suggestion['id']])}}">
+                                                    <i class="tio-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <div class="row g-2">
             <div class="col-lg-12">
                 <!-- Card -->

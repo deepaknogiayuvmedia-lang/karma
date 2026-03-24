@@ -347,5 +347,57 @@ class shepping
             return ['status' => 'error', 'message' => 'Exception: ' . $e->getMessage()];
         }
     }
+
+       public static function check_pincode($pin)
+    {
+        $config = Helpers::get_shipping_config();
+        
+        if (!$config || !$config->status) {
+            return ['status' => 'error', 'message' => 'Delhivery is not active'];
+        }
+
+        $api_token = $config->api_secret;
+        
+        // Delhivery Pincode Serviceability API endpoint
+        $url = "https://staging-express.delhivery.com/c/api/pin-codes/json/?filter_codes=" . $pin;
+        
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Token ' . $api_token,
+                'Content-Type' => 'application/json'
+            ])->get($url);
+                // dd($response->json());
+            if ($response->successful()) {
+                $result = $response->json();
+             
+                // If delivery_codes array exists and has length > 0, the pincode is serviceable
+                if (isset($result['delivery_codes']) && count($result['delivery_codes']) > 0) {
+                    $details = $result['delivery_codes'][0]['postal_code'] ?? null;
+
+                    return [
+                        'status' => 'success',
+                        'serviceable' => true,
+                        'message' => 'Pincode is serviceable.',
+                        'data' => $details
+                    ];
+                } else {
+                    return [
+                        'status' => 'error',
+                        'serviceable' => false,
+                        'message' => 'Service is not available for this pincode.',
+                        'data' => []
+                    ];
+                }
+            }
+            return [
+                'status' => 'error', 
+                'serviceable' => false,
+                'message' => 'Delhivery API connection failed: ' . $response->status(),
+                'data' => $response->json()
+            ];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'serviceable' => false, 'message' => 'Exception: ' . $e->getMessage()];
+        }
+    }
 }
 

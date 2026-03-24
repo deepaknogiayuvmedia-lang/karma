@@ -26,6 +26,15 @@ class Kernel extends ConsoleKernel
     {
         // Sync temp products to products table every 5 minutes
         $schedule->command('sync:temp-products')->everySecond();
+        
+        // Update product auto indexing based on price, reviews, and stock
+        $schedule->command('products:update-indexing')->everyMinute();
+
+        // Update seller ranking based on reviews, delivery speed, and product count
+        $schedule->command('update:seller-ranking')->everySixHours();
+
+        // Update price suggestions based on market trends and performance
+        $schedule->command('price:update-suggestions')->everySixHours();
     }
 
     /**

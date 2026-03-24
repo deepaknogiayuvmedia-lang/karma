@@ -311,6 +311,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
 
             Route::post('sales-commission-update/{id}', 'SellerController@sales_commission_update')->name('sales-commission-update');
 
+            Route::get('seller-score', 'SellerController@seller_score')->name('seller-score');
+
             Route::group(['prefix' => 'withdraw-method', 'as' => 'withdraw-method.'], function () {
                 Route::get('list', 'WithdrawalMethodController@list')->name('list');
                 Route::get('create', 'WithdrawalMethodController@create')->name('create');
@@ -321,6 +323,13 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
                 Route::post('status-update', 'WithdrawalMethodController@status_update')->name('status-update');
                 Route::post('default-status-update', 'WithdrawalMethodController@default_status_update')->name('default-status-update');
             });
+        });
+
+        Route::group(['prefix' => 'seller-notification', 'as' => 'seller-notification.', 'middleware' => ['module:user_section']], function () {
+            Route::get('index', 'SellerNotificationController@index')->name('index');
+            Route::get('create', 'SellerNotificationController@create')->name('create');
+            Route::post('store', 'SellerNotificationController@store')->name('store');
+            Route::post('delete/{id}', 'SellerNotificationController@delete')->name('delete');
         });
         Route::group(['prefix' => 'product', 'as' => 'product.','middleware'=>['module:product_management']], function () {
             Route::get('add-new', 'ProductController@add_new')->name('add-new');

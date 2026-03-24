@@ -23,7 +23,7 @@
                 </nav>
             </div>
             <div class="order-lg-1 text-center text-lg-{{Session::get('direction') === "rtl" ? 'right pl-lg-4' : 'left pr-lg-4'}}">
-                <h1 class="h3 text-light mb-0">{{\App\CPU\translate('My orders')}}</h1>
+                <h1 class="h3 text-light mb-0">{{\App\CPU\translate('My Wallet')}}</h1>
             </div>
         </div>
     </div>

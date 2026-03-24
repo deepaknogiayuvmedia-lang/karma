@@ -113,74 +113,7 @@ class Delhivery {
             return ['status' => 'error', 'message' => 'Exception: ' . $e->getMessage()];
         }
     }
+ 
 
-    public static function wherehouse_creation($data)
-    {
-        $config = Helpers::get_shipping_config();
-        
-        if (!$config || !$config->status) {
-            return ['status' => 'error', 'message' => 'Delhivery is not active'];
-        }
 
-        $api_token = $config->api_secret;
-        
-        // Delhivery Client Warehouse Creation API endpoint
-        $url = "https://track.delhivery.com/api/backend/clientwarehouse/create/";
-        
-        try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Token ' . $api_token,
-                'Content-Type' => 'application/json'
-            ])->post($url, $data);
-
-            if ($response->successful()) {
-                return [
-                    'status' => 'success',
-                    'data' => $response->json()
-                ];
-            }
-            return [
-                'status' => 'error', 
-                'message' => 'Delhivery API connection failed: ' . $response->status(),
-                'data' => $response->json()
-            ];
-        } catch (\Exception $e) {
-            return ['status' => 'error', 'message' => 'Exception: ' . $e->getMessage()];
-        }
-    }
-
-    public static function wherehouse_update($data)
-    {
-        $config = Helpers::get_shipping_config();
-        
-        if (!$config || !$config->status) {
-            return ['status' => 'error', 'message' => 'Delhivery is not active'];
-        }
-
-        $api_token = $config->api_secret;
-        
-        // Delhivery Client Warehouse Edit API endpoint
-        $url = "https://track.delhivery.com/api/backend/clientwarehouse/edit/";
-        
-        try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Token ' . $api_token,
-                'Content-Type' => 'application/json'
-            ])->post($url, $data);
-
-            if ($response->successful()) {
-                return [
-                    'status' => 'success',
-                    'data' => $response->json()
-                ];
-            }
-            return [
-                'status' => 'error', 
-                'message' => 'Delhivery API connection failed: ' . $response->status(),
-                'data' => $response->json()
-            ];
-        } catch (\Exception $e) {
-            return ['status' => 'error', 'message' => 'Exception: ' . $e->getMessage()];
-        }
-    }
 }

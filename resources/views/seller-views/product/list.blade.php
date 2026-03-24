@@ -7,6 +7,17 @@
 @endpush
 
 @section('content')
+    <style>
+
+        .hratebit {
+            animation: hratebit 1s infinite;
+        } 
+        @keyframes hratebit {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
     <div class="content container-fluid">
 
         <!-- Page Title -->
@@ -104,6 +115,7 @@
                                 <th>{{\App\CPU\translate('Product Type')}}</th>
                                 <th>{{\App\CPU\translate('purchase_price')}}</th>
                                 <th>{{\App\CPU\translate('selling_price')}}</th>
+                                <th>{{\App\CPU\translate('price_suggestion')}}</th>
                                 <th>{{\App\CPU\translate('verify_status')}}</th>
                                 <th>{{\App\CPU\translate('Active')}} {{\App\CPU\translate('status')}}</th>
                                 <th class="text-center __w-5px">{{\App\CPU\translate('Action')}}</th>
@@ -111,6 +123,8 @@
                             </thead>
                             <tbody>
                             @foreach($products as $k=>$p)
+
+                            {{-- @dd($p['lowest_market_price']) --}}
                                 <tr>
                                     <th scope="row">{{$products->firstitem()+ $k}}</th>
                                     <td>
@@ -128,6 +142,13 @@
                                     </td>
                                     <td>
                                         {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['unit_price']))}}
+                                    </td>
+                                    <td>
+                                       
+                                       @if($p['indexing'] != 1 && $p['lowest_market_price'] > $p['actual_amount'])
+                                            <div style="color: red;" class="hratebit"> {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['suggested_price'])) .'-'. \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['lowest_market_price']))}}</div>
+                                        @endif
+                                       
                                     </td>
                                     <td>
                                         @if($p->request_status == 0)

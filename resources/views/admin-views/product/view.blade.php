@@ -184,7 +184,7 @@
                         <hr>
                     </div>
 
-                    <div class="col-lg-4 mb-5 mb-lg-0 d-flex flex-column gap-1">
+                    <div class="col-lg-4 mb-5 mb-lg-0 d-flex flex-column align-self-start gap-1">
                         <div class="flex-start">
                             <h5 class="">{{$product['name']}}</h5>
                         </div>

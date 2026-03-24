@@ -27,6 +27,7 @@ use Intervention\Image\Facades\Image;
 use function App\CPU\translate;
 use App\CPU\Convert;
 use function React\Promise\all;
+use App\Model\Review;
 
 class UserProfileController extends Controller
 {
@@ -556,13 +557,13 @@ class UserProfileController extends Controller
         $order_details = OrderDetail::where(['id'=>$id])->whereHas('order', function($q){
             $q->where(['customer_id'=>auth('customer')->id(),'payment_status'=>'paid']);
         })->first();
-
+        $reting_details = Review::where(['order_id'=>$order_details->order_id])->first();
         if(!$order_details){
             Toastr::error(translate('Invalid order!'));
             return redirect('/');
         }
 
-        return view('web-views.users-profile.submit-review',compact('order_details'));
+        return view('web-views.users-profile.submit-review',compact('order_details','reting_details'));
 
     }
 }

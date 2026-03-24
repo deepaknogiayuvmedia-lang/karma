@@ -43,7 +43,8 @@ class Product extends Model
         // other fields...
         'added_by',   // <–– add this
         'code',
-        'pid' ,
+        'pid',
+        'indexing',
     ];
 
     public function translations()
@@ -142,11 +143,7 @@ class Product extends Model
 
     public function scopeLowestPricePerPid($query)
     {
-        return $query->whereIn('products.id', function ($q) {
-            $q->select('id')
-                ->from(DB::raw("(SELECT id, ROW_NUMBER() OVER(PARTITION BY COALESCE(NULLIF(pid, ''), CAST(id AS CHAR)) ORDER BY unit_price ASC) as rn FROM products WHERE status = 1) as t"))
-                ->where('rn', 1);
-        });
+        return $query->whereNotNull('indexing')->where('indexing', 1);
     }
 
     public function tags()

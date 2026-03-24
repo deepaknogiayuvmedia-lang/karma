@@ -472,27 +472,27 @@
                                 <form action="{{ route('product-query') }}" class="row"  method="POST">
                                     @csrf
                                     <div class="col-md-6">
-        <input type="hidden" class="form-control " name="product_id"  value="{{ $product['id'] }}" required />
-        <label for="name">Name:</label>
-        <input type="text" class="form-control name" name="name" required />
-    </div>
-    <div class="col-md-6">
-        <label for="mobile">Mobile Number:</label>
-        <input type="tel" class="form-control mobile" name="mobile" required />
-    </div>
-    <div class="col-md-6">
-        <label for="email">Email:</label>
-        <input type="email" class="form-control email" name="email" required />
-    </div>
-    <div class="col-md-6">
-        <label for="address">Address:</label>
-        <input name="address" class="form-control address"  required></input>
-    </div>
-    <div class="col-md-6">
-        <button type="submit" class="btn text-center d-block w-100 mt-2" style="background: #00695c;color:#ffffff" ><i class="fa fa-shopping-bag" aria-hidden="true"></i> RUSH MY ORDER</button>
-    </div>
-    </form>
-                                </div>
+                                        <input type="hidden" class="form-control " name="product_id"  value="{{ $product['id'] }}" required />
+                                        <label for="name">Name:</label>
+                                        <input type="text" class="form-control name" name="name" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="mobile">Mobile Number:</label>
+                                        <input type="tel" class="form-control mobile" name="mobile" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email">Email:</label>
+                                        <input type="email" class="form-control email" name="email" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="address">Address:</label>
+                                        <input name="address" class="form-control address"  required></input>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button type="submit" class="btn text-center d-block w-100 mt-2" style="background: #00695c;color:#ffffff" ><i class="fa fa-shopping-bag" aria-hidden="true"></i> RUSH MY ORDER</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div> -->
 
                     <div class="row">
@@ -757,6 +757,21 @@
 
                 </div>
                 <div class="col-lg-3 ">
+                    <!-- Pincode Modal Trigger -->
+                    <div class="product-details-shipping-details mb-3 cursor-pointer" style="cursor:pointer;" data-toggle="modal" data-target="#pincodeModal">
+                        <div class="shipping-details-bottom-border">
+                            <div class="px-3 py-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fa fa-map-marker text-primary mr-2"></i>
+                                    <span class="font-weight-bold">{{ \App\CPU\translate('Check Delivery Info') }}</span>
+                                </div>
+                                <div>
+                                    <span id="pincode-status-text" class="text-muted"><i class="czi-arrow-right"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="product-details-shipping-details">
                         <div class="shipping-details-bottom-border">
                             <div class="px-3 py-3">
@@ -808,7 +823,7 @@
                         @if (count($relatedProducts) > 0)
                             @foreach ($relatedProducts as $key => $relatedProduct)
                                 <div class=" p-3 mb-4">
-                                    @include('web-views.partials._single-product', [
+                                    @include('web-views.partials._inline-single-product', [
                                         'product' => $relatedProduct,
                                         'decimal_point_settings' => $decimal_point_settings,
                                     ])
@@ -825,12 +840,60 @@
                             </div>
                         @endif
                     </div>
+
+                    @if (isset($recentlyViewed) && count($recentlyViewed) > 0)
+                        <div class="row flex-between mt-4">
+                            <div class="text-capitalize font-bold __text-30px"
+                                style="{{ Session::get('direction') === 'rtl' ? 'margin-right: 5px;' : 'margin-left: 5px;' }}">
+                                <span>{{ \App\CPU\translate('recently_viewed') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4 row-cols-xl-1 row-cols-lg-1 row-cols-md-1 row-cols-1">
+                            @foreach ($recentlyViewed as $rv)
+                                @if($rv->product)
+                                    <div class=" p-3">
+                                        @include('web-views.partials._inline-single-product', [
+                                            'product' => $rv->product,
+                                            'decimal_point_settings' => $decimal_point_settings,
+                                        ])
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
     
+
+    <!-- Pincode Check Modal -->
+    <div class="modal fade rtl" id="pincodeModal" tabindex="-1" role="dialog" aria-labelledby="pincodeModalLabel" aria-hidden="true" style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pincodeModalLabel">{{ \App\CPU\translate('Select Delivery Address') }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body pb-4">
+                    <p class="font-weight-bold text-dark mb-3">{{ \App\CPU\translate('Use pin code to check delivery info') }}</p>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="w-100 {{ Session::get('direction') === 'rtl' ? 'ml-2' : 'mr-2' }}">
+                            <input type="text" id="delivery_pincode_input" class="form-control" placeholder="{{ \App\CPU\translate('Enter pin code') }}">
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-secondary text-white" style="background:#d1d1d1; font-weight:bold; border:none;" id="check_delivery_pincode_btn">{{ \App\CPU\translate('Submit') }}</button>
+                        </div>
+                    </div>
+                    <div id="pincode_check_result" class="mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade rtl" id="show-modal-view" tabindex="-1" role="dialog" aria-labelledby="show-modal-image"
         aria-hidden="true" style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
@@ -957,4 +1020,45 @@
     <script type="text/javascript"
         src="https://platform-api.sharethis.com/js/sharethis.js#property=5f55f75bde227f0012147049&product=sticky-share-buttons"
         async="async"></script>
+
+    <script>
+        $('#check_delivery_pincode_btn').on('click', function() {
+            let pincode = $('#delivery_pincode_input').val();
+            if (pincode === '') {
+                toastr.warning('{{ \App\CPU\translate('Please enter a pin code') }}');
+                return;
+            }
+            
+            $('#check_delivery_pincode_btn').attr('disabled', true).text('{{ \App\CPU\translate('Wait...') }}');
+            $('#pincode_check_result').html('');
+
+            $.ajax({
+                type: "post",
+                url: '{{ route('check-pincode') }}',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    pincode: pincode
+                },
+                success: function(response) {
+                    $('#check_delivery_pincode_btn').removeAttr('disabled').text('{{ \App\CPU\translate('Submit') }}');
+                    if (response.status === 'success' && response.serviceable) {
+                        $('#pincode_check_result').html('<div class="text-success mt-2 font-weight-bold"><i class="fa fa-check-circle"></i> {{ \App\CPU\translate('Delivery available in this area.') }}</div>');
+                        $('#pincode-status-text').html('<span class="text-success font-weight-bold">' + pincode + '</span>');
+                        $('#delivery_pincode_input').css('border-color', '#28a745');
+                        setTimeout(function() {
+                            $('#pincodeModal').modal('hide');
+                        }, 2500);
+                    } else {
+                        $('#pincode_check_result').html('<div class="text-danger mt-2 font-weight-bold"><i class="fa fa-times-circle"></i> {{ \App\CPU\translate('Delivery not available in this area.') }}</div>');
+                        $('#pincode-status-text').html('<span class="text-danger font-weight-bold">' + pincode + '</span>');
+                        $('#delivery_pincode_input').css('border-color', '#dc3545');
+                    }
+                },
+                error: function() {
+                    $('#check_delivery_pincode_btn').removeAttr('disabled').text('{{ \App\CPU\translate('Submit') }}');
+                    $('#pincode_check_result').html('<div class="text-danger mt-2 font-weight-bold"><i class="fa fa-exclamation-circle"></i> {{ \App\CPU\translate('Error checking pin code.') }}</div>');
+                }
+            });
+        });
+    </script>
 @endpush

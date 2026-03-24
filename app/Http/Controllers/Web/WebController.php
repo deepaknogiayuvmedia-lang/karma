@@ -73,10 +73,10 @@ class WebController extends Controller
                 ->inRandomOrder()->take(12)->get();
         });
         //products based on top seller
-        $top_sellers = Seller::approved()->with('shop')
-            ->withCount(['orders'])->orderBy('orders_count', 'DESC')->take(12)->get();
+        $top_sellers = Seller::approved()->with('shop') 
+            ->orderBy('seller_rank', 'ASC')->take(12)->get();
         //end
-
+        // dd($top_sellers);    
         //feature products finding based on selling
         $featured_products = Product::with(['reviews'])->active()->lowestPricePerPid()
             ->where('featured', 1)
@@ -121,9 +121,18 @@ class WebController extends Controller
 
         $deal_of_the_day = DealOfTheDay::join('products', 'products.id', '=', 'deal_of_the_days.product_id')->select('deal_of_the_days.*', 'products.unit_price')->where('products.status', 1)->where('deal_of_the_days.status', 1)->first();
 
+        $recentlyViewed = [];
+        if (auth('customer')->check()) {
+            $recentlyViewed = \App\Model\RecentlyViewedProduct::with(['product.reviews'])
+                ->where('user_id', auth('customer')->id())
+                ->orderBy('id', 'desc')
+                ->take(5)
+                ->get();
+        }
+        // dd($brands);
         return view(
             'web-views.home',
-            compact('featured_products', 'topRated', 'bestSellProduct', 'latest_products', 'categories', 'brands', 'deal_of_the_day', 'top_sellers', 'home_categories', 'brand_setting')
+            compact('featured_products', 'topRated', 'bestSellProduct', 'latest_products', 'categories', 'brands', 'deal_of_the_day', 'top_sellers', 'home_categories', 'brand_setting', 'recentlyViewed')
         );
     }
 
@@ -754,6 +763,21 @@ class WebController extends Controller
             $inhouse_vacation_status = $product->added_by == 'admin' ? $inhouse_vacation['status'] : false;
             $inhouse_temporary_close = $product->added_by == 'admin' ? $temporary_close['status'] : false;
 
+            $recentlyViewed = [];
+            if (auth('customer')->check()) {
+                \App\Model\RecentlyViewedProduct::updateOrCreate(
+                    ['user_id' => auth('customer')->id(), 'product_id' => $product->id],
+                    ['updated_at' => now()]
+                );
+
+                $recentlyViewed = \App\Model\RecentlyViewedProduct::with(['product.reviews'])
+                    ->where('user_id', auth('customer')->id())
+                    ->where('product_id', '!=', $product->id)
+                    ->orderBy('id', 'desc')
+                    ->take(5)
+                    ->get();
+            }
+
             return view(
                 'web-views.products.details',
                 compact(
@@ -761,6 +785,7 @@ class WebController extends Controller
                     'countWishlist',
                     'countOrder',
                     'relatedProducts',
+                    'recentlyViewed',
                     'deal_of_the_day',
                     'current_date',
                     'seller_vacation_start_date',
@@ -776,6 +801,16 @@ class WebController extends Controller
 
         Toastr::error(translate('not_found'));
         return back();
+    }
+
+    public function check_pincode(Request $request)
+    {
+        $request->validate([
+            'pincode' => 'required|numeric'
+        ]);
+
+        $response = \App\CPU\shepping::check_pincode($request->pincode);
+        return response()->json($response);
     }
 
     public function products(Request $request)
@@ -836,7 +871,7 @@ class WebController extends Controller
 
             $query = $porduct_data->whereIn('id', $product_ids);
         } elseif ($request['data_from'] == 'featured') {
-            $query = Product::active()->with(['reviews'])->where('featured', 1);
+            $query = Product::active()->with(['reviews'])->where('featured', 1)->whereNotNull('indexing')->lowestPricePerPid();
         } elseif ($request['data_from'] == 'featured_deal') {
 
             $deal_id = FlashDeal::where('status', 1)

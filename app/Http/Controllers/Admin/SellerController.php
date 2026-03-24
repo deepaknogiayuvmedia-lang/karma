@@ -404,4 +404,28 @@ class SellerController extends Controller
         return back();
     }
     
+    public function seller_score(Request $request)
+    {
+        $query_param = [];
+        $search = $request['search'];
+
+        $sellers = Seller::with(['shop'])
+            ->when($search, function($query) use($search){
+                $key = explode(' ', $search);
+                foreach ($key as $value) {
+                    $query->where(function($q) use($value){
+                        $q->orWhere('f_name', 'like', "%{$value}%")
+                            ->orWhere('l_name', 'like', "%{$value}%")
+                            ->orWhere('phone', 'like', "%{$value}%")
+                            ->orWhere('email', 'like', "%{$value}%");
+                    });
+                }
+            })
+            ->orderBy('seller_rank', 'asc')
+            ->orderBy('rank_score', 'desc')
+            ->paginate(Helpers::pagination_limit())
+            ->appends($query_param);
+
+        return view('admin-views.seller.score-list', compact('sellers', 'search'));
+    }
 }

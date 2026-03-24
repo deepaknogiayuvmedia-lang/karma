@@ -22,12 +22,15 @@ class ReviewController extends Controller
                 array_push($image_array, ImageManager::upload('review/', 'png', $image));
             }
         }
-
+        $request->rating = ($request->product_package + $request->product_delivery + $request->product_quality) / 3;
+        // dd($request->all());
+  
         Review::updateOrCreate(
             [
                 'delivery_man_id' => null,
                 'customer_id' => auth('customer')->id(),
-                'product_id' => $request->product_id
+                'product_id' => $request->product_id,
+                'order_id' => $request->order_id
             ],
             [
                 'customer_id' => auth('customer')->id(),
@@ -35,6 +38,10 @@ class ReviewController extends Controller
                 'comment' => $request->comment,
                 'rating' => $request->rating,
                 'attachment' => json_encode($image_array),
+                'product_package' => $request->product_package,
+                'product_delivery' => $request->product_delivery,
+                'product_quality' => $request->product_quality,
+
             ]
         );
 

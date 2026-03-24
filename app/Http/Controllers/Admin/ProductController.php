@@ -739,6 +739,7 @@ class ProductController extends BaseController
 
     public function update(Request $request, $id)
     {
+        $adminId = auth('admin')->id(); 
 
         $product = Product::find($id);
         $validator = Validator::make($request->all(), [

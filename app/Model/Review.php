@@ -26,6 +26,10 @@ class Review extends Model
         'attachment',
         'rating',
         'status',
+        'product_package',
+        'product_delivery',
+        'product_quality',
+        'condition_images',
     ];
 
     public function scopeActive($query)
@@ -33,7 +37,7 @@ class Review extends Model
         $query->where('status',1);
     }
     public function user()
-    {
+    {   
         return $this->hasOne('App\User', 'id', 'customer_id');
     }
     public function product()

@@ -377,6 +377,35 @@
         </div>
     </section>
 
+   @if (isset($recentlyViewed) && count($recentlyViewed) > 0)
+        <div class="container mb-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="feature-product-title">
+                        {{ \App\CPU\translate('recently_viewed')}}
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="feature-product">
+                        <div class="carousel-wrap p-1">
+                            <div class="owl-carousel owl-theme " id="recently_viewed_products_list">
+                                @foreach($recentlyViewed as $rv)
+                                    @if($rv->product && $rv->product->indexing == 1)
+                               
+                                        <div>
+                                            @include('web-views.partials._feature-product',['product'=>$rv->product, 'decimal_point_settings'=>$decimal_point_settings])
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    
     {{--flash deal--}}
     @php($flash_deals=\App\Model\FlashDeal::with(['products'=>function($query){
     $query->with('product')->whereHas('product',function($q){
@@ -1454,60 +1483,110 @@
                 }
             }
         });
+        $('#recently_viewed_products_list').owlCarousel({
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 3000,
+            smartSpeed: 800,
+            margin: 20,
+            nav: true,
+            navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
+            dots: false,
+            autoplayHoverPause: true,
+            '{{session('direction')}}': true,
+            responsive: {
+                0: {
+                    items: 1,
+                    margin: 10,
+                },
+                360: {
+                    items: 2,
+                    margin: 10,
+                },
+                375: {
+                    items: 2,
+                    margin: 10,
+                },
+                425: {
+                    items: 2,
+                    margin: 10,
+                },
+                540: {
+                    items: 2,
+                    margin: 10,
+                },
+                576: {
+                    items: 2,
+                    margin: 10,
+                },
+                768: {
+                    items: 3
+                },
+                992: {
+                    items: 4
+                },
+                1200: {
+                    items: 5,
+                    loop: false,
+                    autoplay: false,
+                    nav: false
+                },
+                1400: {
+                    items: 6,
+                    loop: false,
+                    autoplay: false,
+                    nav: false
+                }
+            }
+        });
    
         $('#categorylist_slider').owlCarousel({
             loop: true,
             autoplay: true,
+            autoplayTimeout: 3000,
+            smartSpeed: 800,
             margin: 50,
             nav: true,
             navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
             dots: false,
             autoplayHoverPause: true,
-            '{{session('
-            direction ')}}': true,
-            // center: true,
+            '{{session('direction')}}': true,
             responsive: {
-                //X-Small
                 0: {
                     items: 1,
-                     margin: 10,
+                    margin: 10,
                 },
                 360: {
                     items: 2,
-                     margin: 10,
+                    margin: 10,
                 },
                 375: {
-                    items:2 ,
-                     margin: 10,
+                    items: 2,
+                    margin: 10,
                 },
                 425: {
-                    items:2 ,
-                     margin: 10,
+                    items: 2,
+                    margin: 10,
                 },
                 540: {
                     items: 2,
-                     margin: 10,
+                    margin: 10,
                 },
-                //Small
                 576: {
                     items: 2,
-                     margin: 10,
+                    margin: 10,
                 },
-                //Medium
                 768: {
                     items: 3
                 },
-                //Large
                 992: {
                     items: 4
                 },
-                //Extra large
                 1200: {
-                    items: 7
+                    items: 5
                 },
-                //Extra extra large
                 1400: {
-                    items:7
+                    items: 6
                 }
             }
         });

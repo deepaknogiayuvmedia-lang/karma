@@ -83,6 +83,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
     Route::get('discounted-products', 'WebController@discounted_products')->name('discounted-products');
 
     Route::post('review-list-product', 'WebController@review_list_product')->name('review-list-product');
+    Route::post('check-pincode', 'WebController@check_pincode')->name('check-pincode');
     //Chat with seller from product details
     Route::get('chat-for-product', 'WebController@chat_for_product')->name('chat-for-product');
 
