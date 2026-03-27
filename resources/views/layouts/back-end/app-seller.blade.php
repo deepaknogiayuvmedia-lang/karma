@@ -364,10 +364,92 @@
     <script>
         // initSample();
     </script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
+
     <script>
-        function getRndInteger() {
-            return Math.floor(Math.random() * 90000) + 100000;
+        console.log("🔥 Seller Firebase script loaded");
+        const firebaseConfig = {
+            apiKey: "AIzaSyAB2BkJP_9iQiFVyjLeRftIfs7DJEumWoo",
+            authDomain: "multi-vendor-5d507.firebaseapp.com",
+            databaseURL: "https://multi-vendor-5d507-default-rtdb.firebaseio.com",
+            projectId: "multi-vendor-5d507",
+            storageBucket: "multi-vendor-5d507.firebasestorage.app",
+            messagingSenderId: "593155222746",
+            appId: "1:593155222746:web:107a9a6d16bd534f4309e3",
+        };
+
+        // Init
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
+
+        const messaging = firebase.messaging();
+
+        // Register SW
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                // const swPath = '{{ asset('public/firebase-messaging-sw.js') }}';
+                navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                    .then(function(registration) {
+                        getToken(registration);
+                    })
+                    .catch(function(err) {
+                        console.error('SW registration failed:', err);
+                    });
+            }
+        }
+
+        // Get Token
+        function getToken(registration) {
+            messaging.getToken({
+                    vapidKey: "{{ \App\CPU\Helpers::get_business_settings('push_notification_key') }}",
+                    serviceWorkerRegistration: registration
+                })
+                .then((currentToken) => {
+                    if (currentToken) {
+                        console.log("SELLER TOKEN:", currentToken);
+                        saveToken(currentToken);
+                    } else {
+                        console.warn("No token available");
+                    }
+                })
+                .catch((err) => {
+                    console.error("Token Error:", err);
+                });
+        }
+
+        // Save Token
+        function saveToken(token) {
+            $.ajax({
+                type: "POST",
+                url: "{{ route('seller.update-fcm-token') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    token: token
+                },
+                success: function() {
+                    console.log('Seller Token saved');
+                }
+            });
+        }
+
+        // Foreground message
+        messaging.onMessage((payload) => {
+            console.log("🔥 Foreground:", payload);
+            toastr.info("New Notification", payload.notification.body);
+        });
+
+
+        // Permission
+        @if(auth('seller')->check())
+        Notification.requestPermission().then(permission => {
+            console.log("Permission:", permission);
+            if (permission === "granted") {
+                registerServiceWorker();
+            }
+        });
+        @endif
     </script>
 </body>
 

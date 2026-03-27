@@ -24,6 +24,8 @@ use function App\CPU\translate;
 use App\CPU\CustomerManager;
 use App\CPU\Convert;
 use Rap2hpoutre\FastExcel\FastExcel;
+use App\Mail\NotificationMail;
+use Illuminate\Support\Facades\Mail;
 class OrderController extends Controller
 {
     use CommonTrait;
@@ -263,6 +265,7 @@ class OrderController extends Controller
         $fcm_token = isset($order->customer) ? $order->customer->cm_firebase_token : null;
         $value = Helpers::order_status_update_message($request->order_status);
         if(!empty($fcm_token)) {
+           
             try {
                 if ($value) {
                     $data = [
@@ -271,36 +274,49 @@ class OrderController extends Controller
                         'order_id' => $order['id'],
                         'image' => '',
                     ];
-                    Helpers::send_push_notif_to_device($fcm_token, $data);
+                    $result = Helpers::send_push_notif_to_device($fcm_token, $data);
+
+                    // If token is stale/unregistered, clear it from the customer record
+                    if (isset($result['error']['details'][0]['errorCode']) &&
+                        $result['error']['details'][0]['errorCode'] === 'UNREGISTERED') {
+                        $order->customer->cm_firebase_token = null;
+                        $order->customer->save();
+                    }
+                    else{
+                         if (!empty($order->customer->email)) {
+                            $name = trim($order->customer->f_name . ' ' . $order->customer->l_name) ?: $order->customer->name;
+                             Mail::to($order->customer->email)->send(new NotificationMail($data['title'], $data['description'], $name, 'info'));
+                }
+                    }
                 }
             } catch (\Exception $e) {
             }
         }
-        
+       
         if (isset($order->customer) && $order->customer->phone) {
-            
+               
             try {
                 \App\CPU\Helpers::send_whatsapp_notification($order->customer->phone, $request->order_status, $order->id);
             } catch (\Exception $e) {
             }
         }
 
-        try {
-            $fcm_token_delivery_man = $order->delivery_man->fcm_token;
-            if ($request->order_status == 'canceled' && $value != null) {
-                $data = [
-                    'title' => translate('order'),
-                    'description' => $value,
-                    'order_id' => $order['id'],
-                    'image' => '',
-                ];
-                if($order->delivery_man_id) {
-                    self::add_deliveryman_push_notification($data, $order->delivery_man_id);
-                }
-                Helpers::send_push_notif_to_device($fcm_token_delivery_man, $data);
-            }
-        } catch (\Exception $e) {
-        }
+        // try {
+        //     $fcm_token_delivery_man = $order->delivery_man->fcm_token;
+        //     if ($request->order_status == 'canceled' && $value != null) {
+        //         $data = [
+        //             'title' => translate('order'),
+        //             'description' => $value,
+        //             'order_id' => $order['id'],
+        //             'image' => '',
+        //         ];
+        //         if($order->delivery_man_id) {
+        //             self::add_deliveryman_push_notification($data, $order->delivery_man_id);
+        //         }
+        //         Helpers::send_push_notif_to_device($fcm_token_delivery_man, $data);
+        //     }
+        // } catch (\Exception $e) {
+        // }
 
         $order->order_status = $request->order_status;
         OrderManager::stock_update_on_order_status_change($order, $request->order_status);

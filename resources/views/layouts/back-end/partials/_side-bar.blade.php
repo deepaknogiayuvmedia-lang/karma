@@ -678,6 +678,17 @@
                             <!--promotion management end-->
                         @endif
 
+                        <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/membership-plan*') ? 'active' : '' }}">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link"
+                                href="{{ route('admin.membership-plan.index') }}"
+                                title="{{ \App\CPU\translate('Membership_Plan') }}">
+                                <i class="tio-diamond nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                    {{ \App\CPU\translate('Membership_Plan') }}
+                                </span>
+                            </a>
+                        </li>
+
                         <!-- end refund section -->
                         @if (\App\CPU\Helpers::module_permission_check('support_section'))
                             <li

@@ -116,6 +116,15 @@
             visibility: visible;
             bottom: calc(100% + 5px);
         }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-warning {
+            background-color: #ffb100;
+        }
     </style>
 @endpush
 
@@ -137,9 +146,9 @@
         <div class="row gy-3">
             <div class="col-md-12 ">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-center align-items-center">
                         <h5 class="mb-0 text-capitalize">{{ \App\CPU\translate('WhatsApp Template Mapping') }}</h5>
-                        <div class="d-flex align-items-center gap-4">
+                        {{-- <div class="d-flex align-items-center gap-4">
                             @php
                                 $types = [
                                     
@@ -158,29 +167,69 @@
                                 @endforeach
                             </select>
 
-                            {{-- <select name="id" id="id" class="form-control">
+                            <select name="id" id="id" class="form-control">
                                 <option value="" disabled selected>Select Template</option>
                                 @foreach ($templetes as $key => $templete)
                                     <option value="{{ $templete['id'] }}">{{ $templete['name'] }}</option>
                                 @endforeach
-                            </select> --}}
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
+                            </select>
+                        </div> --}}
+                        {{-- <div class="d-flex align-items-center gap-2">
                             <a href="{{ route('admin.business-settings.whatsapp.sync-templates') }}"
                                 class="btn btn-info btn-sm">
                                 <i class="tio-sync"></i> {{ \App\CPU\translate('sync_from_api') }}
                             </a>
+                        </div> --}}
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-soft-warning border-warning border mb-0 p-3">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="tio-info-outined text-warning"></i>
+                                <h6 class="mb-0 text-warning">{{ \App\CPU\translate('Important Configuration Note') }}</h6>
+                            </div>
+                            <p class="mb-2 text-dark">
+                                {{ \App\CPU\translate('To ensure successful message delivery, your template names in') }} <strong>Meta Business Suite</strong> {{ \App\CPU\translate('must match the system identifiers below:') }}
+                            </p>
+                            <div class="row g-2">
+                                <div class="col-sm-3">
+                                    <div class="d-flex align-items-center gap-2 text-muted small">
+                                        <div class="dot dot-warning"></div>
+                                        <span>Order Confirmation: <strong>order_confirmation_2</strong></span>
+                                    </div>
+                                    
+                                </div>
+                                <div class="col-sm-3">
+                                  <div class="d-flex align-items-center gap-2 text-muted small">
+                                        <div class="dot dot-warning"></div>
+                                        <span>Processing/Packaging: <strong>packaging_order</strong></span>
+                                    </div>
+                                    
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="d-flex align-items-center gap-2 text-muted small">
+                                        <div class="dot dot-warning"></div>
+                                        <span>Returns/Recovery: <strong>order_recovery</strong></span>
+                                    </div>
+                                   
+                                </div>
+                                <div class="col-sm-3">
+                                     <div class="d-flex align-items-center gap-2 text-muted small">
+                                        <div class="dot dot-warning"></div>
+                                        <span>Order Cancellation: <strong>order_cancelled</strong></span>
+                                    </div>
+                                   
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
             <div class="col-md-12">
                 <div class="mt-3">
-                    <div class="row gy-3">
+                    <div class="row gy-3 justify-content-center">
                         @foreach ($templetes as $key => $templete)
-                            <div class="col-sm-6 col-lg-3">
+                            <div class="col-sm-6 col-xxl-4">
                                 <div class="card h-100 shadow-sm border-0">
                                     <div
                                         class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">

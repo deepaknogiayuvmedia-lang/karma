@@ -22,6 +22,7 @@
         "doctrine/dbal": "^3.2",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
+        "google/apiclient": "^2.14",
         "gregwar/captcha": "^1.1",
         "guzzlehttp/guzzle": "^7.0.1",
         "intervention/image": "^2.7",

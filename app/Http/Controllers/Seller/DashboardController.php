@@ -411,4 +411,13 @@ class DashboardController extends Controller
 
         return $data;
     }
+
+    public function update_fcm_token(Request $request)
+    {
+        $user = auth('seller')->user();
+        // dd($request->all());
+        $user->cm_firebase_token = $request->token;
+        $user->save();
+        return response()->json(['message' => 'FCM token updated successfully']);
+    }
 }

@@ -1258,9 +1258,9 @@ h1 {
 }
 
 .upload-img-view {
-    block-size: 162px;
-    inline-size: 162px;
-    max-inline-size: 162px;
+    block-size: 274px;
+    inline-size: 274px;
+    max-inline-size: 274px;
     border-radius: 5px;
     border: 0.5px solid #99a7ba;
     aspect-ratio: 1/1;

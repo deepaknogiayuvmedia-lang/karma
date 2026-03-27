@@ -37,6 +37,7 @@ use App\Model\Wishlist;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -48,6 +49,7 @@ use Gregwar\Captcha\CaptchaBuilder;
 use App\CPU\CustomerManager;
 use App\CPU\Convert;
 use App\Model\ProductQuery as SaleProductQuery;
+use Google\Client;
 
 class WebController extends Controller
 {
@@ -1424,5 +1426,73 @@ class WebController extends Controller
         // dd($id);
         $productquerydata = SaleProductQuery::where('id', $id)->delete();
         return back();
+    }
+
+    // ✅ Test Notification
+    public function testNotification()
+    {
+        $user = auth('customer')->user(); // change if needed
+    
+        if (!$user || !$user->cm_firebase_token) {
+            return "Token not found";
+        }
+
+        return $this->sendNotification($user->cm_firebase_token);
+    }
+
+    public function sendNotification($token)
+    {
+        $notification = \App\Model\Notification::active()->latest()->first();
+        if (!$notification) {
+            return response()->json(['success' => false, 'message' => 'No active notification found']);
+        }
+
+        $accessToken = $this->getAccessToken();
+        $url = "https://fcm.googleapis.com/v1/projects/multi-vendor-5d507/messages:send";
+
+        $response = Http::withToken($accessToken)->post($url, [
+            "message" => [
+                "token" => $token,
+                "notification" => [
+                    "title" => $notification->title,
+                    "body"  => $notification->description,
+                    "image" => asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $notification['image']
+                ],
+            ]
+        ]);
+
+        return $response->json();
+    }
+
+    public function getAccessToken()
+    {
+        $client = new Client();
+        $client->setAuthConfig(public_path('firebase-service-account.json'));
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+
+        $client->fetchAccessTokenWithAssertion();
+        $token = $client->getAccessToken();
+
+        return $token['access_token'];
+    }
+    public function update_fcm_token(Request $request)
+    {
+      
+        if (auth('customer')->check()) {
+            //   dd($request->token);
+            $user = auth('customer')->user();
+            $user->cm_firebase_token = $request->token;
+            $user->save();
+           return response()->json(['success' => true]);
+        }
+
+        if (auth('seller')->check()) {
+            $user = auth('seller')->user();
+            $user->cm_firebase_token = $request->token;
+            $user->save();
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 401);
     }
 }

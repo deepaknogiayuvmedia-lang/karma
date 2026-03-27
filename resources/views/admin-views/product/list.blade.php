@@ -46,7 +46,7 @@
                                 <!-- End Search -->
                             </div>
                             <div class="col-lg-8 mt-3 mt-lg-0 d-flex flex-wrap gap-3 justify-content-lg-end">
-                                @if(auth('seller')->user()->tally_sync_enabled)
+                                @if(auth('seller')->user() && auth('seller')->user()->tally_sync_enabled)
                                 <div>
                                     <button type="button" class="btn btn-outline--primary" data-toggle="dropdown">
                                         <i class="tio-download-to"></i>

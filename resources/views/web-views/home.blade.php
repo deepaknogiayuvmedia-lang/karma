@@ -714,8 +714,8 @@
                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M14.665 3.04a4 4 0 0 0-5.33 0l-.242.216a2 2 0 0 1-1.22.506l-.324.018a4 4 0 0 0-3.77 3.77l-.017.323a2 2 0 0 1-.506 1.22l-.216.242a4 4 0 0 0 0 5.33l.216.242a2 2 0 0 1 .506 1.22l.018.324a4 4 0 0 0 3.769 3.769l.324.018a2 2 0 0 1 1.22.506l.242.216a4 4 0 0 0 5.33 0l.242-.216a2 2 0 0 1 1.22-.506l.324-.018a4 4 0 0 0 3.769-3.77l.018-.323a2 2 0 0 1 .505-1.22l.216-.242a4 4 0 0 0 0-5.33l-.216-.242a2 2 0 0 1-.505-1.22l-.018-.324a4 4 0 0 0-3.77-3.769l-.323-.018a2 2 0 0 1-1.22-.506l-.242-.216Zm1.042 5.253a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0ZM16 14.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="#4eaa6f"></path>
                                             </svg>
                                             save  {{\App\CPU\Helpers::currency_converter(
-                            (\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
-                        )}}
+                                                        (\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
+                                                    )}}
                                         </div>
                                         @endif
                                     </div>
@@ -921,204 +921,152 @@
     </div>
 </div>
 
-<div class="container rtl " style="padding:0">
+<div class="container rtl" style="padding:0">
     <div class="row g-3">
+
+        <!-- Best Selling -->
         <div class="col-md-6">
             <div class="card card __shadow h-100">
                 <div class="card-body p-xl-35">
-                    <div class="row d-flex justify-content-between mx-1 mb-3">
-                        <div>
-                            <img class="size-30"
-                                src="{{asset("public/assets/front-end/png/best sellings.png")}}"
-                                alt="">
-                            <span class="font-bold pl-1">{{ \App\CPU\translate('best sellings')}}</span>
-                        </div>
-                        <div>
-                            <a class="text-capitalize view-all-text"
-                                href="{{route('products',['data_from'=>'best-selling','page'=>1])}}">{{ \App\CPU\translate('view_all')}}
-                                <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                            </a>
-                        </div>
 
-                    </div>
-                    <div>
-                        <div class="row">
-                            @foreach($bestSellProduct as $key=>$bestSell)
-                            @if($bestSell->product && $key<2)
-                                <div class="col-md-6">
-                                <a class="__best-selling" href="{{route('product',$bestSell->product->slug)}}">
-                                    @if($bestSell->product->discount > 0)
-                                    <div class="d-flex"
-                                        style="top:0;position:absolute;{{Session::get('direction') === "rtl" ? 'right:0;' : 'left:0;'}}">
-                                        <span class="for-discoutn-value p-1 pl-2 pr-2"
-                                            style="{{Session::get('direction') === "rtl" ? 'border-radius:0px 5px' : 'border-radius:5px 0px'}};">
-                                            @if ($bestSell->product->discount_type == 'percent')
-                                            {{round($bestSell->product->discount)}}%
-                                            @elseif($bestSell->product->discount_type =='flat')
-                                            {{\App\CPU\Helpers::currency_converter($bestSell->product->discount)}}
-                                            @endif {{\App\CPU\translate('off')}}
-                                        </span>
-                                    </div>
-                                    @endif
-                                    <div class="d-flex flex-wrap p-2">
-                                        <div class="best-selleing-image">
-                                            <img class="rounded"
-                                                onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                                src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$bestSell->product['thumbnail']}}"
-                                                alt="Product" />
-                                        </div>
-                                        <div class="best-selling-details">
-                                            <h6 class="widget-product-title">
-                                                <span class="ptr _text-14px" style="font-weight: 600;font-size: 14px;">
-                                                    {{\Illuminate\Support\Str::limit($bestSell->product['name'],100)}}
-                                                </span>
-                                            </h6>
-                                            @php($bestSell_overallRating = \App\CPU\ProductManager::get_overall_rating($bestSell->product['reviews']))
-                                            <!-- <div class="rating-show">
-                                                <span class="d-inline-block font-size-sm text-body">
-                                                    @for($inc=0;$inc<5;$inc++)
-                                                        @if($inc<$bestSell_overallRating[0])
-                                                        <i class="p-0 sr-star czi-star-filled active"></i>
-                                                        @else
-                                                        <i class="p-0 sr-star czi-star __color-fea569"></i>
-                                                        @endif
-                                                        @endfor
-                                                        <label class="badge-style">( {{$bestSell->product->reviews_count}} )</label>
-                                                </span>
-                                            </div> -->
-                                            <div class="widget-product-meta">
-                                              
-                                                <span class="text-accent __text-14px">
-                                                    {{\App\CPU\Helpers::currency_converter(
-                                                        $bestSell->product->unit_price-(\App\CPU\Helpers::get_product_discount($bestSell->product,$bestSell->product->unit_price))
-                                                        )}}
-                                                </span>
-                                                  @if($bestSell->product->discount > 0)
-                                                <span> <strike class="__color-E96A6A __text-12px">
-                                                        {{\App\CPU\Helpers::currency_converter($bestSell->product->unit_price)}}
-                                                    </strike> </span>
-                                                @endif
-                                            </div>
-                                              @if($product->discount > 0)
-                                                <div class="__text-14px" style="color: #4eaa6f;">
-                                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 "><path fill-rule="evenodd" clip-rule="evenodd" d="M14.665 3.04a4 4 0 0 0-5.33 0l-.242.216a2 2 0 0 1-1.22.506l-.324.018a4 4 0 0 0-3.77 3.77l-.017.323a2 2 0 0 1-.506 1.22l-.216.242a4 4 0 0 0 0 5.33l.216.242a2 2 0 0 1 .506 1.22l.018.324a4 4 0 0 0 3.769 3.769l.324.018a2 2 0 0 1 1.22.506l.242.216a4 4 0 0 0 5.33 0l.242-.216a2 2 0 0 1 1.22-.506l.324-.018a4 4 0 0 0 3.769-3.77l.018-.323a2 2 0 0 1 .505-1.22l.216-.242a4 4 0 0 0 0-5.33l-.216-.242a2 2 0 0 1-.505-1.22l-.018-.324a4 4 0 0 0-3.77-3.769l-.323-.018a2 2 0 0 1-1.22-.506l-.242-.216Zm1.042 5.253a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0ZM16 14.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="#4eaa6f"></path></svg>
-                                                    save {{\App\CPU\Helpers::currency_converter(
-                                                            (\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
-                                                        )}}
-                                            </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </a>
-                                @endif
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <img class="size-30" src="{{asset('public/assets/front-end/png/best sellings.png')}}">
+                            <span class="font-bold pl-1">Best Sellings</span>
                         </div>
-                        @endforeach
                     </div>
-                </div>
-            </div>
-        </div>
 
-    </div>
-    <div class="col-md-6 mt-2 mt-md-0">
-        <div class="card card __shadow h-100">
-            <div class="card-body p-xl-35">
-                <div class="row d-flex justify-content-between mx-1 mb-3">
-                    <div>
-                        <img class="size-30" src="{{asset("public/assets/front-end/png/top-rated.png")}}"
-                            alt="">
-                        <span class="font-bold pl-1">{{ \App\CPU\translate('top rated')}}</span>
-                    </div>
-                    <div>
-                        <a class="text-capitalize view-all-text"
-                            href="{{route('products',['data_from'=>'top-rated','page'=>1])}}">{{ \App\CPU\translate('view_all')}}
-                            <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1'}}"></i>
-                        </a>
-                    </div>
-                </div>
-                <div>
                     <div class="row">
-                        @foreach($topRated as $key=>$top)
-                        @if($top->product && $key<2)
-                            <div class="col-md-6">
-                            <a class="__best-selling" href="{{route('product',$top->product->slug)}}">
-                                @if($top->product->discount > 0)
-                                <div class="d-flex"
-                                    style="top:0;position:absolute;{{Session::get('direction') === "rtl" ? 'right:0;' : 'left:0;'}}">
-                                    <span class="for-discoutn-value p-1 pl-2 pr-2"
-                                        style="{{Session::get('direction') === "rtl" ? 'border-radius:0px 5px' : 'border-radius:5px 0px'}};">
-                                        @if ($top->product->discount_type == 'percent')
-                                        {{round($top->product->discount)}}%
-                                        @elseif($top->product->discount_type =='flat')
-                                        {{\App\CPU\Helpers::currency_converter($top->product->discount)}}
-                                        @endif {{\App\CPU\translate('off')}}
-                                    </span>
-                                </div>
-                                @endif
-                                <div class="d-flex flex-wrap p-2">
-                                    <div class="top-rated-image">
-                                        <img class="rounded"
-                                            onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
-                                            src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$top->product['thumbnail']}}"
-                                            alt="Product" />
-                                    </div>
-                                    <div class="top-rated-details">
-                                        <h6 class="widget-product-title _text-14px">
-                                            <span class="ptr _text-14px" style="font-weight: 600;font-size: 14px;">
-                                                {{\Illuminate\Support\Str::limit($top->product['name'],100)}}
+                        @foreach($bestSellProduct as $key => $bestSell)
+                            @if($bestSell->product && $key < 2)
+                                @php($product = $bestSell->product)
+
+                                <div class="col-md-6">
+                                    <a href="{{route('product',$product->slug)}}" class="__best-selling">
+
+                                        {{-- Discount Badge --}}
+                                        @if($product->discount > 0)
+                                            <span class="for-discoutn-value">
+                                                {{ $product->discount }} {{ $product->discount_type == 'percent' ? '%' : '' }} off
                                             </span>
-                                        </h6>
-                                        @php($top_overallRating = \App\CPU\ProductManager::get_overall_rating($top->product['reviews']))
-                                        <!-- <div class="rating-show">
-                                            <span class="d-inline-block font-size-sm text-body">
-                                                @for($inc=0;$inc<5;$inc++)
-                                                    @if($inc<$top_overallRating[0])
-                                                    <i class="p-0 sr-star czi-star-filled active"></i>
-                                                    @else
-                                                    <i class="p-0 sr-star czi-star __color-fea569"></i>
-                                                    @endif
-                                                    @endfor
-                                                    <label
-                                                        class="badge-style">( {{$top->product->reviews_count}} )</label>
-                                            </span>
-                                        </div> -->
-                                         <div class="widget-product-meta">
-                                              
+                                        @endif
+
+                                        <div class="d-flex p-2">
+                                            <img class="rounded"
+                                                src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$product->thumbnail}}"
+                                                width="60">
+
+                                            <div class="pl-2">
+                                                <h6>{{ Str::limit($product->name, 50) }}</h6>
+
+                                                {{-- Price --}}
                                                 <span class="text-accent">
                                                     {{\App\CPU\Helpers::currency_converter(
-                                                        $bestSell->product->unit_price-(\App\CPU\Helpers::get_product_discount($bestSell->product,$bestSell->product->unit_price))
-                                                        )}}
+                                                        $product->unit_price - \App\CPU\Helpers::get_product_discount($product,$product->unit_price)
+                                                    )}}
                                                 </span>
-                                                  @if($bestSell->product->discount > 0)
-                                                <span> <strike class="__color-E96A6A __text-12px">
-                                                        {{\App\CPU\Helpers::currency_converter($bestSell->product->unit_price)}}
-                                                    </strike> </span>
-                                                @endif
-                                            </div>
-                                              @if($product->discount > 0)
-                                                <div class="__text-14px" style="color: #4eaa6f;">
-                                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 "><path fill-rule="evenodd" clip-rule="evenodd" d="M14.665 3.04a4 4 0 0 0-5.33 0l-.242.216a2 2 0 0 1-1.22.506l-.324.018a4 4 0 0 0-3.77 3.77l-.017.323a2 2 0 0 1-.506 1.22l-.216.242a4 4 0 0 0 0 5.33l.216.242a2 2 0 0 1 .506 1.22l.018.324a4 4 0 0 0 3.769 3.769l.324.018a2 2 0 0 1 1.22.506l.242.216a4 4 0 0 0 5.33 0l.242-.216a2 2 0 0 1 1.22-.506l.324-.018a4 4 0 0 0 3.769-3.77l.018-.323a2 2 0 0 1 .505-1.22l.216-.242a4 4 0 0 0 0-5.33l-.216-.242a2 2 0 0 1-.505-1.22l-.018-.324a4 4 0 0 0-3.77-3.769l-.323-.018a2 2 0 0 1-1.22-.506l-.242-.216Zm1.042 5.253a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0ZM16 14.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="#4eaa6f"></path></svg>
-                                                    save {{\App\CPU\Helpers::currency_converter(
-                                                            (\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
-                                                        )}}
-                                            </div>
-                                            @endif
-                                    </div>
 
+                                                @if($product->discount > 0)
+                                                    <strike>
+                                                        {{\App\CPU\Helpers::currency_converter($product->unit_price)}}
+                                                    </strike>
+                                                @endif
+
+                                                {{-- Save --}}
+                                                @if($product->discount > 0)
+                                                    <div style="color:green;">
+                                                        Save {{\App\CPU\Helpers::currency_converter(
+                                                            \App\CPU\Helpers::get_product_discount($product,$product->unit_price)
+                                                        )}}
+                                                    </div>
+                                                @endif
+
+                                            </div>
+                                        </div>
+
+                                    </a>
                                 </div>
 
-                            </a>
+                            @endif
+                        @endforeach
                     </div>
-                    @endif
-                    @endforeach
+
                 </div>
-
             </div>
+        </div>
 
+        <!-- Top Rated -->
+        <div class="col-md-6">
+            <div class="card card __shadow h-100">
+                <div class="card-body p-xl-35">
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <img class="size-30" src="{{asset('public/assets/front-end/png/top-rated.png')}}">
+                            <span class="font-bold pl-1">Top Rated</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        @foreach($topRated as $key => $top)
+                            @if($top->product && $key < 2)
+                                @php($product = $top->product)
+
+                                <div class="col-md-6">
+                                    <a href="{{route('product',$product->slug)}}" class="__best-selling">
+
+                                        {{-- Discount --}}
+                                        @if($product->discount > 0)
+                                            <span class="for-discoutn-value">
+                                                {{ $product->discount }} {{ $product->discount_type == 'percent' ? '%' : '' }} off
+                                            </span>
+                                        @endif
+
+                                        <div class="d-flex p-2">
+                                            <img class="rounded"
+                                                src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$product->thumbnail}}"
+                                                width="60">
+
+                                            <div class="pl-2">
+                                                <h6>{{ Str::limit($product->name, 50) }}</h6>
+
+                                                {{-- Price --}}
+                                                <span class="text-accent">
+                                                    {{\App\CPU\Helpers::currency_converter(
+                                                        $product->unit_price - \App\CPU\Helpers::get_product_discount($product,$product->unit_price)
+                                                    )}}
+                                                </span>
+
+                                                @if($product->discount > 0)
+                                                    <strike>
+                                                        {{\App\CPU\Helpers::currency_converter($product->unit_price)}}
+                                                    </strike>
+                                                @endif
+
+                                                {{-- Save --}}
+                                                @if($product->discount > 0)
+                                                    <div style="color:green;">
+                                                        Save {{\App\CPU\Helpers::currency_converter(
+                                                            \App\CPU\Helpers::get_product_discount($product,$product->unit_price)
+                                                        )}}
+                                                    </div>
+                                                @endif
+
+                                            </div>
+                                        </div>
+
+                                    </a>
+                                </div>
+
+                            @endif
+                        @endforeach
+                    </div>
+
+                </div>
+            </div>
         </div>
 
     </div>
-
-</div>
 </div>
 <div class="container rtl py-4">
 
@@ -1275,8 +1223,9 @@
     @endsection
 
     @push('script')
+
     {{-- Owl Carousel --}}
-    <script src="{{asset('public/assets/front-end')}}/js/owl.carousel.min.js"></script>
+    <script src="{{asset('public/assets/front-end/js/owl.carousel.min.js')}}"></script>
 
     <script>
         $('#flash-deal-slider').owlCarousel({

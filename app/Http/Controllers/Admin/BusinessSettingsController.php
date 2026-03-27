@@ -640,10 +640,37 @@ class BusinessSettingsController extends Controller
             'value' => $request['fcm_project_id'],
         ]);
 
-        DB::table('business_settings')->updateOrInsert(['type' => 'push_notification_key'], [
-            'value' => $request['push_notification_key'],
+        DB::table('business_settings')->updateOrInsert(['type' => 'fcm_api_key'], [
+            'value' => $request['fcm_api_key'],
         ]);
 
+        DB::table('business_settings')->updateOrInsert(['type' => 'fcm_auth_domain'], [
+            'value' => $request['fcm_auth_domain'],
+        ]);
+
+        DB::table('business_settings')->updateOrInsert(['type' => 'fcm_storage_bucket'], [
+            'value' => $request['fcm_storage_bucket'],
+        ]);
+
+        DB::table('business_settings')->updateOrInsert(['type' => 'fcm_messaging_sender_id'], [
+            'value' => $request['fcm_messaging_sender_id'],
+        ]);
+
+        DB::table('business_settings')->updateOrInsert(['type' => 'fcm_app_id'], [
+            'value' => $request['fcm_app_id'],
+        ]);
+
+        DB::table('business_settings')->updateOrInsert(['type' => 'fcm_vapid_key'], [
+            'value' => $request['fcm_vapid_key'],
+        ]);
+
+        if ($request->fcm_service_account_content) {
+            DB::table('business_settings')->updateOrInsert(['type' => 'fcm_service_account_content'], [
+                'value' => $request['fcm_service_account_content'],
+            ]);
+            file_put_contents(storage_path('app/firebase-adminsdk.json'), $request['fcm_service_account_content']);
+            file_put_contents(public_path('firebase-service-account.json'), $request['fcm_service_account_content']);
+        }
         Toastr::success('Settings updated!');
         return back();
     }

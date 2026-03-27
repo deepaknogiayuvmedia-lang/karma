@@ -30,11 +30,11 @@
             }
         ],
         "language": "en_US",
-        "status": "PENDING",
+        "status": "APPROVED",
         "category": "UTILITY",
         "sub_category": "CUSTOM",
-        "id": "744896218500573",
-        "type": "returned"
+        "is_primary_device_delivery_only": false,
+        "id": "744896218500573"
     },
     {
         "name": "packaging_order",
@@ -82,8 +82,8 @@
         "status": "APPROVED",
         "category": "UTILITY",
         "sub_category": "CUSTOM",
-        "id": "35064359163162815",
-        "type": "processing"
+        "is_primary_device_delivery_only": false,
+        "id": "35064359163162815"
     },
     {
         "name": "order_confirmation_2",
@@ -96,7 +96,7 @@
             },
             {
                 "type": "BODY",
-                "text": "Hi {{name}}! \ud83c\udfa7\ud83d\uded2\n\nCongratulations! \ud83c\udf89 Your order for the *Headway Bassheads* has been confirmed. \ud83d\ude4c\n\nOrder Details: \nProduct: {{p_name}}\nQuantity: {{qty}}\nOrder ID: {{o_id}}\nDelivery Address: {{d_address}}\n\nEstimated Delivery Date: {{d_date}}\n\nWe're thrilled to be sending you your new {{category}}, and we're sure you're going to love them! \ud83c\udfb6 \n\nIf you have any questions or need assistance, feel free to reach out to us anytime.\n\nThank you for choosing {{ps_name}}! We appreciate your support. \ud83d\udc99",
+                "text": "Hi {{name}}! \ud83c\udfa7\ud83d\uded2\n\nCongratulations! \ud83c\udf89 Your order for the *{{p_name1}}* has been confirmed. \ud83d\ude4c\n\nOrder Details: \nProduct: {{p_name2}}\nQuantity: {{qty}}\nOrder ID: {{o_id}}\nDelivery Address: {{d_address}}\n\nEstimated Delivery Date: {{d_date}}\n\nWe're thrilled to be sending you your new {{category}}, and we're sure you're going to love them! \ud83c\udfb6 \n\nIf you have any questions or need assistance, feel free to reach out to us anytime.\n\nThank you for choosing {{ps_name}}! We appreciate your support. \ud83d\udc99",
                 "example": {
                     "body_text_named_params": [
                         {
@@ -104,8 +104,12 @@
                             "example": "Shivam"
                         },
                         {
-                            "param_name": "p_name",
-                            "example": "Headway Bassheads 225"
+                            "param_name": "p_name1",
+                            "example": "product name"
+                        },
+                        {
+                            "param_name": "p_name2",
+                            "example": "product name"
                         },
                         {
                             "param_name": "qty",
@@ -138,12 +142,12 @@
         "language": "en",
         "status": "PENDING",
         "category": "UTILITY",
-        "sub_category": "CUSTOM",
-        "id": "1982688169264296",
-        "type": "confirmed"
+        "is_primary_device_delivery_only": false,
+        "id": "1982688169264296"
     },
     {
         "name": "order_cancelled",
+        "previous_category": "UTILITY",
         "parameter_format": "NAMED",
         "components": [
             {
@@ -173,10 +177,10 @@
             }
         ],
         "language": "en_US",
-        "status": "PENDING",
-        "category": "UTILITY",
-        "id": "1242255024012598",
-        "type": "canceled"
+        "status": "APPROVED",
+        "category": "MARKETING",
+        "is_primary_device_delivery_only": false,
+        "id": "1242255024012598"
     },
     {
         "name": "hello_world",
@@ -199,7 +203,7 @@
         "language": "en_US",
         "status": "APPROVED",
         "category": "UTILITY",
-        "id": "1574449583665427",
-        "type": "hello_world"
+        "is_primary_device_delivery_only": false,
+        "id": "1574449583665427"
     }
 ]

@@ -201,6 +201,28 @@
                         </a>
                     </div>
                     @if(auth('customer')->check())
+                    <div class="navbar-tool dropdown {{Session::get('direction') === "rtl" ? 'mr-md-3' : 'ml-md-3'}}">
+                        <a class="navbar-tool-icon-box bg-secondary dropdown-toggle" href="javascript:" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="notification_icon">
+                            <span class="navbar-tool-label">
+                                <span class="countNotification">0</span>
+                            </span>
+                            <i class="navbar-tool-icon czi-bell"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-{{Session::get('direction') === "rtl" ? 'left' : 'right'}}" style="width: 330px; padding: 0;">
+                            <div class="widget widget-cart px-3 pt-3 pb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="font-size-sm mb-0">{{\App\CPU\translate('Notifications')}}</h5>
+                                </div>
+                                <div id="notification-list" style="max-height: 20rem; overflow-y: auto;">
+                                    <p class="text-center font-size-xs text-muted py-3 mb-0">{{\App\CPU\translate('Loading...')}}</p>
+                                </div>
+                                <div class="dropdown-divider my-2"></div>
+                                <a class="btn btn--primary btn-sm btn-block" href="{{route('notifications')}}">
+                                    {{\App\CPU\translate('View All')}}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="dropdown">
                         <a class="navbar-tool ml-3" type="button" data-toggle="dropdown" aria-haspopup="true"
                             aria-expanded="false">
@@ -227,6 +249,7 @@
                         </div>
                     </div>
                     @else
+
                     <div class="dropdown">
                         <a class="navbar-tool {{Session::get('direction') === "rtl" ? 'mr-md-3' : 'ml-md-3'}}"
                             type="button" data-toggle="dropdown" aria-haspopup="true"
@@ -504,10 +527,99 @@
         </div>
     </div>
 </header>
+<!-- Notification Modal -->
+<div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <button type="button" class="close {{Session::get('direction') === "rtl" ? 'ml-0 mr-auto' : ''}}" data-dismiss="modal" aria-label="Close" style="background: #f8f9fa; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; opacity: 1; transition: all 0.2s;">
+                    <span aria-hidden="true" style="font-size: 20px; color: #333;">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body px-4 pb-5 text-center">
+                <div id="notif-image-container" class="mb-4">
+                    <img id="notif-image" src="" alt="" class="img-fluid rounded-lg shadow-sm" style="max-height: 250px; width: 100%; object-fit: cover; border-radius: 15px;">
+                </div>
+                <h4 id="notif-title" class="mb-3 font-weight-bold" style="color: {{$web_config['primary_color']}};"></h4>
+                <div class="px-2">
+                    <p id="notif-description" class="text-muted font-size-md mb-0 text-justify" style="line-height: 1.6; white-space: pre-wrap;"></p>
+                </div>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-secondary px-5" data-dismiss="modal" style="border-radius: 10px;">{{ \App\CPU\translate('Close') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('script')
+{{-- <script src="{{ asset('firebase-messaging-sw.js') }}"></script> --}}
 <script>
     function myFunction() {
         $('#anouncement').slideUp(300)
     }
+
+    $(document).ready(function() {
+        @if(auth('customer')->check())
+            fetchNotifications();
+        @endif
+    });
+
+    function fetchNotifications() {
+        $.get({
+            url: "{{route('get-notifications')}}",
+            dataType: 'json',
+            success: function (data) {
+                $('#notification-list').html(data.view);
+                if(data.count > 0){
+                    $('.countNotification').text(data.count).show();
+                    $('.countNotification').parent().addClass('animate__animated animate__pulse animate__infinite');
+                } else {
+                    // $('.countNotification').hide();
+                    $('.countNotification').parent().removeClass('animate__animated animate__pulse animate__infinite');
+                }
+            },
+        });
+    }
+
+    function openNotificationModal(id) {
+        $.get({
+            url: "{{route('read-notification')}}",
+            data: { id: id },
+            dataType: 'json',
+            beforeSend: function () {
+                $('#loading').show();
+            },
+            success: function (data) {
+                $('#notif-title').text(data.title);
+                $('#notif-description').text(data.description);
+                if (data.image && !data.image.includes('placeholder')) {
+                    $('#notif-image').attr('src', data.image).show();
+                    $('#notif-image-container').show();
+                } else {
+                    $('#notif-image-container').hide();
+                }
+                $('#notificationModal').modal('show');
+                fetchNotifications(); // Refresh to update unread count and read status in dropdown
+            },
+            complete: function () {
+                $('#loading').hide();
+            }
+        });
+    }
+
+messaging.onMessage((payload) => {
+    console.log(payload);   
+    // show popup
+    new Notification(payload.notification.title, {
+        body: payload.notification.body
+    });
+
+    // reload bell data
+    fetchNotifications();
+});
+    $(document).on('click', '#notification_icon', function() {
+        fetchNotifications();
+    });
 </script>
 @endpush

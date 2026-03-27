@@ -566,4 +566,71 @@ class UserProfileController extends Controller
         return view('web-views.users-profile.submit-review',compact('order_details','reting_details'));
 
     }
+
+    public function notifications()
+    {
+        $user_id = auth('customer')->id();
+        $notifications = \App\Model\Notification::active()
+            ->leftJoin('notification_reads', function ($join) use ($user_id) {
+                $join->on('notifications.id', '=', 'notification_reads.notification_id')
+                    ->where('notification_reads.user_id', '=', $user_id);
+            })
+            ->select('notifications.*', 'notification_reads.read_at')
+            ->latest('notifications.created_at')
+            ->paginate(20);
+
+        return view('web-views.users-profile.notifications', compact('notifications'));
+    }
+
+    public function get_notifications()
+    {
+        $user_id = auth('customer')->id();
+        $notifications = \App\Model\Notification::active()
+            ->leftJoin('notification_reads', function ($join) use ($user_id) {
+                $join->on('notifications.id', '=', 'notification_reads.notification_id')
+                    ->where('notification_reads.user_id', '=', $user_id);
+            })
+            ->select('notifications.*', 'notification_reads.read_at')
+            ->latest('notifications.created_at')
+            ->take(10)
+            ->get();
+
+        $unread_count = \App\Model\Notification::active()
+            ->whereNotExists(function ($query) use ($user_id) {
+                $query->select(DB::raw(1))
+                    ->from('notification_reads')
+                    ->whereRaw('notification_reads.notification_id = notifications.id')
+                    ->where('notification_reads.user_id', $user_id);
+            })->count();
+
+        $view = view('layouts.front-end.partials._notifications', compact('notifications'))->render();
+        return response()->json([
+            'view' => $view,
+            'count' => $unread_count
+        ]);
+    }
+    
+    public function read_notification(Request $request)
+    {
+        $user_id = auth('customer')->id();
+        $id = $request->id;
+
+        $already_read = \App\NotificationRead::where(['notification_id' => $id, 'user_id' => $user_id])->first();
+        if (!$already_read) {
+            \App\NotificationRead::create([
+                'notification_id' => $id,
+                'user_id' => $user_id,
+                'read_at' => now()
+            ]);
+        }
+
+        $notification = \App\Model\Notification::find($id);
+
+        return response()->json([
+            'title' => $notification->title,
+            'description' => $notification->description,
+            'image' => asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $notification['image']
+        ]);
+    }
 }
+

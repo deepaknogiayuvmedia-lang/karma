@@ -38,7 +38,9 @@ class NotificationController extends Controller
     {
         $request->validate([
             'title' => 'required',
-            'description' => 'required'
+            'description' => 'required',
+            'role_type' => 'required',
+            'notification_type' => 'required'
         ], [
             'title.required' => 'title is required!',
         ]);
@@ -46,6 +48,8 @@ class NotificationController extends Controller
         $notification = new Notification;
         $notification->title = $request->title;
         $notification->description = $request->description;
+        $notification->role_type = $request->role_type;
+        $notification->notification_type = $request->notification_type;
 
         if ($request->has('image')) {
             $notification->image = ImageManager::upload('notification/', 'png', $request->file('image'));
@@ -78,6 +82,8 @@ class NotificationController extends Controller
         $request->validate([
             'title' => 'required',
             'description' => 'required',
+            'role_type' => 'required',
+            'notification_type' => 'required',
         ], [
             'title.required' => 'title is required!',
         ]);
@@ -85,6 +91,8 @@ class NotificationController extends Controller
         $notification = Notification::find($id);
         $notification->title = $request->title;
         $notification->description = $request->description;
+        $notification->role_type = $request->role_type;
+        $notification->notification_type = $request->notification_type;
         $notification->image = $request->has('image')? ImageManager::update('notification/', $notification->image, 'png', $request->file('image')):$notification->image;
         $notification->save();
 
@@ -110,6 +118,7 @@ class NotificationController extends Controller
         try {
             Helpers::send_push_notif_to_topic($notification);
             $notification->notification_count += 1;
+            $notification->cron_sent = false; // allow cron to resend this notification
             $notification->save();
 
             $data['success'] = true;

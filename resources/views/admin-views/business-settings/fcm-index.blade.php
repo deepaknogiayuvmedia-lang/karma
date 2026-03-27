@@ -34,28 +34,87 @@
                             enctype="multipart/form-data">
                             @csrf
                             @php($key = \App\Model\BusinessSetting::where('type', 'push_notification_key')->first()->value)
-                            <div class="form-group">
-                                <label class="title-color"
-                                    for="exampleFormControlInput1">{{ \App\CPU\translate('Server Key') }}</label>
-                                <textarea name="push_notification_key" class="form-control" required>{{ env('APP_MODE') == 'demo' ? '' : $key }}</textarea>
-                            </div>
+                            <div class="row">
 
-                            <div class="row d--none">
-                                @php($project_id = \App\Model\BusinessSetting::where('type', 'fcm_project_id')->first()->value)
-                                <div class="col-md-12 col-12">
+                                @php($fcm_project_id = \App\Model\BusinessSetting::where('type', 'fcm_project_id')->first()->value ?? '')
+                                <div class="col-md-6 col-12">
                                     <div class="form-group">
-                                        <label class="input-label"
-                                            for="exampleFormControlInput1">{{ \App\CPU\translate('FCM Project ID') }}</label>
-                                        <input type="text" value="{{ $project_id }}" name="fcm_project_id"
-                                            class="form-control">
+                                        <label class="title-color"
+                                            for="fcm_project_id">{{ \App\CPU\translate('FCM Project ID') }}</label>
+                                        <input type="text" value="{{ $fcm_project_id }}" name="fcm_project_id"
+                                            class="form-control" placeholder="{{ \App\CPU\translate('Ex: multi-vendor-5d507') }}">
                                     </div>
                                 </div>
+                                @php($fcm_api_key = \App\Model\BusinessSetting::where('type', 'fcm_api_key')->first()->value ?? '')
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="title-color"
+                                            for="fcm_api_key">{{ \App\CPU\translate('FCM API Key') }}</label>
+                                        <input type="text" value="{{ $fcm_api_key }}" name="fcm_api_key"
+                                            class="form-control" placeholder="{{ \App\CPU\translate('Ex: AIzaSyAB2BkJP...') }}">
+                                    </div>
+                                </div>
+                                @php($fcm_auth_domain = \App\Model\BusinessSetting::where('type', 'fcm_auth_domain')->first()->value ?? '')
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="title-color"
+                                            for="fcm_auth_domain">{{ \App\CPU\translate('FCM Auth Domain') }}</label>
+                                        <input type="text" value="{{ $fcm_auth_domain }}" name="fcm_auth_domain"
+                                            class="form-control" placeholder="{{ \App\CPU\translate('Ex: multi-vendor-5d507.firebaseapp.com') }}">
+                                    </div>
+                                </div>
+                                @php($fcm_storage_bucket = \App\Model\BusinessSetting::where('type', 'fcm_storage_bucket')->first()->value ?? '')
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="title-color"
+                                            for="fcm_storage_bucket">{{ \App\CPU\translate('FCM Storage Bucket') }}</label>
+                                        <input type="text" value="{{ $fcm_storage_bucket }}" name="fcm_storage_bucket"
+                                            class="form-control" placeholder="{{ \App\CPU\translate('Ex: multi-vendor-5d507.firebasestorage.app') }}">
+                                    </div>
+                                </div>
+                                @php($fcm_messaging_sender_id = \App\Model\BusinessSetting::where('type', 'fcm_messaging_sender_id')->first()->value ?? '')
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="title-color"
+                                            for="fcm_messaging_sender_id">{{ \App\CPU\translate('FCM Messaging Sender ID') }}</label>
+                                        <input type="text" value="{{ $fcm_messaging_sender_id }}" name="fcm_messaging_sender_id"
+                                            class="form-control" placeholder="{{ \App\CPU\translate('Ex: 593155222746') }}">
+                                    </div>
+                                </div>
+                                @php($fcm_app_id = \App\Model\BusinessSetting::where('type', 'fcm_app_id')->first()->value ?? '')
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="title-color"
+                                            for="fcm_app_id">{{ \App\CPU\translate('FCM App ID') }}</label>
+                                        <input type="text" value="{{ $fcm_app_id }}" name="fcm_app_id"
+                                            class="form-control" placeholder="{{ \App\CPU\translate('Ex: 1:593155222746:web:107a9a6d16bd534f4309e3') }}">
+                                    </div>
+                                </div>
+                                @php($fcm_vapid_key = \App\Model\BusinessSetting::where('type', 'fcm_vapid_key')->first()->value ?? '')
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="title-color"
+                                            for="fcm_vapid_key">{{ \App\CPU\translate('VAPID Key') }}</label>
+                                        <input type="text" value="{{ $fcm_vapid_key }}" name="fcm_vapid_key"
+                                            class="form-control" placeholder="{{ \App\CPU\translate('Ex: BJs_58yzl8dDNoQpdmcAKY...') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label class="title-color"
+                                            for="fcm_service_account_key">{{ \App\CPU\translate('FCM Service Account JSON') }} ({{ \App\CPU\translate('Upload File') }})</label>
+                                        <input type="file" name="fcm_service_account_key" class="form-control">
+                                    </div>
+                                </div>
+                                @php($fcm_service_account_content = \App\Model\BusinessSetting::where('type', 'fcm_service_account_content')->first()->value ?? '')
+                             
                             </div>
                             <div class="d-flex justify-content-end">
                                 <button type="{{ env('APP_MODE') != 'demo' ? 'submit' : 'button' }}"
                                     onclick="{{ env('APP_MODE') != 'demo' ? '' : 'call_demo()' }}"
                                     class="btn btn--primary px-4">{{ \App\CPU\translate('save') }}</button>
                             </div>
+
                         </form>
                     </div>
                 </div>

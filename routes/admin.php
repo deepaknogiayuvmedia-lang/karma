@@ -36,6 +36,15 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('business-overview', 'DashboardController@business_overview')->name('business-overview');
             Route::get('earning-statistics', 'DashboardController@get_earning_statitics')->name('earning-statistics');
         });
+
+        Route::group(['prefix' => 'membership-plan', 'as' => 'membership-plan.'], function () {
+            Route::get('index', 'MembershipPlanController@index')->name('index');
+            Route::post('store', 'MembershipPlanController@store')->name('store');
+            Route::get('edit/{id}', 'MembershipPlanController@edit')->name('edit');
+            Route::post('update/{id}', 'MembershipPlanController@update')->name('update');
+            Route::post('status-update', 'MembershipPlanController@status_update')->name('status-update');
+            Route::get('delete/{id}', 'MembershipPlanController@destroy')->name('delete');
+        });
         //system routes
         Route::get('import-search-function-data', 'SystemController@importSearchFunctionData')->name('import-search-function-data');
         Route::get('search-function', 'SystemController@search_function')->name('search-function');

@@ -8,9 +8,9 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" sizes="180x180"
-        href="{{ asset(env('PUBLIC_STORAGE_PATH').'/company') }}/{{ $web_config['fav_icon']->value }}">
+        href="{{ asset(env('PUBLIC_STORAGE_PATH') . '/company') }}/{{ $web_config['fav_icon']->value }}">
     <link rel="icon" type="image/png" sizes="32x32"
-        href="{{ asset(env('PUBLIC_STORAGE_PATH').'/company') }}/{{ $web_config['fav_icon']->value }}">
+        href="{{ asset(env('PUBLIC_STORAGE_PATH') . '/company') }}/{{ $web_config['fav_icon']->value }}">
 
     <link rel="stylesheet" media="screen"
         href="{{ asset('public/assets/front-end') }}/vendor/simplebar/dist/simplebar.min.css" />
@@ -207,7 +207,7 @@
         }
 
         .dropdown-menu {
-            margin-{{ Session::get('direction') === 'rtl' ? 'right' : 'left' }}: -8px !important;
+            margin-{{ Session::get('direction') === 'rtl' ? 'right' : 'left' }} -8px !important;
         }
     </style>
 
@@ -288,7 +288,7 @@
             <div id="loading" style="display: none;">
                 <center>
                     <img width="200"
-                        src="{{ asset(env('PUBLIC_STORAGE_PATH').'/company') }}/{{ \App\CPU\Helpers::get_business_settings('loader_gif') }}"
+                        src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/company') }}/{{ \App\CPU\Helpers::get_business_settings('loader_gif') }}"
                         onerror="this.src='{{ asset('public/assets/front-end/img/loader.gif') }}'">
                 </center>
             </div>
@@ -344,16 +344,97 @@
     <script src="{{ asset('public/assets/front-end') }}/vendor/lightgallery.js/dist/js/lightgallery.min.js"></script>
     <script src="{{ asset('public/assets/front-end') }}/vendor/lg-video.js/dist/lg-video.min.js"></script>
     {{-- Toastr --}}
-    <script src={{ asset('public/assets/back-end/js/toastr.js') }}></script>
+    <script src="{{ asset('public/assets/back-end/js/toastr.js') }}"></script>
     <!-- Main theme script-->
     <script src="{{ asset('public/assets/front-end') }}/js/theme.min.js"></script>
     <script src="{{ asset('public/assets/front-end') }}/js/slick.min.js"></script>
 
     <script src="{{ asset('public/assets/front-end') }}/js/sweet_alert.js"></script>
-    {{-- Toastr --}}
-    <script src={{ asset('public/assets/back-end/js/toastr.js') }}></script>
     {!! Toastr::message() !!}
+      <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
 
+    <script>
+        console.log("🔥 Firebase script loaded");
+        const firebaseConfig = {
+            apiKey: "{{ \App\CPU\Helpers::get_business_settings('fcm_api_key') }}",
+            authDomain: "{{ \App\CPU\Helpers::get_business_settings('fcm_auth_domain') }}",
+            projectId: "{{ \App\CPU\Helpers::get_business_settings('fcm_project_id') }}",
+            storageBucket: "{{ \App\CPU\Helpers::get_business_settings('fcm_storage_bucket') }}",
+            messagingSenderId: "{{ \App\CPU\Helpers::get_business_settings('fcm_messaging_sender_id') }}",
+            appId: "{{ \App\CPU\Helpers::get_business_settings('fcm_app_id') }}",
+        };
+
+        // Init
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const messaging = firebase.messaging();
+
+        // Register SW
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                    .then(function(registration) {
+                        getToken(registration);
+                    })
+                    .catch(function(err) {
+                        console.error('SW registration failed:', err);
+                    });
+            }
+        }
+
+        // Get Token
+        function getToken(registration) {
+            messaging.getToken({
+                    vapidKey: "{{ \App\CPU\Helpers::get_business_settings('fcm_vapid_key') }}",
+                    serviceWorkerRegistration: registration
+                })
+                .then((currentToken) => {
+                    if (currentToken) {
+                        console.log("FINAL TOKEN:", currentToken);
+                        saveToken(currentToken);
+                    } else {
+                        console.warn("No token available");
+                    }
+                })
+                .catch((err) => {
+                    console.error("Token Error:", err);
+                });
+        }
+
+        // Save Token
+        function saveToken(token) {
+            $.ajax({
+                type: "POST",
+                url: "{{ route('update-fcm-token') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    token: token
+                },
+                success: function() {
+                    console.log('Token saved');
+                }
+            });
+        }
+
+        // Foreground message
+        messaging.onMessage((payload) => {
+            console.log("🔥 Foreground:", payload);
+
+            alert("Notification aayi");
+        });
+
+
+        // Permission
+        Notification.requestPermission().then(permission => {
+            console.log("Permission:", permission);
+            if (permission === "granted") {
+                registerServiceWorker();
+            }
+        });
+    </script>
     <script>
         function addWishlist(product_id) {
             $.ajaxSetup({
@@ -842,11 +923,12 @@
             }
         });
 
-        const img = document.getElementByTagName("img")
-        img.addEventListener("error", function(event) {
-            event.target.src = '{{ asset('public/assets/front-end/img/image-place-holder.png') }}';
-            event.onerror = null
-        })
+        document.querySelectorAll('img').forEach(function(img) {
+            img.addEventListener('error', function(event) {
+                event.target.src = '{{ asset('public/assets/front-end/img/image-place-holder.png') }}';
+                event.onerror = null;
+            });
+        });
 
         function route_alert(route, message) {
             Swal.fire({
@@ -909,58 +991,56 @@
     </script>
     @stack('script')
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-    document.addEventListener('DOMContentLoaded', function() {
+            var links = document.querySelectorAll('a');
 
-        var links = document.querySelectorAll('a');
+            var urlParams = new URLSearchParams(window.location.search);
 
-        var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.toString() === '') {
 
-        if (urlParams.toString() === '') {
-
-            return;
-
-        }
-
-        for (var i = 0; i<links.length; i++) {
-
-            var link = links[i];
-
-            var linkUrl = link.href;
-
-            var hashIndex = linkUrl.indexOf('#');
-
-            var urlWithoutHash = linkUrl;
-
-            var urlHash = '';
-
-            if (hashIndex !== -1) {
-
-                urlWithoutHash = linkUrl.substring(0, hashIndex);
-
-                urlHash = linkUrl.substring(hashIndex);
+                return;
 
             }
 
-            var existingParams = new URLSearchParams(urlWithoutHash.split('?')[1]);
+            for (var i = 0; i < links.length; i++) {
 
-            urlParams.forEach(function(value, key) {
+                var link = links[i];
 
-                if (!existingParams.has(key)) {
+                var linkUrl = link.href;
 
-                    existingParams.append(key, value);
+                var hashIndex = linkUrl.indexOf('#');
+
+                var urlWithoutHash = linkUrl;
+
+                var urlHash = '';
+
+                if (hashIndex !== -1) {
+
+                    urlWithoutHash = linkUrl.substring(0, hashIndex);
+
+                    urlHash = linkUrl.substring(hashIndex);
 
                 }
 
-            });
+                var existingParams = new URLSearchParams(urlWithoutHash.split('?')[1]);
 
-            link.href = urlWithoutHash.split('?')[0] + '?' + existingParams.toString() + urlHash;
+                urlParams.forEach(function(value, key) {
 
-        }
+                    if (!existingParams.has(key)) {
 
-    });
+                        existingParams.append(key, value);
 
-</script>
+                    }
+
+                });
+
+                link.href = urlWithoutHash.split('?')[0] + '?' + existingParams.toString() + urlHash;
+
+            }
+
+        });
+    </script>
 
     <!--Mgid Sensor -->
     <script type="text/javascript">

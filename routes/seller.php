@@ -33,6 +33,7 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
 
     /*authenticated*/
     Route::group(['middleware' => ['seller']], function () {
+        Route::post('update-fcm-token', 'DashboardController@update_fcm_token')->name('update-fcm-token');
         //dashboard routes
 
         Route::get('/get-order-data', 'SystemController@order_data')->name('get-order-data');
@@ -43,6 +44,7 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
             Route::post('order-stats', 'DashboardController@order_stats')->name('order-stats');
             Route::post('business-overview', 'DashboardController@business_overview')->name('business-overview');
             Route::get('earning-statistics', 'DashboardController@get_earning_statitics')->name('earning-statistics');
+           
         });
 
         Route::group(['prefix' => 'product', 'as' => 'product.'], function () {

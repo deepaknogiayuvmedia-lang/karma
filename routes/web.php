@@ -39,7 +39,9 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
     Route::get('quick-view', 'WebController@quick_view')->name('quick-view');
 
     Route::get('searched-products', 'WebController@searched_products')->name('searched-products');
-
+    Route::post('update-fcm-token', 'WebController@update_fcm_token')->name('update-fcm-token');
+    Route::get('send-notification', 'WebController@sendNotification')->name('send-notification');
+    Route::get('/test-notification', 'WebController@testNotification');
     Route::group(['middleware' => ['customer']], function () {
         Route::get('checkout-details', 'WebController@checkout_details')->name('checkout-details');
         Route::get('checkout-shipping', 'WebController@checkout_shipping')->name('checkout-shipping')->middleware('customer');
@@ -143,6 +145,11 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
         Route::get('last', 'UserProfileController@track_last_order')->name('last');
         Route::any('result', 'UserProfileController@track_order_result')->name('result');
     });
+
+    Route::get('notifications', 'UserProfileController@notifications')->name('notifications')->middleware('customer');
+    Route::get('get-notifications', 'UserProfileController@get_notifications')->name('get-notifications')->middleware('customer');
+    Route::get('read-notification', 'UserProfileController@read_notification')->name('read-notification')->middleware('customer');
+
     //FAQ route
     Route::get('helpTopic', 'WebController@helpTopic')->name('helpTopic');
     //Contacts

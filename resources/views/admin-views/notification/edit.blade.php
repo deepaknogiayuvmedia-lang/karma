@@ -31,6 +31,23 @@
                                 <input type="text" value="{{$notification['title']}}" name="title" class="form-control"
                                         placeholder="{{\App\CPU\translate('New notification')}}" required>
                             </div>
+                            <div class="form-group">
+                                <label class="title-color text-capitalize"
+                                    for="exampleFormControlInput1">{{ \App\CPU\translate('Role Type') }} </label>
+                                <select name="role_type" class="form-control" required>
+                                    <option value="customer" {{ $notification->role_type == 'customer' ? 'selected' : '' }}>{{ \App\CPU\translate('Customer') }}</option>
+                                    <option value="seller" {{ $notification->role_type == 'seller' ? 'selected' : '' }}>{{ \App\CPU\translate('Seller') }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="title-color text-capitalize"
+                                    for="exampleFormControlInput1">{{ \App\CPU\translate('Notification Type') }} </label>
+                                <select name="notification_type" class="form-control" required>
+                                    <option value="danger" {{ $notification->notification_type == 'danger' ? 'selected' : '' }}>{{ \App\CPU\translate('Danger') }}</option>
+                                    <option value="warning" {{ $notification->notification_type == 'warning' ? 'selected' : '' }}>{{ \App\CPU\translate('Warning') }}</option>
+                                    <option value="info" {{ $notification->notification_type == 'info' ? 'selected' : '' }}>{{ \App\CPU\translate('Info') }}</option>
+                                </select>
+                            </div>
                             <div class="form-group mb-0">
                                 <label class="input-label" for="exampleFormControlInput1">{{\App\CPU\translate('Description')}}</label>
                                 <textarea name="description" class="form-control"

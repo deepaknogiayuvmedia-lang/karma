@@ -14,6 +14,7 @@ use App\Model\Seller;
 use App\Model\ShippingMethod;
 use App\User;
 use Carbon\Carbon;
+use Google\Client;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -449,55 +450,98 @@ class Helpers
         return $res['message'];
     }
 
+    
     /**
-     * Device wise notification send
+     * Device wise notification send (FCM HTTP v1 API)
      */
     public static function send_push_notif_to_device($fcm_token, $data)
     {
-        $key = BusinessSetting::where(['type' => 'push_notification_key'])->first()->value;
-        $url = "https://fcm.googleapis.com/fcm/send";
-        $header = array(
-            "authorization: key=" . $key . "",
-            "content-type: application/json"
-        );
-
-        if (isset($data['order_id']) == false) {
-            $data['order_id'] = null;
+      
+        if (empty($fcm_token)) {
+            return null;
         }
+        if (empty($data)) {
+            return null;
+        }
+      
+        if (!isset($data['order_id'])) {
+            $data['order_id'] = null;
+            
+        }
+        $client = new Client();
+        $client->setAuthConfig(storage_path('app/firebase-adminsdk.json'));
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
 
-        $postdata = '{
-            "to" : "' . $fcm_token . '",
-            "data" : {
-                "title" :"' . $data['title'] . '",
-                "body" : "' . $data['description'] . '",
-                "image" : "' . $data['image'] . '",
-                "order_id":"' . $data['order_id'] . '",
-                "is_read": 0
-              },
-              "notification" : {
-                "title" :"' . $data['title'] . '",
-                "body" : "' . $data['description'] . '",
-                "image" : "' . $data['image'] . '",
-                "order_id":"' . $data['order_id'] . '",
-                "title_loc_key":"' . $data['order_id'] . '",
-                "is_read": 0,
-                "icon" : "new",
-                "sound" : "default"
-              }
-        }';
+        $tokenData = $client->fetchAccessTokenWithAssertion();
+
+        $accessToken = $tokenData['access_token'] ?? ($client->getAccessToken()['access_token'] ?? null);
+        
+        $project_id = self::get_business_settings('fcm_project_id');
+        $url = "https://fcm.googleapis.com/v1/projects/". $project_id ."/messages:send";
+
+        $image = asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $data['image'];
+
+        $response = \Illuminate\Support\Facades\Http::withToken($accessToken)->post($url, [
+            "message" => [
+                "token" => $fcm_token,
+                "notification" => [
+                    "title" => $data['title'],
+                    "body"  => $data['description'],
+                    "image" => $image,
+                ],
+                "data" => [
+                    "title"    => $data['title'],
+                    "body"     => $data['description'],
+                    "image"    => $image,
+                    "order_id" => (string)($data['order_id'] ?? ''),
+                    "is_read"  => "0",
+                ],
+            ]
+        ]);
+       
+        return $response->json();
+    }
+
+    public static function send_push_notif_to_topic($data)
+    {
+        $project_id = self::get_business_settings('fcm_project_id');
+
+        $url = "https://fcm.googleapis.com/v1/projects/" . $project_id . "/messages:send";
+
+        $accessToken = self::getAccessToken();
+
+        $header = [
+            "Authorization: Bearer " . $accessToken,
+            "Content-Type: application/json"
+        ];
+        $image = asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $data['image'];
+        $topic = $data->role_type ?? 'sixvalley';
+        $postdata = json_encode([
+            "message" => [
+                "topic" => $topic,
+                "notification" => [
+                    "title" => $data->title,
+                    "body" => $data->description,
+                    "image" => $image
+                ],
+                "data" => [
+                    "title" => $data->title,
+                    "body" => $data->description,
+                    "image" => $image,
+                    "is_read" => "0"
+                ]
+            ]
+        ]);
 
         $ch = curl_init();
-        $timeout = 120;
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
-        // Get URL content
         $result = curl_exec($ch);
-        // close handle to release resources
+        // dd($result);
         curl_close($ch);
 
         return $result;
@@ -513,16 +557,23 @@ class Helpers
                 'message' => 'WhatsApp configuration missing'
             ];
         }
-
         // Map order status → template "type" value stored in JSON
-      
+        $status_map = [
+            'pending'   => 'confirmed',
+            'confirmed' => 'confirmed',
+            'processing' => 'processing',
+            'out_for_delivery' => 'processing',
+            'canceled'  => 'canceled',
+            'returned'  => 'returned',
+            'failed'    => 'canceled',
+        ];
 
-       
+        $type = $status_map[$status] ?? $status;
 
         // Load templates from JSON and find the one matching the type
         $json      = file_get_contents(base_path('whatsapp_templates.json'));
         $templates = json_decode($json, true) ?? [];
-        $template  = collect($templates)->firstWhere('type', $status);
+        $template  = collect($templates)->firstWhere('type', $type);
 
         if (!$template) {
             return [
@@ -530,16 +581,16 @@ class Helpers
                 'message' => 'No WhatsApp template found in JSON for type: ' . $status
             ];
         }
-       
+
         // Fetch order + relations for building template parameters
         $order = null;
         if ($order_id) {
             $order = \App\Model\Order::with(['customer', 'details.product', 'shippingAddress'])->find($order_id);
         }
-        // dump($template);
+        dump($template);
         // Clean phone number - keep digits only
+        dump($phone);
         $phone = preg_replace('/[^0-9]/', '', $phone);
-
         // Auto-add India country code if 10-digit number
         if (strlen($phone) === 10) {
             $phone = '91' . $phone;
@@ -557,8 +608,8 @@ class Helpers
                 'message' => 'Phone number is empty or invalid'
             ];
         }
-
         $url = "https://graph.facebook.com/v25.0/{$config->phone_number_id}/messages";
+        dump($url);
 
         $body = [
             "messaging_product" => "whatsapp",
@@ -571,6 +622,7 @@ class Helpers
                 ]
             ]
         ];
+        dump($body);
         // Build named parameters from order data based on each template's variables
         if ($order) {
             $customer_name = trim(($order->customer->f_name ?? '') . ' ' . ($order->customer->l_name ?? '')) ?: 'Customer';
@@ -580,8 +632,8 @@ class Helpers
             $order_amount  = '₹' . number_format($order->order_amount, 2);
             $shop_name     = self::get_business_settings('company_name') ?? 'Our Store';
             $delivery_date = $order->expected_delivery_date
-                             ? date('d M Y', strtotime($order->expected_delivery_date))
-                             : 'Soon';
+                ? date('d M Y', strtotime($order->expected_delivery_date))
+                : 'Soon';
             $address      = $order->shippingAddress?->address ?? 'N/A';
             $order_id_str = (string)$order->id;
 
@@ -625,7 +677,7 @@ class Helpers
 
             if (isset($param_map[$template['name']])) {
                 $parameters = array_map(
-                    fn($p) => array_merge(['type' => 'text'], $p),
+                    function($p) { return array_merge(['type' => 'text'], $p); },
                     $param_map[$template['name']]
                 );
                 $body['template']['components'] = [
@@ -636,7 +688,7 @@ class Helpers
                 ];
             }
         }
-            // dump($body);
+        dump($body);
         try {
             $response = \Illuminate\Support\Facades\Http::withToken($config->access_token)
                 ->post($url, $body);
@@ -645,7 +697,7 @@ class Helpers
                 'url'  => $url,
                 'body' => $body,
             ]);
-            //  dd($response);
+             dump($response);
             if ($response->successful()) {
                 \Illuminate\Support\Facades\Log::info('WhatsApp Send Success', $response->json());
                 return [
@@ -672,52 +724,7 @@ class Helpers
         }
     }
 
-    public static function send_push_notif_to_topic($data)
-    {
-        $key = BusinessSetting::where(['type' => 'push_notification_key'])->first()->value;
 
-        $url = "https://fcm.googleapis.com/fcm/send";
-        $header = [
-            "authorization: key=" . $key . "",
-            "content-type: application/json",
-        ];
-
-        $image = asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $data['image'];
-        $postdata = '{
-            "to" : "/topics/sixvalley",
-            "data" : {
-                "title":"' . $data->title . '",
-                "body" : "' . $data->description . '",
-                "image" : "' . $image . '",
-                "is_read": 0
-              },
-              "notification" : {
-                "title":"' . $data->title . '",
-                "body" : "' . $data->description . '",
-                "image" : "' . $image . '",
-                "title_loc_key":null,
-                "is_read": 0,
-                "icon" : "new",
-                "sound" : "default"
-              }
-        }';
-
-        $ch = curl_init();
-        $timeout = 120;
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
-        // Get URL content
-        $result = curl_exec($ch);
-        // close handle to release resources
-        curl_close($ch);
-
-        return $result;
-    }
 
     public static function get_seller_by_token($request)
     {
