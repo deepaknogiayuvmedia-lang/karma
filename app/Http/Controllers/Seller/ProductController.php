@@ -380,6 +380,8 @@ class ProductController extends Controller
         $product->tax_model      = $request->tax_model;
         $product->discount       = $request->discount_type == 'flat' ? Convert::usd($request->discount) : $request->discount;
         $product->discount_type  = $request->discount_type;
+        $product->discount_amount = $request->discount_type == 'flat' ? $request->unit_price - $request->discount : $request->unit_price * ($request->discount / 100);
+        $product->actual_amount =   $request->unit_price - $product->discount_amount;
         $product->attributes     = $request->product_type == 'physical' ? json_encode($request->choice_attributes) : json_encode([]);
         $product->current_stock  = $request->product_type == 'physical' ? abs($stock_count) : 0;
         $product->video_provider = 'youtube';
@@ -998,6 +1000,8 @@ class ProductController extends Controller
         $product->minimum_order_qty = $request->minimum_order_qty;
         $product->tax_type          = $request->tax_type;
         $product->discount          = $request->discount_type == 'flat' ? Convert::usd($request->discount) : $request->discount;
+        $product->discount_amount = $request->discount_type == 'flat' ? $request->unit_price - $request->discount : $request->unit_price * ($request->discount / 100);
+        $product->actual_amount = $request->unit_price - $product->discount_amount;
         $product->attributes        = $request->product_type == 'physical' ? json_encode($request->choice_attributes) : json_encode([]);
         $product->discount_type     = $request->discount_type;
         $product->current_stock     = $request->product_type == 'physical' ? abs($stock_count) : 0;
