@@ -1171,15 +1171,17 @@ class ProductController extends BaseController
         if (count($variant) > 0) {
             foreach ($variant as $item) {
                 $order_pending_qty = OrderDetail::where('product_id', $product->id)->where('delivery_status', 'pending')->where('variant', $item['type'])->sum('qty');
+                // dd($order_pending_qty);
                 $unit =  $unit = preg_replace('/[^a-zA-Z]/', '', $item['type']);
+               
                 if ($order_pending_qty > 0) {
-                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $item['type'] . '-' . $product->id, $categoryName, $order_pending_qty, $unit, $item['price']);
+                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $item['type'] . '-' . $product->id, $categoryName, $order_pending_qty, $unit, $item['price'],auth('admin')->id());
                     if (!Tallymethod::isSuccess($response)) {
-                        Toastr::error(translate('You can not delete this product because there are pending orders for this product variant: ') . $item['type']);
+                        Toastr::error(translate('You can not delete this product because there are pending orders for this product variant: ') . $item['type'],auth('admin')->id());
                         return back();
                     }
                 } else {
-                    $response = Tallymethod::deleteItem($product->tally_name . '-' . $item['type'] . '-' . $product->id);
+                    $response = Tallymethod::deleteItem($product->tally_name . '-' . $item['type'] . '-' . $product->id,auth('admin')->id());
                     if (!Tallymethod::isSuccess($response)) {
                         Toastr::error(translate('Tally item deletion failed for item: ') . $product->tally_name . '-' . $item['type']);
                         return back();
@@ -1192,9 +1194,6 @@ class ProductController extends BaseController
         $translation = Translation::where('translationable_type', 'App\Model\Product')
             ->where('translationable_id', $id);
         $translation->delete();
-
-        
-
         if(Product::where(['pid' => $id])->get()){
             Cart::where('product_id', $product->id)->delete();
         Wishlist::where('product_id', $product->id)->delete();

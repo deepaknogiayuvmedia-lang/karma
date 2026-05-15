@@ -80,6 +80,18 @@ class DashboardController extends Controller
             ->take(6)
             ->get();
 
+        $top_sellers_fast_delivery = OrderDetail::join('orders', 'order_details.order_id', '=', 'orders.id')
+            ->where('order_details.delivery_status', 'delivered')
+            ->select(
+                'order_details.seller_id',
+                DB::raw('COUNT(order_details.id) as delivered_count'),
+                DB::raw('AVG(DATEDIFF(orders.updated_at, orders.created_at)) as avg_delivery_days')
+            )
+            ->groupBy('order_details.seller_id')
+            ->orderBy('avg_delivery_days', 'asc')
+            ->take(6)
+            ->get();
+
         $from = Carbon::now()->startOfYear()->format('Y-m-d');
         $to = Carbon::now()->endOfYear()->format('Y-m-d');
 
@@ -143,6 +155,7 @@ class DashboardController extends Controller
         $data['top_customer'] = $top_customer;
         $data['top_store_by_order_received'] = $top_store_by_order_received;
         $data['top_deliveryman'] = $top_deliveryman;
+        $data['top_sellers_fast_delivery'] = $top_sellers_fast_delivery;
 
         $admin_wallet = AdminWallet::where('admin_id', 1)->first();
         $data['inhouse_earning'] = $admin_wallet!=null?$admin_wallet->inhouse_earning:0;

@@ -292,6 +292,33 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('order', 'OrderReportController@order_list')->name('order');
             Route::get('order-report-excel', 'OrderReportController@order_report_export_excel')->name('order-report-excel');
         });
+
+        // Custom Vendor & Delivery Reports
+        Route::group(['prefix' => 'custom-reports', 'as' => 'vendor-delivery-report.'], function () {
+            // Vendor Reports
+            Route::get('vendor-report', 'VendorDeliveryReportController@vendor_report')->name('vendor');
+            Route::get('vendor-report-pdf', 'VendorDeliveryReportController@export_vendor_pdf')->name('vendor-pdf');
+            Route::get('vendor-report-excel', 'VendorDeliveryReportController@export_vendor_excel')->name('vendor-excel');
+
+            // Delivery Reports
+            Route::get('delivery-report', 'VendorDeliveryReportController@delivery_report')->name('delivery');
+            Route::get('delivery-report-pdf', 'VendorDeliveryReportController@export_delivery_pdf')->name('delivery-pdf');
+            Route::get('delivery-report-excel', 'VendorDeliveryReportController@export_delivery_excel')->name('delivery-excel');
+
+            // Comparison Report
+            Route::get('comparison-report', 'VendorDeliveryReportController@vendor_comparison')->name('comparison');
+        });
+
+        // Alias routes for easier navigation
+        Route::get('vendor-report', 'VendorDeliveryReportController@vendor_report')->name('vendor-report.index');
+        Route::get('vendor-report/export-pdf', 'VendorDeliveryReportController@export_vendor_pdf')->name('vendor-report.export-pdf');
+        Route::get('vendor-report/export-excel', 'VendorDeliveryReportController@export_vendor_excel')->name('vendor-report.export-excel');
+
+        Route::get('delivery-report', 'VendorDeliveryReportController@delivery_report')->name('delivery-report.index');
+        Route::get('delivery-report/export-pdf', 'VendorDeliveryReportController@export_delivery_pdf')->name('delivery-report.export-pdf');
+        Route::get('delivery-report/export-excel', 'VendorDeliveryReportController@export_delivery_excel')->name('delivery-report.export-excel');
+
+        Route::get('comparison-report', 'VendorDeliveryReportController@vendor_comparison')->name('comparison-report');
         Route::group(['prefix' => 'stock', 'as' => 'stock.' ,'middleware'=>['module:report']], function () {
             //product stock report
             Route::get('product-stock', 'ProductStockReportController@index')->name('product-stock');

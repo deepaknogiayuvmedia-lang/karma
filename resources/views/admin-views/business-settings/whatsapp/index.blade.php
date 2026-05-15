@@ -49,7 +49,7 @@
 
                                 <div class="form-group col-lg-6">
                                     <label class="d-flex title-color">{{ \App\CPU\translate('App  Secret Key') }}</label>
-                                    <input type="password" class="form-control" name="api_secret_key"
+                                    <input type="text" class="form-control" name="api_secret_key"
                                         value="{{ $whatsapp_setting['api_secret_key'] ?? '' }}">
                                 </div>
 
@@ -65,9 +65,9 @@
                                     <input type="text" class="form-control" name="whatsapp_business_account_id"
                                         value="{{ $whatsapp_setting['whatsapp_business_account_id'] ?? '' }}">
                                 </div>
-                                <div class="form-group col-lg-6">
+                                <div class="form-group col-lg-12">
                                     <label class="d-flex title-color">{{ \App\CPU\translate('Access Token') }}</label>
-                                    <input type="password" class="form-control" name="access_token"
+                                    <input type="text" class="form-control" name="access_token"
                                         value="{{ $whatsapp_setting['access_token'] ?? '' }}">
                                 </div>
 

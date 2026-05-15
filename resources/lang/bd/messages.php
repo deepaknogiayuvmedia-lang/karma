@@ -219,6 +219,8 @@
   'dashboard_order_statistics' => 'ড্যাশবোর্ড অর্ডার পরিসংখ্যান',
   'top_store_by_order_received' => 'অর্ডার প্রাপ্ত শীর্ষ দোকান',
   'top_selling_store' => 'শীর্ষ বিক্রয় দোকান',
+  'top_sellers_fast_delivery' => 'দ্রুত ডেলিভারির জন্য শীর্ষ বিক্রেতা',
+  'avg_delivery_days' => 'গড় ডেলিভারি দিন',
   'top_customer' => 'শীর্ষ গ্রাহক',
   'sales' => 'বিক্রয়',
   'comission' => 'কমিশন',

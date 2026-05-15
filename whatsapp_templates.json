@@ -34,7 +34,8 @@
         "category": "UTILITY",
         "sub_category": "CUSTOM",
         "is_primary_device_delivery_only": false,
-        "id": "744896218500573"
+        "id": "744896218500573",
+        "type": "returned"
     },
     {
         "name": "packaging_order",
@@ -83,7 +84,8 @@
         "category": "UTILITY",
         "sub_category": "CUSTOM",
         "is_primary_device_delivery_only": false,
-        "id": "35064359163162815"
+        "id": "35064359163162815",
+        "type" : "processing"
     },
     {
         "name": "order_confirmation_2",
@@ -143,7 +145,8 @@
         "status": "PENDING",
         "category": "UTILITY",
         "is_primary_device_delivery_only": false,
-        "id": "1982688169264296"
+        "id": "1982688169264296",
+        "type" : "confirmed"
     },
     {
         "name": "order_cancelled",
@@ -180,7 +183,8 @@
         "status": "APPROVED",
         "category": "MARKETING",
         "is_primary_device_delivery_only": false,
-        "id": "1242255024012598"
+        "id": "1242255024012598",
+        "type" : "canceled"
     },
     {
         "name": "hello_world",
@@ -204,6 +208,7 @@
         "status": "APPROVED",
         "category": "UTILITY",
         "is_primary_device_delivery_only": false,
-        "id": "1574449583665427"
+        "id": "1574449583665427",
+        "type": "test"
     }
 ]

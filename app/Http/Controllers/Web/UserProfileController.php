@@ -155,6 +155,7 @@ class UserProfileController extends Controller
             Toastr::error(translate('Delivery_unavailable_in_this_zip_code_area!'));
             return back();
         }
+        auth('customer')->update('phone', $request->phone);
 
         $address = [
             'customer_id' => auth('customer')->check() ? auth('customer')->id() : null,

@@ -46,7 +46,7 @@ class Tallymethod
 
   private static function send($xml)
   {
-  
+   
     try {
       $response = Http::timeout(5)->withHeaders([
         'Content-Type' => 'text/xml',
@@ -209,19 +209,20 @@ class Tallymethod
 
   public static function updateOpeningStock($name, $parent, $qty, $unit, $price,$authid)
   {
+
     $name = htmlspecialchars($name, ENT_XML1, 'UTF-8');
     $parent = htmlspecialchars($parent, ENT_XML1, 'UTF-8');
     $unit = htmlspecialchars($unit, ENT_XML1, 'UTF-8');
     $value = $qty * $price;
 
     $body = "
-    <STOCKITEM NAME=\"$name\" ACTION=\"Alter\">
+      <STOCKITEM NAME=\"$name\" ACTION=\"Alter\">
         <NAME>$name</NAME>
         <PARENT>$parent</PARENT>
         <BASEUNITS>$unit</BASEUNITS>
         <OPENINGBALANCE>$qty $unit</OPENINGBALANCE>
         <OPENINGVALUE>-$value</OPENINGVALUE>
-    </STOCKITEM>
+      </STOCKITEM>
     ";
 
     return self::send(self::envelope($body, 'Import Data', 'All Masters',$authid));
@@ -249,7 +250,7 @@ class Tallymethod
             </BODY>
         </ENVELOPE>";
 
-    return self::send($xml,$authid);
+    return self::send($xml);
   }
 
   public static function checkTallyStatus()

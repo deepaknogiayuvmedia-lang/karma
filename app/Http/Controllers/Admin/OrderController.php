@@ -37,9 +37,7 @@ class OrderController extends Controller
         $to = $request['to'];
         $key = $request['search'] ? explode(' ', $request['search']) : '';
         $delivery_man_id = $request['delivery_man_id'];
-
         Order::where(['checked' => 0])->update(['checked' => 1]);
-
         $orders = Order::with(['customer', 'seller.shop'])
             ->when($status != 'all', function ($q) use($status){
                 $q->where(function ($query) use ($status) {
@@ -294,10 +292,13 @@ class OrderController extends Controller
         }
        
         if (isset($order->customer) && $order->customer->phone) {
-               
+              
+
             try {
+                //  dd($order->customer->phone);
                 \App\CPU\Helpers::send_whatsapp_notification($order->customer->phone, $request->order_status, $order->id);
             } catch (\Exception $e) {
+                dd($e);
             }
         }
 
@@ -470,6 +471,7 @@ class OrderController extends Controller
 
     public function generate_invoice($id)
     {
+        
         $company_phone =BusinessSetting::where('type', 'company_phone')->first()->value;
         $company_email =BusinessSetting::where('type', 'company_email')->first()->value;
         $company_name =BusinessSetting::where('type', 'company_name')->first()->value;
@@ -482,6 +484,7 @@ class OrderController extends Controller
         $mpdf_view = View::make('admin-views.order.invoice',
             compact('order', 'seller', 'company_phone', 'company_name', 'company_email', 'company_web_logo')
         );
+        
         Helpers::gen_mpdf($mpdf_view, 'order_invoice_', $order->id);
     }
 

@@ -40,6 +40,7 @@
                                         <label for="reg-phone" class="text-primary">* {{\App\CPU\translate('verification_code') }} / {{ \App\CPU\translate('OTP')}}</label>
                                     @endif
                                     <input class="form-control" type="text" name="token" required>
+                                    <input type="hidden" name="type" value="{{ $loginuser }}">
                                 </div>
                             </div>
                             <input type="hidden" value="{{$user->id}}" name="id">

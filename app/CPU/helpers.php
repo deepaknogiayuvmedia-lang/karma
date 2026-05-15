@@ -550,7 +550,7 @@ class Helpers
     public static function send_whatsapp_notification($phone, $status, $order_id = null)
     {
         $config = self::get_whatsapp_config();
-
+        
         if (!$config || !$config->access_token || !$config->phone_number_id) {
             return [
                 'status'  => 0,
@@ -569,7 +569,7 @@ class Helpers
         ];
 
         $type = $status_map[$status] ?? $status;
-
+        // dd($type);
         // Load templates from JSON and find the one matching the type
         $json      = file_get_contents(base_path('whatsapp_templates.json'));
         $templates = json_decode($json, true) ?? [];
@@ -647,7 +647,8 @@ class Helpers
             $param_map = [
                 'order_confirmation_2' => [
                     ['parameter_name' => 'name',      'text' => $customer_name],
-                    ['parameter_name' => 'p_name',    'text' => $product_name],
+                    ['parameter_name' => 'p_name1',    'text' => $product_name],
+                    ['parameter_name' => 'p_name2',    'text' => $product_name],
                     ['parameter_name' => 'qty',       'text' => (string)$qty],
                     ['parameter_name' => 'o_id',      'text' => '#' . $order_id_str],
                     ['parameter_name' => 'd_address', 'text' => $address],
@@ -697,7 +698,7 @@ class Helpers
                 'url'  => $url,
                 'body' => $body,
             ]);
-             dump($response);
+             dump($response->body());
             if ($response->successful()) {
                 \Illuminate\Support\Facades\Log::info('WhatsApp Send Success', $response->json());
                 return [

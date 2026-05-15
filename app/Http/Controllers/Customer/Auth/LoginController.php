@@ -10,6 +10,7 @@ use App\Model\Wishlist;
 use App\User;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Gregwar\Captcha\CaptchaBuilder;
 use Illuminate\Support\Facades\Session;
@@ -94,13 +95,18 @@ class LoginController extends Controller
             return back()->withInput();
         }
 
+        // if (!Hash::check($request->password, $user->password)) {
+        //    Toastr::error('Credentials do not match.');
+        //    return back()->withInput();
+        // }
+
         $phone_verification = Helpers::get_business_settings('phone_verification');
         $email_verification = Helpers::get_business_settings('email_verification');
         if ($phone_verification && !$user->is_phone_verified) {
-            return redirect(route('customer.auth.check', [$user->id]));
+            return redirect(route('customer.auth.check', ['id' => $user->id, 'type' => 'login']));
         }
         if ($email_verification && !$user->is_email_verified) {
-            return redirect(route('customer.auth.check', [$user->id]));
+            return redirect(route('customer.auth.check',  ['id' => $user->id, 'type' => 'login']));
         }
 
         if (isset($user) && $user->is_active && auth('customer')->attempt(['email' => $user->email, 'password' => $request->password], $remember)) {

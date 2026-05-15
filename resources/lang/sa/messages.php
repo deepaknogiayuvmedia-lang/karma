@@ -219,6 +219,8 @@
   'dashboard_order_statistics' => 'لوحة إحصاءات ترتيب اللوحة',
   'top_store_by_order_received' => 'تم استلام احجز طلبًا في متجر توب ستور',
   'top_selling_store' => 'في أفضل المتاجر مبيعًا',
+  'top_sellers_fast_delivery' => 'أفضل البائعين للتسليم السريع',
+  'avg_delivery_days' => 'متوسط أيام التسليم',
   'top_customer' => 'أعلى العملاء',
   'sales' => 'مبيعات',
   'comission' => 'التكليف',

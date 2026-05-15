@@ -219,6 +219,8 @@
   'dashboard_order_statistics' => 'Dashboard order statistics',
   'top_store_by_order_received' => 'Top store by order received',
   'top_selling_store' => 'Top selling store',
+  'top_sellers_fast_delivery' => 'Top sellers for fast delivery',
+  'avg_delivery_days' => 'Avg delivery days',
   'top_customer' => 'Top customer',
   'sales' => 'Sales',
   'comission' => 'Comission',

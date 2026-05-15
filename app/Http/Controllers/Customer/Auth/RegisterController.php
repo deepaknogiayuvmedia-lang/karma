@@ -20,6 +20,7 @@ use function App\CPU\translate;
 
 class RegisterController extends Controller
 {
+    public $login = null;
     public function __construct()
     {
         $this->middleware('guest:customer', ['except' => ['logout']]);
@@ -90,9 +91,11 @@ class RegisterController extends Controller
         return redirect(route('customer.auth.login'));
     }
 
-    public static function check($id)
+    public static function check($id, $login = null)
     {
         $user = User::find($id);
+        $loginuser = $login;
+        
 
         $token = rand(1000, 9999);
         DB::table('phone_or_email_verifications')->insert([
@@ -124,8 +127,9 @@ class RegisterController extends Controller
 
             Toastr::success($response);
         }
-
-        return view('customer-view.auth.verify', compact('user'));
+     
+        
+        return view('customer-view.auth.verify', compact('user','loginuser'));
     }
 
     public static function verify(Request $request)
@@ -133,6 +137,8 @@ class RegisterController extends Controller
         Validator::make($request->all(), [
             'token' => 'required',
         ]);
+
+      
 
         $email_status = Helpers::get_business_settings('email_verification');
         $phone_status = Helpers::get_business_settings('phone_verification');
@@ -151,7 +157,21 @@ class RegisterController extends Controller
                 // }
                 $verify->delete();
                 Toastr::success(translate('verification_done_successfully'));
-
+                
+                // Login the user and create session
+                if($request->type == 'login'){
+                    auth('customer')->login($user);
+                    $wish_list = Wishlist::whereHas('wishlistProduct',function($q){
+                        return $q;
+                    })->where('customer_id', $user->id)->pluck('product_id')->toArray();
+                    session()->put('wish_list', $wish_list);
+                    CartManager::cart_to_db();
+                    
+                    return redirect(session('keep_return_url') ?? route('home'));
+                }
+                else{
+                    return redirect(route('customer.auth.login'));
+                }
             } else {
                 Toastr::error(translate('Verification_code_or_OTP mismatched'));
                 return redirect()->back();
@@ -168,8 +188,19 @@ class RegisterController extends Controller
                 }
 
                 Toastr::success('Verification Successfully Done');
+                
+                // Login the user and create session
+                auth('customer')->login($user);
+                $wish_list = Wishlist::whereHas('wishlistProduct',function($q){
+                    return $q;
+                })->where('customer_id', $user->id)->pluck('product_id')->toArray();
+                session()->put('wish_list', $wish_list);
+                CartManager::cart_to_db();
+
+                return redirect(session('keep_return_url') ?? route('home'));
             } else {
                 Toastr::error('Verification code/ OTP mismatched');
+                return redirect()->back();
             }
 
         }

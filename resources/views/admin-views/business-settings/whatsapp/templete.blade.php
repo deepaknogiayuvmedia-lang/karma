@@ -336,7 +336,7 @@
 @endsection
 
 @push('script_2')
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             $('#type, #id').on('change', function() {
                 let type = $('#type').val();
@@ -383,5 +383,5 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 @endpush

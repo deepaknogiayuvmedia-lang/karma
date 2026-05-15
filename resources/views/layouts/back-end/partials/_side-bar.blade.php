@@ -1092,23 +1092,23 @@
                             </li>
 
                             <li
-                                class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/mail') || Request::is('admin/business-settings/sms-module') || Request::is('admin/business-settings/captcha') || Request::is('admin/social-login/view') || Request::is('admin/social-media-chat/view') || Request::is('admin/business-settings/map-api') || Request::is('admin/business-settings/payment-method') || Request::is('admin/business-settings/fcm-index') ? 'active' : '' }}">
-                                <a class="nav-link " href="{{ route('admin.business-settings.sms-module') }}"
+                                class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/shipping-method/3rd-party-shipping-method') || Request::is('admin/business-settings/tally-companies') || Request::is('admin/business-settings/whatsapp/templete') || Request::is('admin/business-settings/whatsapp/index') ? 'active' : '' }}">
+                                <a class="nav-link " href="{{ route('admin.business-settings.shipping-method.shipping-method-3rd-party') }}"
                                     title="{{ \App\CPU\translate('3rd_party') }}">
                                     <span class="tio-key nav-icon"></span>
                                     <span class="text-truncate">{{ \App\CPU\translate('3rd_party') }}</span>
                                 </a>
                             </li>
-                            <li
+                            {{-- <li
                                 class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/chanal') ? 'active' : '' }}">
                                 <a class="nav-link " href="{{ route('admin.business-settings.chanal') }}"
                                     title="{{ \App\CPU\translate('Chanal') }}">
                                     <span class="tio-key nav-icon"></span>
                                     <span class="text-truncate">{{ \App\CPU\translate('Chanal') }}</span>
                                 </a>
-                            </li>
+                            </li> --}}
 
-                            <li
+                            {{-- <li
                                 class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/terms-condition') || Request::is('admin/business-settings/page*') || Request::is('admin/business-settings/privacy-policy') || Request::is('admin/business-settings/about-us') || Request::is('admin/helpTopic/list') || Request::is('admin/business-settings/social-media') || Request::is('admin/file-manager*') ? 'active' : '' }}">
                                 <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle"
                                     href="javascript:" title="{{ \App\CPU\translate('Pages_&_Media') }}">
@@ -1156,9 +1156,9 @@
                                         </a>
                                     </li>
                                 </ul>
-                            </li>
+                            </li> --}}
 
-                            <li
+                            {{-- <li
                                 class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/web-config/environment-setup') || Request::is('admin/business-settings/web-config/mysitemap') || Request::is('admin/business-settings/analytics-index') || Request::is('admin/currency/view') || Request::is('admin/business-settings/web-config/db-index') || Request::is('admin/business-settings/language*') ? 'active' : '' }}">
                                 <a class="js-navbar-vertical-aside-menu-link nav-link"
                                     title="{{ \App\CPU\translate('System_Setup') }}"
@@ -1168,7 +1168,7 @@
                                         {{ \App\CPU\translate('System_Setup') }}
                                     </span>
                                 </a>
-                            </li>
+                            </li> --}}
                         @endif
                         <!--System Settings end-->
 
