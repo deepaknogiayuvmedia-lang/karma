@@ -178,7 +178,7 @@
                             <div class="form-group col-md-9" id="select-img">
                                 <div class="custom-file">
                                     <input type="file" name="image" id="customFileUpload" class="custom-file-input"
-                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                     <label class="custom-file-label"
                                         for="customFileUpload">{{\App\CPU\translate('image')}} {{\App\CPU\translate('Upload')}}</label>
                                 </div>

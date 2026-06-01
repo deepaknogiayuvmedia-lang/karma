@@ -17,7 +17,7 @@ class UpdateProductIndexing extends Command
     /**
      * The console command description.
      *
-     * @var string
+     * @var string 
      */
     protected $description = 'Updates product sorting indexing based on price, review ratings, and stock limits';
 

@@ -43,8 +43,8 @@ class ShopController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'banner'      => 'mimes:png,jpg,jpeg|max:2048',
-            'image'       => 'mimes:png,jpg,jpeg|max:2048',
+            'banner'      => 'mimes:png,jpg,jpeg,webp|max:2048',
+            'image'       => 'mimes:png,jpg,jpeg,webp|max:2048',
         ], [
             'banner.mimes'   => 'Banner image type jpg, jpeg or png',
             'banner.max'     => 'Banner Maximum size 2MB',

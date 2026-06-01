@@ -366,6 +366,7 @@ class PaymentMethodController extends Controller
                 ]),
                 'updated_at' => now()
             ]);
+            Toastr::success(translate('successfully_updated'));
         } elseif ($name == 'paytm') {
             DB::table('business_settings')->updateOrInsert(['type' => 'paytm'], [
                 'value' => json_encode([
@@ -378,8 +379,20 @@ class PaymentMethodController extends Controller
                 ]),
                 'updated_at' => now()
             ]);
+        } elseif ($name == 'phone_pe') {
+            DB::table('business_settings')->updateOrInsert(['type' => 'phone_pe'], [
+                'value' => json_encode([
+                    'status' => $request['status'],
+                    'environment' => $request['environment'],
+                    'phone_pe_client_id' => $request['phone_pe_client_id'],
+                    'phone_pe_secret_key' => $request['phone_pe_secret_key'],
+                    'phone_pe_merchant_code' => $request['phone_pe_merchant_code'],
+                    'phone_pe_salt_index' => $request['phone_pe_salt_index'],
+                ]),
+                'updated_at' => now()
+            ]);
+            Toastr::success(translate('successfully_updated'));
         }
-        Toastr::success(translate('successfully_updated'));
         return back();
     }
 }

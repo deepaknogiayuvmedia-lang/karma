@@ -87,7 +87,7 @@ class WebController extends Controller
             ->get();
         //end
 
-        $latest_products = Product::with(['reviews'])->active()->lowestPricePerPid()->orderBy('id', 'desc')->get();
+        $latest_products = Product::with(['reviews'])->active()->lowestPricePerPid()->orderBy('id', 'desc')->take(10)->get();
         
         
         $categories = Category::where(['position' => 0])->priority()->take(11)->get();
@@ -113,9 +113,9 @@ class WebController extends Controller
             ->take(4)
             ->get();
 
-        if ($bestSellProduct->count() == 0) {
-            $bestSellProduct = $latest_products;
-        }
+            if ($bestSellProduct->count() == 0) {
+                $bestSellProduct = $latest_products;
+            }
 
         if ($topRated->count() == 0) {
             $topRated = $bestSellProduct;
@@ -1231,7 +1231,7 @@ class WebController extends Controller
         $return_policy = $return_policy->content;
         return view('web-views.return-policy', compact('return_policy'));
     }
-
+     
     public function cancellation_policy()
     {
         $cancellation_policy = json_decode(BusinessSetting::where('type', 'cancellation-policy')->first()->value);

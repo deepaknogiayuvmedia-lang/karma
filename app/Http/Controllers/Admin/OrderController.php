@@ -494,7 +494,7 @@ class OrderController extends Controller
     public function digital_file_upload_after_sell(Request $request)
     {
         $request->validate([
-            'digital_file_after_sell'    => 'required|mimes:jpg,jpeg,png,gif,zip,pdf'
+            'digital_file_after_sell'    => 'required|mimes: jpg,jpeg,png,webp,gif,webp,zip,pdf'
         ], [
             'digital_file_after_sell.required' => 'Digital file upload after sell is required',
             'digital_file_after_sell.mimes' => 'Digital file upload after sell upload must be a file of type: pdf, zip, jpg, jpeg, png, gif.',

@@ -136,6 +136,7 @@ class Tallymethod
 
   public static function createUnit($unit, $sellerId = 0)
   {
+    if (!self::isSyncEnabled($sellerId)) return '<RESPONSE><CREATED>1</CREATED><ERRORS>0</ERRORS></RESPONSE>';
     $xml = self::envelope("
             <UNIT NAME=\"$unit\" ACTION=\"Create Or Alter\">
                 <NAME>$unit</NAME>
@@ -150,6 +151,7 @@ class Tallymethod
 
   public static function createGroup($group,$authid)
   {
+    if (!self::isSyncEnabled($authid)) return '<RESPONSE><CREATED>1</CREATED><ERRORS>0</ERRORS></RESPONSE>';
     $group = htmlspecialchars($group, ENT_XML1, 'UTF-8');
     $xml = self::envelope("
             <STOCKGROUP NAME=\"$group\" ACTION=\"Create Or Alter\">
@@ -166,6 +168,7 @@ class Tallymethod
 
   public static function createOrAlterItem($name, $parent, $qty, $unit, $price,$authid)
   {
+    if (!self::isSyncEnabled($authid)) return '<RESPONSE><CREATED>1</CREATED><ERRORS>0</ERRORS></RESPONSE>';
     $name = htmlspecialchars($name, ENT_XML1, 'UTF-8');
     $parent = htmlspecialchars($parent, ENT_XML1, 'UTF-8');
     $unit = htmlspecialchars($unit, ENT_XML1, 'UTF-8');
@@ -194,6 +197,7 @@ class Tallymethod
 
   public static function deleteItem($name,$authid)
   {
+    if (!self::isSyncEnabled($authid)) return '<RESPONSE><CREATED>1</CREATED><ERRORS>0</ERRORS></RESPONSE>';
     $name = htmlspecialchars($name, ENT_XML1, 'UTF-8');
 
     $xml = self::envelope("
@@ -209,7 +213,7 @@ class Tallymethod
 
   public static function updateOpeningStock($name, $parent, $qty, $unit, $price,$authid)
   {
-
+    if (!self::isSyncEnabled($authid)) return '<RESPONSE><CREATED>1</CREATED><ERRORS>0</ERRORS></RESPONSE>';
     $name = htmlspecialchars($name, ENT_XML1, 'UTF-8');
     $parent = htmlspecialchars($parent, ENT_XML1, 'UTF-8');
     $unit = htmlspecialchars($unit, ENT_XML1, 'UTF-8');
@@ -231,6 +235,7 @@ class Tallymethod
 
   public static function exportStockSummary($authid)
   {
+    if (!self::isSyncEnabled($authid)) return '<RESPONSE><CREATED>1</CREATED><ERRORS>0</ERRORS></RESPONSE>';
     $xml = "
         <ENVELOPE>
             <HEADER>

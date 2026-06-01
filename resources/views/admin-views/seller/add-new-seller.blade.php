@@ -54,7 +54,7 @@
                             <div class="title-color mb-2 d-flex gap-1 align-items-center">{{\App\CPU\translate('Seller_Image')}} <span class="text-info">({{\App\CPU\translate('ratio')}} {{\App\CPU\translate('1')}}:{{\App\CPU\translate('1')}})</span></div>
                             <div class="custom-file text-left">
                                 <input type="file" name="image" id="customFileUpload" class="custom-file-input"
-                                    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label" for="customFileUpload">{{\App\CPU\translate('Upload')}} {{\App\CPU\translate('image')}}</label>
                             </div>
                         </div>
@@ -118,7 +118,7 @@
 
                             <div class="custom-file">
                                 <input type="file" name="logo" id="LogoUpload" class="custom-file-input"
-                                    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label" for="LogoUpload">{{\App\CPU\translate('Upload')}} {{\App\CPU\translate('logo')}}</label>
                             </div>
                         </div>
@@ -137,7 +137,7 @@
 
                             <div class="custom-file">
                                 <input type="file" name="banner" id="BannerUpload" class="custom-file-input"
-                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label" for="BannerUpload">{{\App\CPU\translate('Upload')}} {{\App\CPU\translate('Banner')}}</label>
                             </div>
                         </div>

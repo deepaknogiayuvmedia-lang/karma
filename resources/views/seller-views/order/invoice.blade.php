@@ -391,8 +391,10 @@
                 @endphp
                 <tbody>
                     @foreach ($order->details as $key => $details)
-                        @php($product_details = json_decode($details->product_details, true))
-                        @php $subtotal=($details['price'])*$details->qty @endphp
+                        @php
+                            $product_details = json_decode($details->product_details, true);
+                            $subtotal = $details['price'] * $details->qty;
+                        @endphp
                         <tr>
                             <td>{{ $key + 1 }}</td>
                             <td>

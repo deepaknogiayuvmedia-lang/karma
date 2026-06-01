@@ -74,7 +74,7 @@
                                         <div class="custom-file text-left">
                                             <input type="file" name="image" id="customFileEg1"
                                                 class="custom-file-input"
-                                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                             <label class="custom-file-label"
                                                 for="customFileEg1">{{ \App\CPU\translate('Choose file') }}</label>
                                         </div>

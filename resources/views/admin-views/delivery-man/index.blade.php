@@ -92,7 +92,7 @@
                                         <span class="text-info">* ( {{\App\CPU\translate('ratio')}} 1:1 )</span>
                                         <div class="custom-file">
                                             <input value="{{ old('image') }}" type="file" name="image" id="customFileEg1" class="custom-file-input"
-                                                   accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*" required>
+                                                   accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*" required>
                                             <label class="custom-file-label" for="customFileEg1">{{\App\CPU\translate('choose')}} {{\App\CPU\translate('file')}}</label>
                                         </div>
                                         <center class="mt-4">

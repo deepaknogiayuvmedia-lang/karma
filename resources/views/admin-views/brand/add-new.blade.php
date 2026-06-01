@@ -49,7 +49,7 @@
                                     <span class="ml-1 text-info">( {{\App\CPU\translate('ratio')}} 1:1 )</span>
                                     <div class="custom-file text-left" required>
                                         <input type="file" name="image" id="customFileUpload" class="custom-file-input"
-                                            accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                            accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                         <label class="custom-file-label" for="customFileUpload">{{\App\CPU\translate('choose')}} {{\App\CPU\translate('file')}}</label>
                                     </div>
                                 </div>

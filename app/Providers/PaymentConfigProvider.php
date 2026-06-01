@@ -146,6 +146,19 @@ class PaymentConfigProvider extends ServiceProvider
                 Config::set('config_paytm', $config);
             }
 
+            //phone_pe
+            $phone_pe = Helpers::get_business_settings('phone_pe');
+            if (isset($phone_pe)) {
+                $config = array(
+                    'PHONE_PE_ENVIRONMENT' => $phone_pe['environment'] ?? 'sandbox',
+                    'PHONE_PE_MERCHANT_ID' => $phone_pe['phone_pe_client_id'] ?? '',
+                    'PHONE_PE_SALT_KEY' => $phone_pe['phone_pe_secret_key'] ?? '',
+                    'PHONE_PE_SALT_INDEX' => $phone_pe['phone_pe_salt_index'] ?? 1,
+                    'PHONE_PE_CLIENT_ID' => $phone_pe['phone_pe_merchant_code'] ?? '',
+                );
+                Config::set('config_phone_pe', $config);
+            }
+
         } catch (\Exception $ex) {
 
         }

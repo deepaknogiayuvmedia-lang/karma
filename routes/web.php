@@ -275,6 +275,11 @@ Route::get('/rave/callback', 'FlutterwaveController@callback')->name('flutterwav
 Route::get('paytm-payment', 'PaytmController@payment')->name('paytm-payment');
 Route::any('paytm-response', 'PaytmController@callback')->name('paytm-response');
 
+// The callback url after a payment PHONEPE
+Route::get('phonepe-payment', 'PhonePeController@payment')->name('phonepe-payment');
+Route::any('phonepe-callback', 'PhonePeController@callback')->name('phonepe-callback');
+Route::any('phonepe-response', 'PhonePeController@response')->name('phonepe-response');
+
 // The callback url after a payment LIQPAY
 Route::get('liqpay-payment', 'LiqPayController@payment')->name('liqpay-payment');
 Route::any('liqpay-callback', 'LiqPayController@callback')->name('liqpay-callback');

@@ -86,7 +86,7 @@ class ProductController extends BaseController
             'category_id'          => 'required',
             'product_type'         => 'required',
             'digital_product_type' => 'required_if:product_type,==,digital',
-            'digital_file_ready'   => 'required_if:digital_product_type,==,ready_product|mimes:jpg,jpeg,png,gif,zip,pdf',
+            'digital_file_ready'   => 'required_if:digital_product_type,==,ready_product|mimes: jpg,jpeg,png,webp,gif,webp,zip,pdf',
             'unit'                 => 'required_if:product_type,==,physical',
             'image'                => 'required',
             'tax'                  => 'required|min:0',
@@ -247,7 +247,8 @@ class ProductController extends BaseController
         $p->unit                 = $request->product_type == 'physical' ? $request->unit : null;
         $p->digital_product_type = $request->product_type == 'digital' ? $request->digital_product_type : null;
         $p->product_type         = $request->product_type;
-        $p->details              = $request->description[array_search('en', $request->lang)];
+        $default_lang_index = array_search(Helpers::default_lang(), $request->lang ?? []);
+        $p->details              = $default_lang_index !== false ? ($request->description[$default_lang_index] ?? '') : '';
 
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $p->colors = $request->product_type == 'physical' ? json_encode($request->colors) : json_encode([]);
@@ -750,7 +751,7 @@ class ProductController extends BaseController
             'category_id'           => 'required',
             'product_type'          => 'required',
             'digital_product_type'  => 'required_if:product_type,==,digital',
-            'digital_file_ready'    => 'mimes:jpg,jpeg,png,gif,zip,pdf',
+            'digital_file_ready'    => 'mimes: jpg,jpeg,png,webp,gif,webp,zip,pdf',
             'unit'                  => 'required_if:product_type,==,physical',
             'tax'                   => 'required|min:0',
             'tax_model'             => 'required',
@@ -922,7 +923,8 @@ class ProductController extends BaseController
         $product->digital_product_type  = $request->product_type == 'digital' ? $request->digital_product_type : null;
         $product->code                  = $request->code;
         $product->minimum_order_qty     = $request->minimum_order_qty;
-        $product->details               = $request->description[array_search('en', $request->lang)];
+        $default_lang_index = array_search(Helpers::default_lang(), $request->lang ?? []);
+        $product->details               = $default_lang_index !== false ? ($request->description[$default_lang_index] ?? '') : '';
 
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $product->colors = $request->product_type == 'physical' ? json_encode($request->colors) : json_encode([]);

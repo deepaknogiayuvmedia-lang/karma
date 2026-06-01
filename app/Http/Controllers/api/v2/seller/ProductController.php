@@ -99,7 +99,7 @@ class ProductController extends Controller
 
         try {
             $validator = Validator::make($request->all(), [
-                'digital_file_ready' => 'required|mimes:jpg,jpeg,png,gif,zip,pdf',
+                'digital_file_ready' => 'required|mimes: jpg,jpeg,png,webp,gif,webp,zip,pdf',
             ]);
 
             if ($validator->errors()->count() > 0) {

@@ -250,7 +250,6 @@
                 </th>
             </tr>
         </table>
-       @dd()
         <table class="bs-0 mb-30 px-10">
             <tr>
                 <th class="content-position-y text-left">
@@ -387,8 +386,10 @@
                 @endphp
                 <tbody>
                     @foreach ($order->details as $key => $details)
-                        @php($product_details = json_decode($details->product_details, true))
-                        @php($subtotal = $details['price'] * $details['qty'])
+                        @php
+                            $product_details = json_decode($details->product_details, true);
+                            $subtotal = $details['price'] * $details['qty'];
+                        @endphp
                         <tr>
                             <td>{{ $key + 1 }}</td>
                             <td>

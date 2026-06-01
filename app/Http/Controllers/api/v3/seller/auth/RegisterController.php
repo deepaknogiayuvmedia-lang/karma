@@ -25,9 +25,9 @@ class RegisterController extends Controller
             'shop_name'     => 'required',
             'phone'         => 'required',
             'password'      => 'required|min:8',
-            'image'         => 'required|mimes: jpg,jpeg,png,gif',
-            'logo'          => 'required|mimes: jpg,jpeg,png,gif',
-            'banner'        => 'required|mimes: jpg,jpeg,png,gif',
+            'image'         => 'required|mimes: jpg,jpeg,png,webp,gif',
+            'logo'          => 'required|mimes: jpg,jpeg,png,webp,gif',
+            'banner'        => 'required|mimes: jpg,jpeg,png,webp,gif',
         ]);
 
         if ($validator->fails()) {

@@ -30,9 +30,9 @@ class RegisterController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'image'         => 'required|mimes: jpg,jpeg,png,gif',
-            'logo'          => 'required|mimes: jpg,jpeg,png,gif',
-            'banner'        => 'required|mimes: jpg,jpeg,png,gif',
+            'image'         => 'required|mimes: jpg,jpeg,png,webp,gif',
+            'logo'          => 'required|mimes: jpg,jpeg,png,webp,gif',
+            'banner'        => 'required|mimes: jpg,jpeg,png,webp,gif',
             'email'         => 'required|unique:sellers',
             'shop_address'  => 'required',
             'f_name'        => 'required',

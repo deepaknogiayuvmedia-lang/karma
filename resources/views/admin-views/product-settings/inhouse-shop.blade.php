@@ -66,7 +66,7 @@
                             <div class="position-relative mt-4">
                                 <input type="file" name="shop_banner" id="customFileUploadShop"
                                        class="custom-file-input"
-                                       accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                       accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label" for="customFileUploadShop">
                                     {{\App\CPU\translate('choose')}} {{\App\CPU\translate('file')}}
                                 </label>

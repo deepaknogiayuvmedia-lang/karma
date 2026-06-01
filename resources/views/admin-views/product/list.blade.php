@@ -115,6 +115,7 @@
                                     <th class="text-center">{{ \App\CPU\translate('Show_as_featured') }}</th>
                                     <th class="text-center">{{ \App\CPU\translate('Active') }}
                                         {{ \App\CPU\translate('status') }}</th>
+                                    <th class="text-center">{{ \App\CPU\translate('Website_Visibility') }}</th>
                                     <th class="text-center">{{ \App\CPU\translate('sellers') }}</th>
                                     <th class="text-center">{{ \App\CPU\translate('Action') }}</th>
                                 </tr>
@@ -122,7 +123,7 @@
                             <tbody>
                                 @foreach ($pro as $k => $p)
                                     <tr>
-                                        <th scope="row">{{ $pro->firstItem() + $k }}</th>
+                                        <th scope="row">{{ $pro->firstItem() + $k }}</th>   
                                         <td>
                                             <a href="{{ route('admin.product.view', [$p['id']]) }}"
                                                 class="media align-items-center gap-2">
@@ -157,6 +158,13 @@
                                                     id="{{ $p['id'] }}" {{ $p->status == 1 ? 'checked' : '' }}>
                                                 <span class="switcher_control"></span>
                                             </label>
+                                        </td>
+                                        <td class="text-center">
+                                            @if($p->indexing == 1)
+                                                <span class="badge badge-soft-success">{{ \App\CPU\translate('Visible') }}</span>
+                                            @else
+                                                <span class="badge badge-soft-danger">{{ \App\CPU\translate('Hidden') }}</span>
+                                            @endif
                                         </td>
                                         <td>
 

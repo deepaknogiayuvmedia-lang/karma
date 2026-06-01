@@ -14,7 +14,7 @@
     </style>
 
     {{--stripe--}}
-    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+
     <script src="https://js.stripe.com/v3/"></script>
     {{--stripe--}}
 @endpush
@@ -366,6 +366,19 @@
                                                         src="{{asset('public/assets/front-end/img/fluterwave.png')}}"/>
                                                 </button>
                                             </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @php($config=\App\CPU\Helpers::get_business_settings('phone_pe'))
+                            @if(isset($config) && $config['status'])
+                                <div class="col-sm-6">
+                                    <div class="card cursor-pointer">
+                                        <div class="card-body __h-100px">
+                                            <a class="btn btn-block click-if-alone" href="{{route('phonepe-payment')}}">
+                                                <img class="__inline-55" src="{{asset('public/assets/back-end/img/phonepe-1.svg')}}"/>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

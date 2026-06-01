@@ -108,8 +108,8 @@ class DeliveryManController extends Controller
             'l_name' => 'required',
             'phone' => 'required',
             'email' => 'required|unique:delivery_men,email',
-            'identity_image.0' => 'required|mimes:jpg,jpeg,png',
-            'image' => 'required|mimes:jpg,jpeg,png',
+            'identity_image.0' => 'required|mimes:jpg,jpeg,png,webp',
+            'image' => 'required|mimes:jpg,jpeg,png,webp',
             'country_code' => 'required',
             'password' => 'required|same:confirm_password|min:8'
 

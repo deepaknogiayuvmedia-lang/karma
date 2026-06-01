@@ -24,7 +24,7 @@ class Brand extends Model
 
     public function brandProducts()
     {
-        return $this->hasMany(Product::class)->active();
+        return $this->hasMany(Product::class)->active()->lowestPricePerPid();
     }
 
     public function brandAllProducts(){

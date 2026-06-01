@@ -23,16 +23,14 @@
                                         <label for="reg-phone" class="text-primary">
                                             *
                                             {{\App\CPU\translate('please') }}
-                                            {{\App\CPU\translate('provide') }}
                                             {{\App\CPU\translate('verification') }}
-                                            {{\App\CPU\translate('token') }}
+                                            {{\App\CPU\translate('OTP') }}
                                             {{\App\CPU\translate('sent_in_your_email') }}
                                         </label>
                                     @elseif(\App\CPU\Helpers::get_business_settings('phone_verification'))
                                         <label for="reg-phone" class="text-primary">
                                             *
                                             {{\App\CPU\translate('please') }}
-                                            {{\App\CPU\translate('provide') }}
                                             {{\App\CPU\translate('OTP') }}
                                             {{\App\CPU\translate('sent_in_your_phone') }}
                                         </label>

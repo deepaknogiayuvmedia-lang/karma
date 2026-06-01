@@ -992,7 +992,7 @@
                             <div class="mt-4 position-relative">
                                 <input type="file" name="company_web_logo" id="customFileUploadWL"
                                         class="custom-file-input"
-                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label"
                                         for="customFileUploadWL">{{\App\CPU\translate('choose')}} {{\App\CPU\translate('file')}}</label>
                             </div>
@@ -1017,7 +1017,7 @@
                             <div class="position-relative mt-4">
                                 <input type="file" name="company_footer_logo" id="customFileUploadWFL"
                                         class="custom-file-input"
-                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label"
                                         for="customFileUploadWFL">{{\App\CPU\translate('choose')}} {{\App\CPU\translate('file')}}</label>
                             </div>
@@ -1042,7 +1042,7 @@
                             <div class="position-relative mt-4">
                                 <input type="file" name="company_fav_icon" id="customFileUploadFI"
                                         class="custom-file-input"
-                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label"
                                         for="customFileUploadFI">{{\App\CPU\translate('choose')}} {{\App\CPU\translate('file')}}</label>
                             </div>
@@ -1067,7 +1067,7 @@
                             <div class="position-relative mt-4">
                                 <input type="file" name="loader_gif" id="customFileUploadLoader"
                                         class="custom-file-input"
-                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label"
                                         for="customFileUploadLoader">{{\App\CPU\translate('choose')}} {{\App\CPU\translate('file')}}</label>
                             </div>
@@ -1092,7 +1092,7 @@
                             <div class="mt-4 position-relative">
                                 <input type="file" name="company_mobile_logo" id="customFileUploadML"
                                         class="custom-file-input"
-                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label"
                                         for="customFileUploadML">{{\App\CPU\translate('choose')}} {{\App\CPU\translate('file')}}</label>
                             </div>

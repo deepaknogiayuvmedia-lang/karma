@@ -70,7 +70,7 @@
                         </center>
                         <div class="custom-file mt-3">
                             <input type="file" name="image" id="customFileUpload" class="custom-file-input"
-                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                             <label class="custom-file-label" for="customFileUpload">{{\App\CPU\translate('Upload')}} {{\App\CPU\translate('image')}}</label>
                         </div>
                     </div>
@@ -103,7 +103,7 @@
                         <div class="form-group mb-0">
                             <div class="custom-file">
                                 <input type="file" name="logo" id="LogoUpload" class="custom-file-input"
-                                    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label" for="LogoUpload">{{\App\CPU\translate('Upload')}} {{\App\CPU\translate('logo')}}</label>
                             </div>
                         </div>
@@ -118,7 +118,7 @@
 
                         <div class="form-group">
                             <div class="custom-file">
-                                <input type="file" name="banner" id="BannerUpload" class="custom-file-input overflow-hidden __p-2p" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                <input type="file" name="banner" id="BannerUpload" class="custom-file-input overflow-hidden __p-2p" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
                                 <label class="custom-file-label" for="BannerUpload">{{\App\CPU\translate('Upload')}} {{\App\CPU\translate('Banner')}}</label>
                             </div>
                         </div>

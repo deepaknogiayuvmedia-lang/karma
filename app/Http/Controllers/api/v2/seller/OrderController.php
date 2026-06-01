@@ -191,7 +191,7 @@ class OrderController extends Controller
 
         $validator = Validator::make($request->all(), [
             'order_id' => 'required',
-            'digital_file_after_sell' => 'required|mimes:jpg,jpeg,png,gif,zip,pdf',
+            'digital_file_after_sell' => 'required|mimes: jpg,jpeg,png,webp,gif,webp,zip,pdf',
         ]);
 
         if ($validator->errors()->count() > 0) {
