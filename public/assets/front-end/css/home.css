@@ -196,7 +196,7 @@ widget .btn > i {
 
 .text-accent {
     font-weight: 700;
-    font-size: 17px;
+    font-size: 12px;
 }
 
 .media {
@@ -559,7 +559,7 @@ widget .btn > i {
 
     .flash-product-price,
     .text-accent {
-        font-size: 18px !important;
+        font-size: 14px !important;
     }
 }
 

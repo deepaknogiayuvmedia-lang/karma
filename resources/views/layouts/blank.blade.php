@@ -43,11 +43,7 @@
 <!-- Page Content-->
 @yield('content')
 
-<!-- Back To Top Button-->
-<a class="btn-scroll-top" href="#top" data-scroll>
-    <span class="btn-scroll-top-tooltip text-muted font-size-sm mr-2">Top</span><i
-        class="btn-scroll-top-icon czi-arrow-up"> </i>
-</a>
+
 
 <!-- Vendor scrits: js libraries and plugins-->
 {{--<script src="{{asset('public/assets/front-end')}}/vendor/jquery/dist/jquery.slim.min.js"></script>--}}

@@ -3389,4 +3389,5 @@
   'phone_pe_merchant_code' => 'Phone pe merchant code',
   'phone_pe_salt_index' => 'Phone pe salt index',
   'otp' => 'Otp',
+  'We are sorry  server is not responding' => 'We are sorry  server is not responding',
 );

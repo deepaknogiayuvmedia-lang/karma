@@ -3,6 +3,14 @@
 }
 
 /*Redesign CSS*/
+html,
+body {
+    overflow-x: hidden;
+}
+img {
+    max-width: 100%;
+    height: auto;
+}
 body {
     color: #262d34;
     font-family: var(--font-family-sans-serif);
@@ -43,7 +51,7 @@ a {
 
 .product-single-hover .single-product-details {
     position: relative;
-    height: 120px;
+    height: 135px;
     padding-top: 10px;
     border-radius: 0px 0px 5px 5px;
     transition: all ease 0.3s;
@@ -56,10 +64,9 @@ a {
     -webkit-line-clamp: 2;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 14px !important;
-    font-weight: 600 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
 }
-
 .product-single-hover .quick-view {
     /* position: absolute; */
     left: 0;
@@ -110,10 +117,12 @@ a {
 .product-single-hover .inline_product img {
     transition: all ease 0.5s;
     object-fit: contain;
-    height: 200px;
-    width: 200px;
-    max-width: none;
-    @media (width< 765px) {
+    height: 180px;
+    width: 180px;
+    max-width: 100%;
+}
+@media (width< 765px) {
+    .product-single-hover .inline_product img {
         height: 150px;
         width: 150px;
     }
@@ -508,8 +517,13 @@ a {
     }
 
     .new-st-slider {
-        width: 100vw !important;
+        width: 100% !important;
     }
+
+body {
+    overflow-x: hidden;
+    
+}
 
     /* .p-xl-35 {
       padding: 35px !important;
@@ -659,6 +673,16 @@ a {
 }
 
 .__brand-item {
+    display: inline-block;
+    width: 100%;
+    max-width: 120px;
+    margin: 0 auto;
+    border-radius: 4%;
+    overflow: hidden;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #fafbfc;
+}
     display: block;
     /* width: 120px; */
     border-radius: 4%;
@@ -674,6 +698,11 @@ a {
 }
 
 .__brand-item img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    -o-object-fit: contain;
+}
     /* width: 100%; */
     aspect-ratio: 1;
     -o-object-fit: contain;
@@ -2542,7 +2571,7 @@ a {
 }
 
 .__inline-12 {
-    height: 72px !important;
+    height: 45px !important;
     width: auto;
 }
 

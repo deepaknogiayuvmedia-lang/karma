@@ -2318,15 +2318,17 @@ select {
 }
 
 .__inline-9 .subscribe-button {
-    background: #1b7fed;
+       background: #1b7fed;
     position: absolute;
-    top: 0;
+    top: 0px;
+    right: 0;
     color: white;
     padding: 11px;
-    padding-left: 15px;
-    padding-right: 15px;
+    /* padding-left: 15px; */
+    /* padding-right: 15px; */
     text-transform: capitalize;
     border: none;
+    height: 100%;
 }
 
 .__inline-9 .start_address {

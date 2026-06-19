@@ -237,7 +237,7 @@
                 float: left;
                 padding: 0 15px;
                 text-align: center;
-                width: 20%;
+                width: 25%;
 
                 position: relative;
                 margin: 10px 0;
@@ -256,8 +256,8 @@
             }
 
             .block-policy2 ul li .item-inner {
-                display: inline-block;
                 display: flex;
+                justify-content: center;
             }
 
             .block-policy2 ul li .item-inner .icon {
@@ -366,16 +366,77 @@
 
         <link rel="stylesheet" href="{{ asset('public/assets/front-end') }}/css/owl.carousel.min.css" />
         <link rel="stylesheet" href="{{ asset('public/assets/front-end') }}/css/owl.theme.default.min.css" />
+
+        <style>
+            .mobile-sticky-category {
+                position: -webkit-sticky;
+                position: sticky;
+                top: 0;
+                z-index: 1020;
+                background: #fff;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+                padding: 8px 0;
+                border-bottom: 1px solid #f0f0f0;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            .mobile-sticky-category .owl-stage {
+                display: flex;
+                align-items: center;
+            }
+
+            .mobile-sticky-category .cate-item {
+                padding: 0 12px;
+                text-decoration: none;
+                color: #333;
+                display: block;
+                text-align: center;
+                border-right: 1px solid #f0f0f0;
+            }
+
+            .mobile-sticky-category .owl-item:last-child .cate-item {
+                border-right: none;
+            }
+
+            .mobile-sticky-category .cate-item img {
+                width: 50px;
+                height: 50px;
+                object-fit: cover;
+                border-radius: 50%;
+                margin: 0 auto 4px;
+                display: block;
+            }
+
+            .mobile-sticky-category .cate-item span {
+                text-align: center;
+                line-height: 1.2;
+                /* max-width: 70px; */
+                overflow: hidden;
+                font-size: 10px;
+                color: #555;
+                display: block;
+                font-weight: 900;
+            }
+
+            @media (min-width: 769px) {
+                .mobile-sticky-category {
+                    display: none !important;
+                }
+            }
+        </style>
     @endpush
 
 @section('content')
+
     <div class="__inline-61">
         @php($decimal_point_settings = !empty(\App\CPU\Helpers::get_business_settings('decimal_point_settings')) ? \App\CPU\Helpers::get_business_settings('decimal_point_settings') : 0)
         <!-- Hero (Banners + Slider)-->
         <section class="bg-transparent mb-3">
-            <div class="container-fluid" style="padding: 0;">
-                <div class="row ">
-                    <div class="col-12">
+            <div class="container-fluid px-0">
+                <div class="row m-0">
+                    <div class="col-12 p-0">
                         @include('web-views.partials._home-top-slider')
                     </div>
                 </div>
@@ -508,7 +569,18 @@
         {{-- categries --}}
 
         @if ($business_mode == 'multi')
-            <div class="container">
+            <div class="mobile-sticky-category owl-carousel py-3" id="mobile-category-slider">
+                @foreach ($categories as $category)
+                    <a class="cate-item"
+                        href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
+                        <img src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/category/' . $category->icon) }}"
+                            onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                            alt="{{ $category->name }}">
+                        <span>{{  $category->name }}</span>
+                    </a>
+                @endforeach
+            </div>
+            <div class="container d-lg-block d-none">
                 <div class="row">
                     <div class="col-md-12 mb-5">
                         <div class="card border-0 bg-transparent h-100">
@@ -550,9 +622,10 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         @else
-            <div class=" container my-5">
+            <div class=" container my-5 d-none d-md-block">
                 <div class="card border-0 h-100 pb-4">
                     <div class="card-body">
                         <div class="row d-flex justify-content-between">
@@ -686,7 +759,7 @@
     <div class="container py-4 rtl">
         <div class="row g-4 pt-2 mt-0  __deal-of">
             {{-- Deal of the day/Recommended Product --}}
-            <div class="col-xl-3 col-md-4">
+            <div class="col-xl-3 col-md-4 d-lg-block d-none">
                 <div class="deal_of_the_day h-100" style="background: {{ $web_config['primary_color'] }}">
                     @if (isset($deal_of_the_day) && isset($deal_of_the_day->product))
                         <div class="d-flex justify-content-center align-items-center __w-70p mx-auto">
@@ -707,17 +780,7 @@
                                         <h5 class="font-semibold" style="color: {{ $web_config['primary_color'] }}">
                                             {{ \Illuminate\Support\Str::limit($deal_of_the_day->product['name'], 30) }}
                                         </h5>
-                                        <!-- <span class="d-inline-block font-size-sm text-body">
-                                                    @for ($inc = 0; $inc < 5; $inc++)
-    @if ($inc < $overallRating[0])
-    <i class="p-0 sr-star czi-star-filled active"></i>
-@else
-    <i class="p-0 sr-star czi-star __color-fea569"></i>
-    @endif
-    @endfor
-                                                        <label
-                                                            class="badge-style">( {{ $deal_of_the_day->product->reviews_count }} )</label>
-                                                </span> -->
+
                                     </div>
                                     <div class="">
 
@@ -777,16 +840,7 @@
                                                 style="color: {{ $web_config['primary_color'] }}">
                                                 {{ \Illuminate\Support\Str::limit($product['name'], 40) }}
                                             </h5>
-                                            <!-- <span class="d-inline-block font-size-sm text-body">
-                                                    @for ($inc = 0; $inc < 5; $inc++)
-    @if ($inc < $overallRating[0])
-    <i class="p-0 sr-star czi-star-filled active"></i>
-@else
-    <i class="p-0 sr-star czi-star __color-fea569"></i>
-    @endif
-    @endfor
-                                                        <label class="badge-style">( {{ $product->reviews_count }} )</label>
-                                                </span> -->
+
                                         </div>
                                         <div class="">
 
@@ -830,9 +884,9 @@
             </div>
 
             {{-- Latest products --}}
-            <div class="col-xl-9 col-md-8  mt-2">
+            <div class="col-xl-9 col-md-8 p-0  mt-2">
                 <div class="latest-product-margin">
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex px-4 justify-content-between">
                         <div class="text-center">
                             <span
                                 class="for-feature-title __text-22px font-bold text-center">{{ \App\CPU\translate('latest_products') }}</span>
@@ -847,7 +901,7 @@
                         </div>
                     </div>
 
-                    <div class="row mt-0 g-3 row-cols-xxl-5 row-cols-xl-4">
+                    <div class="row mt-0 g-3 row-cols-xxl-5 row-cols-xl-4 d-none d-sm-flex">
                         @foreach ($latest_products as $product)
                             <div class=" col-sm-4 col-md-6 col-lg-4 col-6">
                                 <div>
@@ -858,6 +912,19 @@
                                 </div>
                             </div>
                         @endforeach
+                    </div>
+
+                    <div class="d-block d-sm-none mt-2 px-3">
+                        <div class="owl-carousel owl-theme" id="latest-products-slider">
+                            @foreach ($latest_products as $product)
+                                <div class="p-1">
+                                    @include('web-views.partials._single-product', [
+                                        'product' => $product,
+                                        'decimal_point_settings' => $decimal_point_settings,
+                                    ])
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -913,7 +980,7 @@
             </div>
             <div class="container-fluid ">
                 <div class="mt-sm-3  brand-slider">
-                    <div class="owl-carousel owl-theme pb-5 pt-2" id="brands-slider">
+                    <div class="owl-carousel owl-theme pb-2 pt-2" id="brands-slider">
                         @foreach ($brands as $brand)
                             <div class="text-center">
                                 <a href="{{ route('products', ['id' => $brand['id'], 'data_from' => 'brand', 'page' => 1]) }}"
@@ -958,7 +1025,7 @@
     </div>
 
     <div class="container rtl" style="padding:0">
-        <div class="row g-3">
+        <div class="row m-0">
 
             <!-- Best Selling -->
             <div class="col-md-6">
@@ -972,7 +1039,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row g-3">
                             @foreach ($bestSellProduct as $key => $bestSell)
                                 @if ($bestSell->product && $key < 2)
                                     @php($product = $bestSell->product)
@@ -1042,7 +1109,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row g-3">
                             @foreach ($topRated as $key => $top)
                                 @if ($top->product && $key < 2)
                                     @php($product = $top->product)
@@ -1118,7 +1185,7 @@
     {{-- Categorized product --}}
     @foreach ($home_categories as $key1 => $category)
         @if ($key1 < 4)
-            <section class="container rtl pb-4">
+            <section class="container rtl pb-4 d-none d-lg-block">
                 <!-- Heading-->
                 <div class="__p-20px rounded bg-white">
                     <div class="flex-wrap __gap-6px flex-between pl-xl-4">
@@ -1177,14 +1244,7 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col_pfg8  col-style">
                 <div class="block-policy2">
                     <ul>
-                        <li class="item-1">
-                            <div class="item-inner">
-                                <div class="icon icon1"></div>
-                                <div class="content"><a href="#">Delivery Charge</a>
-                                    <p>From Rs. 99.00</p>
-                                </div>
-                            </div>
-                        </li>
+                     
                         <li class="item-2">
                             <div class="item-inner">
                                 <div class="icon icon2"></div>
@@ -1272,7 +1332,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                        direction ') }}': false,
+                                                                        direction ') }}': false,
             // center: true,
             responsive: {
                 //X-Small
@@ -1320,7 +1380,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                        direction ') }}': true,
+                                                                        direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1367,19 +1427,19 @@
             navText: [
                 "<i class='czi-arrow-{{ Session::get('direction') ===
                 "
-                                rtl "
+                                                                                                rtl "
                     ? 'right'
                     : 'left' }}'></i>",
                 "<i class='czi-arrow-{{ Session::get('direction') ===
                 "
-                                rtl "
+                                                                                                rtl "
                     ? 'left'
                     : 'right' }}'></i>"
             ],
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                        direction ') }}': true,
+                                                                        direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1428,7 +1488,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                        direction ') }}': true,
+                                                                        direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1532,6 +1592,29 @@
             }
         });
 
+        $('#mobile-category-slider').owlCarousel({
+            loop: false,
+            autoplay: false,
+            margin: 0,
+            nav: false,
+            dots: false,
+            pullDrag: true,
+            freeDrag: false,
+            mouseDrag: true,
+            touchDrag: true,
+            responsive: {
+                0: {
+                    items: 4
+                },
+                480: {
+                    items: 5
+                },
+                640: {
+                    items: 6
+                }
+            }
+        });
+
         $('#categorylist_slider').owlCarousel({
             loop: true,
             autoplay: true,
@@ -1592,7 +1675,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                        direction ') }}': false,
+                                                                        direction ') }}': false,
             // center: true,
             responsive: {
                 //X-Small
@@ -1640,7 +1723,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                        direction ') }}': false,
+                                                                        direction ') }}': false,
             // center: true,
             responsive: {
                 //X-Small
@@ -1651,7 +1734,7 @@
                     items: 1
                 },
                 375: {
-                    items: 1
+                    items: 2
                 },
                 540: {
                     items: 2
@@ -1685,7 +1768,7 @@
             margin: 20,
             nav: false,
             '{{ session('
-                        direction ') }}': true,
+                                                                        direction ') }}': true,
             dots: true,
             autoplayHoverPause: true,
             // center: true,
@@ -1735,7 +1818,7 @@
             dots: true,
             autoplayHoverPause: true,
             '{{ session('
-                        direction ') }}': true,
+                                                                        direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1773,5 +1856,51 @@
                 }
             }
         })
+
+        $('#latest-products-slider').owlCarousel({
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 3000,
+            margin: 10,
+            nav: false,
+            dots: true,
+            autoplayHoverPause: true,
+            '{{ session('direction') }}': true,
+            responsive: {
+                0: {
+                    items: 2
+                },
+                360: {
+                    items: 2
+                },
+                375: {
+                    items: 2
+                },
+                480: {
+                    items: 2
+                }
+            }
+        });
+    </script>
+
+    <script>
+        function updateStickyCategoryTop() {
+            var header = document.querySelector('.navbar-sticky');
+            var catBar = document.querySelector('.mobile-sticky-category');
+            if (header && catBar) {
+                var headerHeight = header.offsetHeight;
+                catBar.style.top = headerHeight + 'px';
+            }
+        }
+        updateStickyCategoryTop();
+        window.addEventListener('resize', updateStickyCategoryTop);
+        var observer = new MutationObserver(updateStickyCategoryTop);
+        var header = document.querySelector('.navbar-sticky');
+        if (header) {
+            observer.observe(header, {
+                attributes: true,
+                attributeFilter: ['class', 'style']
+            });
+        }
     </script>
 @endpush

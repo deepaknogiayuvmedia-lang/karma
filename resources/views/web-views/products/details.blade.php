@@ -463,46 +463,14 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="row">
-                            <div class="col-md-12">
-                                <label class="h6">Enquiry For Product</label>
-                                <hr>
-                                </div>
-                            <div class="col-md-12">
-                                <form action="{{ route('product-query') }}" class="row"  method="POST">
-                                    @csrf
-                                    <div class="col-md-6">
-                                        <input type="hidden" class="form-control " name="product_id"  value="{{ $product['id'] }}" required />
-                                        <label for="name">Name:</label>
-                                        <input type="text" class="form-control name" name="name" required />
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="mobile">Mobile Number:</label>
-                                        <input type="tel" class="form-control mobile" name="mobile" required />
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="email">Email:</label>
-                                        <input type="email" class="form-control email" name="email" required />
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="address">Address:</label>
-                                        <input name="address" class="form-control address"  required></input>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <button type="submit" class="btn text-center d-block w-100 mt-2" style="background: #00695c;color:#ffffff" ><i class="fa fa-shopping-bag" aria-hidden="true"></i> RUSH MY ORDER</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div> -->
-
                     <div class="row">
-                        <div class="mt-4 rtl col-12"
+                        <div class="rtl col-12"
                             style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
                             <div class="row">
                                 <div class="col-12">
-                                    <div class=" mt-1">
+                                    <div class="">
                                         <!-- Tabs-->
-                                        <ul class="nav nav-tabs d-flex justify-content-center __mt-35" role="tablist">
+                                        <ul class="nav nav-tabs d-flex justify-content-center" role="tablist">
                                             <li class="nav-item">
                                                 <a class="nav-link __inline-27 active " href="#overview"
                                                     data-toggle="tab" role="tab">
@@ -821,8 +789,8 @@
                     <!-- Product-->
                     <div class="row mt-4 row-cols-xl-1 row-cols-lg-1 row-cols-md-1 row-cols-1">
                         @if (count($relatedProducts) > 0)
-                            @foreach ($relatedProducts as $key => $relatedProduct)
-                                <div class=" p-3 mb-4">
+                            @foreach ($relatedProducts->take(5) as $key => $relatedProduct)
+                                <div class=" px-3 py-1">
                                     @include('web-views.partials._inline-single-product', [
                                         'product' => $relatedProduct,
                                         'decimal_point_settings' => $decimal_point_settings,

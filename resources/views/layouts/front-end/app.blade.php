@@ -304,11 +304,6 @@
     @include('layouts.front-end.partials._footer')
     <!-- Toolbar for handheld devices-->
 
-    <!-- Back To Top Button-->
-    <a class="btn-scroll-top" href="#top" data-scroll>
-        <span class="btn-scroll-top-tooltip text-muted font-size-sm mr-2">Top</span><i
-            class="btn-scroll-top-icon czi-arrow-up"> </i>
-    </a>
     <div class="__floating-btn">
         @php($whatsapp = \App\CPU\Helpers::get_business_settings('whatsapp'))
         @if (isset($whatsapp['status']) && $whatsapp['status'] == 1)

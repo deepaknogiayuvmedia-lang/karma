@@ -41,9 +41,7 @@
         word-wrap: break-word;
         overflow: hidden;
         max-height: 2.4em;
-        /* (Number of lines you want visible) * (line-height) */
         line-height: 1.2em;
-        /*text-align:justify;*/
     }
 
     .ptr {
@@ -88,11 +86,13 @@
     }
 
     .stock-card {
-        /*cursor: not-allowed !important;*/
-        /*pointer-events: none!important;*/
         filter: contrast(0.8) !important;
     }
 </style>
+@php
+    $overallRating = \App\CPU\ProductManager::get_overall_rating($product->reviews);
+    $variations = json_decode($product->variation, true);
+@endphp
 <div class="d-flex product justify-content-between inline_product" style="cursor: pointer;"
     data-href="{{route('product',$product->slug)}}">
     <div class="product_pic d-flex align-items-center justify-content-center" style=" text-align: center;">
@@ -107,7 +107,6 @@
         <h3 class="product-title">
             <a class="ptr ptr1" href="{{route('product',$product->slug)}}">{{$product['name']}}</a>
         </h3>
-        @php($overallRating=\App\CPU\ProductManager::get_overall_rating($product->reviews))
         <h6 class="ptr">
             @for($inc=0;$inc<5;$inc++)
                 @if($inc<$overallRating[0])
@@ -124,14 +123,14 @@
             )}}
             </span>
             @if($product->discount > 0)
-            <strike style="font-size: 12px!important;color: grey!important;">
+            <strike style="font-size: 12px!important;color: #E96A6A!important;">
                 {{\App\CPU\Helpers::currency_converter($product->unit_price)}}
             </strike>
             @endif
         </div>
         @if($product->discount > 0)
-        <div class="__text-14px" style="color: #4eaa6f;">
-            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ">
+        <div class="__text-12px" style="color: #4eaa6f;">
+            <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M14.665 3.04a4 4 0 0 0-5.33 0l-.242.216a2 2 0 0 1-1.22.506l-.324.018a4 4 0 0 0-3.77 3.77l-.017.323a2 2 0 0 1-.506 1.22l-.216.242a4 4 0 0 0 0 5.33l.216.242a2 2 0 0 1 .506 1.22l.018.324a4 4 0 0 0 3.769 3.769l.324.018a2 2 0 0 1 1.22.506l.242.216a4 4 0 0 0 5.33 0l.242-.216a2 2 0 0 1 1.22-.506l.324-.018a4 4 0 0 0 3.769-3.77l.018-.323a2 2 0 0 1 .505-1.22l.216-.242a4 4 0 0 0 0-5.33l-.216-.242a2 2 0 0 1-.505-1.22l-.018-.324a4 4 0 0 0-3.77-3.769l-.323-.018a2 2 0 0 1-1.22-.506l-.242-.216Zm1.042 5.253a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0ZM16 14.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="#4eaa6f"></path>
             </svg>
             save {{\App\CPU\Helpers::currency_converter(

@@ -1,9 +1,9 @@
-<div class="row">
+<div class="row m-0">
     <div class="col-xl-3 d-none d-xl-block __top-slider-cate">
         <div ></div>
     </div>
 
-    <div class="col-xl-12 col-md-12">
+    <div class="col-xl-12 col-md-12 p-0">
         @php($main_banner=\App\Model\Banner::where('banner_type','Main Banner')->where('published',1)->orderBy('id','desc')->get())
         <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
