@@ -78,7 +78,9 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
     Route::get('refund-policy', 'WebController@refund_policy')->name('refund-policy');
     Route::get('return-policy', 'WebController@return_policy')->name('return-policy');
     Route::get('cancellation-policy', 'WebController@cancellation_policy')->name('cancellation-policy');
-
+        Route::get('shipping-policy', 'WebController@shipping_policy')
+    ->name('shipping-policy');
+    
     Route::get('/product/{slug}', 'WebController@product')->name('product');
     Route::get('products', 'WebController@products')->name('products');
     Route::get('orderDetails', 'WebController@orderdetails')->name('orderdetails');

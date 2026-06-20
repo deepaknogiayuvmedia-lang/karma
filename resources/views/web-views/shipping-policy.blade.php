@@ -1,6 +1,6 @@
 @extends('layouts.front-end.app')
 
-@section('title',\App\CPU\translate('refund_policy'))
+@section('title',\App\CPU\translate('return_policy'))
 
 @push('css_or_js')
     <meta property="og:image" content="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{$web_config['web_logo']->value}}"/>
@@ -18,7 +18,7 @@
 @section('content')
     <div class=" rtl" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
 
-  <style>
+    <style>
 
     :root{
       --primary-color:#00695C;
@@ -45,6 +45,8 @@
       line-height:1.7;
     }
 
+   
+
     a{
       text-decoration:none;
     }
@@ -52,7 +54,9 @@
     /* HERO */
 
     .hero{
-      background: linear-gradient(rgb(0 105 92 / 58%), rgb(15 99 82 / 83%)), url(https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1400&auto=format&fit=crop);
+      background:
+      linear-gradient(rgba(38, 53, 15, 0.88), rgba(38, 53, 15, 0.88)),
+      url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1400&auto=format&fit=crop');
 
       background-size:cover;
       background-position:center;
@@ -67,10 +71,10 @@
     }
 
     .hero p{
-      max-width:700px;
+      max-width:750px;
       margin:auto;
-      opacity:0.95;
       font-size:17px;
+      opacity:0.95;
     }
 
     /* POLICY SECTION */
@@ -82,14 +86,14 @@
     .policy-box{
       background:var(--white);
       padding:50px;
-      border-radius:20px;
+      border-radius:22px;
       box-shadow:0 10px 30px rgba(0,0,0,0.06);
     }
 
     .policy-box h2{
       color:var(--primary-color);
-      margin-bottom:15px;
       margin-top:35px;
+      margin-bottom:15px;
       font-size:28px;
     }
 
@@ -117,7 +121,7 @@
       background:rgba(230,126,34,0.1);
       border-left:5px solid var(--accent-color);
       padding:20px;
-      border-radius:10px;
+      border-radius:12px;
       margin:25px 0;
     }
 
@@ -138,8 +142,8 @@
     }
 
     .contact-box h3{
-      margin-bottom:15px;
       font-size:28px;
+      margin-bottom:15px;
     }
 
     .contact-box p{
@@ -149,11 +153,16 @@
 
     /* FOOTER */
 
-     /* FOOTER */
-.page-footer.font-small.mdb-color.rtl{
-    margin-top: 0;
-    padding-top: 0;
-}
+    footer{
+      background:var(--secondary-color);
+      color:#d8d8d8;
+      text-align:center;
+      padding:25px 15px;
+    }
+
+    footer p{
+      font-size:14px;
+    }
 
     /* RESPONSIVE */
 
@@ -175,16 +184,15 @@
 
   </style>
 
-
   <!-- HERO -->
 
   <section class="hero">
     <div class="container">
-      <h1 class="text-white">Refund Policy</h1>
 
-      <p>
-        At PRO KISSAN, customer satisfaction is our priority. Please read our refund and return policy carefully before making any purchase on our platform.
-      </p>
+      <h1 class="text-white">Shipping Policy</h1>
+
+    
+
     </div>
   </section>
 
@@ -195,71 +203,84 @@
 
       <div class="policy-box">
 
-        <h2>1. Overview</h2>
+        <h2>1. Shipping Coverage</h2>
 
         <p>
-          PRO KISSAN is a multi-vendor farming marketplace connecting customers with farmers and agricultural product sellers. We strive to ensure that all products delivered are fresh, authentic, and of high quality.
+          PRO KISSAN provides shipping and delivery services across selected cities, towns, and rural areas through trusted logistics partners and local vendors.
         </p>
 
-        <p>
-          If you are not satisfied with your order, you may request a refund or replacement according to the terms below.
-        </p>
-
-        <div class="highlight">
-          <p>
-            Refund requests must be submitted within 24 hours of product delivery.
-          </p>
-        </div>
-
-        <h2>2. Eligible Refund Cases</h2>
+  
+        <h2>2. Order Processing Time</h2>
 
         <ul>
-          <li>Damaged or defective products received.</li>
-          <li>Expired or spoiled agricultural products.</li>
-          <li>Wrong item delivered.</li>
-          <li>Missing products in the order.</li>
-          <li>Order canceled by vendor or delivery partner.</li>
+          <li>Orders are generally processed within 24–48 hours.</li>
+          <li>Fresh farm produce may be processed faster for same-day or next-day delivery.</li>
+          <li>Bulk and wholesale orders may require additional processing time.</li>
         </ul>
 
-        <h2>3. Non-Refundable Items</h2>
+        <h2>3. Estimated Delivery Time</h2>
+
+        <p>
+          Delivery timelines depend on product type, vendor location, and customer delivery address.
+        </p>
 
         <ul>
-          <li>Products damaged after delivery due to customer handling.</li>
-          <li>Refund requests submitted after the allowed timeframe.</li>
-          <li>Items purchased during special clearance or discount sales.</li>
-          <li>Partially consumed or used products.</li>
+          <li>The product will be delivered in 5-7 business days</li>
         </ul>
 
-        <h2>4. Refund Process</h2>
+        <h2>4. Shipping Charges</h2>
 
         <p>
-          Once your refund request is received, our support team will review the issue and may ask for product images or additional details.
+          Shipping charges may vary depending on order value, product weight, vendor location, and delivery destination.
         </p>
 
         <p>
-          Approved refunds are processed within 5–7 business days and credited back to the original payment method or wallet balance.
+          Free shipping offers may be available on selected products or minimum order values.
         </p>
 
-        <h2>5. Order Cancellation</h2>
+        <h2>5. Fresh & Perishable Products</h2>
 
         <p>
-          Orders can only be canceled before they are shipped by the vendor. Once dispatched, cancellation requests may not be accepted.
+          Fresh fruits, vegetables, dairy products, and other perishable goods are packed carefully to maintain quality during transportation.
         </p>
 
-        <h2>6. Vendor Responsibility</h2>
-
         <p>
-          Vendors on PRO KISSAN are responsible for maintaining product quality, packaging standards, and accurate product descriptions.
+          Customers are advised to inspect perishable items immediately upon delivery.
         </p>
 
-        <h2>7. Contact Support</h2>
+        <h2>6. Delivery Delays</h2>
 
         <p>
-          If you face any issue related to refunds, returns, or damaged products, feel free to contact our support team.
+          Delivery may be delayed due to weather conditions, transport issues, festivals, natural disasters, or unforeseen circumstances.
+        </p>
+
+        <p>
+          PRO KISSAN will make reasonable efforts to keep customers informed about major delays.
+        </p>
+
+        <h2>7. Failed Delivery Attempts</h2>
+
+        <ul>
+          <li>Customers must provide accurate delivery details and contact information.</li>
+          <li>If delivery fails due to incorrect address or unavailability, re-delivery charges may apply.</li>
+          <li>Repeated failed attempts may result in order cancellation.</li>
+        </ul>
+
+        <h2>8. Damaged Packages</h2>
+
+        <p>
+          If your package arrives damaged or tampered with, please contact our support team immediately with photos and order details.
+        </p>
+
+        <h2>9. Contact Support</h2>
+
+        <p>
+          For shipping-related questions, tracking assistance, or delivery issues, feel free to contact us.
         </p>
 
         <!-- CONTACT -->
- <div class="contact-box">
+
+    <div class="contact-box">
 
           <h3 class="text-white">Contact Support</h3>
              <p><strong>Company Name:</strong> CROP SHOP INDIA PRIVATE LIMITED</p>
@@ -270,11 +291,11 @@
           <p><strong>Working Hours:</strong> Monday - Saturday | 9:00 AM - 6:00 PM</p>
 
         </div>
-
       </div>
 
     </div>
   </section>
+
 
     </div>
 @endsection

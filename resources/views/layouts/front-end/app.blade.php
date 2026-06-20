@@ -803,7 +803,16 @@
         @endif
 
         $(".clickable").click(function() {
-            window.location = $(this).find("a").attr("href");
+            let link = $(this).find("a").attr("href");
+            if (!link) {
+                link = $(this).closest('.product-single-hover').find("a[href*='product/']").attr("href");
+            }
+            if (!link) {
+                link = $(this).siblings().find("a").attr("href");
+            }
+            if (link) {
+                window.location = link;
+            }
             return false;
         });
     </script>

@@ -576,7 +576,7 @@
                         <img src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/category/' . $category->icon) }}"
                             onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                             alt="{{ $category->name }}">
-                        <span>{{  $category->name }}</span>
+                        <span>{{ $category->name }}</span>
                     </a>
                 @endforeach
             </div>
@@ -759,7 +759,7 @@
     <div class="container py-4 rtl">
         <div class="row g-4 pt-2 mt-0  __deal-of">
             {{-- Deal of the day/Recommended Product --}}
-            <div class="col-xl-3 col-md-4 d-lg-block d-none">
+            {{-- <div class="col-xl-3 col-md-4 d-lg-block d-none">
                 <div class="deal_of_the_day h-100" style="background: {{ $web_config['primary_color'] }}">
                     @if (isset($deal_of_the_day) && isset($deal_of_the_day->product))
                         <div class="d-flex justify-content-center align-items-center __w-70p mx-auto">
@@ -881,10 +881,10 @@
                     @endif
                 </div>
 
-            </div>
+            </div> --}}
 
             {{-- Latest products --}}
-            <div class="col-xl-9 col-md-8 p-0  mt-2">
+            <div class="col-xl-12 col-md-12 p-0  mt-2">
                 <div class="latest-product-margin">
                     <div class="d-flex px-4 justify-content-between">
                         <div class="text-center">
@@ -983,11 +983,13 @@
                     <div class="owl-carousel owl-theme pb-2 pt-2" id="brands-slider">
                         @foreach ($brands as $brand)
                             <div class="text-center">
-                                <a href="{{ route('products', ['id' => $brand['id'], 'data_from' => 'brand', 'page' => 1]) }}"
-                                    class="__brand-item">
-                                    <img src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/brand/' . $brand->image) }}"
-                                        alt="{{ $brand->name }}">
-                                </a>
+                                <div class="bg-white w-100 mx-auto">
+                                    <a href="{{ route('products', ['id' => $brand['id'], 'data_from' => 'brand', 'page' => 1]) }}"
+                                        class="__brand-item">
+                                        <img src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/brand/' . $brand->image) }}"
+                                            alt="{{ $brand->name }}">
+                                    </a>
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -1055,30 +1057,32 @@
                                                 </span>
                                             @endif
 
-                                            <div class="d-flex p-2">
-                                                <img class="rounded"
-                                                    src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product->thumbnail }}"
-                                                    width="60">
+                                            <div class="row p-2  align-items-center">
+                                                <div class="col-3">
+                                                    <img class="rounded"
+                                                        src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product->thumbnail }}"
+                                                        width="60 ">
+                                                </div>
 
-                                                <div class="pl-2">
-                                                    <h6>{{ Str::limit($product->name, 50) }}</h6>
+                                                <div class="pl-2 col-9">
+                                                    <h6 class="__text-12px">{{ Str::limit($product->name, 50) }}</h6>
 
                                                     {{-- Price --}}
-                                                    <span class="text-accent">
+                                                    <span class="text-accent __text-16px">
                                                         {{ \App\CPU\Helpers::currency_converter(
                                                             $product->unit_price - \App\CPU\Helpers::get_product_discount($product, $product->unit_price),
                                                         ) }}
                                                     </span>
 
                                                     @if ($product->discount > 0)
-                                                        <strike>
+                                                        <strike class="__text-12px">
                                                             {{ \App\CPU\Helpers::currency_converter($product->unit_price) }}
                                                         </strike>
                                                     @endif
 
                                                     {{-- Save --}}
                                                     @if ($product->discount > 0)
-                                                        <div style="color:green;">
+                                                        <div style="color:green;" class="__text-12px">
                                                             Save
                                                             {{ \App\CPU\Helpers::currency_converter(\App\CPU\Helpers::get_product_discount($product, $product->unit_price)) }}
                                                         </div>
@@ -1125,30 +1129,31 @@
                                                 </span>
                                             @endif
 
-                                            <div class="d-flex p-2">
-                                                <img class="rounded"
-                                                    src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product->thumbnail }}"
-                                                    width="60">
-
-                                                <div class="pl-2">
-                                                    <h6>{{ Str::limit($product->name, 50) }}</h6>
+                                            <div class="row p-2 align-items-center">
+                                                <div class="col-3"> 
+                                                    <img class="rounded"
+                                                        src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product->thumbnail }}"
+                                                        width="60">
+                                                </div>
+                                                <div class="pl-2 col-9">
+                                                     <h6 class="__text-12px">{{ Str::limit($product->name, 50) }}</h6>
 
                                                     {{-- Price --}}
-                                                    <span class="text-accent">
+                                                   <span class="text-accent __text-16px">
                                                         {{ \App\CPU\Helpers::currency_converter(
                                                             $product->unit_price - \App\CPU\Helpers::get_product_discount($product, $product->unit_price),
                                                         ) }}
                                                     </span>
 
                                                     @if ($product->discount > 0)
-                                                        <strike>
+                                                       <strike class="__text-12px">
                                                             {{ \App\CPU\Helpers::currency_converter($product->unit_price) }}
                                                         </strike>
                                                     @endif
 
                                                     {{-- Save --}}
                                                     @if ($product->discount > 0)
-                                                        <div style="color:green;">
+                                                         <div style="color:green;" class="__text-12px">
                                                             Save
                                                             {{ \App\CPU\Helpers::currency_converter(\App\CPU\Helpers::get_product_discount($product, $product->unit_price)) }}
                                                         </div>
@@ -1174,7 +1179,8 @@
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col_llqj  col-style">
             <div class="banners banners2">
                 <div class="banner">
-                    <a href="#"><img src="{{ asset('assets/front-end/img/id2-banner2.png') }}" alt="image"></a>
+                    <a href="#"><img src="{{ asset('assets/front-end/img/id2-banner2.png') }}"
+                            alt="image"></a>
                 </div>
             </div>
         </div>
@@ -1183,7 +1189,7 @@
 
 
     {{-- Categorized product --}}
-    @foreach ($home_categories as $key1 => $category)
+    {{-- @foreach ($home_categories as $key1 => $category)
         @if ($key1 < 4)
             <section class="container rtl pb-4 d-none d-lg-block">
                 <!-- Heading-->
@@ -1235,7 +1241,7 @@
                 </div>
             </section>
         @endif
-    @endforeach
+    @endforeach --}}
 
     {{-- delivery type --}}
 
@@ -1244,7 +1250,7 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col_pfg8  col-style">
                 <div class="block-policy2">
                     <ul>
-                     
+
                         <li class="item-2">
                             <div class="item-inner">
                                 <div class="icon icon2">
@@ -1334,7 +1340,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                        direction ') }}': false,
+                                                                                    direction ') }}': false,
             // center: true,
             responsive: {
                 //X-Small
@@ -1382,7 +1388,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                        direction ') }}': true,
+                                                                                    direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1429,19 +1435,19 @@
             navText: [
                 "<i class='czi-arrow-{{ Session::get('direction') ===
                 "
-                                                                                                rtl "
+                                                                                                                rtl "
                     ? 'right'
                     : 'left' }}'></i>",
                 "<i class='czi-arrow-{{ Session::get('direction') ===
                 "
-                                                                                                rtl "
+                                                                                                                rtl "
                     ? 'left'
                     : 'right' }}'></i>"
             ],
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                        direction ') }}': true,
+                                                                                    direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1490,7 +1496,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                        direction ') }}': true,
+                                                                                    direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1677,7 +1683,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                        direction ') }}': false,
+                                                                                    direction ') }}': false,
             // center: true,
             responsive: {
                 //X-Small
@@ -1725,7 +1731,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                        direction ') }}': false,
+                                                                                    direction ') }}': false,
             // center: true,
             responsive: {
                 //X-Small
@@ -1770,7 +1776,7 @@
             margin: 20,
             nav: false,
             '{{ session('
-                                                                        direction ') }}': true,
+                                                                                    direction ') }}': true,
             dots: true,
             autoplayHoverPause: true,
             // center: true,
@@ -1820,7 +1826,7 @@
             dots: true,
             autoplayHoverPause: true,
             '{{ session('
-                                                                        direction ') }}': true,
+                                                                                    direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1906,4 +1912,3 @@
         }
     </script>
 @endpush
-

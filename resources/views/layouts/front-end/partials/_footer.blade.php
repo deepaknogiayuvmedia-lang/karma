@@ -138,6 +138,11 @@
                             href="{{ route('cancellation-policy') }}">{{ \App\CPU\translate('cancellation_policy') }}</a>
                     </div>
 
+                    <div class="{{ Session::get('direction') === 'rtl' ? 'ml-3' : 'mr-3' }}">
+                        <a class="widget-list-link text-white"
+                            href="{{ route('shipping-policy') }}">{{ \App\CPU\translate('shipping_policy') }}</a>
+                    </div>
+
 
 
 
@@ -261,6 +266,11 @@
 
                             <li class="widget-list-item">
                                 <a class="widget-list-link"
+                                    href="{{ route('shipping-policy') }}">{{ \App\CPU\translate('shipping_policy') }}</a>
+                            </li>
+
+                            <li class="widget-list-item">
+                                <a class="widget-list-link"
                                     href="{{ route('account-tickets') }}">{{ \App\CPU\translate('Support Ticket') }}</a>
                             </li>
 
@@ -279,6 +289,10 @@
                             <li class="widget-list-item">
                                 <a class="widget-list-link"
                                     href="{{ route('track-order.index') }}">{{ \App\CPU\translate('track_order') }}</a>
+                            </li>
+                            <li class="widget-list-item">
+                                <a class="widget-list-link"
+                                    href="{{ route('shipping-policy') }}">{{ \App\CPU\translate('shipping_policy') }}</a>
                             </li>
                             <li class="widget-list-item">
                                 <a class="widget-list-link"

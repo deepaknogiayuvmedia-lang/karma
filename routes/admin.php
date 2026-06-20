@@ -17,6 +17,10 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
         Route::get('login', 'LoginController@login')->name('login');
         Route::post('login', 'LoginController@submit')->middleware('actch');
         Route::get('logout', 'LoginController@logout')->name('logout');
+        
+        Route::get('otp-verification', 'LoginController@otp_verification')->name('otp-verification');
+        Route::post('otp-verification', 'LoginController@otp_verification_submit');
+        Route::get('resend-otp', 'LoginController@resend_otp')->name('resend-otp');
     });
 
     /*authenticated*/

@@ -121,12 +121,11 @@
         }
     </style>
     <style>
-        thead {
-            background: {{ $web_config['primary_color'] }} !important;
-        }
-
         table {
             width: 100%
+        }
+        .__inline-23 thead {
+            color: black
         }
     </style>
 
@@ -506,6 +505,7 @@
                                                 @php($reviews_of_product = App\Model\Review::where('product_id', $product->id)->paginate(2))
                                                 <!-- Reviews tab-->
                                                 <div class="tab-pane fade" id="reviews" role="tabpanel">
+                                                    @if($reviews_of_product->count() > 0)
                                                     <div class="row pt-2 pb-3">
                                                         <div class="col-lg-4 col-md-5 ">
                                                             <div
@@ -681,6 +681,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    @endif
                                                     <div class="row pb-4 mb-3">
                                                         <div class="__inline-30">
                                                             <span
@@ -695,14 +696,14 @@
                                                             @if (count($product->reviews) == 0)
                                                                 <div class="card">
                                                                     <div class="card-body">
-                                                                        <h6 class="text-danger text-center m-0">
+                                                                        <h6 class=" text-center m-0" style="color:gray">
                                                                             {{ \App\CPU\translate('product_review_not_available') }}
                                                                         </h6>
                                                                     </div>
                                                                 </div>
                                                             @endif
 
-                                                        </div>
+                                                        </div>  
                                                         @if (count($product->reviews) > 2)
                                                             <div class="col-12">
                                                                 <div

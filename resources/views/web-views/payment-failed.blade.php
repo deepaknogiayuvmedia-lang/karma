@@ -35,4 +35,3 @@
 @push('script')
 
 @endpush
-

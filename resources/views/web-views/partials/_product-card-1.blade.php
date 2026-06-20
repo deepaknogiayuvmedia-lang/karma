@@ -22,26 +22,11 @@
         <div class="flash_deal_product_details pl-3 pr-3 pr-1 d-flex align-items-center">
             <div>
                 <div>
-                    <span class="flash-product-title __text-14px" style="font-weight: 600;">
+                    <span class="flash-product-title __text-12px" style="font-weight: 600;">
                         {{$product['name']}}
                     </span>
                 </div>
-                <!-- <div class="flash-product-review">
-                        @for($inc=0;$inc<5;$inc++)
-                            @if($inc<$overallRating[0])
-                                <i class="sr-star czi-star-filled active"></i>
-                            @else
-                                <i class="sr-star czi-star" style="color:#fea569 !important"></i>
-                            @endif
-                        @endfor
-                        <label class="badge-style2">
-                            ( {{$product->reviews->count()}} )
-                        </label>
-                    </div> -->
-                <div>
-
-                </div>
-                <div class="flash-product-price">
+                <div class="flash-product-price __text-12px" style="font-size: 15px">
                 {{\App\CPU\Helpers::currency_converter($product->unit_price-\App\CPU\Helpers::get_product_discount($product,$product->unit_price))}}
                   
                      @if($product->discount > 0)

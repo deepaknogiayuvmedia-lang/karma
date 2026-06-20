@@ -86,7 +86,7 @@
             justify-content: center;
             margin- {{Session::get('direction') === "rtl" ? 'right' : 'left'}}: 0;
             padding-top: 1rem;
-            padding-right: 22px;
+            padding-right: 40px;
             padding-bottom: 10px;
         }
 
