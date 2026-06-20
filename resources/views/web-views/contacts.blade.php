@@ -35,7 +35,7 @@
     <div class="container rtl" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
         <div class="row no-gutters py-5">
             <div class="col-lg-6 iframe-full-height-wrap ">
-                <img class="for-contac-image" src="{{asset("public/assets/front-end/png/contact.png")}}" alt="">
+                <img class="for-contac-image" src="{{asset("assets/front-end/png/contact.png")}}" alt="">
             </div>
             <div class="col-lg-6">
                 <div class="card">
@@ -150,4 +150,5 @@
 @endif
 {{-- recaptcha scripts end --}}
 @endpush
+
 

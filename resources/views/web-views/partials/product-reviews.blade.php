@@ -6,7 +6,7 @@
             <div
                 class="media media-ie-fix  {{Session::get('direction') === "rtl" ? 'ml-4 pl-2' : 'mr-4 pr-2'}}">
                 <img class="rounded-circle __img-64 object-cover"
-                    onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                    onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                     src="{{asset(env('PUBLIC_STORAGE_PATH')."/profile")}}/{{(isset($productReview->user)?$productReview->user->image:'')}}"
                     alt="{{isset($productReview->user)?$productReview->user->f_name:'not exist'}}"/>
                 <div
@@ -29,7 +29,7 @@
             <p class="mb-3 text-body __text-sm" style="word-wrap:break-word;">{{$productReview->comment}}</p>
             @if (!empty(json_decode($productReview->attachment)))
                 @foreach (json_decode($productReview->attachment) as $key => $photo)
-                    <img onclick="showInstaImage('{{asset(env('PUBLIC_STORAGE_PATH')."/review/".$photo)}}')" class="cz-image-zoom __img-70 rounded border" onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'" src="{{asset(env('PUBLIC_STORAGE_PATH')."/review/".$photo)}}" alt="Product review">
+                    <img onclick="showInstaImage('{{asset(env('PUBLIC_STORAGE_PATH')."/review/".$photo)}}')" class="cz-image-zoom __img-70 rounded border" onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'" src="{{asset(env('PUBLIC_STORAGE_PATH')."/review/".$photo)}}" alt="Product review">
                 @endforeach
             @endif
         </div>
@@ -39,3 +39,4 @@
     </div>
 </div>
 @endforeach
+

@@ -64,8 +64,8 @@
                                     <div class="form-group">
                                         <center>
                                             <img class="upload-img-view mb-4" id="viewer"
-                                                onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
-                                                src="{{ asset('public/assets/admin/img/900x400/img1.jpg') }}"
+                                                onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
+                                                src="{{ asset('assets/admin/img/900x400/img1.jpg') }}"
                                                 alt="image" height="274px"/>
                                         </center>
                                         <label class="title-color text-capitalize">{{ \App\CPU\translate('Image') }}
@@ -154,7 +154,7 @@
                                         </td>
                                         <td>
                                             <img class="min-w-75" width="75" height="75"
-                                                onerror="this.src='{{ asset('public/assets/back-end/img/160x160/img2.jpg') }}'"
+                                                onerror="this.src='{{ asset('assets/back-end/img/160x160/img2.jpg') }}'"
                                                 src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/notification') }}/{{ $notification['image'] }}">
                                         </td>
                                         <td id="count-{{ $notification->id }}">{{ $notification['notification_count'] }}
@@ -329,3 +329,4 @@
         }
     </script>
 @endpush
+

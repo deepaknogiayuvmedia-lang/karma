@@ -18,7 +18,7 @@
                         <div class="grid-card">
                             <div class="text-center">
                                 <img class="avatar rounded-circle avatar-lg"
-                                     onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
+                                     onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
                                      src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$item->customer->image??'')}}">
                             </div>
 
@@ -41,3 +41,4 @@
     @endif
 </div>
 <!-- End Body -->
+

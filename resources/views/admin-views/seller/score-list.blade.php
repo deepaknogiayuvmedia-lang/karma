@@ -68,7 +68,7 @@
                                         <td>
                                             <div class="d-flex align-items-center gap-10 w-max-content">
                                                 <img width="50" class="aspect-1 rounded"
-                                                    onerror="this.src='{{ asset('public/assets/back-end/img/400x400/img2.jpg') }}'"
+                                                    onerror="this.src='{{ asset('assets/back-end/img/400x400/img2.jpg') }}'"
                                                     src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/shop') }}/{{ $seller->shop->image }}"
                                                     alt="">
                                                 <div>
@@ -116,7 +116,7 @@
 
                     @if (count($sellers) == 0)
                         <div class="text-center p-4">
-                            <img class="mb-3 w-160" src="{{ asset('public/assets/back-end') }}/svg/illustrations/sorry.svg"
+                            <img class="mb-3 w-160" src="{{ asset('assets/back-end') }}/svg/illustrations/sorry.svg"
                                 alt="Image Description">
                             <p class="mb-0">{{ \App\CPU\translate('No data to show') }}</p>
                         </div>
@@ -129,3 +129,4 @@
 
 @push('script')
 @endpush
+

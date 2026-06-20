@@ -8,16 +8,16 @@
                 <a class="navbar-brand" href="{{route('seller.dashboard.index')}}" aria-label="">
                     @if (isset($shop))
                         <img class="navbar-brand-logo"
-                             onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
+                             onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
                              src="{{asset(env('PUBLIC_STORAGE_PATH')."/shop/$shop->image")}}" alt="Logo" height="40">
                         <img class="navbar-brand-logo-mini"
-                             onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
+                             onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
                              src="{{asset(env('PUBLIC_STORAGE_PATH')."/shop/$shop->image")}}"
                              alt="Logo" height="40">
 
                     @else
                         <img class="navbar-brand-logo-mini"
-                             src="{{asset('public/assets/back-end/img/160x160/img1.jpg')}}"
+                             src="{{asset('assets/back-end/img/160x160/img1.jpg')}}"
                              alt="Logo" height="40">
                     @endif
 
@@ -70,7 +70,7 @@
                                             @if($data['code']==$local)
                                                 <img class="{{Session::get('direction') === "rtl" ? 'ml-2' : 'mr-2'}}"
                                                      width="20"
-                                                     src="{{asset('public/assets/front-end')}}/img/flags/{{$data['code']}}.png"
+                                                     src="{{asset('assets/front-end')}}/img/flags/{{$data['code']}}.png"
                                                      alt="Eng">
                                                 {{$data['name']}}
                                             @endif
@@ -85,7 +85,7 @@
                                                         <img
                                                             class="{{Session::get('direction') === "rtl" ? 'ml-2' : 'mr-2'}}"
                                                             width="20"
-                                                            src="{{asset('public/assets/front-end')}}/img/flags/{{$data['code']}}.png"
+                                                            src="{{asset('assets/front-end')}}/img/flags/{{$data['code']}}.png"
                                                             alt="{{$data['name']}}"/>
                                                         <span class="text-capitalize">{{$data['name']}}</span>
                                                     </a>
@@ -207,7 +207,7 @@
                                 </div>
                                 <div class="avatar avatar-sm avatar-circle">
                                     <img class="avatar-img"
-                                         onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
+                                         onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
                                          src="{{asset(env('PUBLIC_STORAGE_PATH').'/seller/')}}/{{auth('seller')->user()->image}}"
                                          alt="Image Description">
                                     <span class="avatar-status avatar-sm-status avatar-status-success"></span>
@@ -221,7 +221,7 @@
                                         <div class="avatar avatar-sm avatar-circle mr-2">
 
                                             <img class="avatar-img"
-                                                 onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
+                                                 onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
                                                  src="{{asset(env('PUBLIC_STORAGE_PATH').'/seller/')}}/{{auth('seller')->user()->image}}"
                                                  alt="Image Description">
                                         </div>
@@ -283,7 +283,7 @@
                                 @if($data['code']==$local)
                                     <img class="{{Session::get('direction') === "rtl" ? 'ml-2' : 'mr-2'}}"
                                          width="20"
-                                         src="{{asset('public/assets/front-end')}}/img/flags/{{$data['code']}}.png"
+                                         src="{{asset('assets/front-end')}}/img/flags/{{$data['code']}}.png"
                                          alt="Eng">
                                     {{$data['name']}}
                                 @endif
@@ -298,7 +298,7 @@
                                             <img
                                                 class="{{Session::get('direction') === "rtl" ? 'ml-2' : 'mr-2'}}"
                                                 width="20"
-                                                src="{{asset('public/assets/front-end')}}/img/flags/{{$data['code']}}.png"
+                                                src="{{asset('assets/front-end')}}/img/flags/{{$data['code']}}.png"
                                                 alt="{{$data['name']}}"/>
                                             <span class="text-capitalize">{{$data['name']}}</span>
                                         </a>
@@ -341,3 +341,4 @@
 </div>
 <div id="headerFluid" class="d-none"></div>
 <div id="headerDouble" class="d-none"></div>
+

@@ -161,7 +161,7 @@
                             </div>
                         </div>
                     </div>
-                    <span class="d-none" id="placeholderImg" data-img="{{asset('public/assets/back-end/img/400x400/img3.png')}}"></span>
+                    <span class="d-none" id="placeholderImg" data-img="{{asset('assets/back-end/img/400x400/img3.png')}}"></span>
 
                     <div class="d-flex gap-3 justify-content-end">
                         <button type="reset" id="reset" class="btn btn-secondary">{{\App\CPU\translate('reset')}}</button>
@@ -198,7 +198,7 @@
         });
     </script>
 
-    <script src="{{asset('public/assets/back-end/js/spartan-multi-image-picker.js')}}"></script>
+    <script src="{{asset('assets/back-end/js/spartan-multi-image-picker.js')}}"></script>
     <script type="text/javascript">
         $(function () {
             $("#coba").spartanMultiImagePicker({
@@ -208,7 +208,7 @@
                 groupClassName: 'col-6 col-md-4',
                 maxFileSize: '',
                 placeholderImage: {
-                    image: '{{asset('public/assets/back-end/img/400x400/img2.jpg')}}',
+                    image: '{{asset('assets/back-end/img/400x400/img2.jpg')}}',
                     width: '100%'
                 },
                 dropFileLabel: "Drop Here",
@@ -237,3 +237,4 @@
         });
     </script>
 @endpush
+

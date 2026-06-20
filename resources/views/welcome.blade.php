@@ -9,3 +9,4 @@ function translate($q, $sl, $tl)
 
 //example--
 echo \App\CPU\getLanguageCode('sa');*/
+

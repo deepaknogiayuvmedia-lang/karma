@@ -49,7 +49,7 @@
                                         <a class="btn p-0"
                                            href="{{route('admin.file-manager.index', base64_encode($file['path']))}}">
                                             <img class="img-thumbnail mb-2"
-                                                 src="{{asset('public/assets/back-end/img/folder.png')}}" alt="">
+                                                 src="{{asset('assets/back-end/img/folder.png')}}" alt="">
                                             <p class="title-color">{{Str::limit($file['name'],10)}}</p>
                                         </a>
                                     @elseif($file['type']=='file')
@@ -186,3 +186,4 @@
         }
     </script>
 @endpush
+

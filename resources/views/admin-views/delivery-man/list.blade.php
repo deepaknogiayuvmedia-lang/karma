@@ -75,7 +75,7 @@
                                     <td>
                                         <div class="media align-items-center gap-10">
                                             <img class="rounded-circle avatar avatar-lg"
-                                                 onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
+                                                 onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
                                                  src="{{asset(env('PUBLIC_STORAGE_PATH').'/delivery-man')}}/{{$dm['image']}}">
                                             <div class="media-body">
                                                 <a title="Earning Statement"
@@ -136,7 +136,7 @@
                                 <tr>
                                     <td colspan="7">
                                         <div class="text-center p-4">
-                                            <img class="mb-3 w-160" src="{{ asset('public/assets/back-end/svg/illustrations/sorry.svg') }}" alt="Image Description">
+                                            <img class="mb-3 w-160" src="{{ asset('assets/back-end/svg/illustrations/sorry.svg') }}" alt="Image Description">
                                             <p class="mb-0">{{\App\CPU\translate('No_delivery_man_found')}}</p>
                                         </div>
                                     </td>
@@ -189,3 +189,4 @@
         });
     </script>
 @endpush
+

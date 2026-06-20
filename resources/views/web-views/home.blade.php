@@ -16,7 +16,7 @@
         <meta property="twitter:url" content="{{ env('APP_URL') }}">
         <meta property="twitter:description" content="{!! substr($web_config['about']->value, 0, 100) !!}">
 
-        <link rel="stylesheet" href="{{ asset('public/assets/front-end') }}/css/home.css" />
+        <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/home.css" />
         <style>
             .cz-countdown-days {
                 border: .5px solid var(--primary_color);
@@ -261,7 +261,7 @@
             }
 
             .block-policy2 ul li .item-inner .icon {
-                background: url(../../public/assets/front-end/img/promotion.png) no-repeat center center;
+                background: url(../../assets/front-end/img/promotion.png) no-repeat center center;
                 width: 60px;
                 height: 52px;
                 float: left;
@@ -364,8 +364,8 @@
             }
         </style>
 
-        <link rel="stylesheet" href="{{ asset('public/assets/front-end') }}/css/owl.carousel.min.css" />
-        <link rel="stylesheet" href="{{ asset('public/assets/front-end') }}/css/owl.theme.default.min.css" />
+        <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/owl.carousel.min.css" />
+        <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/owl.theme.default.min.css" />
 
         <style>
             .mobile-sticky-category {
@@ -574,7 +574,7 @@
                     <a class="cate-item"
                         href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
                         <img src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/category/' . $category->icon) }}"
-                            onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                            onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                             alt="{{ $category->name }}">
                         <span>{{  $category->name }}</span>
                     </a>
@@ -605,7 +605,7 @@
                                                     <a
                                                         href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
                                                         <div class="__img overflow-hidden rounded-circle">
-                                                            <img onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                                            <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                                 src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/category/' . $category->icon) }}"
                                                                 alt="{{ $category->name }}">
                                                         </div>
@@ -650,7 +650,7 @@
                                             <a
                                                 href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
                                                 <div class="__img">
-                                                    <img onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                                    <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                         src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/category/' . $category->icon) }}"
                                                         alt="{{ $category->name }}">
                                                     <p class="text-center small mt-1">
@@ -813,7 +813,7 @@
                             </div>
                         </div>
                         <div class="recomanded-buy-button">
-                            <button class="buy_btn" style="color:{{ $web_config['primary_color'] }}"
+                            <button class="buy_btn mx-auto " style="color:{{ $web_config['primary_color'] }}"
                                 onclick="location.href='{{ route('product', $deal_of_the_day->product->slug) }}'">{{ \App\CPU\translate('buy_now') }}
                             </button>
                         </div>
@@ -828,7 +828,7 @@
                                 <div class="d-flex justify-content-center align-items-center  __pt-20 __m-20-r"
                                     style="background-color: #fff;">
                                     <img src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product['thumbnail'] }}"
-                                        onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                        onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                         alt="" style="height: 250px">
                                 </div>
                                 <div class="__i-1">
@@ -872,7 +872,7 @@
                                 </div>
                             </div>
                             <div class="recomanded-buy-button">
-                                <button class="buy_btn" style="color:{{ $web_config['primary_color'] }}"
+                                <button class="buy_btn mx-auto" style="color:{{ $web_config['primary_color'] }}"
                                     onclick="location.href='{{ route('product', $product->slug) }}'">{{ \App\CPU\translate('buy_now') }}
                                 </button>
                             </div>
@@ -945,7 +945,7 @@
                                         <a href="{{ $mainbanner->url }}" class="d-block">
 
                                             <img class="d-block"
-                                                onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                                onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                 src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/banner') }}/{{ $mainbanner['photo'] }}">
                                         </a>
                                     </div>
@@ -999,7 +999,7 @@
     <div class="container rtl mt-4" style="padding:0">
         <div class="arrival-title">
             <div>
-                <img src="{{ asset('public/assets/front-end/png/new-arrivals.png') }}" alt="">
+                <img src="{{ asset('assets/front-end/png/new-arrivals.png') }}" alt="">
 
             </div>
             <div class="pl-2">
@@ -1034,7 +1034,7 @@
 
                         <div class="d-flex justify-content-between mb-3">
                             <div>
-                                <img class="size-30" src="{{ asset('public/assets/front-end/png/best sellings.png') }}">
+                                <img class="size-30" src="{{ asset('assets/front-end/png/best sellings.png') }}">
                                 <span class="font-bold pl-1">Best Sellings</span>
                             </div>
                         </div>
@@ -1104,7 +1104,7 @@
 
                         <div class="d-flex justify-content-between mb-3">
                             <div>
-                                <img class="size-30" src="{{ asset('public/assets/front-end/png/top-rated.png') }}">
+                                <img class="size-30" src="{{ asset('assets/front-end/png/top-rated.png') }}">
                                 <span class="font-bold pl-1">Top Rated</span>
                             </div>
                         </div>
@@ -1174,7 +1174,7 @@
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col_llqj  col-style">
             <div class="banners banners2">
                 <div class="banner">
-                    <a href="#"><img src="public/assets/front-end/img/id2-banner2.png" alt="image"></a>
+                    <a href="#"><img src="{{ asset('assets/front-end/img/id2-banner2.png') }}" alt="image"></a>
                 </div>
             </div>
         </div>
@@ -1211,7 +1211,7 @@
                             <a href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}"
                                 class="cursor-pointer d-block  __cate-product-side-img">
                                 <img class=""
-                                    onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                    onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                     src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/category') }}/{{ $category['icon'] }}">
                             </a>
                         </div>
@@ -1247,7 +1247,9 @@
                      
                         <li class="item-2">
                             <div class="item-inner">
-                                <div class="icon icon2"></div>
+                                <div class="icon icon2">
+
+                                </div>
                                 <div class="content">
                                     <a href="#">support 24/7</a>
                                     <p>Online 24 hours</p>
@@ -1302,7 +1304,7 @@
 
                                     <a href="{{ $banner->url }}" class="d-block">
                                         <img class="footer_banner_img"
-                                            onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                            onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                             src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/banner') }}/{{ $banner['photo'] }}">
                                     </a>
                                 </div>
@@ -1320,7 +1322,7 @@
 
 @push('script')
     {{-- Owl Carousel --}}
-    <script src="{{ asset('public/assets/front-end/js/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('assets/front-end/js/owl.carousel.min.js') }}"></script>
 
     <script>
         $('#flash-deal-slider').owlCarousel({
@@ -1904,3 +1906,4 @@
         }
     </script>
 @endpush
+

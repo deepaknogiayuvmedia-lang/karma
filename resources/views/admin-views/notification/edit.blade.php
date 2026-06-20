@@ -58,7 +58,7 @@
                             <center>
                                 <img class="upload-img-view mt-4" 
                                     id="viewer"
-                                    onerror="this.src='{{asset('public/assets/back-end/img/160x160/img2.jpg')}}'"
+                                    onerror="this.src='{{asset('assets/back-end/img/160x160/img2.jpg')}}'"
                                     src="{{asset(env('PUBLIC_STORAGE_PATH').'/notification')}}/{{$notification['image']}}"
                                         alt="image"/>
                             </center>
@@ -105,3 +105,4 @@
         });
     </script>
 @endpush
+

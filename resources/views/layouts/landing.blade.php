@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link
-      href="{{ asset('public/customassets/assets/materialize.min.css') }}"
+      href="{{ asset('customassets/assets/materialize.min.css') }}"
       type="text/css"
       rel="stylesheet"
       media="screen,projection"
     />
-    <link rel="stylesheet" href="{{ asset('public/customassets/assets/styles.css') }}" />
-    <link rel="stylesheet" href="{{ asset('public/customassets/assets/form-style.css') }}" />
+    <link rel="stylesheet" href="{{ asset('customassets/assets/styles.css') }}" />
+    <link rel="stylesheet" href="{{ asset('customassets/assets/form-style.css') }}" />
     <script
       type="text/javascript"
       src="https://code.jquery.com/jquery-1.12.4.min.js"
@@ -57,8 +57,9 @@
             @yield('content')
         </main>
     </div>
-    <script src="{{ asset('public/customassets/assets/materialize.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('public/customassets/assets/scrollmenu.js') }}"></script>
-    <script src="{{ asset('public/customassets/assets/scripts.js') }}"></script>
+    <script src="{{ asset('customassets/assets/materialize.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('customassets/assets/scrollmenu.js') }}"></script>
+    <script src="{{ asset('customassets/assets/scripts.js') }}"></script>
 </body>
 </html>
+

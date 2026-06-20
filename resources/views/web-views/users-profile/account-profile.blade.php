@@ -24,7 +24,7 @@
                                 <div class="d-flex mb-3 mb-md-0 px-3 align-it ems-center">
                                     <img id="blah"
                                         class="rounded-circle border __inline-48"
-                                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                        onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile')}}/{{$customerDetail['image']}}">
 
                                     <div class="{{Session::get('direction') === "rtl" ? 'pr-2' : 'pl-2'}}">
@@ -127,8 +127,8 @@
 @endsection
 
 @push('script')
-    <script src="{{asset('public/assets/front-end')}}/vendor/nouislider/distribute/nouislider.min.js"></script>
-    <script src="{{asset('public/assets/back-end/js/croppie.js')}}"></script>
+    <script src="{{asset('assets/front-end')}}/vendor/nouislider/distribute/nouislider.min.js"></script>
+    <script src="{{asset('assets/back-end/js/croppie.js')}}"></script>
     <script>
         function checkPasswordMatch() {
             var password = $("#password").val();
@@ -199,3 +199,4 @@
         }
     </script>
 @endpush
+

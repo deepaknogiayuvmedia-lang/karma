@@ -28,7 +28,7 @@
                 ?>
                 <div class="media d-flex gap-3">
                     <img class="rounded-circle avatar" src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile')}}/{{isset($userDetails)?$userDetails['image']:''}}"
-                            onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}"
+                            onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}"
                             alt="{{isset($userDetails)?$userDetails['name']:'not found'}}"/>
                     <div class="media-body">
                         <h6 class="font-size-md mb-1">{{isset($userDetails)?$userDetails['f_name'].' '.$userDetails['l_name']:'not found'}}</h6>
@@ -93,11 +93,12 @@
 
 @push('script')
     <!-- Page level plugins -->
-    <script src="{{asset('public/assets/back-end')}}/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="{{asset('public/assets/back-end')}}/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="{{asset('assets/back-end')}}/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="{{asset('assets/back-end')}}/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="{{asset('public/assets/back-end')}}/js/demo/datatables-demo.js"></script>
-    <script src="{{asset('public/assets/back-end/js/croppie.js')}}"></script>
+    <script src="{{asset('assets/back-end')}}/js/demo/datatables-demo.js"></script>
+    <script src="{{asset('assets/back-end/js/croppie.js')}}"></script>
 
 @endpush
+

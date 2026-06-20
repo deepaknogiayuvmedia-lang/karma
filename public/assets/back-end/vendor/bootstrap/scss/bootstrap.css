@@ -5340,7 +5340,10 @@ a.close.disabled {
   height: 50px;
   overflow: scroll;
 }
-
+.modal-dialog {
+    max-width: 400px;
+    margin: 1.75rem auto;
+  }
 @media (min-width: 576px) {
   .modal-dialog {
     max-width: 500px;

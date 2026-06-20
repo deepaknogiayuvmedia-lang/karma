@@ -8,12 +8,12 @@
                     @php($shop=\App\Model\Shop::where(['seller_id'=>auth('seller')->id()])->first())
                     <a class="navbar-brand" href="{{route('seller.dashboard.index')}}" aria-label="Front">
                         @if (isset($shop))
-                            <img onerror="this.src='{{asset('public/assets/back-end/img/900x400/img1.jpg')}}'"
+                            <img onerror="this.src='{{asset('assets/back-end/img/900x400/img1.jpg')}}'"
                                 class="navbar-brand-logo-mini for-seller-logo"
                                 src="{{asset(env('PUBLIC_STORAGE_PATH')."/shop/$shop->image")}}" alt="Logo">
                         @else
                             <img class="navbar-brand-logo-mini for-seller-logo"
-                                src="{{asset('public/assets/back-end/img/900x400/img1.jpg')}}" alt="Logo">
+                                src="{{asset('assets/back-end/img/900x400/img1.jpg')}}" alt="Logo">
                         @endif
                     </a>
                     <!-- End Logo -->
@@ -562,3 +562,4 @@
         });
     </script>
 @endpush
+

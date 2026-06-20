@@ -271,7 +271,7 @@
             }
 
             $img_path = \App\CPU\ProductManager::product_image_path('thumbnail') . '/' . $thumbnail;
-            $placeholder = asset('public/assets/front-end/img/image-place-holder.png');
+            $placeholder = asset('assets/front-end/img/image-place-holder.png');
             $product_url = route('product', $slug);
 
             echo '<div class="d-flex justify-content-between border-bottom mb-3 pb-3">';

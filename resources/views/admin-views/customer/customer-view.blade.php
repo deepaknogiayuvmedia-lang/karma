@@ -100,7 +100,7 @@
                         </table>
                         @if(count($orders)==0)
                             <div class="text-center p-4">
-                                <img class="mb-3 w-160" src="{{asset('public/assets/back-end')}}/svg/illustrations/sorry.svg" alt="Image Description">
+                                <img class="mb-3 w-160" src="{{asset('assets/back-end')}}/svg/illustrations/sorry.svg" alt="Image Description">
                                 <p class="mb-0">{{ \App\CPU\translate('No_data_to_show')}}</p>
                             </div>
                         @endif
@@ -128,7 +128,7 @@
                                 <div class="mr-3">
                                     <img
                                         class="avatar rounded-circle avatar-70"
-                                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                        onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$customer->image??'')}}"
                                         alt="Image">
                                 </div>
@@ -159,3 +159,4 @@
 @push('script_2')
 
 @endpush
+

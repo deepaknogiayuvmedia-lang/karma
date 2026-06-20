@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>{{ \App\CPU\translate("product") }} {{ \App\CPU\translate("barcode") }}</title>
-    <link rel="stylesheet" href="{{ asset('public/assets/back-end') }}/css/bootstrap.css" />
+    <link rel="stylesheet" href="{{ asset('assets/back-end') }}/css/bootstrap.css" />
     <style>
         body {
             line-height: 1.2;
@@ -48,3 +48,4 @@
 </body>
 
 </html>
+

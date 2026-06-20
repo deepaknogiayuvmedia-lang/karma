@@ -60,3 +60,4 @@
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ \App\CPU\translate('Close') }}</button>
 </div>
+

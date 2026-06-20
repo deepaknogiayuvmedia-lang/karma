@@ -10,7 +10,7 @@
                     <div class="hide-on-med-and-down" style="display: flex;">
                         <li class="logo-desktop">
                             <a href="/"><img alt=""
-                                    src="{{ asset('public/customassets/assets/logo.png') }}" /></a>
+                                    src="{{ asset('customassets/assets/logo.png') }}" /></a>
                         </li>
                         <li><a href="#home">Home</a></li>
                         <li><a href="#about1">About Sugo Plus</a></li>
@@ -21,7 +21,7 @@
 
                     <li class="brand-logo center hide-on-large-only scroll-to-home">
                         <a href="/">
-                            <img alt="" src="{{ asset('public/customassets/assets/logo.png') }}" class="mobile-logo"
+                            <img alt="" src="{{ asset('customassets/assets/logo.png') }}" class="mobile-logo"
                                 style="" /></a>
                     </li>
                     <li class="btn-buy-nav right">
@@ -57,15 +57,15 @@
                 <div class="home-col-1">
                     <div class="home-product hide-on-med-and-down">
                         <div class="home-product-img col s12 l8" style="z-index: 99">
-                            <img alt="" src="{{ asset('public/customassets/assets/product-top.png') }}"
+                            <img alt="" src="{{ asset('customassets/assets/product-top.png') }}"
                                 class="product-top-img" />
                         </div>
                     </div>
                     <div class="home-product hide-on-large-only">
                         <div class="home-product-img" style="z-index: 99; position: relative">
-                            <img alt="" src="{{ asset('public/customassets/assets/product.png') }}"
+                            <img alt="" src="{{ asset('customassets/assets/product.png') }}"
                                 class="product-top-img" />
-                            <img alt="" src="{{ asset('public/customassets/assets/stamp-top.png') }}"
+                            <img alt="" src="{{ asset('customassets/assets/stamp-top.png') }}"
                                 class="stamp-top" />
                         </div>
                     </div>
@@ -86,7 +86,7 @@
                                 <span class="pr-newprice">Rs 2499</span>
                                 <span class="pr-saveprice">you save -50%</span>
                             </div>
-                            <img alt="" src="{{ asset('public/customassets/assets/pricetag-1.png') }}"
+                            <img alt="" src="{{ asset('customassets/assets/pricetag-1.png') }}"
                                 class="pricetag1" />
                         </div>
 
@@ -115,34 +115,34 @@
                         <b style="color: #2b3976">Manage<br />Your</b>
                         <b style="color: #d81732">Blood<br />sugar</b>
                         <i>Safely &<br />naturaly</i><br />
-                        <img alt="" src="{{ asset('public/customassets/assets/stamp-30.png') }}"
+                        <img alt="" src="{{ asset('customassets/assets/stamp-30.png') }}"
                             style="width: 61px; margin: 0px auto" />
                     </div>
                     <div class="angle-box white hide-on-med-and-down">
                         <ul class="col l8 push-l3">
                             <li>
                                 <img alt=""
-                                    src="{{ asset('public/customassets/assets/icon-check.svg') }}" /><b>Regulates</b>&nbsp;Blood
+                                    src="{{ asset('customassets/assets/icon-check.svg') }}" /><b>Regulates</b>&nbsp;Blood
                                 Pressure
                             </li>
                             <li>
                                 <img alt=""
-                                    src="{{ asset('public/customassets/assets/icon-check.svg') }}" /><b>Balances</b>&nbsp;Blood
+                                    src="{{ asset('customassets/assets/icon-check.svg') }}" /><b>Balances</b>&nbsp;Blood
                                 Sugar Levels
                             </li>
                             <li>
                                 <img alt=""
-                                    src="{{ asset('public/customassets/assets/icon-check.svg') }}" /><b>Lowers</b>&nbsp;Bad
+                                    src="{{ asset('customassets/assets/icon-check.svg') }}" /><b>Lowers</b>&nbsp;Bad
                                 Cholesterol (LDL)
                             </li>
                             <li>
                                 <img alt=""
-                                    src="{{ asset('public/customassets/assets/icon-check.svg') }}" /><b>Increases</b>&nbsp;Good
+                                    src="{{ asset('customassets/assets/icon-check.svg') }}" /><b>Increases</b>&nbsp;Good
                                 Cholesterol (HDL)
                             </li>
                             <li>
                                 <img alt=""
-                                    src="{{ asset('public/customassets/assets/icon-check.svg') }}" /><b>Reverses</b>&nbsp;Insulin
+                                    src="{{ asset('customassets/assets/icon-check.svg') }}" /><b>Reverses</b>&nbsp;Insulin
                                 Resistance
                             </li>
                         </ul>
@@ -173,27 +173,27 @@
                         <ul>
                             <li>
                                 <img alt=""
-                                    src="{{ asset('public/customassets/assets/icon-check.svg') }}" /><span><b>Regulates</b>&nbsp;Blood
+                                    src="{{ asset('customassets/assets/icon-check.svg') }}" /><span><b>Regulates</b>&nbsp;Blood
                                     Pressure</span>
                             </li>
                             <li>
                                 <img alt=""
-                                    src="{{ asset('public/customassets/assets/icon-check.svg') }}" /><span><b>Balances</b>&nbsp;Blood
+                                    src="{{ asset('customassets/assets/icon-check.svg') }}" /><span><b>Balances</b>&nbsp;Blood
                                     Sugar Levels</span>
                             </li>
                             <li>
                                 <img alt=""
-                                    src="{{ asset('public/customassets/assets/icon-check.svg') }}" /><span><b>Lowers</b>&nbsp;Bad
+                                    src="{{ asset('customassets/assets/icon-check.svg') }}" /><span><b>Lowers</b>&nbsp;Bad
                                     Cholesterol (LDL)</span>
                             </li>
                             <li>
                                 <img alt=""
-                                    src="{{ asset('public/customassets/assets/icon-check.svg') }}" /><span><b>Increases</b>&nbsp;Good
+                                    src="{{ asset('customassets/assets/icon-check.svg') }}" /><span><b>Increases</b>&nbsp;Good
                                     Cholesterol (HDL)</span>
                             </li>
                             <li>
                                 <img alt=""
-                                    src="{{ asset('public/customassets/assets/icon-check.svg') }}" /><span><b>Reverses</b>&nbsp;Insulin
+                                    src="{{ asset('customassets/assets/icon-check.svg') }}" /><span><b>Reverses</b>&nbsp;Insulin
                                     Resistance</span>
                             </li>
                         </ul>
@@ -210,19 +210,19 @@
             </h4>
             <div class="row cause-row">
                 <div class="cause-box">
-                    <img alt="" src="{{ asset('public/customassets/assets/feat-1.png') }}" /><span>Have you been
+                    <img alt="" src="{{ asset('customassets/assets/feat-1.png') }}" /><span>Have you been
                         diagnosed with a heart problem?</span>
                 </div>
                 <div class="cause-box">
-                    <img alt="" src="{{ asset('public/customassets/assets/feat-2.png') }}" /><span>Have you been
+                    <img alt="" src="{{ asset('customassets/assets/feat-2.png') }}" /><span>Have you been
                         diagnosed with Type 2 Diabetes?</span>
                 </div>
                 <div class="cause-box">
-                    <img alt="" src="{{ asset('public/customassets/assets/feat-3.png') }}" /><span>Do you suffer
+                    <img alt="" src="{{ asset('customassets/assets/feat-3.png') }}" /><span>Do you suffer
                         from high blood pressure & blood sugar?</span>
                 </div>
                 <div class="cause-box">
-                    <img alt="" src="{{ asset('public/customassets/assets/feat-4.png') }}" /><span>Are you
+                    <img alt="" src="{{ asset('customassets/assets/feat-4.png') }}" /><span>Are you
                         overweight for your age & body type?</span>
                 </div>
             </div>
@@ -303,7 +303,7 @@
                 </div>
             </div>
         </div>
-        <img alt="" src="{{ asset('public/customassets/assets/product.png') }}" class="back-3-product" />
+        <img alt="" src="{{ asset('customassets/assets/product.png') }}" class="back-3-product" />
     </div>
 
     <div class="back-4">
@@ -327,9 +327,9 @@
             <div class="row">
                 <div class="col s12 ingr-with-img-row no-padding">
                     <div class="ingr-with-img">
-                        <img alt="" src="{{ asset('public/customassets/assets/ingr-1.jpg') }}"
+                        <img alt="" src="{{ asset('customassets/assets/ingr-1.jpg') }}"
                             class="ingrimg2 hide-on-med-and-down" />
-                        <img alt="" src="{{ asset('public/customassets/assets/ingr-m-1.jpg') }}"
+                        <img alt="" src="{{ asset('customassets/assets/ingr-m-1.jpg') }}"
                             class="ingrimg2 hide-on-large-only" />
                         <div class="ingr-text">
                             <span class="ingrimgtitle2"><b>Gudmar</b> Leaf</span>
@@ -339,9 +339,9 @@
                         </div>
                     </div>
                     <div class="ingr-with-img invert-ingr">
-                        <img alt="" src="{{ asset('public/customassets/assets/ingr-2.jpg') }}"
+                        <img alt="" src="{{ asset('customassets/assets/ingr-2.jpg') }}"
                             class="ingrimg2 hide-on-med-and-down" />
-                        <img alt="" src="{{ asset('public/customassets/assets/ingr-m-2.jpg') }}"
+                        <img alt="" src="{{ asset('customassets/assets/ingr-m-2.jpg') }}"
                             class="ingrimg2 hide-on-large-only" />
                         <div class="ingr-text">
                             <span class="ingrimgtitle2"><b>Methi</b> Seed</span>
@@ -351,9 +351,9 @@
                         </div>
                     </div>
                     <div class="ingr-with-img">
-                        <img alt="" src="{{ asset('public/customassets/assets/ingr-3.jpg') }}"
+                        <img alt="" src="{{ asset('customassets/assets/ingr-3.jpg') }}"
                             class="ingrimg2 hide-on-med-and-down" />
-                        <img alt="" src="{{ asset('public/customassets/assets/ingr-m-3.jpg') }}"
+                        <img alt="" src="{{ asset('customassets/assets/ingr-m-3.jpg') }}"
                             class="ingrimg2 hide-on-large-only" />
                         <div class="ingr-text">
                             <span class="ingrimgtitle2"><b>Amala</b> Extract</span>
@@ -363,9 +363,9 @@
                         </div>
                     </div>
                     <div class="ingr-with-img invert-ingr">
-                        <img alt="" src="{{ asset('public/customassets/assets/ingr-4.jpg') }}"
+                        <img alt="" src="{{ asset('customassets/assets/ingr-4.jpg') }}"
                             class="ingrimg2 hide-on-med-and-down" />
-                        <img alt="" src="{{ asset('public/customassets/assets/ingr-m-4.jpg') }}"
+                        <img alt="" src="{{ asset('customassets/assets/ingr-m-4.jpg') }}"
                             class="ingrimg2 hide-on-large-only" />
                         <div class="ingr-text">
                             <span class="ingrimgtitle2"><b>Neem</b> Extract</span>
@@ -374,9 +374,9 @@
                         </div>
                     </div>
                     <div class="ingr-with-img">
-                        <img alt="" src="{{ asset('public/customassets/assets/ingr-5.jpg') }}"
+                        <img alt="" src="{{ asset('customassets/assets/ingr-5.jpg') }}"
                             class="ingrimg2 hide-on-med-and-down" />
-                        <img alt="" src="{{ asset('public/customassets/assets/ingr-m-5.jpg') }}"
+                        <img alt="" src="{{ asset('customassets/assets/ingr-m-5.jpg') }}"
                             class="ingrimg2 hide-on-large-only" />
                         <div class="ingr-text">
                             <span class="ingrimgtitle2"><b>Bitter</b> Melon</span>
@@ -395,7 +395,7 @@
         </h4>
         <div class="back-5">
             <div class="container">
-                <img alt="" src="{{ asset('public/customassets/assets/back-5-2.png') }}"
+                <img alt="" src="{{ asset('customassets/assets/back-5-2.png') }}"
                     class="back-5-2 hide-on-med-and-down" />
                 <div class="row benefits-grid benefits-slider">
                     <div class="benefit-box align-left">
@@ -453,9 +453,9 @@
         <div class="container" style="width: 100%">
             <div class="row midproduct-row no-margin">
                 <div class="midproduct-row-1">
-                    <img alt="" src="{{ asset('public/customassets/assets/product.png') }}"
+                    <img alt="" src="{{ asset('customassets/assets/product.png') }}"
                         class="product-mid-img" />
-                    <img alt="" src="{{ asset('public/customassets/assets/back-6-2.png') }}"
+                    <img alt="" src="{{ asset('customassets/assets/back-6-2.png') }}"
                         class="product-min-back" />
                 </div>
                 <div class="midproduct-row-2">
@@ -466,7 +466,7 @@
                                 <span class="pr-newprice">Rs 2499</span>
                                 <span class="pr-saveprice">you save -50%</span>
                             </div>
-                            <img alt="" src="{{ asset('public/customassets/assets/pricetag-2.png') }}"
+                            <img alt="" src="{{ asset('customassets/assets/pricetag-2.png') }}"
                                 class="pricetag2" />
                         </div>
 
@@ -505,7 +505,7 @@
                 </a>
                 <a href="#cert" class="lightbox" id="img1">
                     <span
-                        style="background-image: url('{{ asset('public/customassets/assets/assets/cert.jpg') }}')"></span>
+                        style="background-image: url('{{ asset('customassets/assets/assets/cert.jpg') }}')"></span>
                 </a>
             </div>
         </div>
@@ -567,12 +567,12 @@
                     <div class="review-box">
                         <div class="review-box-inner">
                             <div class="review-smallimg">
-                                <img alt="" src="{{ asset('public/customassets/assets/rev1-profile.jpg') }}" />
+                                <img alt="" src="{{ asset('customassets/assets/rev1-profile.jpg') }}" />
                                 <div class="review-info hide-on-large-only" style="text-align: left">
                                     <div class="review-name">Mary, 53 years</div>
                                     <div class="review-ver">
                                         Verified Buyer<img alt=""
-                                            src="{{ asset('public/customassets/assets/rev-stars.svg') }}"
+                                            src="{{ asset('customassets/assets/rev-stars.svg') }}"
                                             style="
                         border-radius: 0px;
                         margin-left: 0px;
@@ -594,7 +594,7 @@
                             </div>
                             <div class="review-ver hide-on-med-and-down">
                                 Verified Buyer<img alt=""
-                                    src="{{ asset('public/customassets/assets/rev-stars.svg') }}" />
+                                    src="{{ asset('customassets/assets/rev-stars.svg') }}" />
                             </div>
                         </div>
                     </div>
@@ -603,12 +603,12 @@
                     <div class="review-box">
                         <div class="review-box-inner">
                             <div class="review-smallimg">
-                                <img alt="" src="{{ asset('public/customassets/assets/rev2-profile.jpg') }}" />
+                                <img alt="" src="{{ asset('customassets/assets/rev2-profile.jpg') }}" />
                                 <div class="review-info hide-on-large-only" style="text-align: left">
                                     <div class="review-name">Francesco, 67 years</div>
                                     <div class="review-ver">
                                         Verified Buyer<img alt=""
-                                            src="{{ asset('public/customassets/assets/rev-stars.svg') }}"
+                                            src="{{ asset('customassets/assets/rev-stars.svg') }}"
                                             style="
                         border-radius: 0px;
                         margin-left: 0px;
@@ -630,7 +630,7 @@
                             </div>
                             <div class="review-ver hide-on-med-and-down">
                                 Verified Buyer<img alt=""
-                                    src="{{ asset('public/customassets/assets/rev-stars.svg') }}" />
+                                    src="{{ asset('customassets/assets/rev-stars.svg') }}" />
                             </div>
                         </div>
                     </div>
@@ -639,12 +639,12 @@
                     <div class="review-box">
                         <div class="review-box-inner">
                             <div class="review-smallimg">
-                                <img alt="" src="{{ asset('public/customassets/assets/rev3-profile.jpg') }}" />
+                                <img alt="" src="{{ asset('customassets/assets/rev3-profile.jpg') }}" />
                                 <div class="review-info hide-on-large-only" style="text-align: left">
                                     <div class="review-name">Lara, 69 years</div>
                                     <div class="review-ver">
                                         Verified Buyer<img alt=""
-                                            src="{{ asset('public/customassets/assets/rev-stars.svg') }}"
+                                            src="{{ asset('customassets/assets/rev-stars.svg') }}"
                                             style="
                         border-radius: 0px;
                         margin-left: 0px;
@@ -666,7 +666,7 @@
                             </div>
                             <div class="review-ver hide-on-med-and-down">
                                 Verified Buyer<img alt=""
-                                    src="{{ asset('public/customassets/assets/rev-stars.svg') }}" />
+                                    src="{{ asset('customassets/assets/rev-stars.svg') }}" />
                             </div>
                         </div>
                     </div>
@@ -679,18 +679,18 @@
         <div class="container" style="width: 100%; padding: 30px 0px">
             <div class="row ship-row">
                 <div class="ship-box yellow-gradient-90">
-                    <img alt="" src="{{ asset('public/customassets/assets/icon-ship1.png') }}"
+                    <img alt="" src="{{ asset('customassets/assets/icon-ship1.png') }}"
                         class="hide-on-med-and-down" />
                     <span><b>Shipping</b>DELIVERY BY COURIER WITHIN 1-7 DAYS. FREE
                         SHIPPING.</span>
                 </div>
                 <div class="ship-box yellow-gradient-90">
-                    <img alt="" src="{{ asset('public/customassets/assets/icon-ship2.png') }}"
+                    <img alt="" src="{{ asset('customassets/assets/icon-ship2.png') }}"
                         class="hide-on-med-and-down" />
                     <span><b>Guarantee</b>30 DAYS MONEY BACK GUARANTEE</span>
                 </div>
                 <div class="ship-box yellow-gradient-90">
-                    <img alt="" src="{{ asset('public/customassets/assets/icon-ship3.png') }}"
+                    <img alt="" src="{{ asset('customassets/assets/icon-ship3.png') }}"
                         class="hide-on-med-and-down" />
                     <span><b>Payment</b>CASH ON DELIVERY (COD)</span>
                 </div>
@@ -712,7 +712,7 @@
             <div class="row scrollspy2 shortform" id="buy"
                 style="display: flex; align-items: center; flex-wrap: wrap">
                 <div class="col s12 l6 center">
-                    <img alt="" src="{{ asset('public/customassets/assets/product.png') }}"
+                    <img alt="" src="{{ asset('customassets/assets/product.png') }}"
                         class="product-img-single" />
                 </div>
                 <div class="col s12 m12 l5 pull-l1 xl4 pull-xl2">
@@ -757,7 +757,7 @@
                                     </div>
                                 </form>
 
-                                <img alt="" src="{{ asset('public/customassets/assets/form-card.png') }}"
+                                <img alt="" src="{{ asset('customassets/assets/form-card.png') }}"
                                     class="form-card-pack" />
                             </div>
                         </div>
@@ -766,7 +766,7 @@
             </div>
             <div class="row">
                 <div class="col s12 buyform-stamp center">
-                    <img alt="" src="{{ asset('public/customassets/assets/form-stamp.png') }}"
+                    <img alt="" src="{{ asset('customassets/assets/form-stamp.png') }}"
                         class="form-stamp-pack" />
                 </div>
             </div>
@@ -796,7 +796,7 @@
                         </ul>
                     </div>
                     <div class="col s12 l4 no-padding white-text hide-on-med-and-down">
-                        <a href="/"><img alt="" src="{{ asset('public/customassets/assets/logo.png') }}"
+                        <a href="/"><img alt="" src="{{ asset('customassets/assets/logo.png') }}"
                                 style="
                   max-width: 300px;
                   width: 100%;
@@ -825,3 +825,4 @@
         </div>
     </div>
 @endsection
+

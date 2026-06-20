@@ -15,11 +15,11 @@
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <!-- CSS Implementing Plugins -->
-    <link rel="stylesheet" href="{{asset('public/assets/back-end')}}/css/vendor.min.css">
-    <link rel="stylesheet" href="{{asset('public/assets/back-end')}}/vendor/icon-set/style.css">
+    <link rel="stylesheet" href="{{asset('assets/back-end')}}/css/vendor.min.css">
+    <link rel="stylesheet" href="{{asset('assets/back-end')}}/vendor/icon-set/style.css">
     <!-- CSS Front Template -->
-    <link rel="stylesheet" href="{{asset('public/assets/back-end')}}/css/theme.minc619.css?v=1.0">
-    <link rel="stylesheet" href="{{asset('public/assets/back-end')}}/css/toastr.css">
+    <link rel="stylesheet" href="{{asset('assets/back-end')}}/css/theme.minc619.css?v=1.0">
+    <link rel="stylesheet" href="{{asset('assets/back-end')}}/css/toastr.css">
 
 </head>
 
@@ -27,7 +27,7 @@
 <!-- ========== MAIN CONTENT ========== -->
 <main id="content" role="main" class="main __inline-20">
     <div class="position-fixed top-0 right-0 left-0 bg-img-hero __h-32rem"
-         style="background-image: url({{asset('public/assets/admin')}}/svg/components/abstract-bg-4.svg);">
+         style="background-image: url({{asset('assets/admin')}}/svg/components/abstract-bg-4.svg);">
         <!-- SVG Bottom Shape -->
         <figure class="position-absolute right-0 bottom-0 left-0">
             <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 1921 273">
@@ -42,7 +42,7 @@
         @php($e_commerce_logo=\App\Model\BusinessSetting::where(['type'=>'company_web_logo'])->first()->value)
         <a class="d-flex justify-content-center mb-5" href="javascript:">
             <img class="z-index-2 __w-rem"  src="{{asset(env('PUBLIC_STORAGE_PATH')."/company/".$e_commerce_logo)}}" alt="Logo"
-                 onerror="this.src='{{asset('public/assets/back-end/img/400x400/img2.jpg')}}'">
+                 onerror="this.src='{{asset('assets/back-end/img/400x400/img2.jpg')}}'">
         </a>
 
         <div class="container py-4 py-lg-5 my-4">
@@ -75,11 +75,11 @@
 
 
 <!-- JS Implementing Plugins -->
-<script src="{{asset('public/assets/back-end')}}/js/vendor.min.js"></script>
+<script src="{{asset('assets/back-end')}}/js/vendor.min.js"></script>
 
 <!-- JS Front -->
-<script src="{{asset('public/assets/back-end')}}/js/theme.min.js"></script>
-<script src="{{asset('public/assets/back-end')}}/js/toastr.js"></script>
+<script src="{{asset('assets/back-end')}}/js/theme.min.js"></script>
+<script src="{{asset('assets/back-end')}}/js/toastr.js"></script>
 {!! Toastr::message() !!}
 
 @if ($errors->any())
@@ -125,4 +125,5 @@
     </script>
 </body>
 </html>
+
 

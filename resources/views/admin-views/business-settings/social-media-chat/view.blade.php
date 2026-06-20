@@ -98,3 +98,4 @@
 
 @push('script')
 @endpush
+

@@ -3,7 +3,7 @@
 @section('title',\App\CPU\translate('Shipping Address Choose'))
 
 @push('css_or_js')
-    <link rel="stylesheet" href="{{ asset('public/assets/front-end/css/bootstrap-select.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/front-end/css/bootstrap-select.min.css') }}">
 
     <style>
         .btn-outline {
@@ -425,7 +425,7 @@
 @endsection
 
 @push('script')
-    <script src="{{ asset('public/assets/front-end/js/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('assets/front-end/js/bootstrap-select.min.js') }}"></script>
     <script>
         function anotherAddress() {
             $('#sh-0').prop('checked', true);
@@ -748,3 +748,4 @@
         }
     </script>
 @endpush
+

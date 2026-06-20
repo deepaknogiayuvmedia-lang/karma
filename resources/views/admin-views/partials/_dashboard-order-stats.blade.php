@@ -133,3 +133,4 @@
         <span class="order-stats__title h3">{{$data['failed']}}</span>
     </div>
 </div>
+

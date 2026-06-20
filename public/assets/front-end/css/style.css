@@ -3,10 +3,6 @@
 }
 
 /*Redesign CSS*/
-html,
-body {
-    overflow-x: hidden;
-}
 img {
     max-width: 100%;
     height: auto;
@@ -520,11 +516,6 @@ a {
         width: 100% !important;
     }
 
-body {
-    overflow-x: hidden;
-    
-}
-
     /* .p-xl-35 {
       padding: 35px !important;
   } */
@@ -683,19 +674,7 @@ body {
     padding-bottom: 5px;
     background-color: #fafbfc;
 }
-    display: block;
-    /* width: 120px; */
-    border-radius: 4%;
-    /* aspect-ratio: 1; */
-    overflow: hidden;
-    /* border: 1px solid #b10000; */
-
-    padding-top: 5px;
-    /* padding-right: 20px; */
-    padding-bottom: 5px;
-    /* padding-left: 20px; */
-    background-color: #fafbfc;
-}
+   
 
 .__brand-item img {
     width: 100%;
@@ -704,12 +683,7 @@ body {
     -o-object-fit: contain;
 }
     /* width: 100%; */
-    aspect-ratio: 1;
-    -o-object-fit: contain;
-    object-fit: contain;
-    width: 100px;
-    height: 100px;
-}
+   
 
 .recomanded-buy-button {
     text-align: center;
@@ -2412,15 +2386,17 @@ body {
 }
 
 .__inline-9 .subscribe-button {
-    background: #1b7fed;
+ background: #1b7fed;
     position: absolute;
-    top: 5px;
+    top: 0px;
+    right: 0;
     color: white;
     padding: 11px;
-    padding-left: 15px;
-    padding-right: 15px;
+    /* padding-left: 15px; */
+    /* padding-right: 15px; */
     text-transform: capitalize;
     border: none;
+    height: 100%;
 }
 
 .__inline-9 .start_address {

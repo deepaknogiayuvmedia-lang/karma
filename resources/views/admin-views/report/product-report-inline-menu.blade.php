@@ -5,3 +5,4 @@
         <li class="{{ Request::is('admin/stock/product-in-wishlist') ?'active':'' }}"><a href="{{route('admin.stock.product-in-wishlist')}}">{{\App\CPU\translate('Wish_Listed_Products')}}</a></li>
     </ul>
 </div>
+

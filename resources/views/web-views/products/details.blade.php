@@ -44,7 +44,7 @@
     @endif
     <meta property="twitter:url" content="{{ route('product', [$product->slug]) }}">
 
-    <link rel="stylesheet" href="{{ asset('public/assets/front-end/css/product-details.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/front-end/css/product-details.css') }}" />
     <style>
         .btn-number:hover {
             color: {{ $web_config['secondary_color'] }};
@@ -156,7 +156,7 @@
                                                     <div class="cz-preview-item d-flex align-items-center justify-content-center {{ $key == 0 ? 'active' : '' }}"
                                                         id="image{{ $photo->color }}">
                                                         <img class="cz-image-zoom img-responsive w-100 __max-h-323px"
-                                                            onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                                            onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                             src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
                                                             data-zoom="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
                                                             alt="Product image" width="">
@@ -166,7 +166,7 @@
                                                     <div class="cz-preview-item d-flex align-items-center justify-content-center {{ $key == 0 ? 'active' : '' }}"
                                                         id="image{{ $key }}">
                                                         <img class="cz-image-zoom img-responsive w-100 __max-h-323px"
-                                                            onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                                            onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                             src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
                                                             data-zoom="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
                                                             alt="Product image" width="">
@@ -179,7 +179,7 @@
                                                 <div class="cz-preview-item d-flex align-items-center justify-content-center {{ $key == 0 ? 'active' : '' }}"
                                                     id="image{{ $key }}">
                                                     <img class="cz-image-zoom img-responsive w-100 __max-h-323px"
-                                                        onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                                        onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                         src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo") }}"
                                                         data-zoom="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo") }}"
                                                         alt="Product image" width="">
@@ -200,7 +200,7 @@
                                                                 <a class="cz-thumblist-item  {{ $key == 0 ? 'active' : '' }} d-flex align-items-center justify-content-center"
                                                                     id="preview-img{{ $photo->color }}"
                                                                     href="#image{{ $photo->color }}">
-                                                                    <img onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                                                    <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                                         src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
                                                                         alt="Product thumb">
                                                                 </a>
@@ -210,7 +210,7 @@
                                                                 <a class="cz-thumblist-item  {{ $key == 0 ? 'active' : '' }} d-flex align-items-center justify-content-center"
                                                                     id="preview-img{{ $key }}"
                                                                     href="#image{{ $key }}">
-                                                                    <img onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                                                    <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                                         src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
                                                                         alt="Product thumb">
                                                                 </a>
@@ -223,7 +223,7 @@
                                                             <a class="cz-thumblist-item  {{ $key == 0 ? 'active' : '' }} d-flex align-items-center justify-content-center"
                                                                 id="preview-img{{ $key }}"
                                                                 href="#image{{ $key }}">
-                                                                <img onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                                                <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                                     src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo") }}"
                                                                     alt="Product thumb">
                                                             </a>
@@ -744,21 +744,21 @@
                         <div class="shipping-details-bottom-border">
                             <div class="px-3 py-3">
                                 <img class="{{ Session::get('direction') === 'rtl' ? 'float-right ml-2' : 'mr-2' }} __img-20"
-                                    src="{{ asset('public/assets/front-end/png/Payment.png') }}" alt="">
+                                    src="{{ asset('assets/front-end/png/Payment.png') }}" alt="">
                                 <span>{{ \App\CPU\translate('Safe Payment') }}</span>
                             </div>
                         </div>
                         <div class="shipping-details-bottom-border">
                             <div class="px-3 py-3">
                                 <img class="{{ Session::get('direction') === 'rtl' ? 'float-right ml-2' : 'mr-2' }} __img-20"
-                                    src="{{ asset('public/assets/front-end/png/money.png') }}" alt="">
+                                    src="{{ asset('assets/front-end/png/money.png') }}" alt="">
                                 <span>{{ \App\CPU\translate('7 Days Return Policy') }}</span>
                             </div>
                         </div>
                         <div class="shipping-details-bottom-border">
                             <div class="px-3 py-3">
                                 <img class="{{ Session::get('direction') === 'rtl' ? 'float-right ml-2' : 'mr-2' }} __img-20"
-                                    src="{{ asset('public/assets/front-end/png/Genuine.png') }}" alt="">
+                                    src="{{ asset('assets/front-end/png/Genuine.png') }}" alt="">
                                 <span>{{ \App\CPU\translate('100% Authentic Products') }}</span>
                             </div>
                         </div>
@@ -1030,3 +1030,4 @@
         });
     </script>
 @endpush
+

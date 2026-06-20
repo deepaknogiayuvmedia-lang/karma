@@ -78,7 +78,7 @@
                                 @endforeach
                             @else
                                 <td colspan="5" class="text-center">
-                                    <img class="mb-3 w-160" src="{{asset('public/assets/back-end')}}/svg/illustrations/sorry.svg" alt="Image Description">
+                                    <img class="mb-3 w-160" src="{{asset('assets/back-end')}}/svg/illustrations/sorry.svg" alt="Image Description">
                                     <p class="mb-0">{{\App\CPU\translate('No data to show')}}</p>
                                 </td>
                             @endif
@@ -145,3 +145,4 @@
       }
   </script>
 @endpush
+

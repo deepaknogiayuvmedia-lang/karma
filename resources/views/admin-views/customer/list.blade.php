@@ -85,7 +85,7 @@
                                 <a href="{{route('admin.customer.view',[$customer['id']])}}"
                                    class="title-color hover-c1 d-flex align-items-center gap-10">
                                     <img src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile')}}/{{$customer->image}}"
-                                         onerror="this.src='{{asset('public/assets/back-end/img/160x160/img1.jpg')}}'"
+                                         onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
                                          class="rounded-circle" alt="" width="40">
                                     {{\Illuminate\Support\Str::limit($customer['f_name']." ".$customer['l_name'],20)}}
                                 </a>
@@ -146,7 +146,7 @@
 
             @if(count($customers)==0)
                 <div class="text-center p-4">
-                    <img class="mb-3 w-160" src="{{asset('public/assets/back-end')}}/svg/illustrations/sorry.svg"
+                    <img class="mb-3 w-160" src="{{asset('assets/back-end')}}/svg/illustrations/sorry.svg"
                          alt="Image Description">
                     <p class="mb-0">{{\App\CPU\translate('No data to show')}}</p>
                 </div>
@@ -200,3 +200,4 @@
         });
     </script>
 @endpush
+

@@ -3,8 +3,8 @@
 @section('title', \App\CPU\translate('Product Add '))
 
 @push('css_or_js')
-    <link href="{{ asset('public/assets/back-end/css/tags-input.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('public/assets/select2/css/select2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/back-end/css/tags-input.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/select2/css/select2.min.css') }}" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endpush
 
@@ -456,8 +456,8 @@
 @endsection
 
 @push('script')
-    <script src="{{ asset('public/assets/back-end') }}/js/tags-input.min.js"></script>
-    <script src="{{ asset('public/assets/back-end/js/spartan-multi-image-picker.js') }}"></script>
+    <script src="{{ asset('assets/back-end') }}/js/tags-input.min.js"></script>
+    <script src="{{ asset('assets/back-end/js/spartan-multi-image-picker.js') }}"></script>
     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
     <script>
         $('.textarea').ckeditor({
@@ -482,7 +482,7 @@
                 groupClassName: 'col-6',
                 maxFileSize: '',
                 placeholderImage: {
-                    image: '{{ asset('public/assets/back-end/img/400x400/img2.jpg') }}',
+                    image: '{{ asset('assets/back-end/img/400x400/img2.jpg') }}',
                     width: '100%',
                 },
                 dropFileLabel: "Drop Here",
@@ -517,7 +517,7 @@
                 groupClassName: 'col-12',
                 maxFileSize: '',
                 placeholderImage: {
-                    image: '{{ asset('public/assets/back-end/img/400x400/img2.jpg') }}',
+                    image: '{{ asset('assets/back-end/img/400x400/img2.jpg') }}',
                     width: '100%',
                 },
                 dropFileLabel: "Drop Here",
@@ -552,7 +552,7 @@
                 groupClassName: 'col-12',
                 maxFileSize: '',
                 placeholderImage: {
-                    image: '{{ asset('public/assets/back-end/img/400x400/img2.jpg') }}',
+                    image: '{{ asset('assets/back-end/img/400x400/img2.jpg') }}',
                     width: '90%',
                 },
                 dropFileLabel: "Drop Here",
@@ -669,7 +669,7 @@
                                 <i class="tio-edit"></i>
                                     <input type="file" name="` + color + `" id="` + value_id + `" class="d-none" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*" required="">
                                 </span>
-                                <img src="{{ asset('public/assets/back-end/img/400x400/img2.jpg') }}" style="object-fit: cover;aspect-ratio:1"  alt="public/img">
+                                <img src="{{ asset('assets/back-end/img/400x400/img2.jpg') }}" style="object-fit: cover;aspect-ratio:1"  alt="public/img">
                               </label> </div>`;
                 $('#color_wise_image').append(html)
 
@@ -703,7 +703,7 @@
                 groupClassName: 'col-12',
                 maxFileSize: '',
                 placeholderImage: {
-                    image: '{{ asset('public/assets/back-end/img/400x400/img2.jpg') }}',
+                    image: '{{ asset('assets/back-end/img/400x400/img2.jpg') }}',
                     width: '100%',
                 },
                 dropFileLabel: "Drop Here",
@@ -893,3 +893,4 @@
         }
     </script>
 @endpush
+

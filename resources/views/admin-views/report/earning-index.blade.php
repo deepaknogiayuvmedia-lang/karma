@@ -22,7 +22,7 @@
                 <div class="media align-items-center">
                     <!-- Avatar -->
                     <div class="avatar avatar-xl avatar-4by3">
-                        <img class="avatar-img" src="{{asset('public/assets/back-end')}}/svg/illustrations/earnings.png"
+                        <img class="avatar-img" src="{{asset('assets/back-end')}}/svg/illustrations/earnings.png"
                              alt="Image Description">
                     </div>
                     <!-- End Avatar -->
@@ -456,10 +456,10 @@
 
 @push('script_2')
 
-    <script src="{{asset('public/assets/back-end')}}/vendor/chart.js/dist/Chart.min.js"></script>
+    <script src="{{asset('assets/back-end')}}/vendor/chart.js/dist/Chart.min.js"></script>
     <script
-        src="{{asset('public/assets/back-end')}}/vendor/chartjs-chart-matrix/dist/chartjs-chart-matrix.min.js"></script>
-    <script src="{{asset('public/assets/back-end')}}/js/hs.chartjs-matrix.js"></script>
+        src="{{asset('assets/back-end')}}/vendor/chartjs-chart-matrix/dist/chartjs-chart-matrix.min.js"></script>
+    <script src="{{asset('assets/back-end')}}/js/hs.chartjs-matrix.js"></script>
 
     <script>
         $(document).on('ready', function () {
@@ -665,4 +665,5 @@
         })
     </script>
 @endpush
+
 

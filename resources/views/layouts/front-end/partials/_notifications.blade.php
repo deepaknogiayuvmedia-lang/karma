@@ -8,7 +8,7 @@
                 <div class="position-relative">
                     <img width="50" height="50" 
                          src="{{asset(env('PUBLIC_STORAGE_PATH').'/notification')}}/{{$notification['image']}}"
-                         onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                         onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                          class="rounded-circle shadow-sm" alt="{{$notification['title']}}">
                     @if(!$notification->read_at)
                     <span class="position-absolute border border-white rounded-circle" style="top: 0; right: 0; width: 12px; height: 12px; background-color: {{$web_config['primary_color']}};"></span>
@@ -32,4 +32,5 @@
         <p class="text-muted font-size-xs mb-0">{{\App\CPU\translate('No Notifications Yet')}}</p>
     </div>
 @endif
+
 

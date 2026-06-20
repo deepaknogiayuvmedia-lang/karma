@@ -48,3 +48,4 @@
             <a href="https://herbanix.co/" class="home-button">Find more Product</a>
         </div>
 @endsection
+

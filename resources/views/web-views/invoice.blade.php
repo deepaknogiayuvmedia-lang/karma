@@ -526,3 +526,4 @@ if ($order['extra_discount_type'] == 'percent') {
 
 </body>
 </html>
+

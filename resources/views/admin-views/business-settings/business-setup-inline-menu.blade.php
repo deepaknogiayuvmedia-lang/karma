@@ -13,3 +13,4 @@
         {{-- <li class="{{ Request::is('admin/business-settings/cookie-settings') ? 'active':'' }}"><a href="{{ route('admin.business-settings.cookie-settings') }}">{{\App\CPU\translate('cookie_settings')}}</a></li> --}}
     </ul>
 </div>
+

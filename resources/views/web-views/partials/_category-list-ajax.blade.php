@@ -21,3 +21,4 @@
         <a href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}" class="btn btn--primary">{{\App\CPU\translate('View Products')}}</a>
     </div>
 @endif
+

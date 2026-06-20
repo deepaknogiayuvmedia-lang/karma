@@ -288,3 +288,4 @@
 @push('script_2')
 
 @endpush
+

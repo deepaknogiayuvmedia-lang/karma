@@ -3,8 +3,8 @@
 @section('title', \App\CPU\translate('general_settings'))
 
 @push('css_or_js')
-    <link href="{{ asset('public/assets/select2/css/select2.min.css')}}" rel="stylesheet">
-    <link href="{{ asset('public/assets/back-end/css/custom.css')}}" rel="stylesheet">
+    <link href="{{ asset('assets/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('assets/back-end/css/custom.css')}}" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endpush
 
@@ -986,7 +986,7 @@
                         <div class="card-body d-flex flex-column justify-content-around">
                             <center>
                                 <img height="60" id="viewerWL"
-                                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                        onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{\App\Model\BusinessSetting::where(['type' => 'company_web_logo'])->pluck('value')[0]}}">
                             </center>
                             <div class="mt-4 position-relative">
@@ -1011,7 +1011,7 @@
                         <div class="card-body d-flex flex-column justify-content-around">
                             <center>
                                 <img height="60" id="viewerWFL"
-                                    onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                    onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                     src="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{\App\Model\BusinessSetting::where(['type' => 'company_footer_logo'])->pluck('value')[0]}}">
                             </center>
                             <div class="position-relative mt-4">
@@ -1036,7 +1036,7 @@
                         <div class="card-body d-flex flex-column justify-content-around">
                             <center>
                                 <img height="60" id="viewerFI"
-                                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                        onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{\App\Model\BusinessSetting::where(['type' => 'company_fav_icon'])->pluck('value')[0]}}">
                             </center>
                             <div class="position-relative mt-4">
@@ -1061,7 +1061,7 @@
                         <div class="card-body d-flex flex-column justify-content-around">
                             <center>
                                 <img height="60" id="viewerLoader"
-                                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                        onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{\App\CPU\Helpers::get_business_settings('loader_gif')}}">
                             </center>
                             <div class="position-relative mt-4">
@@ -1086,7 +1086,7 @@
                         <div class="card-body d-flex flex-column justify-content-around">
                             <center>
                                 <img height="60" id="viewerML"
-                                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                        onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{\App\Model\BusinessSetting::where(['type' => 'company_mobile_logo'])->pluck('value')[0]}}">
                             </center>
                             <div class="mt-4 position-relative">
@@ -1108,8 +1108,8 @@
 @endsection
 
 @push('script')
-    <script src="{{asset('public/assets/back-end')}}/js/tags-input.min.js"></script>
-    <script src="{{ asset('public/assets/select2/js/select2.min.js')}}"></script>
+    <script src="{{asset('assets/back-end')}}/js/tags-input.min.js"></script>
+    <script src="{{ asset('assets/select2/js/select2.min.js')}}"></script>
     <script>
 
         $("#customFileUploadShop").change(function () {
@@ -1263,3 +1263,4 @@
         });
     </script>
 @endpush
+

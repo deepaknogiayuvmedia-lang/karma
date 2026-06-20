@@ -50,3 +50,4 @@
     </script>
     {{--ck editor--}}
 @endpush
+

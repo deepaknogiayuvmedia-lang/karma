@@ -186,7 +186,7 @@
                                                 <td>
                                                     <div class="media align-items-center gap-10">
                                                         <img class="avatar avatar-60 rounded"
-                                                            onerror="this.src='{{ asset('public/assets/back-end/img/160x160/img2.jpg') }}'"
+                                                            onerror="this.src='{{ asset('assets/back-end/img/160x160/img2.jpg') }}'"
                                                             src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product_details['thumbnail'] }}"
                                                             alt="Image Description">
                                                         <div>
@@ -479,7 +479,7 @@
                             <div class="media flex-wrap gap-3">
                                 <div class="">
                                     <img class="avatar rounded-circle avatar-70"
-                                        onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                        onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                         src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/profile/' . $order->customer->image) }}"
                                         alt="Image">
                                 </div>
@@ -1062,7 +1062,7 @@
                         {{ $shipping_address->longitude }}),
                     map: map,
                     title: "{{ $order->customer['f_name'] ?? '' }} {{ $order->customer['l_name'] ?? '' }}",
-                    icon: "{{ asset('public/assets/front-end/img/customer_location.png') }}"
+                    icon: "{{ asset('assets/front-end/img/customer_location.png') }}"
                 });
 
                 google.maps.event.addListener(marker, 'click', (function(marker) {
@@ -1129,3 +1129,4 @@
         }
     </script>
 @endpush
+

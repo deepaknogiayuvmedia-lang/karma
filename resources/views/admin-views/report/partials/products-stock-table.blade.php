@@ -26,3 +26,4 @@
         $('input').addClass('form-control');
     });
 </script>
+

@@ -108,7 +108,7 @@
                                                 class="ratio-4:1"
                                                 id="mbImageviewer"
                                                 src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$banner['photo']}}"
-                                                onerror='this.src="{{asset('public/assets/front-end/img/placeholder.png')}}"'
+                                                onerror='this.src="{{asset('assets/front-end/img/placeholder.png')}}"'
                                                 alt=""/>
                                         </center>
                                         <label for="name" class="mt-3">{{ \App\CPU\translate('Image')}}</label><span
@@ -185,3 +185,4 @@
         });
     </script>
 @endpush
+

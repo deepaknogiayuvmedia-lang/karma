@@ -78,7 +78,7 @@
                         @else
                             <div class="text-center p-5">
                                 <img class="mb-3 w-160"
-                                    src="{{ asset('public/assets/back-end/svg/illustrations/sorry.svg') }}"
+                                    src="{{ asset('assets/back-end/svg/illustrations/sorry.svg') }}"
                                     alt="No Tally Connection">
                                 <h5 class="text-muted">{{ \App\CPU\translate('Could not connect to Tally') }}</h5>
                                 <p class="mb-0 text-muted">
@@ -93,3 +93,4 @@
         </div>
     </div>
 @endsection
+

@@ -32,7 +32,7 @@
                         <div class="d-flex align-items-center">
                             <img
                                 class="avatar avatar-xxl avatar-4by3 {{Session::get('direction') === "rtl" ? 'ml-4' : 'mr-4'}}"
-                                onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                 src="{{asset(env('PUBLIC_STORAGE_PATH').'/delivery-man')}}/{{$delivery_man['image']}}"
                                 alt="Image Description">
                             <div class="d-block">
@@ -235,7 +235,7 @@
                                     <div class="avatar avatar-circle">
                                         <img
                                             class="avatar-img"
-                                            onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                            onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                             src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$review->customer->image)}}"
                                             alt="Image Description">
                                     </div>
@@ -279,7 +279,7 @@
                             <td colspan="4">
                                 <div class="text-center p-4">
                                     <img class="mb-3 w-160"
-                                         src="{{asset('public/assets/back-end')}}/svg/illustrations/sorry.svg"
+                                         src="{{asset('assets/back-end')}}/svg/illustrations/sorry.svg"
                                          alt="Image Description">
                                     <p class="mb-0">{{\App\CPU\translate('No data to show')}}</p>
                                 </div>
@@ -347,3 +347,4 @@
 
     </script>
 @endpush
+

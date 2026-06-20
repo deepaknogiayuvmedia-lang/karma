@@ -75,7 +75,7 @@
                                              id="user_{{$shop->delivery_man_id ? $shop->delivery_man_id: $shop->shop_id}}">
                                             <div class="chat_people" id="chat_people">
                                                 <div class="chat_img">
-                                                    <img onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'" src="{{ $shop->delivery_man_id ?asset(env('PUBLIC_STORAGE_PATH').'/delivery-man/'.$shop->image) : asset(env('PUBLIC_STORAGE_PATH').'/shop/'.$shop->image)}}"
+                                                    <img onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'" src="{{ $shop->delivery_man_id ?asset(env('PUBLIC_STORAGE_PATH').'/delivery-man/'.$shop->image) : asset(env('PUBLIC_STORAGE_PATH').'/shop/'.$shop->image)}}"
                                                         class="__rounded-10">
                                                 </div>
                                                 <div class="chat_ib">
@@ -311,4 +311,5 @@
     </script>
 
 @endpush
+
 

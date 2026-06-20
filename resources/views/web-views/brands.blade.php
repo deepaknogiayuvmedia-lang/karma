@@ -32,7 +32,7 @@
                     @foreach($brands as $brand)
                         <div class="col-lg-2 col-md-3 col-sm-4 col-6 text-center">
                             <a href="{{route('products',['id'=> $brand['id'],'data_from'=>'brand','page'=>1])}}" class="brand_div">
-                                <img onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'" src="{{asset(env('PUBLIC_STORAGE_PATH')."/brand/$brand->image")}}" alt="{{$brand->name}}">
+                                <img onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'" src="{{asset(env('PUBLIC_STORAGE_PATH')."/brand/$brand->image")}}" alt="{{$brand->name}}">
                             </a>
                         </div>
                     @endforeach
@@ -52,5 +52,6 @@
 @endsection
 
 @push('script')
-    <script src="{{asset('public/assets/front-end')}}/vendor/nouislider/distribute/nouislider.min.js"></script>
+    <script src="{{asset('assets/front-end')}}/vendor/nouislider/distribute/nouislider.min.js"></script>
 @endpush
+

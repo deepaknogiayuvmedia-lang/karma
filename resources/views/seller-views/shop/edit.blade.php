@@ -2,9 +2,9 @@
 @section('title', \App\CPU\translate('Shop Edit'))
 @push('css_or_js')
     <!-- Custom styles for this page -->
-    <link href="{{ asset('public/assets/back-end') }}/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="{{ asset('assets/back-end') }}/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <!-- Custom styles for this page -->
-    <link href="{{ asset('public/assets/back-end/css/croppie.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/back-end/css/croppie.css') }}" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endpush
 @section('content')
@@ -67,7 +67,7 @@
                                     </div>
                                     <div class="text-center">
                                         <img class="upload-img-view" id="viewer"
-                                            onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                            onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                             src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/shop/' . $shop->image) }}"
                                             alt="Product thumbnail" />
                                     </div>
@@ -91,7 +91,7 @@
                                     </div>
                                     <div class="text-center">
                                         <img class="upload-img-view" id="viewerBanner"
-                                            onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                            onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                             src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/shop/banner/' . $shop->banner) }}"
                                             alt="Product thumbnail" />
                                     </div>
@@ -422,3 +422,4 @@
         });
     </script>
 @endpush
+

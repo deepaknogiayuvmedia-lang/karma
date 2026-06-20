@@ -30,38 +30,38 @@
                             </b>
                             |
                             <a href="javascript:scrollToForm();"><img alt="views"
-                                    src="{{ asset('public/customassets/landingassetsstamin/views.jpg') }}"
+                                    src="{{ asset('customassets/landingassetsstamin/views.jpg') }}"
                                     style="width: 15px; height: 15px" title="views" /></a><span
                                 style="color: #e43221; vertical-align: middle; font-size: 12px">1,351,528</span>
                             |
 
                             <a href="javascript:scrollToForm();"><img
-                                    src="{{ asset('public/customassets/landingassetsstamin/flike.png') }}" />
+                                    src="{{ asset('customassets/landingassetsstamin/flike.png') }}" />
                             </a>
                         </div>
 
                         <p>
                             <a href="javascript:scrollToForm();"><img alt="" class="img-responsive"
-                                    src="{{ asset('public/customassets/landingassetsstamin/x21.png') }}"
+                                    src="{{ asset('customassets/landingassetsstamin/x21.png') }}"
                                     width="100%" /></a>
                         </p>
 
                         <div class="blog-img" id="headline-img">
                             <a href="javascript:scrollToForm();"><img alt="" class="img-responsive img-rounded"
-                                    src="{{ asset('public/customassets/landingassetsstamin/xkate.jpg') }}" /></a>
+                                    src="{{ asset('customassets/landingassetsstamin/xkate.jpg') }}" /></a>
                         </div>
                         <!--<h5 class="fw-bold fs-6 mb-0">SHARE</h5>-->
                         <!--   <div class="d-flex" style="column-gap: 0.2rem;">  -->
                         <a href="https://www.facebook.com/">
-                            <img src="{{ asset('public/customassets/landingassetsstamin/fb.png') }}" alt="fb"
+                            <img src="{{ asset('customassets/landingassetsstamin/fb.png') }}" alt="fb"
                                 width="25" />
                         </a>
                         <a href="http://www.twitter.com/">
-                            <img src="{{ asset('public/customassets/landingassetsstamin/twitter.png') }}" alt="fb"
+                            <img src="{{ asset('customassets/landingassetsstamin/twitter.png') }}" alt="fb"
                                 width="25" />
                         </a>
                         <a href="https://api.whatsapp.com/">
-                            <img src="{{ asset('public/customassets/landingassetsstamin/wpp.png') }}" alt="fb"
+                            <img src="{{ asset('customassets/landingassetsstamin/wpp.png') }}" alt="fb"
                                 width="25s" />
                         </a>
                     </div>
@@ -100,7 +100,7 @@
                         जब मैंने उम्मीद छोड़ दी थी, तब मिला मुझे सबसे बड़ा सहारा...
                     </h3>
                     <center>
-                        <img src="{{ asset('public/customassets/landingassetsstamin/banner_4.jpg') }}"
+                        <img src="{{ asset('customassets/landingassetsstamin/banner_4.jpg') }}"
                             alt="मेरी यौन जीवन की दास्तान !" class="img-fluid" style="max-width: 100%; height: auto;" />
                     </center>
 
@@ -127,7 +127,7 @@
                 </p>
                 <div class="row">
                     <div class="col-md-6">
-                        <img src="{{ asset('public/customassets/landingassetsstamin/herbnx.jpeg') }}"
+                        <img src="{{ asset('customassets/landingassetsstamin/herbnx.jpeg') }}"
                             alt="मेरी यौन जीवन की दास्तान !" class="img-fluid"
                             style="max-width: 100%; width: 75%; height: auto" />
 
@@ -199,7 +199,7 @@
                             <div class="col-sm-6">
                                 <center>
                                     <a href="javascript:scrollToForm();"><img
-                                            src="{{ asset('public/customassets/landingassetsstamin/herbnx.jpeg') }}"
+                                            src="{{ asset('customassets/landingassetsstamin/herbnx.jpeg') }}"
                                             style="display: block; max-width: 250px; max-height: 271px" /></a>
                                 </center>
                             </div>
@@ -301,7 +301,7 @@
                     <span style="color: white; font-weight: bold; font-size: 20px" class="blink">Free Home
                         Delivery</span>
 
-                    <img src="{{ asset('public/customassets/landingassetsstamin/free_shipping.png') }}" alt="free_shipping"
+                    <img src="{{ asset('customassets/landingassetsstamin/free_shipping.png') }}" alt="free_shipping"
                         style="height:20px;" /><br />
                 </div>
                 <span style="color: white; font-weight: bold; font-size: 20px" class="blink">Available On Cash On
@@ -409,7 +409,7 @@
                 <div class="container">
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
-                                class="avatar" src="{{ asset('public/customassets/landingassetsstamin/1.png') }}" /></a>
+                                class="avatar" src="{{ asset('customassets/landingassetsstamin/1.png') }}" /></a>
 
                         <div class="text">
                             <span class="login"> सुनील प्रजापति </span><br /><span class="date">11 Dec, 23</span><span
@@ -424,7 +424,7 @@
 
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
-                                class="avatar" src="{{ asset('public/customassets/landingassetsstamin/23.png') }}" /></a>
+                                class="avatar" src="{{ asset('customassets/landingassetsstamin/23.png') }}" /></a>
 
                         <div class="text">
                             <span class="login"> प्रिया मोघे </span><br /><span class="date">8 Dec, 23</span><span
@@ -438,7 +438,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> असलम हुसैन </span><br /><span class="date">6 Dec, 23</span><span
@@ -453,7 +453,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> योगेश </span><br /><span class="date">1 Sept, 23</span><span
@@ -468,7 +468,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> सेजल पटेल </span><br /><span class="date">10 July, 23</span><span
@@ -483,7 +483,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> रोहित खट्टर </span><br /><span class="date">18 Jun, 23</span><span
@@ -499,7 +499,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> सुधीर मकवाना </span><br /><span class="date">13 Apr, 23</span><span
@@ -514,7 +514,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> शिखा </span><br /><span class="date">8 Mar, 23</span><span
@@ -529,7 +529,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> पुनीत वर्मा </span><br /><span class="date">2 Jan, 23</span><span
@@ -546,7 +546,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> सिकंदर </span><br /><span class="date">8 Dec, 22</span><span
@@ -560,7 +560,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> Sandeep Rathore </span><br /><span class="date">11 Oct, 22</span><span
@@ -571,7 +571,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> Imran </span><br /><span class="date">20 Aug, 22</span><span
@@ -586,7 +586,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> Arif </span><br /><span class="date">8 Jun, 22</span><span
@@ -600,7 +600,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> Sonu kumar </span><br /><span class="date">9 Mar, 21</span><span
@@ -619,7 +619,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> मोहित रघुवंशी </span><br /><span class="date">23 Nov, 21</span><span
@@ -636,7 +636,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> नीरज पांडा </span><br /><span class="date">30 Nov, 21</span><span
@@ -652,7 +652,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> Rajeev Singh </span><br /><span class="date">31 May, 21</span><span
@@ -668,7 +668,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> Kratika Batham </span><br /><span class="date">2 May, 21</span><span
@@ -679,7 +679,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> Jatin Jadhav </span><br /><span class="date">2 May, 21</span><span
@@ -689,7 +689,7 @@
                     <div class="comment">
                         <a href="https://healthylives.life/herbxx/?utm_source=SXP&amp;clickId=2kruSLuCYRviNXNzJodeWt#"><img
                                 class="avatar"
-                                src="{{ asset('public/customassets/landingassetsstamin/xava.jpg') }}" /></a>
+                                src="{{ asset('customassets/landingassetsstamin/xava.jpg') }}" /></a>
 
                         <div class="text">
                             <span class="login"> Vishal Agnihotri </span><br /><span class="date">2 May, 21</span><span
@@ -742,7 +742,7 @@
             <div class="text-center">
                 <div id="mybutton">
                     <a href="javascript:scrollToForm();"><img class="button1"
-                            src="{{ asset('public/customassets/landingassetsstamin/button.png') }}" alt="herb"
+                            src="{{ asset('customassets/landingassetsstamin/button.png') }}" alt="herb"
                             title="herb" /></a>
                 </div>
             </div>
@@ -892,3 +892,4 @@
         }
     </style>
 @endsection
+

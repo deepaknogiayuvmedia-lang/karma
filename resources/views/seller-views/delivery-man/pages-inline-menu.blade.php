@@ -5,3 +5,4 @@
         <li class="{{ Request::is('seller/delivery-man/order-wise-earning*') ?'active':'' }}"><a href="{{ route('seller.delivery-man.order-wise-earning', ['id' => $delivery_man['id']]) }}">{{\App\CPU\translate('Earning')}}</a></li>
     </ul>
 </div>
+

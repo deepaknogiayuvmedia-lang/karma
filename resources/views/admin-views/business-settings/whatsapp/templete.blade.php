@@ -287,7 +287,7 @@
                                             <div class="whatsapp-bubble">
                                                 @if($header)
                                                     @if($header['format'] == 'IMAGE')
-                                                        <img src="{{ $header['example']['header_handle'][0] ?? asset('public/assets/back-end/img/image-place-holder.png') }}" class="whatsapp-header-img">
+                                                        <img src="{{ $header['example']['header_handle'][0] ?? asset('assets/back-end/img/image-place-holder.png') }}" class="whatsapp-header-img">
                                                     @elseif($header['format'] == 'TEXT')
                                                         <div class="whatsapp-header-text">{!! $headerText !!}</div>
                                                     @endif
@@ -324,7 +324,7 @@
 
                     @if (count($templetes) == 0)
                         <div class="text-center p-4 card shadow-sm border-0">
-                            <img class="mb-3 w-160" src="{{ asset('public/assets/back-end/svg/illustrations/sorry.svg') }}"
+                            <img class="mb-3 w-160" src="{{ asset('assets/back-end/svg/illustrations/sorry.svg') }}"
                                 alt="Image Description">
                             <p class="mb-0">{{ \App\CPU\translate('no_template_found') }}</p>
                         </div>
@@ -385,3 +385,4 @@
         });
     </script> --}}
 @endpush
+

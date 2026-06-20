@@ -42,7 +42,7 @@
     <div class="for-banner container">
 
         <img class="d-block for-image"
-             onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+             onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
              src="{{asset(env('PUBLIC_STORAGE_PATH').'/deal')}}/{{$deal['banner']}}"
              alt="Shop Converse">
 
@@ -114,3 +114,4 @@
 @push('script')
 
 @endpush
+

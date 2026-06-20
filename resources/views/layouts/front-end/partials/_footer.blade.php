@@ -107,7 +107,7 @@
                     <a class="d-block" href="{{ route('home') }}">
                         <img class="{{ Session::get('direction') === 'rtl' ? 'rightalign' : '' }}"
                             src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/company/') }}/{{ $web_config['footer_logo']->value }}"
-                            onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                            onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                             alt="{{ $web_config['name']->value }}" style="max-width:150px;" />
                     </a>
                 </div>
@@ -174,7 +174,7 @@
 
     <!-- Footer Links -->
     <div class="pt-4" style="background: #fff;">
-        <div class="container text-center __pb-13px">
+        <div class="container __pb-13px">
 
             <!-- Footer links -->
             <div
@@ -339,8 +339,8 @@
                     <div class="">
                         <a class="d-block" href="{{ route('home') }}">
                             <img class="{{ Session::get('direction') === 'rtl' ? 'rightalign' : '' }}"
-                                src="{{ asset('public/assets/front-end/img/payment.png') }}"
-                                onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'"
+                                src="{{ asset('assets/front-end/img/payment.png') }}"
+                                onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                 alt="{{ $web_config['name']->value }}" />
                         </a>
                     </div>
@@ -359,3 +359,4 @@
         @endif
         </footer>
     </div>
+

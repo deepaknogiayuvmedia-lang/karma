@@ -4,3 +4,4 @@
         <li class="{{ Request::is('seller/report/stock-product-report') ?'active':'' }}"><a href="{{route('seller.report.stock-product-report')}}">{{\App\CPU\translate('Products_Stock')}}</a></li>
     </ul>
 </div>
+

@@ -3,14 +3,14 @@
     @push('title')
         <title>बिना रसायन, भूख और शारीरिक श्रम के 10 दिन में 5 किलो वजन घटाएँ</title>
     @endpush
-    <meta property="og:image" content="{{ asset('public/customassets/customassetsketoplus/prod.png') }}">
-    <link href="{{ asset('public/customassets/customassetsketoplus/herbanix-ok.png') }}" rel="shortcut icon"
+    <meta property="og:image" content="{{ asset('customassets/customassetsketoplus/prod.png') }}">
+    <link href="{{ asset('customassets/customassetsketoplus/herbanix-ok.png') }}" rel="shortcut icon"
         type="image/x-icon">
-    <link rel="stylesheet" href="{{ asset('public/customassets/customassetsketoplus/main.css') }}">
-    <link rel="stylesheet" href="{{ asset('public/customassets/customassetsketoplus/popup.css') }}/">
+    <link rel="stylesheet" href="{{ asset('customassets/customassetsketoplus/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('customassets/customassetsketoplus/popup.css') }}/">
     <script type="text/javascript"
-        src="{{ asset('public/customassets/customassetsketoplus/jquery-3.3.1.min.js.download') }}/"></script>
-    <script type="text/javascript" src="{{ asset('public/customassets/customassetsketoplus/dr-dtime.min.js.download') }}">
+        src="{{ asset('customassets/customassetsketoplus/jquery-3.3.1.min.js.download') }}/"></script>
+    <script type="text/javascript" src="{{ asset('customassets/customassetsketoplus/dr-dtime.min.js.download') }}">
     </script>
     <script>
         function blockBackPage() {
@@ -489,7 +489,7 @@
                 <div class="container">
                     <div class="row jcs">
                         <div class="logo"><img
-                                src="{{ asset('public/customassets/customassetsketoplus/herbanix-ok.png') }}" alt=""
+                                src="{{ asset('customassets/customassetsketoplus/herbanix-ok.png') }}" alt=""
                                 style="width: 133px;"> </div>
                         <a href="https://healthylives.life/ads/keto1/?utm_source=HB&amp;clickId=FLBuKbYWDV63dwvezm6Bed&amp;campaignId=af21cf0e-7d80-4316-9258-cd944ac07ce8&amp;widget_id=utmsandbox#form"
                             target="_top" class="btn order-btn scroll"> हमारी लॉटरी में भाग लें! </a>
@@ -506,7 +506,7 @@
                         <video class="video-inner" preload="auto" rel="preload" as="video" controls=""
                             muted="muted" autoplay="" poster="images/poster.jpg">
 
-                            <source src="{{ asset('public/customassets/customassetsketoplus/video.mp4') }}"
+                            <source src="{{ asset('customassets/customassetsketoplus/video.mp4') }}"
                                 type="video/mp4">
                         </video>
 
@@ -519,7 +519,7 @@
                             <figure class="lead__pic"> <a
                                     href="https://healthylives.life/ads/keto1/?utm_source=HB&amp;clickId=FLBuKbYWDV63dwvezm6Bed&amp;campaignId=af21cf0e-7d80-4316-9258-cd944ac07ce8&amp;widget_id=utmsandbox#form"
                                     data-mfp-src="images/photo_2020-09-18_14-17-31.jpg"> <img
-                                        src="{{ asset('public/customassets/customassetsketoplus/photo_2020-09-18_14-17-31.jpg') }}">
+                                        src="{{ asset('customassets/customassetsketoplus/photo_2020-09-18_14-17-31.jpg') }}">
                                 </a>
                                 <figcaption class="lead__caption"> एक युवा डॉक्टर सुनिधि रावत </figcaption>
                             </figure>
@@ -616,7 +616,7 @@
                             <figure class="content__pic"> <a
                                     href="https://healthylives.life/ads/keto1/?utm_source=HB&amp;clickId=FLBuKbYWDV63dwvezm6Bed&amp;campaignId=af21cf0e-7d80-4316-9258-cd944ac07ce8&amp;widget_id=utmsandbox#form"
                                     data-mfp-src="images/foto1.jpg?v=1"> <img
-                                        src="{{ asset('public/customassets/customassetsketoplus/foto1.jpg') }}">
+                                        src="{{ asset('customassets/customassetsketoplus/foto1.jpg') }}">
                                 </a>
                                 <figcaption class="content__pic-caption"> परिणाम <b> 14 दिन </b> Keto Plus लेने के बाद <b> -
                                         8 किलो </b> </figcaption>
@@ -624,7 +624,7 @@
                             <figure class="content__pic"> <a
                                     href="https://healthylives.life/ads/keto1/?utm_source=HB&amp;clickId=FLBuKbYWDV63dwvezm6Bed&amp;campaignId=af21cf0e-7d80-4316-9258-cd944ac07ce8&amp;widget_id=utmsandbox#form"
                                     data-mfp-src="images/7.jpg?v=1"> <img
-                                        src="{{ asset('public/customassets/customassetsketoplus/7.jpg') }}">
+                                        src="{{ asset('customassets/customassetsketoplus/7.jpg') }}">
                                 </a>
                                 <figcaption class="content__pic-caption"> परिणाम <b> 28 दिन </b> Keto Plus लेने के बाद <b> -
                                         16 किलो </b> </figcaption>
@@ -632,7 +632,7 @@
                             <figure class="content__pic"> <a
                                     href="https://healthylives.life/ads/keto1/?utm_source=HB&amp;clickId=FLBuKbYWDV63dwvezm6Bed&amp;campaignId=af21cf0e-7d80-4316-9258-cd944ac07ce8&amp;widget_id=utmsandbox#form"
                                     data-mfp-src="images/6.jpg?v=1"> <img
-                                        src="{{ asset('public/customassets/customassetsketoplus/6.jpg') }}">
+                                        src="{{ asset('customassets/customassetsketoplus/6.jpg') }}">
                                 </a>
                                 <figcaption class="content__pic-caption"> परिणाम <b> 60 दिन </b> Keto Plus लेने के बाद <b> -
                                         32 किलो </b> </figcaption>
@@ -640,7 +640,7 @@
                             <figure class="content__pic"> <a
                                     href="https://healthylives.life/ads/keto1/?utm_source=HB&amp;clickId=FLBuKbYWDV63dwvezm6Bed&amp;campaignId=af21cf0e-7d80-4316-9258-cd944ac07ce8&amp;widget_id=utmsandbox#form"
                                     data-mfp-src="images/9.jpg?v=1"> <img
-                                        src="{{ asset('public/customassets/customassetsketoplus/9.jpg') }}">
+                                        src="{{ asset('customassets/customassetsketoplus/9.jpg') }}">
                                 </a>
                                 <figcaption class="content__pic-caption"> अंतिम परिणाम: <b> 60 दिन में -32 किलो </b> !
                                 </figcaption>
@@ -879,7 +879,7 @@
                         <div class="comments__list">
                             <div class="comments__item load visible" id="comment-load">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/c1.jpg') }}">
+                                        src="{{ asset('customassets/customassetsketoplus/c1.jpg') }}">
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> सरिता </span> <span
@@ -897,7 +897,7 @@
                             </div>
                             <div class="comments__item" id="teaser-comment">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/c6.jpg') }}">
+                                        src="{{ asset('customassets/customassetsketoplus/c6.jpg') }}">
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> महिमा </span> &lt;<span
@@ -914,7 +914,7 @@
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/c5.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/c5.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> चेतना </span> <span
@@ -932,7 +932,7 @@
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/c23.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/c23.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> जरीना </span> <span
@@ -952,7 +952,7 @@
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/commit_03.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/commit_03.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> अनीता </span> <span
@@ -970,7 +970,7 @@
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/commit_04.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/commit_04.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> मंजूषा </span> <span
@@ -988,7 +988,7 @@
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/commit_05.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/commit_05.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> रागिनी </span> <span
@@ -1002,14 +1002,14 @@
                                             था। लेकिन रिज़ल्ट 7 दिन के बाद भी दिखने लगे थे। ये रहे मेरे फोटो। आप देख सकते हो
                                             मैंने पतली हो गई हून। </p>
                                         <p><img
-                                                src="{{ asset('public/customassets/customassetsketoplus/foto1(1).jpg') }}" />
+                                                src="{{ asset('customassets/customassetsketoplus/foto1(1).jpg') }}" />
                                         </p>
                                     </div>
                                 </div>
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/commit_06.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/commit_06.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> रजनी </span> <span
@@ -1024,14 +1024,14 @@
                                             करता है। किस्मत अच्छी है कि क्लीनिकल ट्रायल में हिस्सा लिया। मेरी ज़िंदगी अब
                                             बेहतर हो गई है! देखिए, ये रहे मेरे रिज़ल्ट। प्रयोग शुरू होने से लेकर अंत तक।
                                         </p>
-                                        <p><img src="{{ asset('public/customassets/customassetsketoplus/foto2.jpg') }}" />
+                                        <p><img src="{{ asset('customassets/customassetsketoplus/foto2.jpg') }}" />
                                         </p>
                                     </div>
                                 </div>
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/commit_07.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/commit_07.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> काजल </span> <span
@@ -1048,7 +1048,7 @@
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/c17.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/c17.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> सीता </span> <span
@@ -1065,7 +1065,7 @@
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/commit_08.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/commit_08.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> तान्या </span> <span
@@ -1083,7 +1083,7 @@
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/autoAva.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/autoAva.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> अंजलि </span> <span
@@ -1097,14 +1097,14 @@
                                             है! आपको पता नहीं होता पर मैंने अपना साइज़ काफी कम कर लिया है: 82 से 52 हो गया
                                             है! और मैं इसे दिखाने में भी नहीं शर्माती! ये रहे मेरे रिज़ल्ट! अब मेरे कई दोस्त
                                             खुद के लिए ऑर्डर करना चाहते हैं! मैं भी अपने लिए और पैक ऑर्डर करूंगा! </p>
-                                        <p><img src="{{ asset('public/customassets/customassetsketoplus/foto3.jpg') }}" />
+                                        <p><img src="{{ asset('customassets/customassetsketoplus/foto3.jpg') }}" />
                                         </p>
                                     </div>
                                 </div>
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/commit_09.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/commit_09.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> करिश्मा </span> <span
@@ -1120,7 +1120,7 @@
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/autoAva.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/autoAva.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> सुनील </span> <span
@@ -1133,14 +1133,14 @@
                                         <p> दोस्तों मैं क्लीनिकल ट्रायल के ग्रुप में था और मेरा भी वजन कम हुआ! ये प्रोडक्ट
                                             मेरे लिए बिल्कुल सही है। मैं मोटा था और कोई मुझे नहीं चाहता था... अब मेरी एक
                                             गर्लफ्रेंड है। मैं तेजी से वजन कम कर रहा हूँ। ये रही मेरी फोटो! </p>
-                                        <p><img src="{{ asset('public/customassets/customassetsketoplus/foto4.jpg') }}" />
+                                        <p><img src="{{ asset('customassets/customassetsketoplus/foto4.jpg') }}" />
                                         </p>
                                     </div>
                                 </div>
                             </div>
                             <div class="comments__item">
                                 <div class="comments__avatar"><img
-                                        src="{{ asset('public/customassets/customassetsketoplus/commit_02.jpg') }}" />
+                                        src="{{ asset('customassets/customassetsketoplus/commit_02.jpg') }}" />
                                 </div>
                                 <div class="comments__body">
                                     <div class="comments__info"> <span class="comments__name"> राहुल </span> <span
@@ -1225,7 +1225,7 @@
                     <div class="col text-white text-center">
 
                         <h5>Our Partners:</h5>
-                        <img src="{{ asset('public/customassets/customassetsketoplus/courier-icon.png') }}"
+                        <img src="{{ asset('customassets/customassetsketoplus/courier-icon.png') }}"
                             class="p-1"> <br>
                         <br>
 
@@ -1557,3 +1557,4 @@
 
     </div>
 @endsection
+

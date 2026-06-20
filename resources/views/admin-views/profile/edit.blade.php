@@ -3,7 +3,7 @@
 @section('title', \App\CPU\translate('Profile Settings'))
 
 @push('css_or_js')
-    <link href="{{ asset('public/assets/back-end/css/croppie.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/back-end/css/croppie.css') }}" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endpush
 
@@ -96,7 +96,7 @@
                         <label class="avatar avatar-xxl avatar-circle avatar-border-lg avatar-uploader profile-cover-avatar"
                             for="avatarUploader">
                             <img id="viewer"
-                                onerror="this.src='{{ asset('public/assets/back-end/img/160x160/img1.jpg') }}'"
+                                onerror="this.src='{{ asset('assets/back-end/img/160x160/img1.jpg') }}'"
                                 class="avatar-img"
                                 src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/admin') }}/{{ $data->image }}" alt="Image">
                         </label>
@@ -402,3 +402,4 @@
 
 @push('script')
 @endpush
+

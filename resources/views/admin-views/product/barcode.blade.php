@@ -1,7 +1,7 @@
 @extends('layouts.back-end.app')
 @section('title', $product->name . ' barcode ' . date('Y/m/d'))
 @push('css_or_js')
-    <link rel="stylesheet" href="{{ asset('public/assets/back-end') }}/css/barcode.css" />
+    <link rel="stylesheet" href="{{ asset('assets/back-end') }}/css/barcode.css" />
 @endpush
 @section('content')
     <div class="row m-2 show-div pt-3">
@@ -111,7 +111,7 @@
     </div>
 @endsection
 @push('script_2')
-    <script src={{ asset('public/assets/admin/js/global.js') }}></script>
+    <script src={{ asset('assets/admin/js/global.js') }}></script>
     <script>
         function printDiv(divName) {
             var printContents = document.getElementById(divName).innerHTML;
@@ -123,3 +123,4 @@
         }
     </script>
 @endpush
+

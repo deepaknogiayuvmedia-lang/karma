@@ -28,7 +28,7 @@
     <meta property="twitter:description" content="{!! substr($web_config['about']->value,0,100) !!}">
 
 
-    <link href="{{asset('public/assets/front-end')}}/css/home.css" rel="stylesheet">
+    <link href="{{asset('assets/front-end')}}/css/home.css" rel="stylesheet">
     <style>
 
         .page-item.active .page-link {
@@ -51,13 +51,13 @@
                     @if($shop['id'] != 0)
                         <img class="__shop-page-banner"
                              src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop/banner')}}/{{$shop->banner}}"
-                             onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                             onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                              alt="">
                     @else
                         @php($banner=\App\CPU\Helpers::get_business_settings('shop_banner'))
                         <img class="__shop-page-banner"
                              src="{{asset(env('PUBLIC_STORAGE_PATH')."/shop")}}/{{$banner??""}}"
-                             onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                             onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                              alt="">
                     @endif
                 </div>
@@ -94,7 +94,7 @@
                                         <img class="__inline-68"
                                         
                                              src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop')}}/{{$shop->image}}"
-                                             onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                             onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                              alt="">
                                     </div>
                                 @else
@@ -111,7 +111,7 @@
                                         @endif
                                         <img class="__inline-68"
                                              src="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{$web_config['fav_icon']->value}}"
-                                             onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                             onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                              alt="">
                                     </div>
                                 @endif
@@ -246,7 +246,7 @@
                                                 <div class="d-flex ">
                                                     <img
                                                         class="__inline-72 {{Session::get('direction') === "rtl" ? 'ml-2' : 'mr-2'}}"
-                                                        onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                                        onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/category')}}/{{$category['icon']}}">
                                                     <label class="for-hover-lable cursor-pointer"
                                                            onclick="location.href='{{route('shopView',['id'=> $seller_id,'category_id'=>$category['id']])}}'" {{--onclick="productSearch({{$seller_id}}, {{$category['id']}})"--}}>
@@ -459,3 +459,4 @@
         });
     </script>
 @endpush
+

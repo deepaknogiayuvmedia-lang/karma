@@ -22,7 +22,7 @@
 
             <img class="mx-auto"
                 src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product['thumbnail'] }}"
-                onerror="this.src='{{ asset('public/assets/front-end/img/image-place-holder.png') }}'">
+                onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'">
 
         </div>
         <div class="single-product-details d-flex flex-column justify-content-between pb-2">
@@ -87,3 +87,4 @@
 
     </div>
 </div>
+

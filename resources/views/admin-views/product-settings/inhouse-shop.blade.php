@@ -60,7 +60,7 @@
                             @csrf
                             <center>
                                 <img id="viewerShop" width="300"
-                                     onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                     onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                      src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop')}}/{{\App\CPU\Helpers::get_business_settings('shop_banner')}}">
                             </center>
                             <div class="position-relative mt-4">
@@ -190,3 +190,4 @@
         })
     </script>
 @endpush
+

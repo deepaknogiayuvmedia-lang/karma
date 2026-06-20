@@ -27,7 +27,7 @@
                                         <div class="position-relative">
                                             <img width="80" height="80" 
                                                  src="{{asset(env('PUBLIC_STORAGE_PATH').'/notification')}}/{{$notification['image']}}"
-                                                 onerror="this.src='{{asset('public/assets/front-end/img/image-place-holder.png')}}'"
+                                                 onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                                  class="rounded-lg shadow-sm" alt="{{$notification['title']}}"
                                                  style="object-fit: cover;">
                                             @if(!$notification->read_at)
@@ -68,3 +68,4 @@
         </div>
     </div>
 @endsection
+

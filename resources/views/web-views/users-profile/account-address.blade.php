@@ -4,8 +4,8 @@
 
 @push('css_or_js')
     <link rel="stylesheet" media="screen"
-          href="{{asset('public/assets/front-end')}}/vendor/nouislider/distribute/nouislider.min.css"/>
-    <link rel="stylesheet" href="{{ asset('public/assets/front-end/css/bootstrap-select.min.css') }}">
+          href="{{asset('assets/front-end')}}/vendor/nouislider/distribute/nouislider.min.css"/>
+    <link rel="stylesheet" href="{{ asset('assets/front-end/css/bootstrap-select.min.css') }}">
 
     <style>
         .cz-sidebar-body h3:hover + .divider-role {
@@ -346,7 +346,7 @@
 @endsection
 
 @push('script')
-    <script src="{{ asset('public/assets/front-end/js/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('assets/front-end/js/bootstrap-select.min.js') }}"></script>
     <script>
         $(document).ready(function (){
             $('.address_type_li').on('click', function (e) {
@@ -513,3 +513,4 @@
         });
     </script>
 @endpush
+

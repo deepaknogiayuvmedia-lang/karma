@@ -7,7 +7,7 @@
                     <!-- Logo -->
                     @php($e_commerce_logo = \App\Model\BusinessSetting::where(['type' => 'company_web_logo'])->first()->value)
                     <a class="navbar-brand" href="{{ route('admin.dashboard.index') }}" aria-label="Front">
-                        <img onerror="this.src='{{ asset('public/assets/back-end/img/900x400/img1.jpg') }}'"
+                        <img onerror="this.src='{{ asset('assets/back-end/img/900x400/img1.jpg') }}'"
                             class="navbar-brand-logo-mini for-web-logo max-h-30"
                             src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/company/$e_commerce_logo") }}" alt="Logo">
                     </a>
@@ -1204,3 +1204,4 @@
         });
     </script>
 @endpush
+

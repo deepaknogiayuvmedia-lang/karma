@@ -16,3 +16,4 @@
         {!! $products->links() !!}
     </nav>
 </div>
+

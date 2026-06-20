@@ -9,3 +9,4 @@
         <li class="{{ Request::is('admin/helpTopic/list') ?'active':'' }}"><a href="{{route('admin.helpTopic.list')}}">{{\App\CPU\translate('FAQ')}}</a></li>
     </ul>
 </div>
+

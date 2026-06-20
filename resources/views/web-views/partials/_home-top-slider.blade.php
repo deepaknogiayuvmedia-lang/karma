@@ -16,7 +16,7 @@
             <div class="carousel-inner">
                 @foreach($main_banner as $key=>$banner)
                     <div class="carousel-item {{$key==0?'active':''}}">
-                        <a href="{{$banner['url']}}">
+                        <a href="{{$banner['url']}}" class="w-100">
                             <img class="d-block w-100 __slide-img new-st-slider"
                                  
                                  src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$banner['photo']}}"
@@ -52,3 +52,4 @@
         });
     });
 </script>
+
