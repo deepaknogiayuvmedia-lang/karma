@@ -3408,4 +3408,5 @@
   'Resend Code' => 'Resend Code',
   'Wrong account ' => 'Wrong account ',
   'Back to Login' => 'Back to Login',
+  'shipping_policy' => 'Shipping policy',
 );
