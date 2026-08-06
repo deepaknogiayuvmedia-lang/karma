@@ -23,7 +23,6 @@ use Ramsey\Uuid\Uuid;
 use function App\CPU\translate;
 use App\CPU\CustomerManager;
 use App\CPU\Convert;
-use Rap2hpoutre\FastExcel\FastExcel;
 use App\Mail\NotificationMail;
 use Illuminate\Support\Facades\Mail;
 class OrderController extends Controller

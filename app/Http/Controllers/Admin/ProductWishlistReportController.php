@@ -9,7 +9,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Rap2hpoutre\FastExcel\FastExcel;
 use Brian2694\Toastr\Facades\Toastr;
 
 class ProductWishlistReportController extends Controller

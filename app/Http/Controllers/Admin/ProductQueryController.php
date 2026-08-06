@@ -20,7 +20,6 @@ use function App\CPU\translate;
 use App\CPU\CustomerManager;
 use App\CPU\Convert;
 use App\Model\Product;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class ProductQueryController extends Controller
 {

@@ -2644,4 +2644,5 @@
   'Completion Rate' => 'Completion Rate',
   'Refund Rate' => 'Refund Rate',
   'Transaction_Report' => 'Transaction Report',
+  'Stock Out' => 'মজুত শেষ',
 );

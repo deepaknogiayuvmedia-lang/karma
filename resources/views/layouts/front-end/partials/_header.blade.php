@@ -57,6 +57,133 @@
             color: var(--primary_color) !important;
         }
     }
+
+    /* Phase 3: Mobile Top Header Fix */
+    .topbar {
+        min-height: 40px;
+        max-height: 45px;
+    }
+
+    .topbar .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 0 1rem;
+    }
+
+    .topbar > div {
+        display: flex;
+        align-items: center;
+    }
+
+    .topbar .topbar-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .topbar .topbar-link i {
+        font-size: 0.8rem;
+    }
+
+    @media (max-width: 767px) {
+        .topbar {
+            min-height: 38px;
+            padding: 0.15rem 0;
+        }
+
+        .topbar .container {
+            padding: 0 0.75rem;
+        }
+
+        .topbar .topbar-link {
+            font-size: 0.8rem;
+            padding: 0.2rem 0;
+        }
+
+        .topbar .topbar-link i {
+            font-size: 0.75rem;
+        }
+
+        .topbar img {
+            width: 18px;
+            height: 13px;
+        }
+    }
+
+    /* Phase 4: Language Selector Redesign */
+    .__language-bar {
+        position: relative;
+    }
+
+    .__language-bar .dropdown-toggle::after {
+        display: none;
+    }
+
+    .__language-bar .dropdown-menu {
+        min-width: 200px;
+        max-height: 320px;
+        overflow-y: auto;
+        border: 1px solid rgba(0,0,0,0.08);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        padding: 0.5rem 0;
+        margin-top: 0.5rem;
+        animation: langDropdownFade 0.2s ease;
+    }
+
+    @keyframes langDropdownFade {
+        from { opacity: 0; transform: translateY(-8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .__language-bar .dropdown-menu .dropdown-item {
+        padding: 0.45rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        transition: background-color 0.15s;
+    }
+
+    .__language-bar .dropdown-menu .dropdown-item:hover {
+        background-color: rgba(0,0,0,0.04);
+    }
+
+    .__language-bar .dropdown-menu .dropdown-item img {
+        width: 20px;
+        height: 14px;
+        object-fit: cover;
+        border-radius: 2px;
+    }
+
+    .lang-search-box {
+        padding: 0.4rem 0.75rem;
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+        margin-bottom: 0.25rem;
+    }
+
+    .lang-search-box input {
+        width: 100%;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 4px;
+        padding: 0.3rem 0.5rem;
+        font-size: 0.8rem;
+        outline: none;
+    }
+
+    .lang-search-box input:focus {
+        border-color: var(--primary_color);
+    }
+
+    .lang-active-indicator {
+        margin-left: auto;
+        color: var(--primary_color);
+        font-size: 0.75rem;
+    }
 </style>
 @php($announcement=\App\CPU\Helpers::get_business_settings('announcement'))
 @if (isset($announcement) && $announcement['status']==1)
@@ -76,66 +203,51 @@
         <div class="container px-5">
 
             <div>
-                <div class="topbar-text dropdown d-md-none {{Session::get('direction') === "rtl" ? 'mr-auto' : 'ml-auto'}}">
+                <div class="topbar-text d-md-none {{Session::get('direction') === "rtl" ? 'mr-auto' : 'ml-auto'}}">
                     <a class="topbar-link" href="tel: {{$web_config['phone']->value}}">
-                        <i class="fa fa-phone"></i> {{$web_config['phone']->value}}
+                        <i class="fa fa-phone"></i> {{\App\CPU\translate('Call')}}
                     </a>
                 </div>
-                <div class="d-none d-md-block {{Session::get('direction') === "rtl" ? 'mr-2' : 'mr-2'}} text-nowrap">
-                    <a class="topbar-link d-none d-md-inline-block" href="tel:{{$web_config['phone']->value}}">
+                <div class="d-none d-md-flex {{Session::get('direction') === "rtl" ? 'mr-2' : 'mr-2'}} text-nowrap">
+                    <a class="topbar-link" href="tel:{{$web_config['phone']->value}}">
                         <i class="fa fa-phone"></i> {{$web_config['phone']->value}}
                     </a>
                 </div>
             </div>
 
             <div>
-                @php($currency_model = \App\CPU\Helpers::get_business_settings('currency_model'))
-                @if($currency_model=='multi_currency')
-                <div class="topbar-text dropdown disable-autohide {{Session::get('direction') === "rtl" ? 'mr-4' : 'mr-4'}}">
-                    <a class="topbar-link dropdown-toggle" href="#" data-toggle="dropdown">
-                        <span>{{session('currency_code')}} {{session('currency_symbol')}}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-{{Session::get('direction') === "rtl" ? 'right' : 'left'}}"
-                        style="min-width: 160px!important;text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
-                        @foreach (\App\Model\Currency::where('status', 1)->get() as $key => $currency)
-                        <li class="dropdown-item cursor-pointer"
-                            onclick="currency_change('{{$currency['code']}}')">
-                            {{ $currency->name }}
-                        </li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
                 @php( $local = \App\CPU\Helpers::default_lang())
-                <div
-                    class="topbar-text dropdown disable-autohide  __language-bar text-capitalize">
-                    <a class="topbar-link dropdown-toggle" href="#" data-toggle="dropdown">
+                <div class="topbar-text dropdown disable-autohide __language-bar text-capitalize">
+                    <a class="topbar-link dropdown-toggle" href="#" data-toggle="dropdown" aria-expanded="false">
                         @foreach(json_decode($language['value'],true) as $data)
                         @if($data['code']==$local)
                         <img class="{{Session::get('direction') === "rtl" ? 'mr-2' : 'mr-2'}}" width="20"
                             src="{{asset('assets/front-end')}}/img/flags/{{$data['code']}}.png"
-                            alt="Eng">
-                        {{$data['name']}}
+                            alt="{{$data['name']}}">
+                        <span class="d-none d-sm-inline">{{$data['name']}}</span>
                         @endif
                         @endforeach
+                        <i class="fa fa-chevron-down ml-1" style="font-size:0.6rem;"></i>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-{{Session::get('direction') === "rtl" ? 'right' : 'left'}}"
-                        style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
+                    <div class="dropdown-menu dropdown-menu-{{Session::get('direction') === "rtl" ? 'right' : 'left'}}">
+                        <div class="lang-search-box">
+                            <input type="text" id="langSearchInput" placeholder="{{\App\CPU\translate('Search language...')}}" autocomplete="off">
+                        </div>
+                        <div id="langList">
                         @foreach(json_decode($language['value'],true) as $key =>$data)
                         @if($data['status']==1)
-                        <li>
-                            <a class="dropdown-item pb-1" href="{{route('lang',[$data['code']])}}">
-                                <img class="{{Session::get('direction') === "rtl" ? 'mr-2' : 'mr-2'}}"
-                                    width="20"
-                                    src="{{asset('assets/front-end')}}/img/flags/{{$data['code']}}.png"
-                                    alt="{{$data['name']}}" />
-                                <span style="text-transform: capitalize">{{$data['name']}}</span>
-                            </a>
-                        </li>
+                        <a class="dropdown-item lang-item" href="{{route('lang',[$data['code']])}}" data-name="{{strtolower($data['name'])}}">
+                            <img src="{{asset('assets/front-end')}}/img/flags/{{$data['code']}}.png"
+                                alt="{{$data['name']}}" />
+                            <span>{{$data['name']}}</span>
+                            @if($data['code']==$local)
+                            <span class="lang-active-indicator"><i class="fa fa-check"></i></span>
+                            @endif
+                        </a>
                         @endif
                         @endforeach
-                    </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

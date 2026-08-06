@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Rap2hpoutre\FastExcel\FastExcel;
 use App\Model\Cart;
 use App\Model\Seller;
 use App\CPU\Tallymethod;
@@ -85,7 +84,6 @@ class ProductController extends Controller
                 ], 200);
             }
 
-            //  dd($blankid);
             do {
                 $code = random_int(100000, 999999);
             } while (Product::where('code', $code)->exists());
@@ -97,22 +95,43 @@ class ProductController extends Controller
             $duplicate->slug = $duplicate->slug . '-' . Str::random(6);
             $duplicate->tax            = 0;
             $duplicate->discount       = 0;
-            $duplicate->current_stock  = 0;
             $duplicate->status         = 0;
             $duplicate->shipping_cost  = 0;
             $duplicate->multiply_qty   = 0;
             $duplicate->minimum_order_qty = 1;
+            $duplicate->featured       = 0;
+            $duplicate->featured_status = 0;
             $duplicate->code = $code;
 
+            // Update variations with qty from modal
+            $variants = $request->variants ?? [];
+            $stock_count = 0;
+            if (!empty($variants) && is_array($variants)) {
+                $variations = json_decode($duplicate->variation, true) ?? [];
+                foreach ($variants as $variantData) {
+                    $variantType = $variantData['type'] ?? '';
+                    $variantQty = abs(intval($variantData['qty'] ?? 0));
+                    foreach ($variations as &$item) {
+                        if ($item['type'] == $variantType) {
+                            $item['qty'] = $variantQty;
+                        }
+                        $stock_count += $item['qty'];
+                    }
+                    unset($item);
+                }
+                $duplicate->variation = json_encode($variations);
+                $duplicate->current_stock = $stock_count;
+            } else {
+                $duplicate->current_stock  = 0;
+            }
 
             unset($duplicate->reviews_count);
 
             $duplicate->save();
 
-
             return response()->json([
                 'success' => 1,
-                'message' => 'Product Added successfully  ',
+                'message' => 'Product Added successfully',
             ], 200);
         } else {
             return response()->json([
@@ -390,6 +409,11 @@ class ProductController extends Controller
         $product->status         = 0;
         $product->shipping_cost  = $request->product_type == 'physical' ? Convert::usd($request->shipping_cost) : 0;
         $product->multiply_qty   = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
+        // Phase 8: Approval Workflow - seller products start as pending
+        $product->approval_status = Helpers::get_business_settings('new_product_approval') == 1 ? 'pending' : 'approved';
+        $product->admin_commission = $request->admin_commission ?? 0;
+        $product->admin_commission_type = $request->admin_commission_type ?? 'percentage';
+        $product->priority = $request->priority ?? 0;
 
         if ($request->ajax()) {
             return response()->json([], 200);
@@ -487,10 +511,10 @@ class ProductController extends Controller
         $query_param = [];
         $search = $request['search'];
         $sellerproduct = Product::where(['added_by' => 'seller', 'user_id' => \auth('seller')->id()])->where('pid', '!=', null)->pluck('pid')->toArray();
-        // dd($sellerproduct);
         if ($request->has('search')) {
             $key = explode(' ', $request['search']);
             $products = Product::where(['added_by' => 'admin'])
+                ->whereNotIn('id', $sellerproduct)
                 ->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->Where('name', 'like', "%{$value}%");
@@ -505,7 +529,7 @@ class ProductController extends Controller
                     }
                 });;
         } else {
-            $products = Product::where(['added_by' => 'admin']);
+            $products = Product::where(['added_by' => 'admin'])->whereNotIn('id', $sellerproduct);
             $pidarray = $products->pluck('id')->toArray();
             $productssell = Product::where('added_by', 'seller')->where('user_id',  '!=',   \auth('seller')->id())->whereNotIn('pid', $pidarray);
         }
@@ -518,7 +542,7 @@ class ProductController extends Controller
         // })->values()->all();
 
         // print_r($result);
-        return view('seller-views.product.adminproduct', compact('products', 'search', 'sellerproduct', 'productssell'));
+        return view('seller-views.product.adminproduct', compact('products', 'search', 'productssell'));
     }
 
     public function stock_limit_list(Request $request, $type)
@@ -578,8 +602,15 @@ class ProductController extends Controller
     public function get_variations(Request $request)
     {
         $product = Product::find($request['id']);
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        $variations = json_decode($product->variation, true) ?? [];
+
         return response()->json([
-            'view' => view('seller-views.product.partials._update_stock', compact('product'))->render()
+            'variations' => $variations,
+            'product_name' => $product->name,
         ]);
     }
 
@@ -587,54 +618,35 @@ class ProductController extends Controller
     {
         $product = Product::find($request->data['id']);
 
-        $variations = json_decode($product->variation, true) ?? [];
-        $categories = json_decode($product->category_ids, true);
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'Product not found']);
+        }
 
-        $categoryName = $categories[count($categories) - 1]['id'] ?? null;
-        $category = Category::find($categoryName);
-        $categoryName = $category ? $category->name : $categoryName;
+        // Only allow seller to update their own products
+        if ($product->added_by === 'seller' && $product->user_id !== auth('seller')->id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized']);
+        }
+
+        $variations = json_decode($product->variation, true) ?? [];
 
         $stock_count = 0;
-        if ($product) {
-            foreach ($variations as $key => &$item) {
-                if ($item['type'] == $request->data['variation']) {
-
-                    $item['type'] = $request->data['variation'];
-                    $item['price'] = BackEndHelper::currency_to_usd(abs($request->data['price']));
-                    $item['qty'] = abs($request->data['qty']);
-                    $unit = preg_replace('/[^a-zA-Z]/', '', $item['type']);
-                    $response = Tallymethod::createUnit($unit);
-                    if (!Tallymethod::isSuccess($response)) {
-                        Toastr::error(translate('Tally unit creation failed for unit: ') . $unit);
-                        return back();
-                    }
-                    $order_pending_qty = OrderDetail::where('product_id', $request->data['id'])
-                        ->whereHas('order', function ($q) {
-                            $q->whereIn('delivery_status', ['pending', 'confirmed', 'processing', 'out_for_delivery']);
-                        })
-                        ->where('variant', $item['type'])->sum('qty');
-
-                    $response = Tallymethod::updateOpeningStock($product->tally_name . '-' . $item['type'] . '-' . $request->data['id'], $categoryName, $item['qty'] + $order_pending_qty, $unit, $item['price']);
-                    if (!Tallymethod::isSuccess($response)) {
-                        Toastr::error(translate('Tally item creation failed for item: ') . $product->tally_name . '-' . $item['type']);
-                        return back();
-                    }
-                }
-
-                $stock_count += $item['qty'];
+        foreach ($variations as $key => &$item) {
+            if ($item['type'] == $request->data['variation']) {
+                $item['price'] = BackEndHelper::currency_to_usd(abs($request->data['price']));
+                $item['qty'] = abs($request->data['qty']);
             }
+            $stock_count += $item['qty'];
         }
+        unset($item);
 
         if ($stock_count >= 0) {
             $product->variation = json_encode($variations);
             $product->current_stock = $stock_count;
             $product->purchase_price = BackEndHelper::currency_to_usd(abs($request->data['purchase_price']));
             $product->save();
-            Toastr::success(translate('product_quantity_updated_successfully!'));
-            return response()->json(['success' => true]);
+            return response()->json(['success' => true, 'message' => 'Quantity updated successfully']);
         } else {
-            Toastr::warning(translate('product_quantity_can_not_be_less_than_0_!'));
-            return response()->json(['success' => false]);
+            return response()->json(['success' => false, 'message' => 'Quantity cannot be less than 0']);
         }
     }
 
@@ -1007,6 +1019,14 @@ class ProductController extends Controller
         $product->current_stock     = $request->product_type == 'physical' ? abs($stock_count) : 0;
         $product->shipping_cost     = $request->product_type == 'physical' ? (Helpers::get_business_settings('product_wise_shipping_cost_approval') == 1 ? $product->shipping_cost : Convert::usd($request->shipping_cost)) : 0;
         $product->multiply_qty      = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
+        // Phase 8: Approval Workflow - approved products need re-approval after edit
+        if ($product->approval_status === 'approved') {
+            $product->approval_status = 'pending_edit';
+            $product->edit_status = 'pending_edit';
+        }
+        $product->admin_commission = $request->admin_commission ?? $product->admin_commission;
+        $product->admin_commission_type = $request->admin_commission_type ?? $product->admin_commission_type;
+        $product->priority = $request->priority ?? $product->priority;
 
         if (Helpers::get_business_settings('product_wise_shipping_cost_approval') == 1 && $product->shipping_cost != Convert::usd($request->shipping_cost)) {
             $product->temp_shipping_cost = Convert::usd($request->shipping_cost);

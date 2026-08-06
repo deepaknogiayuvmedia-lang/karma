@@ -11,7 +11,6 @@ use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Model\Translation;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class BrandController extends Controller
 {

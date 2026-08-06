@@ -8,11 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Model\BusinessSetting;
 use App\Model\Chanal;
 use Brian2694\Toastr\Facades\Toastr;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use phpseclib3\Crypt\RSA\Formats\Keys\JWK;
 
 class ChanalController extends Controller
 {

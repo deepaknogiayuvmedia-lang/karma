@@ -12,7 +12,7 @@
     <!-- Page Title -->
     <div class="mb-4 d-flex flex-wrap gap-3 justify-content-between align-items-center">
         <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-            <img width="20" src="{{asset('/public/assets/back-end/img/products.png')}}" alt="">
+            <img width="20" src="{{asset('assets/back-end/img/products.png')}}" alt="">
             {{\App\CPU\translate('Bidding List ')}}
             <span class="badge badge-soft-dark radius-50 fz-14 ml-1"></span>
         </h2>

@@ -10,7 +10,6 @@ use App\Model\DeliverymanWallet;
 use App\Model\WithdrawRequest;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
-use Rap2hpoutre\FastExcel\FastExcel;
 use function App\CPU\translate;
 
 class DeliverymanWithdrawController extends Controller

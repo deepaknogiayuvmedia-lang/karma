@@ -17,7 +17,6 @@ use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class TransactionReportController extends Controller
 {

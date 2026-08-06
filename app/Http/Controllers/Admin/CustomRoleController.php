@@ -9,7 +9,6 @@ use App\Model\Product;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class CustomRoleController extends Controller
 {

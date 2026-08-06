@@ -73,6 +73,7 @@
         .mobile-bottom-nav .nav-item a .nav-icon {
             font-size: 22px;
             transition: transform 0.2s;
+            line-height: normal
         }
 
         .mobile-bottom-nav .nav-item a .nav-label {

@@ -2,6 +2,99 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
+    <style>
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            z-index: 9999;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            color: #fff;
+            text-decoration: none;
+        }
+        .back-btn:active {
+            transform: translateY(-1px);
+        }
+    </style>
+    <!-- Phase 20: Product Description Layout Fix -->
+    <style>
+        /* Responsive tables in product description */
+        .product-description table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .product-description table th,
+        .product-description table td {
+            border: 1px solid #dee2e6;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        .product-description table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .product-description table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        @media (max-width: 767px) {
+            .product-description .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 10px 0;
+            }
+            .product-description table {
+                min-width: 500px;
+                font-size: 0.85rem;
+            }
+            .product-description table th,
+            .product-description table td {
+                padding: 6px 8px;
+                white-space: nowrap;
+            }
+        }
+        /* Typography fix for product description */
+        .product-description h1,
+        .product-description h2,
+        .product-description h3,
+        .product-description h4 {
+            margin-top: 1.2em;
+            margin-bottom: 0.6em;
+        }
+        .product-description p {
+            margin-bottom: 1em;
+            line-height: 1.7;
+        }
+        .product-description img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .product-description ul,
+        .product-description ol {
+            padding-left: 1.5em;
+            margin-bottom: 1em;
+        }
+        .product-description li {
+            margin-bottom: 0.3em;
+            line-height: 1.6;
+        }
+    </style>
     <meta charset="utf-8">
     <title>
         @yield('title')
@@ -43,6 +136,113 @@
     <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/style.css">
     {{-- dont touch this --}}
     <meta name="_token" content="{{ csrf_token() }}">
+    <!-- Phase 21: UI Improvements -->
+    <style>
+        /* Cards */
+        .card {
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        /* Buttons */
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 8px 20px;
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn--primary {
+            border-radius: 8px;
+        }
+        /* Forms */
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 10px 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-control:focus {
+            border-color: var(--primary_color, #007bff);
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
+        }
+        /* Tables */
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+        }
+        .table td, .table th {
+            vertical-align: middle;
+        }
+        /* Badges */
+        .badge {
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-weight: 500;
+        }
+        /* Product cards */
+        .product-card {
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        /* Alerts */
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        /* Dropdown menus */
+        .dropdown-menu {
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 8px 0;
+        }
+        .dropdown-item {
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin: 0 8px;
+        }
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        /* Mobile improvements */
+        @media (max-width: 767px) {
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            .form-control {
+                padding: 12px 14px;
+            }
+            .table {
+                font-size: 0.85rem;
+            }
+            .product-card .product-card__body {
+                padding: 12px;
+            }
+            .product-card .product-card__title {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
     {{-- dont touch this --}}
     <!--to make http ajax request to https-->
     <!--<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
@@ -297,6 +497,11 @@
     {{-- loader --}}
 
     <!-- Page Content-->
+    <!-- Back Button -->
+    <a href="javascript:history.back()" class="back-btn" title="Go Back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+    </a>
+    <!-- End Back Button -->
     @yield('content')
 
     <!-- Footer-->
@@ -350,7 +555,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
 
     <script>
-        console.log("🔥 Firebase script loaded");
+      
         const firebaseConfig = {
             apiKey: "{{ \App\CPU\Helpers::get_business_settings('fcm_api_key') }}",
             authDomain: "{{ \App\CPU\Helpers::get_business_settings('fcm_auth_domain') }}",
@@ -388,7 +593,7 @@
                 })
                 .then((currentToken) => {
                     if (currentToken) {
-                        console.log("FINAL TOKEN:", currentToken);
+                     
                         saveToken(currentToken);
                     } else {
                         console.warn("No token available");
@@ -409,7 +614,7 @@
                     token: token
                 },
                 success: function() {
-                    console.log('Token saved');
+                    
                 }
             });
         }
@@ -424,7 +629,7 @@
 
         // Permission
         Notification.requestPermission().then(permission => {
-            console.log("Permission:", permission);
+           
             if (permission === "granted") {
                 registerServiceWorker();
             }
@@ -526,6 +731,19 @@
         }
 
         function addToCart(form_id = 'add-to-cart-form', redirect_to_checkout = false) {
+            var $form = $('#' + form_id);
+            var maxQty = parseInt($form.find('.cart-qty-field').attr('max')) || 0;
+            var currentQty = parseInt($form.find('input[name=quantity]').val()) || 0;
+
+            if (maxQty <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Out of Stock',
+                    text: '{{ \App\CPU\translate("This variant is currently out of stock") }}'
+                });
+                return false;
+            }
+
             if (checkAddToCartValidity()) {
                 $.ajaxSetup({
                     headers: {
@@ -579,24 +797,19 @@
             /* location.href = "{{ route('checkout-details') }}"; */
         }
 
-        function currency_change(currency_code) {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                }
+        // Phase 4: Language Search Functionality
+        $(document).ready(function() {
+            $('#langSearchInput').on('keyup', function() {
+                var value = $(this).val().toLowerCase();
+                $('#langList .lang-item').filter(function() {
+                    $(this).toggle($(this).data('name').indexOf(value) > -1);
+                });
             });
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('currency.change') }}',
-                data: {
-                    currency_code: currency_code
-                },
-                success: function(data) {
-                    toastr.success('{{ \App\CPU\translate('Currency changed to') }}' + data.name);
-                    location.reload();
-                }
+            // Keep dropdown open when clicking inside
+            $('.__language-bar .dropdown-menu').on('click', function(e) {
+                e.stopPropagation();
             });
-        }
+        });
 
         function removeFromCart(key) {
             $.post('{{ route('cart.remove') }}', {
@@ -758,7 +971,8 @@
         });
 
         function getVariantPrice() {
-            if ($('#add-to-cart-form input[name=quantity]').val() > 0 && checkAddToCartValidity()) {
+            var $form = $('#add-to-cart-form');
+            if ($form.find('input[name=quantity]').val() > 0 && checkAddToCartValidity()) {
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
@@ -767,14 +981,26 @@
                 $.ajax({
                     type: "POST",
                     url: '{{ route('cart.variant_price') }}',
-                    data: $('#add-to-cart-form').serializeArray(),
+                    data: $form.serializeArray(),
                     success: function(data) {
-                        $('#add-to-cart-form #chosen_price_div').removeClass('d-none');
-                        $('#add-to-cart-form #chosen_price_div #chosen_price').html(data.price);
-                        $('#set-tax-amount').html(data.tax);
-                        $('#set-discount-amount').html(data.discount);
-                        $('#available-quantity').html(data.quantity);
-                        $('.cart-qty-field').attr('max', data.quantity);
+                        $form.find('#chosen_price_div').removeClass('d-none');
+                        $form.find('#chosen_price_div #chosen_price').html(data.price);
+                        $form.find('#set-tax-amount').html(data.tax);
+                        $form.find('#set-discount-amount').html(data.discount);
+                        $form.find('#available-quantity').html(data.quantity);
+                        $form.find('.cart-qty-field').attr('max', data.quantity);
+
+                        // Out of stock handling
+                        if (data.quantity <= 0) {
+                            $form.find('#variant-out-of-stock, #qv-variant-out-of-stock').removeClass('d-none');
+                            $form.find('.cart-qty-field').val(0).attr('max', 0);
+                            $form.find('.btn-buy-now, .btn-add-to-cart').addClass('d-none');
+                            $form.find('.btn-oos').removeClass('d-none');
+                        } else {
+                            $form.find('#variant-out-of-stock, #qv-variant-out-of-stock').addClass('d-none');
+                            $form.find('.btn-buy-now, .btn-add-to-cart').removeClass('d-none');
+                            $form.find('.btn-oos').addClass('d-none');
+                        }
                     }
                 });
             }

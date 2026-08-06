@@ -32,7 +32,7 @@
                         @csrf
                         <div class="card-body">
                             <div class="form-group">
-                                <textarea class="form-control textarea editor-textarea ckeditor" 
+                                <textarea class="form-control" rows="10"
                                     name="value">{{$terms_condition->value}}</textarea>
                             </div>
                             <div class="form-group">
@@ -47,13 +47,5 @@
 @endsection
 
 @push('script')
-   {{--ck editor--}}
-    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
-    <script>
-        $('.textarea').ckeditor({
-            contentsLangDirection : '{{Session::get('direction')}}',
-        });
-    </script>
-    {{--ck editor--}}
 @endpush
 

@@ -71,7 +71,7 @@
                                 <th>{{\App\CPU\translate('Variation')}}</th>
                                 <th>{{\App\CPU\translate('purchase_price')}}</th>
                                 <th>{{\App\CPU\translate('selling_price')}}</th>
-
+                                <th>{{\App\CPU\translate('Commission')}}</th>
                                 <th>{{\App\CPU\translate('quantity')}}</th>
                                 <th class="text-center">{{\App\CPU\translate('action')}}</th>
                             </tr>
@@ -115,6 +115,19 @@
                                                 {{ \App\CPU\BackEndHelper::currency_set_symbol()}}</span>
                                             <input type="text" name="price" id="" value="{{\App\CPU\BackEndHelper::usd_to_currency($value['price']) }}" class="form-control">
                                         </div>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $commVal = $p->admin_commission ?? 0;
+                                            $commType = $p->admin_commission_type ?? 'percentage';
+                                        @endphp
+                                        @if($commVal > 0)
+                                            <span class="badge badge-soft-success">
+                                                {{ $commVal }}{{ $commType === 'fixed' ? \App\CPU\BackEndHelper::currency_set_symbol() : '%' }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center product-quantity">
@@ -161,6 +174,19 @@
                                                 {{ \App\CPU\BackEndHelper::currency_set_symbol()}}</span>
                                             <input type="text" name="price" id="" value="{{\App\CPU\BackEndHelper::usd_to_currency($p['unit_price']) }}" class="form-control">
                                         </div>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $commVal = $p->admin_commission ?? 0;
+                                            $commType = $p->admin_commission_type ?? 'percentage';
+                                        @endphp
+                                        @if($commVal > 0)
+                                            <span class="badge badge-soft-success">
+                                                {{ $commVal }}{{ $commType === 'fixed' ? \App\CPU\BackEndHelper::currency_set_symbol() : '%' }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center product-quantity">
@@ -210,7 +236,7 @@
             lengthChange: false,
             searching: false,
             order: [
-                [5, 'asc']
+                [6, 'asc']
             ]
         });
 
@@ -227,6 +253,9 @@
                 qty: check_qty,
             };
             
+            var $btn = $(this);
+            $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
@@ -240,13 +269,16 @@
                 },
                success: function (data) {
                     if(data.success){
-                        toastr.success('{{\App\CPU\translate('Quantity updated successfully')}}');
+                        toastr.success(data.message || 'Quantity updated successfully');
                     }else{
-                        toastr.error('{{\App\CPU\translate('Update failed')}}');
+                        toastr.error(data.message || 'Update failed');
                     }
                 },
                 error: function() {
-                    toastr.error('{{\App\CPU\translate('Update failed')}}');
+                    toastr.error('Update failed');
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html('<i class="tio-save"></i>');
                 }
             });
         });

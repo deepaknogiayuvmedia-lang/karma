@@ -31,6 +31,35 @@
     {{-- light box --}}
     <link rel="stylesheet" href="{{ asset('css/lightbox.css') }}">
     @stack('css_or_js')
+    <style>
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            color: #fff;
+            text-decoration: none;
+        }
+        .back-btn:active {
+            transform: translateY(-1px);
+        }
+    </style>
     <!-- <style>
         :root {
             --theameColor: #045cff;
@@ -44,6 +73,26 @@
         src="{{ asset('assets/back-end') }}/vendor/hs-navbar-vertical-aside/hs-navbar-vertical-aside-mini-cache.js">
     </script>
     <link rel="stylesheet" href="{{ asset('assets/back-end') }}/css/toastr.css">
+    <!-- Phase: CKEditor 5 Height Fix -->
+    <style>
+        .ck-editor__editable {
+            min-height: 250px !important;
+            max-height: 400px !important;
+            height: 300px !important;
+            overflow: auto !important;
+        }
+        .ck-editor {
+            min-height: 350px !important;
+        }
+        /* CKEditor 5 Color Picker Fix */
+        .ck-color-grid {
+            min-width: 280px !important;
+        }
+        .ck-color-grid__tile {
+            width: 24px !important;
+            height: 24px !important;
+        }
+    </style>
 </head>
 
 <body class="footer-offset">
@@ -70,6 +119,11 @@
     <!-- END ONLY DEV -->
 
     <main id="content" role="main" class="main pointer-event">
+        <!-- Back Button -->
+        <a href="javascript:history.back()" class="back-btn" title="Go Back">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+        </a>
+        <!-- End Back Button -->
         <!-- Content -->
         @yield('content')
         <!-- End Content -->
@@ -87,15 +141,14 @@
     <script src="{{ asset('assets/back-end') }}/js/custom.js"></script>
     <!-- JS Implementing Plugins -->
 
-    @stack('script')
-
-
     <!-- JS Front -->
     <script src="{{ asset('assets/back-end') }}/js/vendor.min.js"></script>
     <script src="{{ asset('assets/back-end') }}/js/theme.min.js"></script>
     <script src="{{ asset('assets/back-end') }}/js/sweet_alert.js"></script>
     <script src="{{ asset('assets/back-end') }}/js/toastr.js"></script>
     {!! Toastr::message() !!}
+
+    @stack('script')
 
     @if ($errors->any())
         <script>
@@ -352,23 +405,11 @@
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write(
             '<script src="{{ asset('assets/back-end') }}/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>
-    @stack('script')
-
-    {{-- ck editor --}}
-    <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
-    <script>
-        // CKEDITOR.replace('editor');
-    </script>
-    {{-- ck editor --}}
-
-    <script>
-        // initSample();
-    </script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
 
     <script>
-        console.log("🔥 Seller Firebase script loaded");
+       
         const firebaseConfig = {
             apiKey: "AIzaSyAB2BkJP_9iQiFVyjLeRftIfs7DJEumWoo",
             authDomain: "multi-vendor-5d507.firebaseapp.com",
@@ -444,7 +485,7 @@
         // Permission
         @if(auth('seller')->check())
         Notification.requestPermission().then(permission => {
-            console.log("Permission:", permission);
+        
             if (permission === "granted") {
                 registerServiceWorker();
             }

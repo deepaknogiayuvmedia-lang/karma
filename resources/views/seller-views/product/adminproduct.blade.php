@@ -12,7 +12,7 @@
     <!-- Page Title -->
     <div class="mb-4">
         <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-            <img width="20" src="{{asset('/public/assets/back-end/img/products.png')}}" alt="">
+            <img width="20" src="{{asset('assets/back-end/img/products.png')}}" alt="">
             {{\App\CPU\translate('Products')}}
             <span class="badge badge-soft-dark radius-50 fz-14 ml-1">{{ $products->total() }}</span>
         </h2>
@@ -65,7 +65,7 @@
                                 <th scope="row">
                                     <label class="switcher">
                                         <input type="checkbox" class="selectItem switcher_input"
-                                            id="{{$p['id']}}" @if(in_array($p['id'], $sellerproduct)) disabled checked @endif >
+                                            id="{{$p['id']}}">
                                         <span class="switcher_control"></span>
                                     </label>
                                 </th>
@@ -134,7 +134,7 @@
                                 <th scope="row">
                                     <label class="switcher">
                                         <input type="checkbox" class="selectItem switcher_input"
-                                            id="{{$p['id']}}" @if(in_array($p['id'], $sellerproduct)) disabled checked @endif >
+                                            id="{{$p['id']}}">
                                         <span class="switcher_control"></span>
                                     </label>
                                 </th>
@@ -180,25 +180,124 @@
 </div>
 @endsection
 
+<!-- Copy Product Modal with Variant Qty -->
+<div class="modal fade" id="copyProductModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{\App\CPU\translate('Set_Variant_Quantities')}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="copyProductId">
+                <input type="hidden" id="copyProductPrice">
+                <div class="mb-3">
+                    <label class="font-weight-bold">{{\App\CPU\translate('Product')}}</label>
+                    <p id="copyProductName" class="mb-0 text-muted"></p>
+                </div>
+                <div id="variantQtyContainer">
+                    <!-- Variant qty inputs will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{\App\CPU\translate('Cancel')}}</button>
+                <button type="button" class="btn btn--primary" id="confirmCopyBtn" onclick="confirmCopyProduct()">
+                    <span id="copyBtnText">{{\App\CPU\translate('Copy_Product')}}</span>
+                    <span id="copyBtnLoader" class="d-none"><i class="fa fa-spinner fa-spin"></i></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('script')
 <!-- Page level plugins -->
 <script src="{{asset('assets/back-end')}}/vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="{{asset('assets/back-end')}}/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
 <script>
-    // Call the dataTables jQuery plugin
     $(document).ready(function() {
         $('#dataTable').DataTable();
         $('#dataTable1').DataTable();
     });
 
-    $('.selectItem').on('change', function() {
-        if ($(this).prop("checked") != true) {
+    var pendingProductId = null;
+
+    // Override the toggle behavior - fetch variations first, then show modal
+    $(document).off('change', '.selectItem').on('change', '.selectItem', function() {
+        if (!$(this).prop("checked")) {
             return;
         }
         var id = $(this).attr("id");
-        var price = $('.sellprice' + id).val()
-        let t = $(this);
+        var price = $('.sellprice' + id).val();
+        var productName = $(this).closest('tr').find('td:nth-child(2)').text().trim();
+        pendingProductId = id;
+
+        // Fetch product variations
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: "{{route('seller.product.get-variations')}}",
+            method: 'POST',
+            data: { id: id },
+            success: function(data) {
+                var container = $('#variantQtyContainer');
+                container.empty();
+                $('#copyProductId').val(id);
+                $('#copyProductPrice').val(price);
+                $('#copyProductName').text(productName);
+
+                if (data.variations && data.variations.length > 0) {
+                    data.variations.forEach(function(variant, index) {
+                        container.append(`
+                            <div class="form-group">
+                                <label class="font-weight-bold">${variant.type}</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control variant-qty"
+                                        data-variant='${JSON.stringify(variant)}'
+                                        min="0" value="0" placeholder="Enter quantity">
+                                </div>
+                            </div>
+                        `);
+                    });
+                } else {
+                    container.append(`
+                        <div class="form-group">
+                            <label class="font-weight-bold">{{\App\CPU\translate('Quantity')}}</label>
+                            <input type="number" class="form-control variant-qty" min="0" value="0"
+                                data-variant='{"type":"default","price":0,"sku":"","qty":0}'
+                                placeholder="Enter quantity">
+                        </div>
+                    `);
+                }
+                $('#copyProductModal').modal('show');
+            },
+            error: function() {
+                toastr.error('Failed to load product variations');
+            }
+        });
+    });
+
+    function confirmCopyProduct() {
+        var id = $('#copyProductId').val();
+        var price = $('#copyProductPrice').val();
+
+        var variants = [];
+        $('.variant-qty').each(function() {
+            var variant = JSON.parse($(this).attr('data-variant'));
+            variant.qty = parseInt($(this).val()) || 0;
+            variants.push(variant);
+        });
+
+        $('#copyBtnText').addClass('d-none');
+        $('#copyBtnLoader').removeClass('d-none');
+        $('#confirmCopyBtn').prop('disabled', true);
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
@@ -209,21 +308,31 @@
             method: 'POST',
             data: {
                 id: id,
-                price: price.replace(/[^\d.]/g, "")
+                price: price.replace(/[^\d.]/g, ""),
+                variants: variants
             },
             success: function(data) {
-                const translate = (msg) => `{{ \App\CPU\translate('${msg}') }}`;
-
                 if (data.success) {
-                    t.attr('disabled', true);
-                    toastr.success(translate(data.message));
+                    toastr.success(data.message);
+                    // Disable the checkbox
+                    $('.selectItem#' + id).attr('disabled', true);
+                    $('#copyProductModal').modal('hide');
                 } else {
-                    t.attr('disabled', true);
-                    console.log(t);
-                    toastr.error(translate(data.message));
+                    toastr.error(data.message);
+                    // Uncheck the checkbox
+                    $('.selectItem#' + id).prop('checked', false);
                 }
+            },
+            error: function() {
+                toastr.error('Something went wrong');
+                $('.selectItem#' + id).prop('checked', false);
+            },
+            complete: function() {
+                $('#copyBtnText').removeClass('d-none');
+                $('#copyBtnLoader').addClass('d-none');
+                $('#confirmCopyBtn').prop('disabled', false);
             }
         });
-    });
+    }
 </script>
 @endpush

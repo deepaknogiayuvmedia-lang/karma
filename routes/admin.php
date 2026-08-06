@@ -220,6 +220,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('stock-limit-warning', 'BusinessSettingsController@stock_limit_warning')->name('stock-limit-warning');
             Route::post('update-digital-product', 'BusinessSettingsController@updateDigitalProduct')->name('update-digital-product');
             Route::post('update-product-brand', 'BusinessSettingsController@updateProductBrand')->name('update-product-brand');
+            Route::post('save-ranking-weights', 'BusinessSettingsController@saveRankingWeights')->name('save-ranking-weights');
+            Route::post('recalculate-ranking', 'BusinessSettingsController@recalculateRanking')->name('recalculate-ranking');
         });
 
         Route::group(['prefix' => 'currency', 'as' => 'currency.','middleware'=>['module:system_settings']], function () {
@@ -313,16 +315,6 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('comparison-report', 'VendorDeliveryReportController@vendor_comparison')->name('comparison');
         });
 
-        // Alias routes for easier navigation
-        Route::get('vendor-report', 'VendorDeliveryReportController@vendor_report')->name('vendor-report.index');
-        Route::get('vendor-report/export-pdf', 'VendorDeliveryReportController@export_vendor_pdf')->name('vendor-report.export-pdf');
-        Route::get('vendor-report/export-excel', 'VendorDeliveryReportController@export_vendor_excel')->name('vendor-report.export-excel');
-
-        Route::get('delivery-report', 'VendorDeliveryReportController@delivery_report')->name('delivery-report.index');
-        Route::get('delivery-report/export-pdf', 'VendorDeliveryReportController@export_delivery_pdf')->name('delivery-report.export-pdf');
-        Route::get('delivery-report/export-excel', 'VendorDeliveryReportController@export_delivery_excel')->name('delivery-report.export-excel');
-
-        Route::get('comparison-report', 'VendorDeliveryReportController@vendor_comparison')->name('comparison-report');
         Route::group(['prefix' => 'stock', 'as' => 'stock.' ,'middleware'=>['module:report']], function () {
             //product stock report
             Route::get('product-stock', 'ProductStockReportController@index')->name('product-stock');
@@ -365,12 +357,13 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             });
         });
 
-        Route::group(['prefix' => 'seller-notification', 'as' => 'seller-notification.', 'middleware' => ['module:user_section']], function () {
-            Route::get('index', 'SellerNotificationController@index')->name('index');
-            Route::get('create', 'SellerNotificationController@create')->name('create');
-            Route::post('store', 'SellerNotificationController@store')->name('store');
-            Route::post('delete/{id}', 'SellerNotificationController@delete')->name('delete');
-        });
+        // SellerNotificationController routes disabled - controller not yet created
+        // Route::group(['prefix' => 'seller-notification', 'as' => 'seller-notification.', 'middleware' => ['module:user_section']], function () {
+        //     Route::get('index', 'SellerNotificationController@index')->name('index');
+        //     Route::get('create', 'SellerNotificationController@create')->name('create');
+        //     Route::post('store', 'SellerNotificationController@store')->name('store');
+        //     Route::post('delete/{id}', 'SellerNotificationController@delete')->name('delete');
+        // });
         Route::group(['prefix' => 'product', 'as' => 'product.','middleware'=>['module:product_management']], function () {
             Route::get('add-new', 'ProductController@add_new')->name('add-new');
             Route::post('store', 'ProductController@store')->name('store');
@@ -386,6 +379,9 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('featured-status', 'ProductController@featured_status')->name('featured-status');
             Route::get('approve-status', 'ProductController@approve_status')->name('approve-status');
             Route::post('deny', 'ProductController@deny')->name('deny');
+            // Phase 9: Verify Product routes
+            Route::post('verify', 'ProductController@verify')->name('verify');
+            Route::post('bulk-verify', 'ProductController@bulk_verify')->name('bulk-verify');
             Route::post('sku-combination', 'ProductController@sku_combination')->name('sku-combination');
             Route::get('get-categories', 'ProductController@get_categories')->name('get-categories');
             Route::delete('delete/{id}', 'ProductController@delete')->name('delete');
@@ -399,6 +395,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('barcode/generate', 'ProductController@barcode_generate')->name('barcode.generate');
             Route::get('sysc-tally', 'ProductController@sysc_tally')->name('sysc-tally');
             Route::get('sysc-web', 'ProductController@sysc_web')->name('sysc-web');
+            Route::post('set-commission', 'ProductController@set_commission')->name('set-commission');
+            Route::get('get-sellers/{id}', 'ProductController@get_sellers')->name('get-sellers');
         });
 
         Route::group(['prefix' => 'transaction', 'as' => 'transaction.' ,'middleware'=>['module:report']], function () {
@@ -455,20 +453,6 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
                 Route::get('3rd-party-shipping-method', 'ShippingMethodController@shipping_method_3rd_party')->name('shipping-method-3rd-party');
                 Route::post('3rd-party-shipping-method-store', 'ShippingMethodController@third_party_shipping_store')->name('third-party-shipping-method-store');
                 Route::post('3rd-party-shipping-method-warehouse-store', 'ShippingMethodController@warehouse_store')->name('third-party-shipping-method-warehouse-store');
-            });
-            // whatsapp route 
-            Route::group(['prefix' => 'whatsapp', 'as' => 'whatsapp.','middleware'=>['module:system_settings']], function () {
-                Route::get('index', 'WhatsAppController@index')->name('index');
-                Route::post('store', 'WhatsAppController@store')->name('store');
-
-                // Test route - remove in production
-                Route::get('test-send', function(\Illuminate\Http\Request $request) {
-                    $phone  = 917688927161  ;
-                    $status = $request->get('status', 'delivered');
-                    $order_id = $request->get('order_id', null);
-                    $result = \App\CPU\Helpers::send_whatsapp_notification($phone, $status, $order_id);
-                    return response()->json($result);
-                })->name('test-send');
             });
 
             // tally companies route

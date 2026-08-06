@@ -17,7 +17,6 @@ use App\Model\Review;
 use App\Model\OrderTransaction;
 use App\Model\DeliveryMan;
 use App\Model\Shop;
-use Rap2hpoutre\FastExcel\FastExcel;
 use App\CPU\shepping;
 
 class SellerController extends Controller

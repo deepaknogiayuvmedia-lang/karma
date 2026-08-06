@@ -13,7 +13,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Rap2hpoutre\FastExcel\FastExcel;
 use Illuminate\Support\Facades\DB;
 
 class VendorDeliveryReportController extends Controller

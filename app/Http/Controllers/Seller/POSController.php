@@ -19,7 +19,6 @@ use Illuminate\Support\Str;
 use App\CPU\BackEndHelper;
 use App\Model\Shop;
 use App\Model\BusinessSetting;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class POSController extends Controller
 {

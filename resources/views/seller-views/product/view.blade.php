@@ -15,7 +15,7 @@
                 <div class="">
                     <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
                         <img width="20" onerror="this.src='{{asset('assets/back-end/img/160x160/img2.jpg')}}'"
-                             src="{{asset('/public/assets/back-end/img/products.png')}}" alt="">
+                             src="{{asset('/assets/back-end/img/products.png')}}" alt="">
                         {{$product['name']}}
                     </h2>
                 </div>

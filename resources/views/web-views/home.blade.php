@@ -998,34 +998,6 @@
         </section>
     @endif
 
-    <div class="container rtl mt-4" style="padding:0">
-        <div class="arrival-title">
-            <div>
-                <img src="{{ asset('assets/front-end/png/new-arrivals.png') }}" alt="">
-
-            </div>
-            <div class="pl-2">
-                {{ \App\CPU\translate('ARRIVALS') }}
-            </div>
-        </div>
-    </div>
-    <div class="container rtl mb-3 overflow-hidden" style="padding:0">
-        <div class="py-2">
-            <div class="new_arrival_product">
-                <div class="carousel-wrap">
-                    <div class="owl-carousel owl-theme" id="new-arrivals-product">
-                        @foreach ($latest_products as $key => $product)
-                            @include('web-views.partials._product-card-1', [
-                                'product' => $product,
-                                'decimal_point_settings' => $decimal_point_settings,
-                            ])
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="container rtl" style="padding:0">
         <div class="row m-0">
 
@@ -1266,8 +1238,8 @@
                             <div class="item-inner">
                                 <div class="icon icon3"></div>
                                 <div class="content">
-                                    <a href="#">free return</a>
-                                    <p>365 a day</p>
+                                    <a href="#">{{\App\CPU\translate('Original product / Verified.')}}</a>
+                                    <p>{{\App\CPU\translate('100% Genuine')}}</p>
                                 </div>
                             </div>
                         </li>
@@ -1275,8 +1247,8 @@
                             <div class="item-inner">
                                 <div class="icon icon4"></div>
                                 <div class="content">
-                                    <a href="#">payment method</a>
-                                    <p>secure payment</p>
+                                    <a href="#">{{\App\CPU\translate('Best Price')}}</a>
+                                    <p>{{\App\CPU\translate('Guaranteed Lowest')}}</p>
                                 </div>
                             </div>
                         </li>
@@ -1284,8 +1256,8 @@
                             <div class="item-inner">
                                 <div class="icon icon5"></div>
                                 <div class="content">
-                                    <a href="#">big saving</a>
-                                    <p>weekend sales</p>
+                                    <a href="#">{{\App\CPU\translate("Farmer's Choice") }}</a>
+                                    <p>{{\App\CPU\translate('Direct from Farms')}}</p>
                                 </div>
                             </div>
                         </li>
@@ -1423,65 +1395,6 @@
                 //Extra extra large
                 1400: {
                     items: 2
-                }
-            }
-        })
-
-        $('#new-arrivals-product').owlCarousel({
-            loop: true,
-            autoplay: false,
-            margin: 20,
-            nav: true,
-            navText: [
-                "<i class='czi-arrow-{{ Session::get('direction') ===
-                "
-                                                                                                                rtl "
-                    ? 'right'
-                    : 'left' }}'></i>",
-                "<i class='czi-arrow-{{ Session::get('direction') ===
-                "
-                                                                                                                rtl "
-                    ? 'left'
-                    : 'right' }}'></i>"
-            ],
-            dots: false,
-            autoplayHoverPause: true,
-            '{{ session('
-                                                                                    direction ') }}': true,
-            // center: true,
-            responsive: {
-                //X-Small
-                0: {
-                    items: 1
-                },
-                360: {
-                    items: 1
-                },
-                375: {
-                    items: 1
-                },
-                540: {
-                    items: 2
-                },
-                //Small
-                576: {
-                    items: 2
-                },
-                //Medium
-                768: {
-                    items: 2
-                },
-                //Large
-                992: {
-                    items: 2
-                },
-                //Extra large
-                1200: {
-                    items: 3
-                },
-                //Extra extra large
-                1400: {
-                    items: 4
                 }
             }
         })

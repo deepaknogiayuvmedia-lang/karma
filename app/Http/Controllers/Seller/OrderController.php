@@ -27,7 +27,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 use function App\CPU\translate;
-use Rap2hpoutre\FastExcel\FastExcel;
 use App\CPU\CustomerManager;
 use App\CPU\Convert;
 

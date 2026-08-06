@@ -3,7 +3,26 @@
 @section('title',$seller->shop ? $seller->shop->name : \App\CPU\translate("shop name not found"))
 
 @push('css_or_js')
-
+<style>
+    .commission-badge {
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    .commission-badge.has-commission {
+        background: #d4edda;
+        color: #155724;
+    }
+    .commission-badge.no-commission {
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 1px dashed #dee2e6;
+    }
+    .commission-badge:hover {
+        opacity: 0.8;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -116,6 +135,8 @@
                                         <th>{{\App\CPU\translate('Product Name')}}</th>
                                         <th>{{\App\CPU\translate('purchase_price')}}</th>
                                         <th>{{\App\CPU\translate('selling_price')}}</th>
+                                        <th>{{\App\CPU\translate('Commission')}}</th>
+                                        <th class="text-center">{{\App\CPU\translate('Verified')}}</th>
                                         <th class="text-center">{{\App\CPU\translate('featured')}}</th>
                                         <th class="text-center">{{\App\CPU\translate('Active')}} {{\App\CPU\translate('status')}}</th>
                                         <th class="text-center">{{\App\CPU\translate('Action')}}</th>
@@ -137,6 +158,28 @@
                                             </td>
                                             <td>
                                                 {{\App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['unit_price']))}}
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $commVal = $p->admin_commission ?? 0;
+                                                    $commType = $p->admin_commission_type ?? 'percentage';
+                                                @endphp
+                                                <span class="commission-badge {{ $commVal > 0 ? 'has-commission' : 'no-commission' }}"
+                                                      onclick="openCommissionModal({{ $p->id }}, {{ $commVal }}, '{{ $commType }}', '{{ addslashes($p->name) }}')"
+                                                      title="{{\App\CPU\translate('Click to set commission')}}">
+                                                    @if($commVal > 0)
+                                                        {{ $commVal }}{{ $commType === 'fixed' ? \App\CPU\BackEndHelper::currency_set_symbol() : '%' }}
+                                                    @else
+                                                        <i class="tio-settings"></i> {{\App\CPU\translate('Set')}}
+                                                    @endif
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <label class="mx-auto switcher">
+                                                    <input type="checkbox" class="switcher_input"
+                                                           onclick="toggle_verified('{{$p['id']}}')" {{ isset($p->verified) && $p->verified == 1 ? 'checked' : '' }}>
+                                                    <span class="switcher_control"></span>
+                                                </label>
                                             </td>
                                             <td>
                                                 <label class="mx-auto switcher">
@@ -196,11 +239,59 @@
             </div>
         </div>
     </div>
+
+    <!-- Commission Modal -->
+    <div class="modal fade" id="commissionModal" tabindex="-1" role="dialog" aria-labelledby="commissionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="commissionModalLabel">{{\App\CPU\translate('Set Product Commission')}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="font-weight-bold">{{\App\CPU\translate('Product')}}</label>
+                        <p id="commissionProductName" class="mb-0 text-muted"></p>
+                    </div>
+                    <input type="hidden" id="commissionProductId">
+                    <div class="form-group">
+                        <label class="font-weight-bold">{{\App\CPU\translate('Commission Type')}}</label>
+                        <select id="commissionType" class="form-control">
+                            <option value="percentage">{{\App\CPU\translate('Percentage')}} (%)</option>
+                            <option value="fixed">{{\App\CPU\translate('Fixed Amount')}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">{{\App\CPU\translate('Commission Value')}}</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="commissionSymbol">%</span>
+                            </div>
+                            <input type="number" id="commissionValue" class="form-control" min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <small class="form-text text-muted" id="commissionHint">{{\App\CPU\translate('Enter commission percentage (0-100)')}}</small>
+                    </div>
+                    <div class="alert alert-info small mb-0" id="commissionInfo">
+                        <i class="tio-info-circle"></i>
+                        {{\App\CPU\translate('Product commission overrides seller and global commission settings.')}}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{\App\CPU\translate('Cancel')}}</button>
+                    <button type="button" class="btn btn--primary" id="saveCommissionBtn" onclick="saveCommission()">
+                        <span id="saveBtnText">{{\App\CPU\translate('Save Commission')}}</span>
+                        <span id="saveBtnLoader" class="d-none"><i class="fa fa-spinner fa-spin"></i></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('script')
     <script>
-        // Call the dataTables jQuery plugin
         $(document).ready(function () {
             $('#dataTable').DataTable();
         });
@@ -249,6 +340,104 @@
                 },
                 success: function () {
                     toastr.success('{{\App\CPU\translate('Featured status updated successfully')}}');
+                }
+            });
+        }
+
+        function toggle_verified(id) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('admin.product.verify') }}",
+                method: 'POST',
+                data: { id: id },
+                success: function(data) {
+                    if (data.message) {
+                        toastr.success(data.message);
+                    }
+                },
+                error: function(data) {
+                    toastr.error(data.responseJSON.error || 'Something went wrong');
+                }
+            });
+        }
+
+        // Commission Modal Functions
+        function openCommissionModal(productId, currentValue, currentType, productName) {
+            $('#commissionProductId').val(productId);
+            $('#commissionProductName').text(productName);
+            $('#commissionValue').val(currentValue > 0 ? currentValue : '');
+            $('#commissionType').val(currentType);
+            updateCommissionUI(currentType);
+            $('#commissionModal').modal('show');
+        }
+
+        function updateCommissionUI(type) {
+            if (type === 'fixed') {
+                $('#commissionSymbol').html('{{ \App\CPU\BackEndHelper::currency_set_symbol() }}');
+                $('#commissionHint').text('{{\App\CPU\translate("Enter fixed commission amount")}}');
+            } else {
+                $('#commissionSymbol').html('%');
+                $('#commissionHint').text('{{\App\CPU\translate("Enter commission percentage (0-100)")}}');
+            }
+        }
+
+        $(document).on('change', '#commissionType', function() {
+            updateCommissionUI($(this).val());
+        });
+
+        function saveCommission() {
+            var productId = $('#commissionProductId').val();
+            var commissionValue = $('#commissionValue').val();
+            var commissionType = $('#commissionType').val();
+
+            if (commissionValue === '' || commissionValue < 0) {
+                toastr.error('{{\App\CPU\translate("Please enter a valid commission value")}}');
+                return;
+            }
+
+            if (commissionType === 'percentage' && commissionValue > 100) {
+                toastr.error('{{\App\CPU\translate("Percentage cannot exceed 100")}}');
+                return;
+            }
+
+            $('#saveBtnText').addClass('d-none');
+            $('#saveBtnLoader').removeClass('d-none');
+            $('#saveCommissionBtn').prop('disabled', true);
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('admin.product.set-commission') }}",
+                method: 'POST',
+                data: {
+                    product_id: productId,
+                    commission: commissionValue,
+                    commission_type: commissionType
+                },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success('{{\App\CPU\translate("Commission updated successfully")}}');
+                        $('#commissionModal').modal('hide');
+                        setTimeout(function() { location.reload(); }, 500);
+                    } else {
+                        toastr.error(response.message || '{{\App\CPU\translate("Update failed")}}');
+                    }
+                },
+                error: function () {
+                    toastr.error('{{\App\CPU\translate("Something went wrong")}}');
+                },
+                complete: function () {
+                    $('#saveBtnText').removeClass('d-none');
+                    $('#saveBtnLoader').addClass('d-none');
+                    $('#saveCommissionBtn').prop('disabled', false);
                 }
             });
         }

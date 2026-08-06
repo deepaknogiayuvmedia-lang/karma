@@ -73,7 +73,15 @@
                                         <label class="title-color"
                                             for="{{ $lang }}_description">{{ \App\CPU\translate('description') }}
                                             ({{ strtoupper($lang) }})</label>
-                                        <textarea name="description[]" class="textarea editor-textarea ckeditor w-100" cols="30" rows="10" required>{{ old('details') }}</textarea>
+                                        <div style="position:relative;">
+                                            <textarea name="description[]" class="tiny-editor w-100" cols="30" rows="10" required>{{ old('details') }}</textarea>
+                                            <div id="editor-loading" class="text-center border rounded" style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                                <p class="mt-2 text-muted">Editor loading...</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -796,12 +804,31 @@
         }
     </script>
 
-     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
     <script>
-        $('.textarea').ckeditor({
-            contentsLangDirection : '{{Session::get('direction')}}',
+        document.addEventListener('DOMContentLoaded', function() {
+            var loading = document.getElementById('editor-loading');
+            if (loading) loading.style.display = 'flex';
+            tinymce.init({
+                selector: '.tiny-editor',
+                plugins: 'print preview paste searchreplace autolink directionality visualblocks visualchars fullscreen link media charmap codesample table hr pagebreak nonbreaking anchor insertdatetime lists textpattern image',
+                toolbar: 'undo redo | formatselect fontselect fontsizeselect lineheight | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | removeformat | code fullscreen',
+                fontsize_formats: '8px 10px 12px 14px 16px 18px 20px 24px 28px 32px 36px 48px 72px',
+                font_formats: 'Arial=arial;Arial Black=arial black;Comic Sans MS=comic sans ms;Courier New=courier new;Georgia=georgia;Helvetica=helvetica;Impact=impact;Lucida Console=lucida console;Lucida Sans Unicode=lucida sans unicode;Microsoft Sans Serif=microsoft sans serif;Palatino Linotype=palatino linotype;Tahoma=tahoma;Times New Roman=times new roman;Trebuchet MS=trebuchet ms;Verdana=verdana',
+                lineheight_formats: '1 1.2 1.5 1.75 2 2.5 3',
+                height: 400,
+                menubar: 'file edit view insert format tools table',
+                init_instance_callback: function(editor) {
+                    var loading = document.getElementById('editor-loading');
+                    if (loading) loading.style.display = 'none';
+                },
+                setup: function(editor) {
+                    editor.on('change', function() {
+                        editor.save();
+                    });
+                }
+            });
         });
     </script>
-    {{-- ck editor --}}
 @endpush
 

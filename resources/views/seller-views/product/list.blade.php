@@ -23,8 +23,8 @@
         <!-- Page Title -->
         <div class="mb-4">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img width="20" src="{{asset('/public/assets/back-end/img/products.png')}}" alt="">
-                {{\App\CPU\translate('Products23')}}
+                <img width="20" src="{{asset('assets/back-end/img/products.png')}}" alt="">
+                {{\App\CPU\translate('Products')}}
                 <span class="badge badge-soft-dark radius-50 fz-14 ml-1">{{ $products->total() }}</span>
             </h2>
         </div>
@@ -95,7 +95,7 @@
                                 </a>
                                 <a href="{{route('seller.product.stock-limit-list',['in_house', ''])}}" class="btn btn-info">
                                     <i class="tio-add-circle"></i>
-                                    <span class="text">{{\App\CPU\translate('Limited_Stocks')}}</span>
+                                    <span class="text">{{\App\CPU\translate('Low Stock')}}</span>
                                 </a>
                                 <a href="{{route('seller.product.add-new')}}" class="btn btn--primary">
                                     <i class="tio-add"></i>
@@ -115,8 +115,10 @@
                                 <th>{{\App\CPU\translate('Product Type')}}</th>
                                 <th>{{\App\CPU\translate('purchase_price')}}</th>
                                 <th>{{\App\CPU\translate('selling_price')}}</th>
+                                <th>{{\App\CPU\translate('Commission')}}</th>
                                 <th>{{\App\CPU\translate('price_suggestion')}}</th>
                                 <th>{{\App\CPU\translate('verify_status')}}</th>
+                                <th>{{\App\CPU\translate('Admin_Verified')}}</th>
                                 <th>{{\App\CPU\translate('Active')}} {{\App\CPU\translate('status')}}</th>
                                 <th class="text-center __w-5px">{{\App\CPU\translate('Action')}}</th>
                             </tr>
@@ -144,6 +146,19 @@
                                         {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['unit_price']))}}
                                     </td>
                                     <td>
+                                        @php
+                                            $commVal = $p->admin_commission ?? 0;
+                                            $commType = $p->admin_commission_type ?? 'percentage';
+                                        @endphp
+                                        @if($commVal > 0)
+                                            <span class="badge badge-soft-success">
+                                                {{ $commVal }}{{ $commType === 'fixed' ? \App\CPU\BackEndHelper::currency_set_symbol() : '%' }}
+                                            </span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
                                        
                                        @if($p['indexing'] != 1 && $p['lowest_market_price'] > $p['actual_amount'])
                                             <div style="color: red;" class="hratebit"> {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['suggested_price'])) .'-'. \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['lowest_market_price']))}}</div>
@@ -157,6 +172,13 @@
                                             <label class="badge badge-soft-success">{{\App\CPU\translate('Approved')}}</label>
                                         @elseif($p->request_status == 2)
                                             <label class="badge badge-soft-danger">{{\App\CPU\translate('Denied')}}</label>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(isset($p->verified) && $p->verified == 1)
+                                            <label class="badge badge-soft-success"><i class="tio-check-circle"></i> {{\App\CPU\translate('Verified')}}</label>
+                                        @else
+                                            <label class="badge badge-soft-warning"><i class="tio-warning"></i> {{\App\CPU\translate('Unverified')}}</label>
                                         @endif
                                     </td>
                                     <td>

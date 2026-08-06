@@ -359,6 +359,12 @@
                                 <h5 class="mt-3" style="color: red">{{\App\CPU\translate('out_of_stock')}}</h5>
                             @endif
                         </div>
+                        <!-- Variant Out of Stock Message -->
+                        <div id="qv-variant-out-of-stock" class="col-12 d-none">
+                            <h5 class="mt-3 text-danger font-weight-bold">
+                                <i class="tio-warning"></i> {{\App\CPU\translate('out_of_stock')}}
+                            </h5>
+                        </div>
                     </div>
                     {{--to do--}}
                     <div class="__btn-grp align-items-center mt-2">
@@ -371,11 +377,14 @@
                                 {{\App\CPU\translate('add_to_cart')}}
                             </button>
                         @else
-                            <button class="btn btn-secondary" onclick="buy_now()" type="button">
+                            <button class="btn btn-secondary btn-buy-now" onclick="buy_now()" type="button">
                                 {{\App\CPU\translate('buy_now')}}
                             </button>
-                            <button class="btn btn--primary string-limit" onclick="addToCart()" type="button">
+                            <button class="btn btn--primary string-limit btn-add-to-cart" onclick="addToCart()" type="button">
                                 {{\App\CPU\translate('add_to_cart')}}
+                            </button>
+                            <button class="btn btn-danger btn-oos d-none" type="button" disabled>
+                                {{\App\CPU\translate('out_of_stock')}}
                             </button>
                         @endif
                         <button type="button" onclick="addWishlist('{{$product['id']}}')"

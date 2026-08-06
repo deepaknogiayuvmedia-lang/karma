@@ -6308,7 +6308,7 @@ a.close.disabled {
 }
 
 .modal-backdrop.fade {
-    opacity: 0
+    opacity: 1
 }
 
 .modal-backdrop.show {

@@ -2649,4 +2649,5 @@
   'temporary_close_inactive_successfully' => 'Temporary close inactive successfully',
   'You have new order  Check Please' => 'You have new order  Check Please',
   'Ok  let me check' => 'Ok  let me check',
+  'Stock Out' => 'المخزن نفذ',
 );

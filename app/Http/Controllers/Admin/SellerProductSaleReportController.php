@@ -17,7 +17,6 @@ use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use App\Model\OrderDetail;
 use Illuminate\Support\Facades\DB;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class SellerProductSaleReportController extends Controller
 {

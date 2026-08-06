@@ -33,18 +33,36 @@ class Product extends Model
         'shipping_cost' => 'float',
         'multiply_qty' => 'integer',
         'temp_shipping_cost' => 'float',
-        'is_shipping_cost_updated' => 'integer'
+        'is_shipping_cost_updated' => 'integer',
+        // Phase 1: New fields
+        'priority' => 'integer',
+        'verified' => 'boolean',
+        'verified_by' => 'integer',
+        'verified_at' => 'datetime',
+        'admin_commission' => 'float',
+        'approval_status' => 'string',
+        'edit_status' => 'string',
+        'ranking_score' => 'float',
     ];
 
     protected $fillable = [
         'name',
         'price',
         'product_type',
-        // other fields...
-        'added_by',   // <–– add this
+        'added_by',
         'code',
         'pid',
         'indexing',
+        // Phase 1: New fields
+        'priority',
+        'verified',
+        'verified_by',
+        'verified_at',
+        'admin_commission',
+        'admin_commission_type',
+        'approval_status',
+        'edit_status',
+        'ranking_score',
     ];
 
     public function translations()
@@ -69,8 +87,9 @@ class Product extends Model
             });
         })->when(!$brand_setting, function ($q) {
             $q->whereNull('brand_id');
-        })->where(['status' => 1])->orWhere(function ($query) {
-            $query->whereNull('brand_id')->where('status', 1);
+        })->where(['status' => 1])->where('verified', 1)->where(function ($query) {
+            $query->where('approval_status', 'approved')
+                  ->orWhereNull('approval_status');
         })->SellerApproved()->whereIn('product_type', $product_type);
     }
 
@@ -149,6 +168,56 @@ class Product extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    // Phase 1: Verified By relationship
+    public function verifiedBy()
+    {
+        return $this->belongsTo(Admin::class, 'verified_by');
+    }
+
+    // Phase 1: Approval Status Scopes
+    public function scopeDraft($query)
+    {
+        return $query->where('approval_status', 'draft');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('approval_status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('approval_status', 'approved');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('approval_status', 'rejected');
+    }
+
+    public function scopePendingEdit($query)
+    {
+        return $query->where('approval_status', 'pending_edit');
+    }
+
+    // Phase 1: Verified scope
+    public function scopeVerified($query)
+    {
+        return $query->where('verified', 1);
+    }
+
+    // Phase 1: By Priority scope
+    public function scopeByPriority($query)
+    {
+        return $query->orderBy('priority', 'desc');
+    }
+
+    // Phase 1: By Ranking Score scope
+    public function scopeByRanking($query)
+    {
+        return $query->orderBy('ranking_score', 'desc');
     }
 
     public function getNameAttribute($name)

@@ -23,7 +23,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Rap2hpoutre\FastExcel\FastExcel;
 use function App\CPU\translate;
 use App\Model\Cart;
 use App\Model\Order;
@@ -51,10 +50,70 @@ class ProductController extends BaseController
         return response()->json($data);
     }
 
+    public function set_commission(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'commission' => 'required|numeric|min:0',
+            'commission_type' => 'required|in:percentage,fixed',
+        ]);
+
+        if ($request->commission_type === 'percentage' && $request->commission > 100) {
+            return response()->json(['success' => false, 'message' => 'Percentage cannot exceed 100%']);
+        }
+
+        $product = Product::find($request->product_id);
+
+        if ($request->commission_type === 'fixed') {
+            if ($request->commission > $product->unit_price) {
+                return response()->json(['success' => false, 'message' => 'Commission cannot exceed product price (' . \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($product->unit_price)) . ')']);
+            }
+            $product->admin_commission = BackEndHelper::currency_to_usd($request->commission);
+        } else {
+            $product->admin_commission = $request->commission;
+        }
+        $product->admin_commission_type = $request->commission_type;
+        $product->save();
+
+        return response()->json(['success' => true, 'message' => 'Commission updated successfully']);
+    }
+
+    public function get_sellers($id)
+    {
+        $sellers = Product::where('pid', $id)
+            ->where('added_by', 'seller')
+            ->select('id', 'user_id', 'unit_price', 'current_stock', 'status')
+            ->get();
+
+        $sellerData = [];
+        foreach ($sellers as $s) {
+            $seller = \App\Model\Seller::find($s->user_id);
+            if ($seller) {
+                $shop = $seller->shop ?? null;
+                $sellerData[] = [
+                    'id' => $s->id,
+                    'name' => $seller->f_name . ' ' . $seller->l_name,
+                    'shop_name' => $shop ? $shop->name : 'N/A',
+                    'price' => $s->unit_price,
+                    'stock' => $s->current_stock,
+                    'status' => $s->status,
+                ];
+            }
+        }
+
+        return response()->json(['sellers' => $sellerData]);
+    }
+
     public function approve_status(Request $request)
     {
         $product = Product::find($request->id);
-        $product->request_status = ($product['request_status'] == 0) ? 1 : 0;
+        // Phase 8: Handle new approval workflow
+        if ($product->approval_status === 'pending' || $product->approval_status === 'pending_edit') {
+            $product->approval_status = 'approved';
+            $product->edit_status = 'none';
+        } else {
+            $product->request_status = ($product['request_status'] == 0) ? 1 : 0;
+        }
         $product->save();
 
         return redirect()->route('admin.product.list', ['seller', 'status' => $product['request_status']]);
@@ -63,11 +122,76 @@ class ProductController extends BaseController
     public function deny(Request $request)
     {
         $product = Product::find($request->id);
+        // Phase 8: Handle new approval workflow
+        $product->approval_status = 'rejected';
         $product->request_status = 2;
         $product->denied_note = $request->denied_note;
         $product->save();
 
         return redirect()->route('admin.product.list', ['seller', 'status' => 2]);
+    }
+
+    // Phase 9: Admin Verify Product
+    public function verify(Request $request)
+    {
+        $product = Product::find($request->id);
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        $product->verified = !$product->verified;
+        $product->verified_by = $product->verified ? auth('admin')->id() : null;
+        $product->verified_at = $product->verified ? now() : null;
+        $product->save();
+
+        // Send notification to seller
+        if ($product->seller_id && $product->verified) {
+            $seller = \App\Model\Seller::find($product->seller_id);
+            if ($seller && !empty($seller->cm_firebase_token)) {
+                $title = 'Product Verified';
+                $body = "Your product \"{$product->name}\" has been verified by admin.";
+                \App\CPU\Helpers::send_push_notif_to_device($seller->cm_firebase_token, [
+                    'title' => $title,
+                    'body' => $body,
+                ]);
+            }
+        }
+
+        $status = $product->verified ? 'verified' : 'unverified';
+        return response()->json(['status' => $status, 'message' => "Product {$status} successfully"]);
+    }
+
+    // Phase 9: Bulk Verify Products
+    public function bulk_verify(Request $request)
+    {
+        $productIds = $request->product_ids;
+        if (empty($productIds)) {
+            return response()->json(['error' => 'No products selected'], 400);
+        }
+
+        $products = Product::whereIn('id', $productIds)->get();
+        Product::whereIn('id', $productIds)->update([
+            'verified' => 1,
+            'verified_by' => auth('admin')->id(),
+            'verified_at' => now(),
+        ]);
+
+        // Send notifications to sellers
+        foreach ($products as $product) {
+            if ($product->seller_id) {
+                $seller = \App\Model\Seller::find($product->seller_id);
+                if ($seller && !empty($seller->cm_firebase_token)) {
+                    $title = 'Product Verified';
+                    $body = "Your product \"{$product->name}\" has been verified by admin.";
+                    \App\CPU\Helpers::send_push_notif_to_device($seller->cm_firebase_token, [
+                        'title' => $title,
+                        'body' => $body,
+                    ]);
+                }
+            }
+        }
+
+        return response()->json(['message' => count($productIds) . ' products verified successfully']);
     }
 
     public function view($id)
@@ -354,8 +478,18 @@ class ProductController extends BaseController
         $p->video_provider    = 'youtube';
         $p->video_url         = $request->video_link;
         $p->request_status    = 1;
+        $p->verified          = 1;
+        $p->verified_by       = auth('admin')->id();
+        $p->verified_at       = now();
         $p->shipping_cost     = $request->product_type == 'physical' ? BackEndHelper::currency_to_usd($request->shipping_cost) : 0;
         $p->multiply_qty      = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
+        // Phase 6: Per-Product Commission
+        $p->admin_commission = $request->admin_commission ?? 0;
+        $p->admin_commission_type = $request->admin_commission_type ?? 'percentage';
+        // Phase 7: Product Priority
+        $p->priority = $request->priority ?? 0;
+        // Phase 8: Approval Status (admin products are auto-approved)
+        $p->approval_status = 'approved';
 
         // if ($request->ajax()) {
 
@@ -442,6 +576,14 @@ class ProductController extends BaseController
             $pro = Product::where(['added_by' => 'seller'])->where('request_status', $request->status);
         }
 
+        // Verified filter
+        $verified_filter = $request->verified ?? null;
+        if ($verified_filter === 'verified') {
+            $pro->where('verified', 1);
+        } elseif ($verified_filter === 'unverified') {
+            $pro->where('verified', 0);
+        }
+
         if ($request->has('search')) {
             $key = explode(' ', $request['search']);
             $pro = $pro->where(function ($q) use ($key) {
@@ -453,8 +595,22 @@ class ProductController extends BaseController
         }
 
         $request_status = $request['status'];
-        $pro = $pro->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends(['status' => $request['status']])->appends($query_param);
-        return view('admin-views.product.list', compact('pro', 'search', 'request_status', 'type'));
+        $pro = $pro->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends(['status' => $request['status']])->appends(['verified' => $verified_filter])->appends($query_param);
+
+        // Counts for tabs
+        $all_count = Product::where('added_by', $type == 'in_house' ? 'admin' : 'seller')
+            ->when($type != 'in_house', fn($q) => $q->where('request_status', $request_status))
+            ->count();
+        $verified_count = Product::where('added_by', $type == 'in_house' ? 'admin' : 'seller')
+            ->where('verified', 1)
+            ->when($type != 'in_house', fn($q) => $q->where('request_status', $request_status))
+            ->count();
+        $unverified_count = Product::where('added_by', $type == 'in_house' ? 'admin' : 'seller')
+            ->where('verified', 0)
+            ->when($type != 'in_house', fn($q) => $q->where('request_status', $request_status))
+            ->count();
+
+        return view('admin-views.product.list', compact('pro', 'search', 'request_status', 'type', 'verified_filter', 'all_count', 'verified_count', 'unverified_count'));
     }
 
     /**
@@ -1037,6 +1193,11 @@ class ProductController extends BaseController
 
         $product->shipping_cost = $request->product_type == 'physical' ? BackEndHelper::currency_to_usd($request->shipping_cost) : 0;
         $product->multiply_qty = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
+        // Phase 6: Per-Product Commission
+        $product->admin_commission = $request->admin_commission ?? 0;
+        $product->admin_commission_type = $request->admin_commission_type ?? 'percentage';
+        // Phase 7: Product Priority
+        $product->priority = $request->priority ?? 0;
         if ($request->ajax()) {
             return response()->json([], 200);
         } else {

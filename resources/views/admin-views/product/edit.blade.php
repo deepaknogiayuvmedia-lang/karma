@@ -6,73 +6,6 @@
     <link href="{{ asset('assets/back-end/css/tags-input.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/select2/css/select2.min.css') }}" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <style>
-        /* Adjust the headings dropdown to host some larger heading styles. */
-        .document-editor .ck-heading-dropdown .ck-list .ck-button__label {
-            line-height: calc(1.7 * var(--ck-line-height-base) * var(--ck-font-size-base));
-            min-width: 6em;
-        }
-
-        /* Scale down all heading previews because they are way too big to be presented in the UI.
-        Preserve the relative scale, though. */
-        .document-editor .ck-heading-dropdown .ck-list .ck-button:not(.ck-heading_paragraph) .ck-button__label {
-            transform: scale(0.8);
-            transform-origin: left;
-        }
-
-        /* Set the styles for "Heading 1". */
-        .document-editor .ck-content h2,
-        .document-editor .ck-heading-dropdown .ck-heading_heading1 .ck-button__label {
-            font-size: 2.18em;
-            font-weight: normal;
-        }
-
-        .document-editor .ck-content h2 {
-            line-height: 1.37em;
-            padding-top: .342em;
-            margin-bottom: .142em;
-        }
-
-        /* Set the styles for "Heading 2". */
-        .document-editor .ck-content h3,
-        .document-editor .ck-heading-dropdown .ck-heading_heading2 .ck-button__label {
-            font-size: 1.75em;
-            font-weight: normal;
-            color: hsl(203, 100%, 50%);
-        }
-
-        .document-editor .ck-heading-dropdown .ck-heading_heading2.ck-on .ck-button__label {
-            color: var(--ck-color-list-button-on-text);
-        }
-
-        /* Set the styles for "Heading 2". */
-        .document-editor .ck-content h3 {
-            line-height: 1.86em;
-            padding-top: .171em;
-            margin-bottom: .357em;
-        }
-
-        /* Set the styles for "Heading 3". */
-        .document-editor .ck-content h4,
-        .document-editor .ck-heading-dropdown .ck-heading_heading3 .ck-button__label {
-            font-size: 1.31em;
-            font-weight: bold;
-        }
-
-        .document-editor .ck-content h4 {
-            line-height: 1.24em;
-            padding-top: .286em;
-            margin-bottom: .952em;
-        }
-
-        /* Set the styles for "Paragraph". */
-        .document-editor .ck-content p {
-            font-size: 1em;
-            line-height: 1.63em;
-            padding-top: .5em;
-            margin-bottom: 1.13em;
-        }
-    </style>
 @endpush
 
 @section('content')
@@ -162,7 +95,15 @@
                                     <div class="form-group pt-4">
                                         <label class="title-color">{{ \App\CPU\translate('description') }}
                                             ({{ strtoupper($lang) }})</label>
-                                        <textarea name="description[]" class="textarea editor-textarea ckeditor w-100" rows="10">{!! $translate[$lang]['description'] ?? $product['details'] !!}</textarea>
+                                        <div style="position:relative;">
+                                            <textarea name="description[]" class="tiny-editor w-100" rows="10">{!! $translate[$lang]['description'] ?? $product['details'] !!}</textarea>
+                                            <div id="editor-loading" class="text-center border rounded" style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                                <p class="mt-2 text-muted">Editor loading...</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -393,6 +334,20 @@
                                         placeholder="{{ \App\CPU\translate('Purchase price') }}" name="purchase_price"
                                         class="form-control"
                                         value={{ \App\CPU\Convert::default($product->purchase_price) }} required>
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Admin Commission') }} ({{ \App\CPU\translate('optional') }})</label>
+                                    <input type="number" min="0" step="0.01"
+                                        placeholder="{{ \App\CPU\translate('Commission') }}"
+                                        value="{{ $product->admin_commission }}" name="admin_commission"
+                                        class="form-control">
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Commission Type') }}</label>
+                                    <select name="admin_commission_type" class="form-control">
+                                        <option value="percentage" {{ $product->admin_commission_type == 'percentage' ? 'selected' : '' }}>{{ \App\CPU\translate('Percentage') }} (%)</option>
+                                        <option value="fixed" {{ $product->admin_commission_type == 'fixed' ? 'selected' : '' }}>{{ \App\CPU\translate('Fixed') }} ({{ \App\CPU\translate('INR') }})</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-4 form-group">
                                     <label class="title-color">{{ \App\CPU\translate('Tax') }}</label>
@@ -657,26 +612,30 @@
     <script src="{{ asset('assets/back-end') }}/js/tags-input.min.js"></script>
     <script src="{{ asset('assets/back-end/js/spartan-multi-image-picker.js') }}"></script>
 
-    {{-- CKEditor 4 Scripts - LOAD BEFORE INIT --}}
-    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
     <script>
-        // Wait for DOM and CKEditor load
-        $(document).ready(function() {
-            function initCKEditor() {
-                if (typeof CKEDITOR === 'undefined') {
-                    console.error('CKEditor not loaded');
-                    setTimeout(initCKEditor, 500); // Retry
-                    return;
-                }
-                $('.ckeditor').not('.ckeditor-ready').each(function() {
-                    var $this = $(this);
-                    $this.addClass('ckeditor-ready');
-                    CKEDITOR.replace(this, {
-                        contentsLangDirection: '{{ Session::get('direction') }}'
+        document.addEventListener('DOMContentLoaded', function() {
+            var loading = document.getElementById('editor-loading');
+            if (loading) loading.style.display = 'flex';
+            tinymce.init({
+                selector: '.tiny-editor',
+                plugins: 'print preview paste searchreplace autolink directionality visualblocks visualchars fullscreen link media charmap codesample table hr pagebreak nonbreaking anchor insertdatetime lists textpattern image',
+                toolbar: 'undo redo | formatselect fontselect fontsizeselect lineheight | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | removeformat | code fullscreen',
+                fontsize_formats: '8px 10px 12px 14px 16px 18px 20px 24px 28px 32px 36px 48px 72px',
+                font_formats: 'Arial=arial;Arial Black=arial black;Comic Sans MS=comic sans ms;Courier New=courier new;Georgia=georgia;Helvetica=helvetica;Impact=impact;Lucida Console=lucida console;Lucida Sans Unicode=lucida sans unicode;Microsoft Sans Serif=microsoft sans serif;Palatino Linotype=palatino linotype;Tahoma=tahoma;Times New Roman=times new roman;Trebuchet MS=trebuchet ms;Verdana=verdana',
+                lineheight_formats: '1 1.2 1.5 1.75 2 2.5 3',
+                height: 400,
+                menubar: 'file edit view insert format tools table',
+                init_instance_callback: function(editor) {
+                    var loading = document.getElementById('editor-loading');
+                    if (loading) loading.style.display = 'none';
+                },
+                setup: function(editor) {
+                    editor.on('change', function() {
+                        editor.save();
                     });
-                });
-            }
-
+                }
+            });
         });
     </script>
     <script>
@@ -1037,9 +996,7 @@
 
     <script>
         function check() {
-            for (instance in CKEDITOR.instances) {
-                CKEDITOR.instances[instance].updateElement();
-            }
+            tinymce.triggerSave();
             var formData = new FormData(document.getElementById('product_form'));
             $.ajaxSetup({
                 headers: {

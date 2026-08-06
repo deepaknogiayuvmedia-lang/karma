@@ -75,6 +75,9 @@
             </div>
         </div>
 
+        {{-- Phase 15: Commission Breakdown --}}
+        @include('seller-views.partials._commission-breakdown')
+
         <div class="modal fade" id="balance-modal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content"

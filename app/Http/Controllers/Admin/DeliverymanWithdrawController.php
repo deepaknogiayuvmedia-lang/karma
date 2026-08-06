@@ -11,7 +11,6 @@ use App\Model\Product;
 use App\Model\WithdrawRequest;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class DeliverymanWithdrawController extends Controller
 {

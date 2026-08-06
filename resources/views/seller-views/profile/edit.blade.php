@@ -28,6 +28,38 @@
         </div>
         <!-- End Row -->
     </div>
+
+    {{-- Phase 18: Vendor Verification Status --}}
+    @php $seller = auth('seller')->user(); @endphp
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    @if($seller->status === 'approved')
+                        <span class="badge badge-soft-success p-2 mr-3" style="font-size:0.9rem;">
+                            <i class="tio-check-circle"></i> {{\App\CPU\translate('Verified Vendor')}}
+                        </span>
+                        <span class="text-muted">{{\App\CPU\translate('Your vendor account is verified and active')}}</span>
+                    @elseif($seller->status === 'pending')
+                        <span class="badge badge-soft-warning p-2 mr-3" style="font-size:0.9rem;">
+                            <i class="tio-time"></i> {{\App\CPU\translate('Pending Verification')}}
+                        </span>
+                        <span class="text-muted">{{\App\CPU\translate('Your vendor account is under review')}}</span>
+                    @else
+                        <span class="badge badge-soft-danger p-2 mr-3" style="font-size:0.9rem;">
+                            <i class="tio-cancel"></i> {{\App\CPU\translate('Verification Rejected')}}
+                        </span>
+                        <span class="text-muted">{{\App\CPU\translate('Please contact admin for details')}}</span>
+                    @endif
+                </div>
+                @if($seller->status === 'approved')
+                    <span class="badge badge-success" style="font-size:0.75rem;">
+                        <i class="tio-check"></i> {{\App\CPU\translate('Active')}}
+                    </span>
+                @endif
+            </div>
+        </div>
+    </div>
     <!-- End Page Header -->
 
     <div class="row">

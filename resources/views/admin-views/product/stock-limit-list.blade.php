@@ -13,7 +13,7 @@
     <div class="mb-3 d-flex flex-column gap-1">
         <h2 class="h1 text-capitalize d-flex gap-2">
             <img src="{{asset('/public/assets/back-end/img/inhouse-product-list.png')}}" class="mb-1 mr-1" alt="">
-            {{\App\CPU\translate('Limited_Stocked_Products_List')}}
+            {{\App\CPU\translate('Low Stock Products List')}}
             <span class="badge badge-soft-dark radius-50 fz-14 ml-1">{{ $pro->count() }}</span>
         </h2>
         <p class="d-flex">{{ \App\CPU\translate('the_products_are_shown_in_this_list,_which_quantity_is_below') }} <span id="stock_limit">{{ $stock_limit }}</span></p>

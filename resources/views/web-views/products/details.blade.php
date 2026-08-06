@@ -49,6 +49,51 @@
         .btn-number:hover {
             color: {{ $web_config['secondary_color'] }};
 
+        /* Phase 17: Product Detail Mobile Fix */
+        @media (max-width: 767px) {
+            .product-gallery {
+                position: relative;
+                overflow: hidden;
+                border-radius: 8px;
+            }
+            .product-gallery .product-gallery__canvas {
+                max-height: 350px;
+                overflow: hidden;
+            }
+            .product-gallery img {
+                width: 100%;
+                height: auto;
+                max-height: 350px;
+                object-fit: contain;
+            }
+            .product-gallery-thumbnails {
+                display: flex;
+                overflow-x: auto;
+                gap: 8px;
+                padding: 8px 0;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .product-gallery-thumbnails::-webkit-scrollbar {
+                display: none;
+            }
+            .product-gallery-thumbnails .product-gallery__thumbnail {
+                flex: 0 0 60px;
+                height: 60px;
+                object-fit: cover;
+                border-radius: 6px;
+                border: 2px solid transparent;
+                cursor: pointer;
+                transition: border-color 0.2s;
+            }
+            .product-gallery-thumbnails .product-gallery__thumbnail.active {
+                border-color: var(--primary_color);
+            }
+            .product-gallery-nav {
+                display: none;
+            }
+        }
+
         }
 
         .for-total-price {
@@ -154,22 +199,22 @@
                                                 @if ($photo->color != null)
                                                     <div class="cz-preview-item d-flex align-items-center justify-content-center {{ $key == 0 ? 'active' : '' }}"
                                                         id="image{{ $photo->color }}">
-                                                        <img class="cz-image-zoom img-responsive w-100 __max-h-323px"
+                                                        <img class=" img-responsive w-100 __max-h-323px"
                                                             onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                             src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
                                                             data-zoom="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
                                                             alt="Product image" width="">
-                                                        <div class="cz-image-zoom-pane"></div>
+                                                        
                                                     </div>
                                                 @else
                                                     <div class="cz-preview-item d-flex align-items-center justify-content-center {{ $key == 0 ? 'active' : '' }}"
                                                         id="image{{ $key }}">
-                                                        <img class="cz-image-zoom img-responsive w-100 __max-h-323px"
+                                                        <img class=" img-responsive w-100 __max-h-323px"
                                                             onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                             src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
                                                             data-zoom="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
                                                             alt="Product image" width="">
-                                                        <div class="cz-image-zoom-pane"></div>
+                                                        
                                                     </div>
                                                 @endif
                                             @endforeach
@@ -177,12 +222,12 @@
                                             @foreach (json_decode($product->images) as $key => $photo)
                                                 <div class="cz-preview-item d-flex align-items-center justify-content-center {{ $key == 0 ? 'active' : '' }}"
                                                     id="image{{ $key }}">
-                                                    <img class="cz-image-zoom img-responsive w-100 __max-h-323px"
+                                                    <img class=" img-responsive w-100 __max-h-323px"
                                                         onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                         src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo") }}"
                                                         data-zoom="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo") }}"
                                                         alt="Product image" width="">
-                                                    <div class="cz-image-zoom-pane"></div>
+                                                    
                                                 </div>
                                             @endforeach
                                         @endif
@@ -400,6 +445,12 @@
                                             @endif
                                         </div>
                                     </div>
+                                    <!-- Variant Out of Stock Message -->
+                                    <div id="variant-out-of-stock" class="d-none mt-2">
+                                        <h5 class="text-danger font-weight-bold">
+                                            <i class="tio-warning"></i> {{ \App\CPU\translate('out_of_stock') }}
+                                        </h5>
+                                    </div>
 
                                     <div class="__btn-grp mt-2 mb-3">
                                         @if (
@@ -422,14 +473,18 @@
                                             </button>
                                         @else
                                             <button
-                                                class="btn btn-secondary element-center __iniline-26 btn-gap-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}"
+                                                class="btn btn-secondary element-center __iniline-26 btn-gap-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }} btn-buy-now"
                                                 onclick="buy_now()" type="button">
                                                 <span class="string-limit">{{ \App\CPU\translate('buy_now') }}</span>
                                             </button>
                                             <button
-                                                class="btn btn--primary element-center btn-gap-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}"
+                                                class="btn btn--primary element-center btn-gap-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }} btn-add-to-cart"
                                                 onclick="addToCart()" type="button">
                                                 <span class="string-limit">{{ \App\CPU\translate('add_to_cart') }}</span>
+                                            </button>
+                                            <button
+                                                class="btn btn-danger element-center btn-oos d-none" type="button" disabled>
+                                                <span class="string-limit">{{ \App\CPU\translate('out_of_stock') }}</span>
                                             </button>
                                         @endif
                                         <button type="button" onclick="addWishlist('{{ $product['id'] }}')"
@@ -764,6 +819,163 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Other Vendors at Lower Price --}}
+                    @if(isset($otherVendorProducts) && count($otherVendorProducts) > 0)
+                        <style>
+                            .ov-section { margin-top: 30px; }
+                            .ov-header {
+                                display: flex; align-items: center; gap: 12px;
+                                margin-bottom: 16px; padding-bottom: 12px;
+                                border-bottom: 2px solid #e8f5e9;
+                            }
+                            .ov-header-icon {
+                                width: 40px; height: 40px; border-radius: 10px;
+                                background: linear-gradient(135deg, #43a047, #66bb6a);
+                                display: flex; align-items: center; justify-content: center;
+                                color: #fff; font-size: 18px;
+                            }
+                            .ov-header h4 { margin: 0; font-size: 18px; font-weight: 700; color: #333; }
+                            .ov-header p { margin: 0; font-size: 12px; color: #888; }
+                            .ov-card {
+                                border: 1px solid #e0e0e0; border-radius: 12px;
+                                background: #fff; overflow: hidden; margin-bottom: 12px;
+                                transition: all 0.3s ease; cursor: pointer; position: relative;
+                            }
+                            .ov-card:hover {
+                                border-color: #43a047;
+                                box-shadow: 0 4px 20px rgba(67,160,71,0.15);
+                                transform: translateY(-2px);
+                            }
+                            .ov-card-inner {
+                                display: flex; align-items: stretch; padding: 0;
+                            }
+                            .ov-card-img {
+                                width: 110px; min-height: 110px; flex-shrink: 0;
+                                display: flex; align-items: center; justify-content: center;
+                                background: #f9f9f9; border-right: 1px solid #eee;
+                                padding: 8px;
+                            }
+                            .ov-card-img img {
+                                max-width: 100%; max-height: 250px; object-fit: contain;
+                            }
+                            .ov-card-body {
+                                flex: 1; padding: 12px 16px; display: flex;
+                                flex-direction: column; justify-content: center; gap: 4px;
+                            }
+                            .ov-seller-name {
+                                font-size: 12px; color: #666; display: flex;
+                                align-items: center; gap: 4px;
+                            }
+                            .ov-seller-name i { font-size: 12px; color: #43a047; }
+                            .ov-price-row {
+                                display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+                            }
+                            .ov-price { font-size: 18px; font-weight: 700; color: #333; }
+                            .ov-price-old { font-size: 13px; color: #999; text-decoration: line-through; }
+                            .ov-badge {
+                                display: inline-flex; align-items: center; gap: 4px;
+                                font-size: 11px; font-weight: 600; padding: 3px 8px;
+                                border-radius: 20px; width: fit-content;
+                            }
+                            .ov-badge-save { background: #e8f5e9; color: #2e7d32; }
+                            .ov-badge-same { background: #f3f4f6; color: #6b7280; }
+                            .ov-badge-more { background: #fce4ec; color: #c62828; }
+                            .ov-stock-badge {
+                                position: absolute; top: 8px; right: 8px;
+                                font-size: 10px; padding: 2px 8px; border-radius: 4px;
+                            }
+                            .ov-rating { display: flex; align-items: center; gap: 4px; }
+                            .ov-rating i { font-size: 10px; }
+                            .ov-rating span { font-size: 11px; color: #999; }
+                            .ov-btn {
+                                display: inline-flex; align-items: center; gap: 4px;
+                                background: #43a047; color: #fff; border: none; border-radius: 6px;
+                                padding: 6px 14px; font-size: 12px; font-weight: 600;
+                                text-decoration: none; transition: background 0.2s;
+                            }
+                            .ov-btn:hover { background: #388e3c; color: #fff; text-decoration: none; }
+                            @media (max-width: 576px) {
+                               
+                                .ov-card-img { width: auto; min-height: 60px; border-right: none; border-bottom: 1px solid #eee; }
+                                .ov-card-body { padding: 12px; }
+                            }
+                        </style>
+                        <div class="ov-section">
+                            <div class="ov-header">
+                                <div class="ov-header-icon">
+                                    <i class="tio-store"></i>
+                                </div>
+                                <div>
+                                    <h4>{{ \App\CPU\translate('Available from Other Vendors') }}</h4>
+                                    <p>{{ count($otherVendorProducts) }} {{ \App\CPU\translate('seller(s) have this product') }}</p>
+                                </div>
+                            </div>
+                            @foreach ($otherVendorProducts as $ovProduct)
+                                @php($savings = $product->unit_price - $ovProduct->unit_price)
+                                @php($ovDiscountPrice = $ovProduct->unit_price - \App\CPU\Helpers::get_product_discount($ovProduct, $ovProduct->unit_price))
+                                @php($ovRating = \App\CPU\ProductManager::get_overall_rating($ovProduct->reviews))
+                                <div class="ov-card" onclick="window.location='{{ route('product', $ovProduct->slug) }}'">
+                                    @if($ovProduct['current_stock'] <= 0)
+                                        <span class="ov-stock-badge badge badge-danger">{{ \App\CPU\translate('Stock Out') }}</span>
+                                    @endif
+                                    <div class="ov-card-inner">
+                                        <div class="ov-card-img">
+                                            <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
+                                                src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $ovProduct->thumbnail }}"
+                                                alt="{{ $ovProduct->name }}">
+                                        </div>
+                                        <div class="ov-card-body">
+                                            <div class="ov-seller-name">
+                                                <i class="tio-store"></i>
+                                                @if($ovProduct->seller && $ovProduct->seller->shop)
+                                                    {{ $ovProduct->seller->shop->name }}
+                                                @else
+                                                    {{ \App\CPU\translate('Admin') }}
+                                                @endif
+                                            </div>
+                                            <div class="ov-price-row">
+                                                <span class="ov-price">{{ \App\CPU\Helpers::currency_converter($ovDiscountPrice) }}</span>
+                                                @if($ovProduct->discount > 0)
+                                                    <span class="ov-price-old">{{ \App\CPU\Helpers::currency_converter($ovProduct->unit_price) }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="ov-rating">
+                                                @for($i = 0; $i < 5; $i++)
+                                                    @if($i < $ovRating[0])
+                                                        <i class="czi-star-filled" style="color:#f59e0b;"></i>
+                                                    @else
+                                                        <i class="czi-star" style="color:#d1d5db;"></i>
+                                                    @endif
+                                                @endfor
+                                                <span>({{ $ovRating[1] }} {{ \App\CPU\translate('reviews') }})</span>
+                                            </div>
+                                            @if($savings > 0)
+                                                <div class="ov-badge ov-badge-save">
+                                                    <i class="tio-arrow-circle-down"></i>
+                                                    {{ \App\CPU\translate('Save') }} {{ \App\CPU\Helpers::currency_converter($savings) }}
+                                                </div>
+                                            @elseif($savings == 0)
+                                                <div class="ov-badge ov-badge-same">
+                                                    {{ \App\CPU\translate('Same price as current') }}
+                                                </div>
+                                            @else
+                                                <div class="ov-badge ov-badge-more">
+                                                    {{ \App\CPU\Helpers::currency_converter(abs($savings)) }} {{ \App\CPU\translate('more') }}
+                                                </div>
+                                            @endif
+                                            <div style="margin-top:6px;">
+                                                <a href="{{ route('product', $ovProduct->slug) }}" class="ov-btn" onclick="event.stopPropagation();">
+                                                    {{ \App\CPU\translate('View from this Seller') }}
+                                                    <i class="tio-arrow-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
 
                     <div class="row flex-between">
                         <div class="text-capitalize font-bold __text-30px"

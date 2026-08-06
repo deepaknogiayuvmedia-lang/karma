@@ -17,7 +17,6 @@ use App\Model\OrderDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\CPU\BackEndHelper;
-use Rap2hpoutre\FastExcel\FastExcel;
 
 class POSController extends Controller
 {

@@ -308,19 +308,8 @@ class Helpers
 
     public static function currency_converter($amount)
     {
-        $currency_model = Helpers::get_business_settings('currency_model');
-        if ($currency_model == 'multi_currency') {
-            if (session()->has('inr')) {
-                $usd = session('inr');
-            } else {
-                $usd = Currency::where(['code' => 'INR'])->first()->exchange_rate;
-                session()->put('inr', $usd);
-            }
-            $my_currency = \session('currency_exchange_rate');
-            $rate = $my_currency / $usd;
-        } else {
-            $rate = 1;
-        }
+        // Multi-currency removed - website supports INR only
+        $rate = 1;
 
         return Helpers::set_symbol(round($amount * $rate, 2));
     }
@@ -393,23 +382,8 @@ class Helpers
 
     public static function convert_currency_to_usd($price)
     {
-        $currency_model = Helpers::get_business_settings('currency_model');
-        if ($currency_model == 'multi_currency') {
-            Helpers::currency_load();
-            $code = session('currency_code') == null ? 'INR' : session('currency_code');
-            if ($code == 'INR') {
-                return $price;
-            }
-            $currency = Currency::where('code', $code)->first();
-            $price = floatval($price) / floatval($currency->exchange_rate);
-
-            $usd_currency = Currency::where('code', 'INR')->first();
-            $price = $usd_currency->exchange_rate < 1 ? (floatval($price) * floatval($usd_currency->exchange_rate)) : (floatval($price) / floatval($usd_currency->exchange_rate));
-        } else {
-            $price = floatval($price);
-        }
-
-        return $price;
+        // Multi-currency removed - website supports INR only
+        return floatval($price);
     }
 
     public static function order_status_update_message($status)
@@ -865,6 +839,59 @@ class Helpers
             $commission_amount = number_format(($order_total / 100) * $commission, 2);
         }
         return $commission_amount;
+    }
+
+    /**
+     * Calculate commission for a single product (Phase 6: Per-Product Commission)
+     * Priority: Product → Seller → Global
+     */
+    public static function product_commission($product, $product_price = null)
+    {
+        $price = $product_price ?? $product->unit_price;
+        $commission_amount = 0;
+
+        // 1. Check product-level commission first
+        if ($product->admin_commission > 0) {
+            if ($product->admin_commission_type === 'fixed') {
+                $commission_amount = $product->admin_commission;
+            } else {
+                // Percentage
+                $commission_amount = ($price / 100) * $product->admin_commission;
+            }
+        }
+        // 2. Check seller-level commission
+        elseif ($product->seller && $product->seller->sales_commission_percentage !== null) {
+            $commission = $product->seller->sales_commission_percentage;
+            $commission_amount = ($price / 100) * $commission;
+        }
+        // 3. Fall back to global commission
+        else {
+            $commission = Helpers::get_business_settings('sales_commission');
+            $commission_amount = ($price / 100) * $commission;
+        }
+
+        return number_format($commission_amount, 2);
+    }
+
+    /**
+     * Get commission info for display (Phase 15: Seller Commission View)
+     * Returns array with commission details
+     */
+    public static function get_commission_info($product, $quantity = 1)
+    {
+        $unit_price = $product->unit_price;
+        $total_price = $unit_price * $quantity;
+        $commission_amount = floatval(self::product_commission($product, $unit_price)) * $quantity;
+        $seller_earnings = $total_price - $commission_amount;
+
+        return [
+            'product_price' => $total_price,
+            'commission_amount' => $commission_amount,
+            'commission_type' => $product->admin_commission_type ?? 'percentage',
+            'commission_value' => $product->admin_commission ?? 0,
+            'seller_earnings' => $seller_earnings,
+            'net_amount' => $seller_earnings,
+        ];
     }
 
     public static function categoryName($id)

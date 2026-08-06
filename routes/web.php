@@ -95,8 +95,6 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
     Route::post('store-wishlist', 'WebController@storeWishlist')->name('store-wishlist');
     Route::post('delete-wishlist', 'WebController@deleteWishlist')->name('delete-wishlist');
 
-    Route::post('/currency', 'CurrencyController@changeCurrency')->name('currency.change');
-
     Route::get('about-us', 'WebController@about_us')->name('about-us');
 
     //profile Route

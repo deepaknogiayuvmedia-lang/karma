@@ -2542,8 +2542,10 @@ a {
 }
 
 .__inline-11 {
-    height: 70px !important;
-    width: auto;
+background: white;
+    z-index: 999;
+    width: 100%;
+    display: none;
 }
 
 .__inline-12 {

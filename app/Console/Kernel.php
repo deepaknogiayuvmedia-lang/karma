@@ -35,6 +35,9 @@ class Kernel extends ConsoleKernel
 
         // Update price suggestions based on market trends and performance
         $schedule->command('price:update-suggestions')->everySixHours();
+
+        // Recalculate product ranking scores based on priority, performance, and reviews
+        $schedule->command('products:update-ranking')->daily();
     }
 
     /**

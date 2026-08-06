@@ -17,6 +17,7 @@ use App\Model\CartShipping;
 use App\Model\Category;
 use App\Model\Contact;
 use App\Model\DealOfTheDay;
+use Illuminate\Support\Facades\Cache;
 use App\Model\DeliveryCountryCode;
 use App\Model\DeliveryZipCode;
 use App\Model\FlashDeal;
@@ -67,43 +68,69 @@ class WebController extends Controller
 
     public function home()
     {
-        $brand_setting = BusinessSetting::where('type', 'product_brand')->first()->value;
+        // Phase 22: Performance - Cache brand setting
+        $brand_setting = Cache::remember('home_brand_setting', 3600, function () {
+            return BusinessSetting::where('type', 'product_brand')->first()->value;
+        });
+
+        // Phase 22: Performance - Eager load categories with products
         $home_categories = Category::where('home_status', true)->priority()->get();
         $home_categories->map(function ($data) {
             $id = '"' . $data['id'] . '"';
             $data['products'] = Product::active()
                 ->lowestPricePerPid()
                 ->where('category_ids', 'like', "%{$id}%")
-                /* ->whereJsonContains('category_ids', ["id" => (string)$data['id']]) */
-                ->inRandomOrder()
+                ->orderBy('priority', 'desc')
+                ->orderBy('ranking_score', 'desc')
                 ->take(12)
-                ->get();
+                ->get()
+                ->unique('name')
+                ->values();
         });
-        // products based on top seller
+
+        // products based on top seller - with eager loading
         $top_sellers = Seller::approved()
             ->with('shop')
             ->orderBy('seller_rank', 'ASC')
             ->take(12)
             ->get();
-        // end
-        // dd($top_sellers);
-        // feature products finding based on selling
-        $featured_products = Product::with(['reviews'])
+
+        // feature products finding based on selling - with ranking
+        $featured_products = Product::with(['reviews', 'translations' => function ($query) {
+            $query->where('locale', Helpers::default_lang());
+        }])
             ->active()
             ->lowestPricePerPid()
             ->where('featured', 1)
             ->withCount(['order_details'])
-            ->orderBy('order_details_count', 'DESC')
+            ->orderBy('priority', 'desc')
+            ->orderBy('ranking_score', 'desc')
             ->take(12)
-            ->get();
-        // end
+            ->get()
+            ->unique('name')
+            ->values();
 
-        $latest_products = Product::with(['reviews'])->active()->lowestPricePerPid()->orderBy('id', 'desc')->take(10)->get();
+        // Latest products with ranking
+        $latest_products = Product::with(['reviews', 'translations' => function ($query) {
+            $query->where('locale', Helpers::default_lang());
+        }])
+            ->active()
+            ->lowestPricePerPid()
+            ->orderBy('priority', 'desc')
+            ->orderBy('ranking_score', 'desc')
+            ->orderBy('id', 'desc')
+            ->take(10)
+            ->get()
+            ->unique('name')
+            ->values();
 
         $categories = Category::where(['position' => 0])->priority()->take(11)->get();
         $brands = Brand::active()->take(15)->get();
-        // best sell product
-        $bestSellProduct = OrderDetail::with('product.reviews')
+
+        // best sell product - with eager loading
+        $bestSellProduct = OrderDetail::with(['product.reviews', 'product.translations' => function ($query) {
+            $query->where('locale', Helpers::default_lang());
+        }])
             ->whereHas('product', function ($query) {
                 $query->active();
             })
@@ -112,8 +139,11 @@ class WebController extends Controller
             ->orderBy('count', 'desc')
             ->take(4)
             ->get();
-        // Top rated
-        $topRated = Review::with('product')
+
+        // Top rated - with eager loading
+        $topRated = Review::with(['product.reviews', 'product.translations' => function ($query) {
+            $query->where('locale', Helpers::default_lang());
+        }])
             ->whereHas('product', function ($query) {
                 $query->active();
             })
@@ -131,17 +161,23 @@ class WebController extends Controller
             $topRated = $bestSellProduct;
         }
 
-        $deal_of_the_day = DealOfTheDay::join('products', 'products.id', '=', 'deal_of_the_days.product_id')->select('deal_of_the_days.*', 'products.unit_price')->where('products.status', 1)->where('deal_of_the_days.status', 1)->first();
+        $deal_of_the_day = DealOfTheDay::join('products', 'products.id', '=', 'deal_of_the_days.product_id')
+            ->select('deal_of_the_days.*', 'products.unit_price')
+            ->where('products.status', 1)
+            ->where('deal_of_the_days.status', 1)
+            ->first();
 
         $recentlyViewed = [];
         if (auth('customer')->check()) {
-            $recentlyViewed = \App\Model\RecentlyViewedProduct::with(['product.reviews'])
+            $recentlyViewed = \App\Model\RecentlyViewedProduct::with(['product.reviews', 'product.translations' => function ($query) {
+                $query->where('locale', Helpers::default_lang());
+            }])
                 ->where('user_id', auth('customer')->id())
                 ->orderBy('id', 'desc')
                 ->take(5)
                 ->get();
         }
-        // dd($brands);
+
         return view(
             'web-views.home',
             compact('featured_products', 'topRated', 'bestSellProduct', 'latest_products', 'categories', 'brands', 'deal_of_the_day', 'top_sellers', 'home_categories', 'brand_setting', 'recentlyViewed')
@@ -712,7 +748,7 @@ class WebController extends Controller
         $wishlists = Wishlist::where('product_id', $product->id)->get();
         $countOrder = count($order_details);
         $countWishlist = count($wishlists);
-        $relatedProducts = Product::with(['reviews'])->where('category_ids', $product->category_ids)->where('id', '!=', $product->id)->limit(12)->get();
+        $relatedProducts = Product::with(['reviews'])->where('category_ids', $product->category_ids)->where('id', '!=', $product->id)->where('verified', 1)->limit(12)->get();
         $current_date = date('Y-m-d');
         $seller_vacation_start_date = ($product->added_by == 'seller' && isset($product->seller->shop->vacation_start_date)) ? date('Y-m-d', strtotime($product->seller->shop->vacation_start_date)) : null;
         $seller_vacation_end_date = ($product->added_by == 'seller' && isset($product->seller->shop->vacation_end_date)) ? date('Y-m-d', strtotime($product->seller->shop->vacation_end_date)) : null;
@@ -765,8 +801,24 @@ class WebController extends Controller
                 ->when($product->pid, function ($query) use ($product) {
                     return $query->where('pid', '!=', $product->pid);
                 })
+                ->orderBy('ranking_score', 'desc')
+                ->orderBy('priority', 'desc')
                 ->limit(12)
-                ->get();
+                ->get()
+                ->unique('name')
+                ->values();
+
+            // Other vendors selling same product (sorted by lowest price, no duplicates)
+            $otherVendorProducts = Product::with(['seller.shop', 'reviews'])
+                ->active()
+                ->lowestPricePerPid()
+                ->where('name', $product->name)
+                ->where('id', '!=', $product->id)
+                ->orderBy('unit_price', 'asc')
+                ->take(5)
+                ->get()
+                ->unique('seller_id')
+                ->values();
             $deal_of_the_day = DealOfTheDay::where('product_id', $product->id)->where('status', 1)->first();
             $current_date = date('Y-m-d');
             $seller_vacation_start_date = ($product->added_by == 'seller' && isset($product->seller->shop->vacation_start_date)) ? date('Y-m-d', strtotime($product->seller->shop->vacation_start_date)) : null;
@@ -802,6 +854,7 @@ class WebController extends Controller
                     'countWishlist',
                     'countOrder',
                     'relatedProducts',
+                    'otherVendorProducts',
                     'recentlyViewed',
                     'deal_of_the_day',
                     'current_date',
@@ -838,7 +891,7 @@ class WebController extends Controller
         $request['sort_by'] = $request['sort_by'] ?? 'latest';
 
         // Base query (IMPORTANT)
-        $porduct_data = Product::active()->with(['reviews'])->lowestPricePerPid();
+        $porduct_data = Product::active()->with(['reviews'])->lowestPricePerPid()->groupBy('name');
         $query = $porduct_data;
 
         // -----------------------------
@@ -884,7 +937,7 @@ class WebController extends Controller
 
             $query = $porduct_data->whereIn('id', $product_ids);
         } elseif ($request['data_from'] == 'featured') {
-            $query = Product::active()->with(['reviews'])->where('featured', 1)->whereNotNull('indexing')->lowestPricePerPid();
+            $query = Product::active()->with(['reviews'])->where('featured', 1)->whereNotNull('indexing')->lowestPricePerPid()->orderBy('priority', 'desc')->orderBy('ranking_score', 'desc');
         } elseif ($request['data_from'] == 'featured_deal') {
             $deal_id = FlashDeal::where('status', 1)
                 ->where('deal_type', 'feature_deal')
@@ -933,7 +986,7 @@ class WebController extends Controller
         // -----------------------------
 
         if ($request['sort_by'] == 'latest') {
-            $fetched = $query->latest();
+            $fetched = $query->orderBy('ranking_score', 'desc')->latest();
         } elseif ($request['sort_by'] == 'low-high') {
             $fetched = $query->orderBy('unit_price', 'ASC');
         } elseif ($request['sort_by'] == 'high-low') {
@@ -943,7 +996,7 @@ class WebController extends Controller
         } elseif ($request['sort_by'] == 'z-a') {
             $fetched = $query->orderBy('name', 'DESC');
         } else {
-            $fetched = $query->latest();
+            $fetched = $query->orderBy('ranking_score', 'desc')->latest();
         }
 
         // -----------------------------
@@ -1070,7 +1123,7 @@ class WebController extends Controller
         }
 
         if ($request['data_from'] == 'featured') {
-            $query = Product::with(['reviews'])->active()->where('featured', 1);
+            $query = Product::with(['reviews'])->active()->where('featured', 1)->orderBy('priority', 'desc')->orderBy('ranking_score', 'desc');
         }
 
         if ($request['data_from'] == 'search') {

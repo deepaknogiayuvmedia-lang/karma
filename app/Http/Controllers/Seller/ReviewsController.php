@@ -9,7 +9,6 @@ use App\Model\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Brian2694\Toastr\Facades\Toastr;
-use Rap2hpoutre\FastExcel\FastExcel;
 use App\CPU\ProductManager;
 
 class ReviewsController extends Controller
