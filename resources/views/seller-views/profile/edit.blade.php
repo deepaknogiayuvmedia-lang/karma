@@ -114,7 +114,7 @@
                 <div class="card mb-3 mb-lg-5" id="generalDiv">
                     <!-- Profile Cover -->
                     <div class="profile-cover">
-                        @php($shop_banners = $shop_banner ? asset(env('PUBLIC_STORAGE_PATH').'/shop/banner/'.$shop_banner) : 'https://images.pexels.com/photos/866398/pexels-photo-866398.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')
+                        @php($shop_banners = $shop_banner ? asset(config('app.public_storage_path').'/shop/banner/'.$shop_banner) : 'https://images.pexels.com/photos/866398/pexels-photo-866398.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')
 
                         <div class="profile-cover-img-wrapper" style="background-image: url({{ $shop_banners }}); background-repeat: no-repeat; background-size: cover;">
                         </div>
@@ -128,7 +128,7 @@
                         <img id="viewer"
                             onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
                             class="avatar-img"
-                            src="{{asset(env('PUBLIC_STORAGE_PATH').'/seller')}}/{{$data->image}}"
+                            src="{{asset(config('app.public_storage_path').'/seller')}}/{{$data->image}}"
                             alt="Image">
                     </label>
                     <!-- End Avatar -->

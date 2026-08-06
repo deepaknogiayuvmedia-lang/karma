@@ -245,7 +245,7 @@
                     {{ \App\CPU\translate('Order_Invoice') }}
                 </th>
                 <th>
-                    <img height="40" src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/company/$company_web_logo") }}"
+                    <img height="40" src="{{ asset(config('app.public_storage_path') . "/company/$company_web_logo") }}"
                         alt="">
                 </th>
             </tr>

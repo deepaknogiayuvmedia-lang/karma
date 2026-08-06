@@ -196,11 +196,12 @@ class ProductManager
 
     public static function product_image_path($image_type)
     {
+        $storagePath = config('app.public_storage_path');
         $path = '';
         if ($image_type == 'thumbnail') {
-            $path = asset(env('PUBLIC_STORAGE_PATH').'/product/thumbnail');
+            $path = asset($storagePath.'/product/thumbnail');
         } elseif ($image_type == 'product') {
-            $path = asset(env('PUBLIC_STORAGE_PATH').'/product');
+            $path = asset($storagePath.'/product');
         }
         return $path;
     }

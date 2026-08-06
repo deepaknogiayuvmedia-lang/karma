@@ -33,10 +33,11 @@ class ProfileController extends Controller
         $admin->phone = $request->phone;
         $admin->email = $request->email;
         if ($request->image) {
-            $admin->image = ImageManager::update('admin/', $admin->image, 'png', $request->file('image'));
+            $extension = $request->file('image')->getClientOriginalExtension() ?: 'png';
+            $admin->image = ImageManager::update('admin/', $admin->image, $extension, $request->file('image'));
         }
         $admin->save();
-        Toastr::info('Profile updated successfully!');
+        Toastr::success('Profile updated successfully!');
         return back();
     }
 

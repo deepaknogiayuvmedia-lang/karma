@@ -9,10 +9,10 @@
                 <a class="navbar-brand" href="{{ route('admin.dashboard.index') }}" aria-label="">
                     <img class="navbar-brand-logo"
                         onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                        src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/company/$e_commerce_logo") }}" alt="Logo">
+                        src="{{ asset(config('app.public_storage_path') . "/company/$e_commerce_logo") }}" alt="Logo">
                     <img class="navbar-brand-logo-mini"
                         onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                        src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/company/$e_commerce_logo") }}" alt="Logo">
+                        src="{{ asset(config('app.public_storage_path') . "/company/$e_commerce_logo") }}" alt="Logo">
                 </a>
                 <!-- End Logo -->
             </div>
@@ -153,13 +153,13 @@
                                      "type": "css-animation"
                                    }'>
                                 <div class="d-none d-md-block media-body text-right">
-                                    <h5 class="profile-name mb-0">{{ auth('admin')->user()->name }}</h5>
-                                    <span class="fz-12">Super Admin</span>
+                                    <h5 class="profile-name mb-0">{{\App\CPU\translate( auth('admin')->user()->name )}}</h5>
+                                    <span class="fz-12">{{\App\CPU\translate('Super')}}     {{\App\CPU\translate('Admin')}}</span>
                                 </div>
                                 <div class="avatar border avatar-circle">
                                     <img class="avatar-img"
                                         onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                        src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/admin') }}/{{ auth('admin')->user()->image }}"
+                                        src="{{ asset(config('app.public_storage_path') . '/admin') }}/{{ auth('admin')->user()->image }}"
                                         alt="Image Description">
                                     <span class="d-none avatar-status avatar-sm-status avatar-status-success"></span>
                                 </div>
@@ -172,7 +172,7 @@
                                         <div class="avatar avatar-sm avatar-circle mr-2">
                                             <img class="avatar-img"
                                                 onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/admin') }}/{{ auth('admin')->user()->image }}"
+                                                src="{{ asset(config('app.public_storage_path') . '/admin') }}/{{ auth('admin')->user()->image }}"
                                                 alt="Image Description">
                                         </div>
                                         <div class="media-body">

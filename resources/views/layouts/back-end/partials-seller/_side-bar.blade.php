@@ -10,7 +10,7 @@
                         @if (isset($shop))
                             <img onerror="this.src='{{asset('assets/back-end/img/900x400/img1.jpg')}}'"
                                 class="navbar-brand-logo-mini for-seller-logo"
-                                src="{{asset(env('PUBLIC_STORAGE_PATH')."/shop/$shop->image")}}" alt="Logo">
+                                src="{{asset(config('app.public_storage_path')."/shop/$shop->image")}}" alt="Logo">
                         @else
                             <img class="navbar-brand-logo-mini for-seller-logo"
                                 src="{{asset('assets/back-end/img/900x400/img1.jpg')}}" alt="Logo">
@@ -299,6 +299,18 @@
                                     <a class="nav-link " href="{{route('seller.product.bulk-import')}}">
                                         <span class="tio-circle nav-indicator-icon"></span>
                                         <span class="text-truncate">{{\App\CPU\translate('bulk_import')}}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{Request::is('seller/product/edit-requests')?'active':''}}">
+                                    <a class="nav-link " href="{{route('seller.product.edit-requests')}}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{\App\CPU\translate('Edit Requests')}}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{Request::is('seller/product/change-requests')?'active':''}}">
+                                    <a class="nav-link " href="{{route('seller.product.change-requests')}}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{\App\CPU\translate('Change Requests')}}</span>
                                     </a>
                                 </li>
                             </ul>

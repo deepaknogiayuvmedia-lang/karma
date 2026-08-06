@@ -225,7 +225,13 @@ class Product extends Model
         if (strpos(url()->current(), '/admin') || strpos(url()->current(), '/seller')) {
             return $name;
         }
-        return $this->translations[0]->value ?? $name;
+        $locale = Helpers::default_lang();
+        foreach ($this->translations as $t) {
+            if ($t->locale === $locale && !empty($t->value)) {
+                return $t->value;
+            }
+        }
+        return $name;
     }
 
     public function getDetailsAttribute($detail)
@@ -233,7 +239,13 @@ class Product extends Model
         if (strpos(url()->current(), '/admin') || strpos(url()->current(), '/seller')) {
             return $detail;
         }
-        return $this->translations[1]->value ?? $detail;
+        $locale = Helpers::default_lang();
+        foreach ($this->translations as $t) {
+            if ($t->locale === $locale && !empty($t->value)) {
+                return $t->value;
+            }
+        }
+        return $detail;
     }
 
     protected static function boot()

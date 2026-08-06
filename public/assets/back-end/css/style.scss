@@ -234,9 +234,7 @@ a:hover {
 aside .navbar-vertical-aside-has-menu .nav-sub .nav-link {
     font-size: 0.8rem;
 }
-aside .navbar-nav > .nav-item:not(:first-child) {
-    margin-top: 15px !important;
-}
+
 aside li .nav-link > span:not(:first-child) {
     display: flex;
     flex-grow: 1;

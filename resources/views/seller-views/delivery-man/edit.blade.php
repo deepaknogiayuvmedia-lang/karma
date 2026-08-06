@@ -113,7 +113,7 @@
                                 </div>
                                 <center>
                                     <img class="upload-img-view" id="viewer"
-                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/delivery-man').'/'.$delivery_man['image']}}"
+                                         src="{{asset(config('app.public_storage_path').'/delivery-man').'/'.$delivery_man['image']}}"
                                          alt="delivery-man image"/>
                                 </center>
                             </div>
@@ -127,7 +127,7 @@
                                         @foreach(json_decode($delivery_man['identity_image'],true) as $img)
                                             <div class="col-md-4 mb-3">
                                                 <img height="150"
-                                                     src="{{asset(env('PUBLIC_STORAGE_PATH').'/delivery-man').'/'.$img}}">
+                                                     src="{{asset(config('app.public_storage_path').'/delivery-man').'/'.$img}}">
                                             </div>
                                         @endforeach
                                     </div>

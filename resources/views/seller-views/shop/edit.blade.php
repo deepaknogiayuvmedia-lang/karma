@@ -68,7 +68,7 @@
                                     <div class="text-center">
                                         <img class="upload-img-view" id="viewer"
                                             onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                            src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/shop/' . $shop->image) }}"
+                                            src="{{ asset(config('app.public_storage_path') . '/shop/' . $shop->image) }}"
                                             alt="Product thumbnail" />
                                     </div>
                                 </div>
@@ -92,7 +92,7 @@
                                     <div class="text-center">
                                         <img class="upload-img-view" id="viewerBanner"
                                             onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                            src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/shop/banner/' . $shop->banner) }}"
+                                            src="{{ asset(config('app.public_storage_path') . '/shop/banner/' . $shop->banner) }}"
                                             alt="Product thumbnail" />
                                     </div>
                                 </div>

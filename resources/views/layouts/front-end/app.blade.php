@@ -2,35 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <style>
-        .back-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            z-index: 9999;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s ease;
-        }
-        .back-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-            color: #fff;
-            text-decoration: none;
-        }
-        .back-btn:active {
-            transform: translateY(-1px);
-        }
-    </style>
+
     <!-- Phase 20: Product Description Layout Fix -->
     <style>
         /* Responsive tables in product description */
@@ -101,9 +73,9 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" sizes="180x180"
-        href="{{ asset(env('PUBLIC_STORAGE_PATH') . '/company') }}/{{ $web_config['fav_icon']->value }}">
+        href="{{ asset(config('app.public_storage_path') . '/company') }}/{{ $web_config['fav_icon']->value }}">
     <link rel="icon" type="image/png" sizes="32x32"
-        href="{{ asset(env('PUBLIC_STORAGE_PATH') . '/company') }}/{{ $web_config['fav_icon']->value }}">
+        href="{{ asset(config('app.public_storage_path') . '/company') }}/{{ $web_config['fav_icon']->value }}">
 
     <link rel="stylesheet" media="screen"
         href="{{ asset('assets/front-end') }}/vendor/simplebar/dist/simplebar.min.css" />
@@ -488,7 +460,7 @@
             <div id="loading" style="display: none;">
                 <center>
                     <img width="200"
-                        src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/company') }}/{{ \App\CPU\Helpers::get_business_settings('loader_gif') }}"
+                        src="{{ asset(config('app.public_storage_path') . '/company') }}/{{ \App\CPU\Helpers::get_business_settings('loader_gif') }}"
                         onerror="this.src='{{ asset('assets/front-end/img/loader.gif') }}'">
                 </center>
             </div>
@@ -498,9 +470,7 @@
 
     <!-- Page Content-->
     <!-- Back Button -->
-    <a href="javascript:history.back()" class="back-btn" title="Go Back">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
-    </a>
+   
     <!-- End Back Button -->
     @yield('content')
 

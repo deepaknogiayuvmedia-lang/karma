@@ -41,7 +41,7 @@
             }
         </style>
         <div class="thank-you-container">
-            <img src="{{asset(env('PUBLIC_STORAGE_PATH').'/company/2023-12-20-658269db7badc.png')}}"
+            <img src="{{asset(config('app.public_storage_path').'/company/2023-12-20-658269db7badc.png')}}"
                 onerror=""
             alt="Logo" class="logo" />
             <p>Thank you for your support!</p>

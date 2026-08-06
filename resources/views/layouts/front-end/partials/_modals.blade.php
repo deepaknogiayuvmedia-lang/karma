@@ -11,7 +11,7 @@
                 <div class="modal-body cursor-pointer __p-3px" onclick="location.href='{{$banner['url']}}'">
                     <img class="d-block w-100"
                          onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$banner['photo']}}"
+                         src="{{asset(config('app.public_storage_path').'/banner')}}/{{$banner['photo']}}"
                          alt="">
                 </div>
             </div>

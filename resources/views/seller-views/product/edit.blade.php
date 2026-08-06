@@ -170,7 +170,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <p class="h-100 mt-5">
-                                                    <a href="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/digital-product/$product->digital_file_ready") }}"
+                                                    <a href="{{ asset(config('app.public_storage_path') . "/product/digital-product/$product->digital_file_ready") }}"
                                                         target="_blank">{{ $product->digital_file_ready }}</a>
                                                 </p>
                                             </div>
@@ -492,7 +492,7 @@
                                             <div class="col-sm-6 col-md-12 col-lg-6">
                                                 <img class="w-100" height="auto"
                                                     onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                    src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/product/meta') }}/{{ $product['meta_image'] }}"
+                                                    src="{{ asset(config('app.public_storage_path') . '/product/meta') }}/{{ $product['meta_image'] }}"
                                                     alt="Meta image">
                                             </div>
                                         </div>
@@ -540,7 +540,7 @@
                                                             <div class="card-body">
                                                                 <img class="w-100"
                                                                     onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                                    src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo") }}"
+                                                                    src="{{ asset(config('app.public_storage_path') . "/product/$photo") }}"
                                                                     alt="Product image">
                                                                 <a href="{{ route('seller.product.remove-image', ['id' => $product['id'], 'name' => $photo]) }}"
                                                                     class="btn btn-danger btn-block">{{ \App\CPU\translate('Remove') }}</a>
@@ -557,7 +557,7 @@
                                                                     <div class="card-body">
                                                                         <img class="w-100" height="auto"
                                                                             onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                                            src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo->image_name") }}"
+                                                                            src="{{ asset(config('app.public_storage_path') . "/product/$photo->image_name") }}"
                                                                             alt="Product image">
                                                                         <a href="{{ route('admin.product.remove-image', ['id' => $product['id'], 'name' => $photo->image_name, 'color' => 'null']) }}"
                                                                             class="btn btn-danger btn-block">{{ \App\CPU\translate('Remove') }}</a>
@@ -573,7 +573,7 @@
                                                                 <div class="card-body">
                                                                     <img class="w-100" height="auto"
                                                                         onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                                        src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/product/$photo") }}"
+                                                                        src="{{ asset(config('app.public_storage_path') . "/product/$photo") }}"
                                                                         alt="Product image">
                                                                     <a href="{{ route('admin.product.remove-image', ['id' => $product['id'], 'name' => $photo]) }}"
                                                                         class="btn btn-danger btn-block">{{ \App\CPU\translate('Remove') }}</a>
@@ -599,7 +599,7 @@
                                                     <div class="rounded overflow-hidden">
                                                         <img class="w-100"
                                                             onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                            src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/product/thumbnail') }}/{{ $product['thumbnail'] }}"
+                                                            src="{{ asset(config('app.public_storage_path') . '/product/thumbnail') }}/{{ $product['thumbnail'] }}"
                                                             alt="Product image">
                                                     </div>
                                                 </div>
@@ -899,7 +899,7 @@
                                     </span>
                                         <img class="w-100" height="auto"
                                              onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                             src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/product/`+image_name+`') }}"
+                                             src="{{ asset(config('app.public_storage_path') . '/product/`+image_name+`') }}"
                                              alt="Product image">
                                         <a href="` + remove_url + `?id=` + product_id + `&name=` + image_name +
                             `&color=` + color_value['color'] + `"

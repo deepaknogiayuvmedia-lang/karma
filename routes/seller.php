@@ -63,6 +63,9 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
             Route::post('update-quantity', 'ProductController@update_quantity')->name('update-quantity');
             Route::get('edit/{id}', 'ProductController@edit')->name('edit');
             Route::post('update/{id}', 'ProductController@update')->name('update');
+            Route::post('request-edit', 'ProductController@request_edit')->name('request-edit');
+            Route::get('edit-requests', 'ProductController@edit_requests')->name('edit-requests');
+            Route::get('change-requests', 'ProductController@change_requests')->name('change-requests');
             Route::post('sku-combination', 'ProductController@sku_combination')->name('sku-combination');
             Route::get('get-categories', 'ProductController@get_categories')->name('get-categories');
             Route::get('barcode', 'ProductController@get_categories')->name('get-categories');

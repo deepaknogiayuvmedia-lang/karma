@@ -75,7 +75,7 @@
                                             <img width="50"
                                             class="aspect-1 rounded"
                                                 onerror="this.src='{{asset('assets/back-end/img/400x400/img2.jpg')}}'"
-                                                src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop')}}/{{$seller->shop->image}}"
+                                                src="{{asset(config('app.public_storage_path').'/shop')}}/{{$seller->shop->image}}"
                                                 alt="">
                                             <div>
                                                 <a class="title-color" href="{{ route('admin.sellers.view', ['id' => $seller->id]) }}">{{ \Str::limit($seller->shop->name, 20)}}</a>

@@ -57,7 +57,7 @@
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 @if(isset($product->thumbnail))
-                                                    <img src="{{asset(env('PUBLIC_STORAGE_PATH').'/product/thumbnail/'.$product->thumbnail)}}"
+                                                    <img src="{{asset(config('app.public_storage_path').'/product/thumbnail/'.$product->thumbnail)}}"
                                                          alt="{{$product->name}}"
                                                          class="mr-2 rounded"
                                                          width="32" height="32"

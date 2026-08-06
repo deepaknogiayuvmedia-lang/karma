@@ -76,7 +76,7 @@
                                         <div class="media align-items-center gap-10">
                                             <img class="rounded-circle avatar avatar-lg"
                                                  onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
-                                                 src="{{asset(env('PUBLIC_STORAGE_PATH').'/delivery-man')}}/{{$dm['image']}}">
+                                                 src="{{asset(config('app.public_storage_path').'/delivery-man')}}/{{$dm['image']}}">
                                             <div class="media-body">
                                                 <a title="Earning Statement"
                                                    class="title-color hover-c1"

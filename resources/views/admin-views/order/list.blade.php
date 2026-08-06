@@ -278,7 +278,7 @@
                                     <td>
                                         <span class="store-name font-weight-medium">
                                             @if($order->seller_is == 'seller')
-                                                {{ isset($order->seller->shop) ? $order->seller->shop->name : 'Store not found' }}
+                                                {{ isset($order->seller->shop) ? $order->seller->shop->name : \App\CPU\translate('Store not found') }}
                                             @elseif($order->seller_is == 'admin')
                                                 {{\App\CPU\translate('In-House')}}
                                             @endif

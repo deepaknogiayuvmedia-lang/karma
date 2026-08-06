@@ -20,7 +20,7 @@
                     <div class="card card-body px-0 h-100">
                         <div class="media align-items-center px-3 gap-3 mb-4">
                             <div class="avatar avatar-sm avatar-circle">
-                                <img class="avatar-img" onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'" src="{{asset(env('PUBLIC_STORAGE_PATH').'/seller/')}}/{{auth('seller')->user()->image}}" alt="Image Description">
+                                <img class="avatar-img" onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'" src="{{asset(config('app.public_storage_path').'/seller/')}}/{{auth('seller')->user()->image}}" alt="Image Description">
                                 <span class="avatar-status avatar-sm-status avatar-status-success"></span>
                             </div>
                             <div class="media-body">
@@ -54,9 +54,9 @@
                                                 <div class="chat_img avatar avatar-sm avatar-circle">
                                                     <img
                                                         @if (Request::is('seller/messages/chat/customer'))
-                                                            src="{{ asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$chatting->image) }}"
+                                                            src="{{ asset(config('app.public_storage_path').'/profile/'.$chatting->image) }}"
                                                         @else
-                                                            src="{{ asset(env('PUBLIC_STORAGE_PATH').'/delivery-man/'.$chatting->image) }}"
+                                                            src="{{ asset(config('app.public_storage_path').'/delivery-man/'.$chatting->image) }}"
                                                         @endif
                                                         id="{{$chatting->user_id? $chatting->user_id : $chatting->delivery_man_id}}" onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'" class="avatar-img avatar-circle">
                                                     <span class="avatar-satatus avatar-sm-status avatar-status-success"></span>
@@ -90,9 +90,9 @@
                                 <div class="avatar avatar-sm avatar-circle">
                                     <img class="avatar-img" id="profile_image"
                                          @if (Request::is('seller/messages/chat/customer'))
-                                         src="{{ asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$chattings_user[0]->image) }}"
+                                         src="{{ asset(config('app.public_storage_path').'/profile/'.$chattings_user[0]->image) }}"
                                          @else
-                                         src="{{ asset(env('PUBLIC_STORAGE_PATH').'/delivery-man/'.$chattings_user[0]->image) }}"
+                                         src="{{ asset(config('app.public_storage_path').'/delivery-man/'.$chattings_user[0]->image) }}"
                                          @endif
                                          onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'" alt="Image Description">
                                     <span class="avatar-status avatar-sm-status avatar-status-success"></span>

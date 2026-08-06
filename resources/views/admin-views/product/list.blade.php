@@ -11,13 +11,16 @@
             margin-right: 4px;
             color: #666;
         }
+
         .nav-custom .nav-link.active {
             background-color: #1a1a2e;
             color: #fff;
         }
+
         .modal-backdrop {
             background-color: #00000047 !important;
         }
+
         #viewSellerModal .modal-dialog,
         #commissionModal .modal-dialog {
             display: flex !important;
@@ -27,11 +30,13 @@
             max-width: 800px;
             margin: 0.5rem auto;
         }
+
         #viewSellerModal .modal-content,
         #commissionModal .modal-content {
             border-radius: 12px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
+
         #commissionModal .modal-dialog {
             max-width: 450px;
         }
@@ -72,8 +77,8 @@
                                             placeholder="{{ \App\CPU\translate('Search Product Name') }}"
                                             aria-label="Search orders" value="{{ $search }}" required>
                                         <input type="hidden" value="{{ $request_status }}" name="status">
-                                        @if($verified_filter)
-                                        <input type="hidden" value="{{ $verified_filter }}" name="verified">
+                                        @if ($verified_filter)
+                                            <input type="hidden" value="{{ $verified_filter }}" name="verified">
                                         @endif
                                         <button type="submit"
                                             class="btn btn--primary">{{ \App\CPU\translate('search') }}</button>
@@ -82,31 +87,32 @@
                                 <!-- End Search -->
                             </div>
                             <div class="col-lg-8 mt-3 mt-lg-0 d-flex flex-wrap gap-3 justify-content-lg-end">
-                                @if(auth('seller')->user() && auth('seller')->user()->tally_sync_enabled)
-                                <div>
-                                    <button type="button" class="btn btn-outline--primary" data-toggle="dropdown">
-                                        <i class="tio-download-to"></i>
-                                        {{ \App\CPU\translate('Sysc') }}
-                                        <i class="tio-chevron-down"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-right">
-                                        <li>
-                                            <div onclick="sysc_to_tally(this)"
-                                                data-message-success="{{ \App\CPU\translate('Sysc Web to Tally successfully') }}"
-                                                data-message-error="{{ \App\CPU\translate('Sysc Web to Tally failed') }}"
-                                                data-url="{{ route('admin.product.sysc-tally') }}" class="dropdown-item">
-                                                {{ \App\CPU\translate('Web to Tally') }}</div>
-                                        </li>
-                                        <li>
-                                            <div onclick="sysc_to_tally(this)"
-                                                data-message-success="{{ \App\CPU\translate('Sysc Tally to Web successfully') }}"
-                                                data-message-error="{{ \App\CPU\translate('Sysc Tally to Web failed') }}"
-                                                data-url="{{ route('admin.product.sysc-web') }}" class="dropdown-item">
-                                                {{ \App\CPU\translate('Tally to Web') }}</div>
-                                        </li>
-                                        <div class="dropdown-divider"></div>
-                                    </ul>
-                                </div>
+                                @if (auth('seller')->user() && auth('seller')->user()->tally_sync_enabled)
+                                    <div>
+                                        <button type="button" class="btn btn-outline--primary" data-toggle="dropdown">
+                                            <i class="tio-download-to"></i>
+                                            {{ \App\CPU\translate('Sysc') }}
+                                            <i class="tio-chevron-down"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                            <li>
+                                                <div onclick="sysc_to_tally(this)"
+                                                    data-message-success="{{ \App\CPU\translate('Sysc Web to Tally successfully') }}"
+                                                    data-message-error="{{ \App\CPU\translate('Sysc Web to Tally failed') }}"
+                                                    data-url="{{ route('admin.product.sysc-tally') }}"
+                                                    class="dropdown-item">
+                                                    {{ \App\CPU\translate('Web to Tally') }}</div>
+                                            </li>
+                                            <li>
+                                                <div onclick="sysc_to_tally(this)"
+                                                    data-message-success="{{ \App\CPU\translate('Sysc Tally to Web successfully') }}"
+                                                    data-message-error="{{ \App\CPU\translate('Sysc Tally to Web failed') }}"
+                                                    data-url="{{ route('admin.product.sysc-web') }}" class="dropdown-item">
+                                                    {{ \App\CPU\translate('Tally to Web') }}</div>
+                                            </li>
+                                            <div class="dropdown-divider"></div>
+                                        </ul>
+                                    </div>
                                 @endif
                                 @if ($type == 'in_house')
                                     <div>
@@ -124,7 +130,7 @@
                                     </div>
                                     <a href="{{ route('admin.product.stock-limit-list', ['in_house']) }}"
                                         class="btn btn-info">
-                                        <span class="text">{{ \App\CPU\translate('Low Stock') }}</span>
+                                        <span class="text">{{ \App\CPU\translate('Stock Report') }}</span>
                                     </a>
                                 @endif
                                 @if (!isset($request_status))
@@ -133,7 +139,7 @@
                                         <span class="text">{{ \App\CPU\translate('Add_New_Product') }}</span>
                                     </a>
                                 @endif
-                                @if($verified_filter === 'unverified')
+                                @if ($verified_filter === 'unverified')
                                     <button type="button" class="btn btn-success" onclick="bulkVerifySelected()">
                                         <i class="tio-check"></i> {{ \App\CPU\translate('Bulk_Verify_Selected') }}
                                     </button>
@@ -148,19 +154,22 @@
                             <li class="nav-item">
                                 <a class="nav-link {{ !$verified_filter ? 'active' : '' }}"
                                     href="{{ route('admin.product.list', $type) }}?status={{ $request_status }}">
-                                    {{ \App\CPU\translate('All') }} <span class="badge badge-soft-dark ml-1">{{ $all_count }}</span>
+                                    {{ \App\CPU\translate('All') }} <span
+                                        class="badge badge-soft-dark ml-1">{{ $all_count }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ $verified_filter === 'verified' ? 'active' : '' }}"
                                     href="{{ route('admin.product.list', $type) }}?status={{ $request_status }}&verified=verified">
-                                    <i class="tio-check-circle text-success"></i> {{ \App\CPU\translate('Verified') }} <span class="badge badge-soft-success ml-1">{{ $verified_count }}</span>
+                                    <i class="tio-check-circle text-success"></i> {{ \App\CPU\translate('Verified') }}
+                                    <span class="badge badge-soft-success ml-1">{{ $verified_count }}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ $verified_filter === 'unverified' ? 'active' : '' }}"
                                     href="{{ route('admin.product.list', $type) }}?status={{ $request_status }}&verified=unverified">
-                                    <i class="tio-warning text-warning"></i> {{ \App\CPU\translate('Unverified') }} <span class="badge badge-soft-danger ml-1">{{ $unverified_count }}</span>
+                                    <i class="tio-warning text-warning"></i> {{ \App\CPU\translate('Unverified') }} <span
+                                        class="badge badge-soft-danger ml-1">{{ $unverified_count }}</span>
                                 </a>
                             </li>
                         </ul>
@@ -190,59 +199,60 @@
                             </thead>
                             <tbody>
                                 @foreach ($pro as $k => $p)
-                                <tr>
-                                    <td class="text-center">
-                                        <input type="checkbox" class="product-checkbox" value="{{ $p['id'] }}">
-                                    </td>
-                                    <th scope="row">{{ $pro->firstItem() + $k }}</th>   
-                                    <td>
-                                        <a href="{{ route('admin.product.view', [$p['id']]) }}"
-                                            class="media align-items-center gap-2">
-                                            <img src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $p['thumbnail'] }}"
-                                                onerror="this.src='{{ asset('/public/assets/back-end/img/brand-logo.png') }}'"
-                                                class="avatar border" alt="">
-                                            <span class="media-body title-color hover-c1">
-                                                {{ \Illuminate\Support\Str::limit($p['name'], 20) }}
-                                            </span>
-                                        </a>
-                                    </td>
-                                    <td class="text-right">
-                                        <button type="button" class="btn btn-outline--primary btn-sm set-commission-btn"
-                                            data-id="{{ $p['id'] }}"
-                                            data-name="{{ \Illuminate\Support\Str::limit($p['name'], 20) }}"
-                                            data-commission="{{ $p['admin_commission_type'] == 'fixed' ? \App\CPU\BackEndHelper::usd_to_currency($p['admin_commission'] ?? 0) : ($p['admin_commission'] ?? 0) }}"
-                                            data-type="{{ $p['admin_commission_type'] ?? 'percentage' }}">
-                                            @if($p['admin_commission_type'] == 'percentage')
-                                                {{ $p['admin_commission'] }}%
-                                            @elseif($p['admin_commission'] > 0)
-                                                {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['admin_commission'])) }}
-                                            @else
-                                                <i class="tio-plus-circle"></i> Set
-                                            @endif
-                                        </button>
-                                    </td>
-                                    <td class="text-right">
-                                        {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['purchase_price'])) }}
-                                    </td>
-                                    <td class="text-right">
-                                        {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['unit_price'])) }}
-                                    </td>
-                                    <td class="text-center">
-                                        <label class="mx-auto switcher">
-                                            <input class="switcher_input" type="checkbox"
-                                                onclick="toggle_verified('{{ $p['id'] }}')"
-                                                {{ isset($p->verified) && $p->verified == 1 ? 'checked' : '' }}>
-                                            <span class="switcher_control"></span>
-                                        </label>
-                                    </td>
-                                    <td class="text-center">
-                                        <label class="mx-auto switcher">
-                                            <input class="switcher_input" type="checkbox"
-                                                onclick="featured_status('{{ $p['id'] }}')"
-                                                {{ $p->featured == 1 ? 'checked' : '' }}>
-                                            <span class="switcher_control"></span>
-                                        </label>
-                                    </td>
+                                    <tr>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="product-checkbox" value="{{ $p['id'] }}">
+                                        </td>
+                                        <th scope="row">{{ $pro->firstItem() + $k }}</th>
+                                        <td>
+                                            <a href="{{ route('admin.product.view', [$p['id']]) }}"
+                                                class="media align-items-center gap-2">
+                                                <img src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $p['thumbnail'] }}"
+                                                    onerror="this.src='{{ asset('/public/assets/back-end/img/brand-logo.png') }}'"
+                                                    class="avatar border" alt="">
+                                                <span class="media-body title-color hover-c1">
+                                                    {{ \Illuminate\Support\Str::limit($p['name'], 20) }}
+                                                </span>
+                                            </a>
+                                        </td>
+                                        <td class="text-right">
+                                            <button type="button"
+                                                class="btn btn-outline--primary btn-sm set-commission-btn"
+                                                data-id="{{ $p['id'] }}"
+                                                data-name="{{ \Illuminate\Support\Str::limit($p['name'], 20) }}"
+                                                data-commission="{{ $p['admin_commission_type'] == 'fixed' ? \App\CPU\BackEndHelper::usd_to_currency($p['admin_commission'] ?? 0) : $p['admin_commission'] ?? 0 }}"
+                                                data-type="{{ $p['admin_commission_type'] ?? 'percentage' }}">
+                                                @if ($p['admin_commission_type'] == 'percentage')
+                                                    {{ $p['admin_commission'] }}%
+                                                @elseif($p['admin_commission'] > 0)
+                                                    {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['admin_commission'])) }}
+                                                @else
+                                                    <i class="tio-plus-circle"></i> Set
+                                                @endif
+                                            </button>
+                                        </td>
+                                        <td class="text-right">
+                                            {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['purchase_price'])) }}
+                                        </td>
+                                        <td class="text-right">
+                                            {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['unit_price'])) }}
+                                        </td>
+                                        <td class="text-center">
+                                            <label class="mx-auto switcher">
+                                                <input class="switcher_input" type="checkbox"
+                                                    onclick="toggle_verified('{{ $p['id'] }}')"
+                                                    {{ isset($p->verified) && $p->verified == 1 ? 'checked' : '' }}>
+                                                <span class="switcher_control"></span>
+                                            </label>
+                                        </td>
+                                        <td class="text-center">
+                                            <label class="mx-auto switcher">
+                                                <input class="switcher_input" type="checkbox"
+                                                    onclick="featured_status('{{ $p['id'] }}')"
+                                                    {{ $p->featured == 1 ? 'checked' : '' }}>
+                                                <span class="switcher_control"></span>
+                                            </label>
+                                        </td>
                                         <td class="text-center">
                                             <label class="mx-auto switcher">
                                                 <input type="checkbox" class="status switcher_input"
@@ -250,12 +260,13 @@
                                                 <span class="switcher_control"></span>
                                             </label>
                                         </td>
-                                      
+
                                         <td>
 
                                             @php($seller = \App\Model\Product::where('pid', $p['id'])->count())
 
-                                            <button type="button" class="btn btn-outline-info btn-sm" onclick="viewSellers({{ $p['id'] }}, '{{ \Illuminate\Support\Str::limit($p['name'], 20) }}')">
+                                            <button type="button" class="btn btn-outline-info btn-sm"
+                                                onclick="viewSellers({{ $p['id'] }}, '{{ \Illuminate\Support\Str::limit($p['name'], 20) }}')">
                                                 <i class="tio-group"></i> {{ $seller }}
                                             </button>
 
@@ -302,8 +313,7 @@
 
                     @if (count($pro) == 0)
                         <div class="text-center p-4">
-                            <img class="mb-3 w-160"
-                                src="{{ asset('assets/back-end') }}/svg/illustrations/sorry.svg"
+                            <img class="mb-3 w-160" src="{{ asset('assets/back-end') }}/svg/illustrations/sorry.svg"
                                 alt="Image Description">
                             <p class="mb-0">{{ \App\CPU\translate('No data to show') }}</p>
                         </div>
@@ -348,12 +358,12 @@
                     if (data.success == true) {
                         toastr.success(
                             '{{ \App\CPU\translate('
-                                                                                                            Status updated successfully ') }}'
+                                                                                                                                        Status updated successfully ') }}'
                         );
                     } else if (data.success == false) {
                         toastr.error(
                             '{{ \App\CPU\translate('
-                                                                                                            Status updated failed.Product must be approved ') }}'
+                                                                                                                                        Status updated failed.Product must be approved ') }}'
                         );
                         setTimeout(function() {
                             location.reload();
@@ -378,7 +388,7 @@
                 success: function() {
                     toastr.success(
                         '{{ \App\CPU\translate('
-                                                                                            Featured status updated successfully ') }}'
+                                                                                                                    Featured status updated successfully ') }}'
                     );
                 }
             });
@@ -393,7 +403,9 @@
             $.ajax({
                 url: "{{ route('admin.product.verify') }}",
                 method: 'POST',
-                data: { id: id },
+                data: {
+                    id: id
+                },
                 success: function(data) {
                     if (data.message) {
                         toastr.success(data.message);
@@ -422,11 +434,15 @@
             $.ajax({
                 url: "{{ route('admin.product.bulk-verify') }}",
                 method: 'POST',
-                data: { product_ids: ids },
+                data: {
+                    product_ids: ids
+                },
                 success: function(data) {
                     if (data.message) {
                         toastr.success(data.message);
-                        setTimeout(function() { location.reload(); }, 1000);
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
                     }
                 },
                 error: function(data) {
@@ -455,17 +471,20 @@
 
         function viewSellers(productId, productName) {
             $('#viewSellerModalLabel').text('Sellers who copied: ' + productName);
-            $('#sellerTableBody').html('<tr><td colspan="6" class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>');
+            $('#sellerTableBody').html(
+                '<tr><td colspan="6" class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>');
             $('#viewSellerModal').modal('show');
 
             $.ajax({
-                url: '{{ route("admin.product.get-sellers", ":id") }}'.replace(':id', productId),
+                url: '{{ route('admin.product.get-sellers', ':id') }}'.replace(':id', productId),
                 method: 'GET',
                 success: function(data) {
                     var tbody = $('#sellerTableBody');
                     tbody.empty();
                     if (data.sellers.length === 0) {
-                        tbody.html('<tr><td colspan="6" class="text-center text-muted">No sellers have copied this product yet</td></tr>');
+                        tbody.html(
+                            '<tr><td colspan="6" class="text-center text-muted">No sellers have copied this product yet</td></tr>'
+                            );
                         return;
                     }
                     $.each(data.sellers, function(index, seller) {
@@ -475,12 +494,16 @@
                             '<td>' + seller.shop_name + '</td>' +
                             '<td>' + formatPrice(seller.price) + '</td>' +
                             '<td>' + seller.stock + '</td>' +
-                            '<td><span class="badge badge-' + (seller.status == 1 ? 'success' : 'danger') + '">' + (seller.status == 1 ? 'Active' : 'Inactive') + '</span></td>' +
+                            '<td><span class="badge badge-' + (seller.status == 1 ? 'success' :
+                                'danger') + '">' + (seller.status == 1 ? 'Active' : 'Inactive') +
+                            '</span></td>' +
                             '</tr>');
                     });
                 },
                 error: function() {
-                    $('#sellerTableBody').html('<tr><td colspan="4" class="text-center text-danger">Failed to load seller data</td></tr>');
+                    $('#sellerTableBody').html(
+                        '<tr><td colspan="4" class="text-center text-danger">Failed to load seller data</td></tr>'
+                        );
                 }
             });
         }
@@ -525,7 +548,7 @@
                 }
             });
             $.ajax({
-                url: '{{ route("admin.product.set-commission") }}',
+                url: '{{ route('admin.product.set-commission') }}',
                 method: 'POST',
                 data: {
                     product_id: productId,
@@ -536,7 +559,9 @@
                     if (data.success) {
                         toastr.success(data.message);
                         $('#commissionModal').modal('hide');
-                        setTimeout(function() { location.reload(); }, 1000);
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
                     } else {
                         toastr.error(data.message || 'Failed to update commission');
                     }
@@ -619,7 +644,8 @@
                 </div>
                 <div class="mb-3">
                     <label class="font-weight-bold">Commission Value</label>
-                    <input type="number" id="commissionValue" class="form-control" min="0" step="0.01" placeholder="Enter commission value">
+                    <input type="number" id="commissionValue" class="form-control" min="0" step="0.01"
+                        placeholder="Enter commission value">
                 </div>
             </div>
             <div class="modal-footer">
@@ -629,4 +655,3 @@
         </div>
     </div>
 </div>
-

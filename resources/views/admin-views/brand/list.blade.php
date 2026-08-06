@@ -83,7 +83,7 @@
                                         <td>
                                             <img class="rounded avatar-60"
                                                  onerror="this.src='{{asset('assets/back-end/img/160x160/img2.jpg')}}'"
-                                                 src="{{asset(env('PUBLIC_STORAGE_PATH').'/brand')}}/{{$b['image']}}">
+                                                 src="{{asset(config('app.public_storage_path').'/brand')}}/{{$b['image']}}">
                                         </td>
                                         <td>{{$b['name']}}</td>
                                         <td>{{ $b['brand_all_products_count'] }}</td>

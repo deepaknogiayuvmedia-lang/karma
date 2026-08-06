@@ -160,13 +160,13 @@
                                                                     @if($detail->product->digital_product_type == 'ready_after_sell' && $detail->digital_file_after_sell)
                                                                         <div class="mb-4">
                                                                             {{\App\CPU\translate('uploaded_file')}} :
-                                                                            <a href="{{ asset(env('PUBLIC_STORAGE_PATH').'/product/digital-product/'.$detail->digital_file_after_sell) }}"
+                                                                            <a href="{{ asset(config('app.public_storage_path').'/product/digital-product/'.$detail->digital_file_after_sell) }}"
                                                                                class="btn btn-success btn-sm" title="Download" download><i class="tio-download"></i> Download</a>
                                                                         </div>
                                                                     @elseif($detail->product->digital_product_type == 'ready_product' && $detail->product->digital_file_ready)
                                                                         <div class="mb-4">
                                                                             {{\App\CPU\translate('uploaded_file')}} :
-                                                                            <a href="{{ asset(env('PUBLIC_STORAGE_PATH').'/product/digital-product/'.$detail->product->digital_file_ready) }}"
+                                                                            <a href="{{ asset(config('app.public_storage_path').'/product/digital-product/'.$detail->product->digital_file_ready) }}"
                                                                                class="btn btn-success btn-sm" title="Download" download><i class="tio-download"></i> Download</a>
                                                                         </div>
                                                                     @endif
@@ -254,7 +254,7 @@
                                 <div>
                                     <img class="avatar rounded-circle avatar-70"
                                         onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile/'.$order->customer->image)}}"
+                                        src="{{asset(config('app.public_storage_path').'/profile/'.$order->customer->image)}}"
                                         alt="Image">
                                 </div>
                                 <div class="media-body d-flex flex-column gap-1">

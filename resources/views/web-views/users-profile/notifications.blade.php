@@ -26,7 +26,7 @@
                                     <div class="flex-shrink-0">
                                         <div class="position-relative">
                                             <img width="80" height="80" 
-                                                 src="{{asset(env('PUBLIC_STORAGE_PATH').'/notification')}}/{{$notification['image']}}"
+                                                 src="{{asset(config('app.public_storage_path').'/notification')}}/{{$notification['image']}}"
                                                  onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                                  class="rounded-lg shadow-sm" alt="{{$notification['title']}}"
                                                  style="object-fit: cover;">

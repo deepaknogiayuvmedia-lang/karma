@@ -55,7 +55,7 @@ class ConfigController extends Controller
         $admin_shipping = ShippingType::where('seller_id',0)->first();
         $shipping_type = isset($admin_shipping)==true?$admin_shipping->shipping_type:'order_wise';
 
-        $company_logo = asset(env('PUBLIC_STORAGE_PATH')."/company/").'/'.BusinessSetting::where(['type'=>'company_web_logo'])->first()->value;
+        $company_logo = asset(config('app.public_storage_path')."/company/").'/'.BusinessSetting::where(['type'=>'company_web_logo'])->first()->value;
 
         return response()->json([
             'brand_setting' => BusinessSetting::where('type', 'product_brand')->first()->value,
@@ -73,16 +73,16 @@ class ConfigController extends Controller
             'base_urls' => [
                 'product_image_url' => ProductManager::product_image_path('product'),
                 'product_thumbnail_url' => ProductManager::product_image_path('thumbnail'),
-                'digital_product_url' => asset(env('PUBLIC_STORAGE_PATH').'/product/digital-product'),
-                'brand_image_url' => asset(env('PUBLIC_STORAGE_PATH').'/brand'),
-                'customer_image_url' => asset(env('PUBLIC_STORAGE_PATH').'/profile'),
-                'banner_image_url' => asset(env('PUBLIC_STORAGE_PATH').'/banner'),
-                'category_image_url' => asset(env('PUBLIC_STORAGE_PATH').'/category'),
-                'review_image_url' => asset(env('PUBLIC_STORAGE_PATH').''),
-                'seller_image_url' => asset(env('PUBLIC_STORAGE_PATH').'/seller'),
-                'shop_image_url' => asset(env('PUBLIC_STORAGE_PATH').'/shop'),
-                'notification_image_url' => asset(env('PUBLIC_STORAGE_PATH').'/notification'),
-                'delivery_man_image_url' => asset(env('PUBLIC_STORAGE_PATH').'/delivery-man'),
+                'digital_product_url' => asset(config('app.public_storage_path').'/product/digital-product'),
+                'brand_image_url' => asset(config('app.public_storage_path').'/brand'),
+                'customer_image_url' => asset(config('app.public_storage_path').'/profile'),
+                'banner_image_url' => asset(config('app.public_storage_path').'/banner'),
+                'category_image_url' => asset(config('app.public_storage_path').'/category'),
+                'review_image_url' => asset(config('app.public_storage_path').''),
+                'seller_image_url' => asset(config('app.public_storage_path').'/seller'),
+                'shop_image_url' => asset(config('app.public_storage_path').'/shop'),
+                'notification_image_url' => asset(config('app.public_storage_path').'/notification'),
+                'delivery_man_image_url' => asset(config('app.public_storage_path').'/delivery-man'),
             ],
             'static_urls' => [
                 'contact_us' => route('contacts'),

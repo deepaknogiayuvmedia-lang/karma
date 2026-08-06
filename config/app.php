@@ -123,6 +123,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'public_storage_path' => env('PUBLIC_STORAGE_PATH', 'storage'),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

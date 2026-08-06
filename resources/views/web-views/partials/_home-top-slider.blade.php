@@ -19,7 +19,7 @@
                         <a href="{{$banner['url']}}" class="w-100">
                             <img class="d-block w-100 __slide-img new-st-slider"
                                  
-                                 src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$banner['photo']}}"
+                                 src="{{asset(config('app.public_storage_path').'/banner')}}/{{$banner['photo']}}"
                                  alt="">
                         </a>
                     </div>

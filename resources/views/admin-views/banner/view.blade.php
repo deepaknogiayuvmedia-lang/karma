@@ -208,7 +208,7 @@
                                     <td>
                                         <img class="ratio-4:1" width="80"
                                              onerror="this.src='{{asset('assets/front-end/img/placeholder.png')}}'"
-                                             src="{{asset(env('PUBLIC_STORAGE_PATH').'/banner')}}/{{$banner['photo']}}">
+                                             src="{{asset(config('app.public_storage_path').'/banner')}}/{{$banner['photo']}}">
                                     </td>
                                     <td>{{\App\CPU\translate(str_replace('_',' ',$banner->banner_type))}}</td>
                                     <td>

@@ -16,7 +16,11 @@ class ImageManager
             if (!Storage::disk('public')->exists($dir)) {
                 Storage::disk('public')->makeDirectory($dir);
             }
-            Storage::disk('public')->put($dir . $imageName, file_get_contents($image));
+            if ($image instanceof UploadedFile) {
+                Storage::disk('public')->put($dir . $imageName, file_get_contents($image->getPathname()));
+            } else {
+                Storage::disk('public')->put($dir . $imageName, file_get_contents($image));
+            }
         } else {
             $imageName = 'def.png';
         }

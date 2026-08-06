@@ -187,7 +187,7 @@ class Helpers
 
     public static function get_image_path($type)
     {
-        $path = asset(env('PUBLIC_STORAGE_PATH') . '/brand');
+        $path = asset(config('app.public_storage_path') . '/brand');
         return $path;
     }
 
@@ -453,7 +453,7 @@ class Helpers
         $project_id = self::get_business_settings('fcm_project_id');
         $url = "https://fcm.googleapis.com/v1/projects/". $project_id ."/messages:send";
 
-        $image = asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $data['image'];
+        $image = asset(config('app.public_storage_path') . '/notification') . '/' . $data['image'];
 
         $response = \Illuminate\Support\Facades\Http::withToken($accessToken)->post($url, [
             "message" => [
@@ -488,7 +488,7 @@ class Helpers
             "Authorization: Bearer " . $accessToken,
             "Content-Type: application/json"
         ];
-        $image = asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $data['image'];
+        $image = asset(config('app.public_storage_path') . '/notification') . '/' . $data['image'];
         $topic = $data->role_type ?? 'sixvalley';
         $postdata = json_encode([
             "message" => [
@@ -977,26 +977,51 @@ if (!function_exists('format_price')) {
 
 function translate($key)
 {
-    $local = Helpers::default_lang();
+    $local = session('local') ?? Helpers::default_lang();
     App::setLocale($local);
+    $processed_key = ucfirst(str_replace('_', ' ', Helpers::remove_invalid_charcaters($key)));
+    $clean_key = Helpers::remove_invalid_charcaters($key);
 
     try {
-        $lang_array = include(base_path('resources/lang/' . $local . '/messages.php'));
-        $processed_key = ucfirst(str_replace('_', ' ', Helpers::remove_invalid_charcaters($key)));
-        $key = Helpers::remove_invalid_charcaters($key);
-        if (!array_key_exists($key, $lang_array)) {
-            $lang_array[$key] = $processed_key;
-            $str = "<?php return " . var_export($lang_array, true) . ";";
-            file_put_contents(base_path('resources/lang/' . $local . '/messages.php'), $str);
-            $result = $processed_key;
-        } else {
-            $result = __('messages.' . $key);
+        // First, try to find in current language
+        $lang_file = base_path('resources/lang/' . $local . '/messages.php');
+        $lang_array = file_exists($lang_file) ? include($lang_file) : [];
+        if (!is_array($lang_array)) {
+            $lang_array = [];
         }
-    } catch (\Exception $exception) {
-        $result = __('messages.' . $key);
-    }
 
-    return $result;
+        if (array_key_exists($clean_key, $lang_array) && !empty(trim($lang_array[$clean_key]))) {
+            return $lang_array[$clean_key];
+        }
+
+        // Fallback to English
+        $en_file = base_path('resources/lang/en/messages.php');
+        $en_array = file_exists($en_file) ? include($en_file) : [];
+        if (!is_array($en_array)) {
+            $en_array = [];
+        }
+
+        if (array_key_exists($clean_key, $en_array) && !empty(trim($en_array[$clean_key]))) {
+            // Add to current language file for future use
+            if ($local !== 'en') {
+                $lang_array[$clean_key] = $en_array[$clean_key];
+                $str = "<?php return " . var_export($lang_array, true) . ";";
+                @file_put_contents($lang_file, $str);
+            }
+            return $en_array[$clean_key];
+        }
+
+        // Not found anywhere - auto-add with formatted key
+        if ($local !== 'en') {
+            $lang_array[$clean_key] = $processed_key;
+            $str = "<?php return " . var_export($lang_array, true) . ";";
+            @file_put_contents($lang_file, $str);
+        }
+        return $processed_key;
+
+    } catch (\Exception $exception) {
+        return $processed_key;
+    }
 }
 
 function auto_translator($q, $sl, $tl)

@@ -85,7 +85,7 @@
                     <div class="card mb-3 mb-lg-5" id="generalDiv">
                         <!-- Profile Cover -->
                         <div class="profile-cover">
-                            @php($shop_banners = $shop_banner ? asset(env('PUBLIC_STORAGE_PATH') . '/shop/' . $shop_banner) : 'https://images.pexels.com/photos/866398/pexels-photo-866398.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')
+                            @php($shop_banners = $shop_banner ? asset(config('app.public_storage_path') . '/shop/' . $shop_banner) : 'https://images.pexels.com/photos/866398/pexels-photo-866398.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')
                             <div class="profile-cover-img-wrapper"
                                 style="background-image: url({{ $shop_banners }}); background-repeat: no-repeat; background-size: cover;">
                             </div>
@@ -98,7 +98,7 @@
                             <img id="viewer"
                                 onerror="this.src='{{ asset('assets/back-end/img/160x160/img1.jpg') }}'"
                                 class="avatar-img"
-                                src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/admin') }}/{{ $data->image }}" alt="Image">
+                                src="{{ asset(config('app.public_storage_path') . '/admin') }}/{{ $data->image }}" alt="Image">
                         </label>
                         <!-- End Avatar -->
                     </div>
@@ -167,7 +167,7 @@
                                     <div class="custom-file">
                                         <input type="file" name="image" id="customFileUpload"
                                             class="custom-file-input"
-                                            accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
+                                            accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp, image/*">
                                         <label class="custom-file-label"
                                             for="customFileUpload">{{ \App\CPU\translate('image') }}
                                             {{ \App\CPU\translate('Upload') }}</label>
@@ -176,7 +176,7 @@
                             </div>
                             <div class="d-flex justify-content-end">
                                 <button type="button"
-                                    onclick="{{ env('APP_MODE') != 'demo' ? "form_alert('admin-profile-form','Want to update admin info ?')" : 'call_demo()' }}"
+                                    onclick="{{ env('APP_MODE') != 'demo' ? "form_alert('admin-profile-form','" . \App\CPU\translate('Want to update admin info') . "?')" : 'call_demo()' }}"
                                     class="btn btn--primary">{{ \App\CPU\translate('Save changes') }}</button>
                             </div>
                             <!-- End Form -->

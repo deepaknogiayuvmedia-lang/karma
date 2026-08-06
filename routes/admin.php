@@ -397,6 +397,15 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('sysc-web', 'ProductController@sysc_web')->name('sysc-web');
             Route::post('set-commission', 'ProductController@set_commission')->name('set-commission');
             Route::get('get-sellers/{id}', 'ProductController@get_sellers')->name('get-sellers');
+
+            // Product Edit/Change Request Routes
+            Route::get('edit-requests', 'ProductController@edit_requests')->name('edit-requests');
+            Route::post('approve-edit-request', 'ProductController@approve_edit_request')->name('approve-edit-request');
+            Route::post('reject-edit-request', 'ProductController@reject_edit_request')->name('reject-edit-request');
+            Route::get('change-requests', 'ProductController@change_requests')->name('change-requests');
+            Route::get('view-change-request/{id}', 'ProductController@view_change_request')->name('view-change-request');
+            Route::post('approve-change-request', 'ProductController@approve_change_request')->name('approve-change-request');
+            Route::post('reject-change-request', 'ProductController@reject_change_request')->name('reject-change-request');
         });
 
         Route::group(['prefix' => 'transaction', 'as' => 'transaction.' ,'middleware'=>['module:report']], function () {

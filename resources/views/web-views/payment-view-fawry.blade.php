@@ -182,7 +182,7 @@
             <div id="loading" style="display: none;">
                 <div style="position: fixed;z-index: 9999; left: 40%;top: 37% ;width: 100%">
                     <img width="200"
-                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{\App\CPU\Helpers::get_business_settings('loader_gif')}}"
+                         src="{{asset(config('app.public_storage_path').'/company')}}/{{\App\CPU\Helpers::get_business_settings('loader_gif')}}"
                          onerror="this.src='{{asset('assets/front-end/img/loader.gif')}}'">
                 </div>
             </div>

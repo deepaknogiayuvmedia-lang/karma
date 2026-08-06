@@ -8,10 +8,10 @@
                 <a class="navbar-brand" href="{{route('sale.pro.list')}}" aria-label="">
                     <img class="navbar-brand-logo"
                          onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                         src="{{asset(env('PUBLIC_STORAGE_PATH')."/company/$e_commerce_logo")}}" alt="Logo">
+                         src="{{asset(config('app.public_storage_path')."/company/$e_commerce_logo")}}" alt="Logo">
                     <img class="navbar-brand-logo-mini"
                          onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                         src="{{asset(env('PUBLIC_STORAGE_PATH')."/company/$e_commerce_logo")}}"
+                         src="{{asset(config('app.public_storage_path')."/company/$e_commerce_logo")}}"
                          alt="Logo">
                 </a>
                 <!-- End Logo -->
@@ -120,7 +120,7 @@
                                 <div class="avatar border avatar-circle">
                                     <img class="avatar-img"
                                          onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                                         src="{{asset(env('PUBLIC_STORAGE_PATH').'/admin')}}/{{auth('sale_manager')->user()->photo}}"
+                                         src="{{asset(config('app.public_storage_path').'/admin')}}/{{auth('sale_manager')->user()->photo}}"
                                          alt="Image Description">
                                     <span class="d-none avatar-status avatar-sm-status avatar-status-success"></span>
                                 </div>
@@ -133,7 +133,7 @@
                                         <div class="avatar avatar-sm avatar-circle mr-2">
                                             <img class="avatar-img"
                                                  onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                                                 src="{{asset(env('PUBLIC_STORAGE_PATH').'/admin')}}/{{auth('sale_manager')->user()->photo}}"
+                                                 src="{{asset(config('app.public_storage_path').'/admin')}}/{{auth('sale_manager')->user()->photo}}"
                                                  alt="Image Description">
                                         </div>
                                         <div class="media-body">

@@ -60,7 +60,7 @@ class SoftwareUpdateController extends Controller
 
         $execute = 0;
         $zip = new ZipArchive;
-        if ($zip->open(base_path(env('PUBLIC_STORAGE_PATH').'/app/uploads/update.zip')) === TRUE) {
+        if ($zip->open(base_path(config('app.public_storage_path').'/app/uploads/update.zip')) === TRUE) {
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 if (strpos($zip->getNameIndex($i), 'Library/Constant.php') && !strpos($zip->getNameIndex($i), '.env')) {
                     $text = 'SOFTWARE_VERSION = ';
@@ -75,8 +75,8 @@ class SoftwareUpdateController extends Controller
 
         if ($execute){
             $zip = new ZipArchive;
-            if ($zip->open(base_path(env('PUBLIC_STORAGE_PATH').'/app/uploads/update.zip')) === TRUE) {
-                $zip->open(base_path(env('PUBLIC_STORAGE_PATH').'/app/uploads/update.zip'));
+            if ($zip->open(base_path(config('app.public_storage_path').'/app/uploads/update.zip')) === TRUE) {
+                $zip->open(base_path(config('app.public_storage_path').'/app/uploads/update.zip'));
                 $zip->extractTo(base_path('.'));
                 $zip->close();
 

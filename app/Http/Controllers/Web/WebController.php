@@ -1519,7 +1519,7 @@ class WebController extends Controller
                 'notification' => [
                     'title' => $notification->title,
                     'body' => $notification->description,
-                    'image' => asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $notification['image']
+                    'image' => asset(config('app.public_storage_path') . '/notification') . '/' . $notification['image']
                 ],
             ]
         ]);

@@ -630,7 +630,7 @@ class UserProfileController extends Controller
         return response()->json([
             'title' => $notification->title,
             'description' => $notification->description,
-            'image' => asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $notification['image']
+            'image' => asset(config('app.public_storage_path') . '/notification') . '/' . $notification['image']
         ]);
     }
 }

@@ -75,7 +75,7 @@
                                              id="user_{{$shop->delivery_man_id ? $shop->delivery_man_id: $shop->shop_id}}">
                                             <div class="chat_people" id="chat_people">
                                                 <div class="chat_img">
-                                                    <img onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'" src="{{ $shop->delivery_man_id ?asset(env('PUBLIC_STORAGE_PATH').'/delivery-man/'.$shop->image) : asset(env('PUBLIC_STORAGE_PATH').'/shop/'.$shop->image)}}"
+                                                    <img onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'" src="{{ $shop->delivery_man_id ?asset(config('app.public_storage_path').'/delivery-man/'.$shop->image) : asset(config('app.public_storage_path').'/shop/'.$shop->image)}}"
                                                         class="__rounded-10">
                                                 </div>
                                                 <div class="chat_ib">
@@ -104,7 +104,7 @@
                                                 @if ($chat->sent_by_seller? $chat->sent_by_seller : $chat->sent_by_delivery_man)
                                                     <div class="incoming_msg">
                                                         <div class="incoming_msg_img"><img
-                                                                src="@if($chat->image == 'def.png'){{asset(env('PUBLIC_STORAGE_PATH').'/'.$chat->image)}} @else {{ $shop->delivery_man_id ?asset(env('PUBLIC_STORAGE_PATH').'/delivery-man/'.$last_chat->delivery_man->image) : asset(env('PUBLIC_STORAGE_PATH').'/shop/'.$last_chat->shop->image)}}
+                                                                src="@if($chat->image == 'def.png'){{asset(config('app.public_storage_path').'/'.$chat->image)}} @else {{ $shop->delivery_man_id ?asset(config('app.public_storage_path').'/delivery-man/'.$last_chat->delivery_man->image) : asset(config('app.public_storage_path').'/shop/'.$last_chat->shop->image)}}
                                                                 @endif"
                                                                 alt="sunil"></div>
                                                         <div class="received_msg">
@@ -226,7 +226,7 @@
                                     )
 
                                 } else {
-                                    let img_path = element.image == 'def.png' ? `{{ asset(env('PUBLIC_STORAGE_PATH').'/shop') }}/${element.image}` : `{{ (isset($shop->delivery_man_id) && $shop->delivery_man_id) ? asset(env('PUBLIC_STORAGE_PATH').'/delivery-man') : asset(env('PUBLIC_STORAGE_PATH').'/shop') }}/${element.image}`;
+                                    let img_path = element.image == 'def.png' ? `{{ asset(config('app.public_storage_path').'/shop') }}/${element.image}` : `{{ (isset($shop->delivery_man_id) && $shop->delivery_man_id) ? asset(config('app.public_storage_path').'/delivery-man') : asset(config('app.public_storage_path').'/shop') }}/${element.image}`;
 
                                     $(".msg_history").append(`
                                         <div class="incoming_msg d-flex" id="incoming_msg">

@@ -107,7 +107,7 @@
                 <div class="">
                     <a class="d-block" href="{{ route('home') }}">
                         <img class="{{ Session::get('direction') === 'rtl' ? 'rightalign' : '' }}"
-                            src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/company/') }}/{{ $web_config['footer_logo']->value }}"
+                            src="{{ asset(config('app.public_storage_path') . '/company/') }}/{{ $web_config['footer_logo']->value }}"
                             onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                             alt="{{ $web_config['name']->value }}" style="max-width:150px;" />
                     </a>

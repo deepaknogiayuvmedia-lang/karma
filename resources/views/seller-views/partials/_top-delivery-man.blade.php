@@ -19,7 +19,7 @@
                                 <img class="avatar rounded-circle avatar-lg"
                                      onclick="location.href='{{route('seller.delivery-man.earning-statement',[$item['delivery_man_id']])}}'"
                                      onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
-                                     src="{{asset(env('PUBLIC_STORAGE_PATH').'/delivery-man/'.$item->delivery_man->image??'')}}">
+                                     src="{{asset(config('app.public_storage_path').'/delivery-man/'.$item->delivery_man->image??'')}}">
                             </div>
 
                             <h5 class="mb-0">

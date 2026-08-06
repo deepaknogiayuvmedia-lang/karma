@@ -35,7 +35,7 @@
                 <div class="px-3 py-4">
                     <div class="row align-items-center">
                         <div class="col-lg-4">
-                            <h1>Self Biddings {{ $biddings->total() }}</h1>
+                            <h1>{{\App\CPU\translate('Self Biddings')}} {{ $biddings->total() }}</h1>
                         </div>
                         <div class="col-lg-8 mt-3 mt-lg-0 d-flex flex-wrap gap-3 justify-content-lg-end">
                             <form action="{{ url()->current() }}" method="GET">

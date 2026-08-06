@@ -63,7 +63,7 @@
                                     <div class="text-center">
                                         <img class="upload-img-view" id="viewer"
                                         onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/admin')}}/{{$e['photo']}}" alt="Employee thumbnail"/>
+                                        src="{{asset(config('app.public_storage_path').'/admin')}}/{{$e['photo']}}" alt="Employee thumbnail"/>
                                     </div>
                                 </div>
                             </div>

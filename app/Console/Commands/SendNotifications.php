@@ -75,7 +75,7 @@ class SendNotifications extends Command
                 "notification" => [
                     "title" => $title,
                     "body"  => $body,
-                    "image" => asset(env('PUBLIC_STORAGE_PATH') . '/notification') . '/' . $image
+                    "image" => asset(config('app.public_storage_path') . '/notification') . '/' . $image
                 ],
             ]
         ]);

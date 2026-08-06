@@ -98,7 +98,7 @@
                                         <center>
                                             <img class="upload-img-view"
                                                     id="viewer"
-                                                    src="{{asset(env('PUBLIC_STORAGE_PATH').'/category')}}/{{$category['icon']}}"
+                                                    src="{{asset(config('app.public_storage_path').'/category')}}/{{$category['icon']}}"
                                                     alt=""/>
                                         </center>
                                     </div>

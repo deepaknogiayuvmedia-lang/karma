@@ -20,7 +20,7 @@
                             <div class="d-flex align-items-center gap-10">
                                 <img class="avatar rounded-circle avatar-sm"
                                      onerror="this.src='{{asset('assets/back-end/img/160x160/img1.jpg')}}'"
-                                     src="{{asset(env('PUBLIC_STORAGE_PATH').'/shop/'.$shop->image??'')}}">
+                                     src="{{asset(config('app.public_storage_path').'/shop/'.$shop->image??'')}}">
 
                                 <h5 class="shop-name">{{$shop['name']??'Not exist'}}</h5>
                             </div>

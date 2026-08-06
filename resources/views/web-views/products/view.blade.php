@@ -3,12 +3,12 @@
 @section('title',\App\CPU\translate($data['data_from']).' '.\App\CPU\translate('products'))
 
 @push('css_or_js')
-    <meta property="og:image" content="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{$web_config['web_logo']}}"/>
+    <meta property="og:image" content="{{asset(config('app.public_storage_path').'/company')}}/{{$web_config['web_logo']}}"/>
     <meta property="og:title" content="Products of {{$web_config['name']}} "/>
     <meta property="og:url" content="{{env('APP_URL')}}">
     <meta property="og:description" content="{!! substr($web_config['about']->value,0,100) !!}">
 
-    <meta property="twitter:card" content="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{$web_config['web_logo']}}"/>
+    <meta property="twitter:card" content="{{asset(config('app.public_storage_path').'/company')}}/{{$web_config['web_logo']}}"/>
     <meta property="twitter:title" content="Products of {{$web_config['name']}}"/>
     <meta property="twitter:url" content="{{env('APP_URL')}}">
     <meta property="twitter:description" content="{!! substr($web_config['about']->value,0,100) !!}">

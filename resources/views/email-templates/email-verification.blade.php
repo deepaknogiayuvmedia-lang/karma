@@ -88,7 +88,7 @@
             <div class="header">
                 @php($logo = \App\CPU\Helpers::get_business_settings('company_web_logo'))
                 @if($logo)
-                    <img src="{{ asset(env('PUBLIC_STORAGE_PATH').'/company/'.$logo) }}" alt="Logo" style="max-height: 50px; margin-bottom: 20px;">
+                    <img src="{{ asset(config('app.public_storage_path').'/company/'.$logo) }}" alt="Logo" style="max-height: 50px; margin-bottom: 20px;">
                 @endif
                 <h1>{{ \App\CPU\translate('Verify Your Email') }}</h1>
             </div>

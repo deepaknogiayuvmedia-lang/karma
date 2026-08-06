@@ -76,7 +76,7 @@
                                 <div class="text-center">
                                     <img class="upload-img-view" id="viewer"
                                         onerror="this.src='{{asset('assets/back-end/img/160x160/img2.jpg')}}'"
-                                        src="{{asset(env('PUBLIC_STORAGE_PATH').'/brand')}}/{{$b['image']}}" alt="banner image"/>
+                                        src="{{asset(config('app.public_storage_path').'/brand')}}/{{$b['image']}}" alt="banner image"/>
                                 </div>
                             </div>
                         </div>

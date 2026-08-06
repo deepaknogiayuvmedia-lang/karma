@@ -262,14 +262,14 @@
                 </button>
                 <a class="navbar-brand d-none d-sm-block {{Session::get('direction') === "rtl" ? 'mr-3' : 'mr-3'}} flex-shrink-0 __min-w-7rem" href="{{route('home')}}">
                     <img class="__inline-11"
-                        src="{{asset(env('PUBLIC_STORAGE_PATH')."/company")."/".$web_config['web_logo']->value}}"
+                        src="{{asset(config('app.public_storage_path')."/company")."/".$web_config['web_logo']->value}}"
                         onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                         alt="{{$web_config['name']->value}}" />
                 </a>
                 <a class="navbar-brand d-sm-none {{Session::get('direction') === "rtl" ? 'mr-2' : 'mr-2'}}"
                     href="{{route('home')}}">
                     <img class="mobile-logo-img __inline-12"
-                        src="{{asset(env('PUBLIC_STORAGE_PATH')."/company")."/".$web_config['mob_logo']->value}}"
+                        src="{{asset(config('app.public_storage_path')."/company")."/".$web_config['mob_logo']->value}}"
                         onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                         alt="{{$web_config['name']->value}}" />
                 </a>
@@ -340,7 +340,7 @@
                             aria-expanded="false">
                             <div class="navbar-tool-icon-box bg-secondary">
                                 <div class="navbar-tool-icon-box bg-secondary">
-                                    <img src="{{asset(env('PUBLIC_STORAGE_PATH').'/profile/'.auth('customer')->user()->image)}}"
+                                    <img src="{{asset(config('app.public_storage_path').'/profile/'.auth('customer')->user()->image)}}"
                                         onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                         class="img-profile rounded-circle __inline-14">
                                 </div>
@@ -439,7 +439,7 @@
                                         <?php if ($category->childes->count() > 0) echo "data-toggle='dropdown'" ?> href="javascript:"
                                         onclick="location.href='{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}'">
                                         <div class="d-flex">
-                                            <img src="{{asset(env('PUBLIC_STORAGE_PATH')."/category/$category->icon")}}"
+                                            <img src="{{asset(config('app.public_storage_path')."/category/$category->icon")}}"
 
                                                 class="__img-18">
                                             <span
@@ -513,7 +513,7 @@
 
                                     <a <?php if ($category->childes->count() > 0) echo "" ?>
                                         href="{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}">
-                                        <img src="{{asset(env('PUBLIC_STORAGE_PATH')."/category/$category->icon")}}"
+                                        <img src="{{asset(config('app.public_storage_path')."/category/$category->icon")}}"
                                             onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                                             class="__img-18">
                                         <span

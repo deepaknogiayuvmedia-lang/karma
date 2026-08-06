@@ -205,7 +205,7 @@
         <div class="card-body p-4 p-sm-5">
             <div class="text-center mb-4">
                 @php($e_commerce_logo = \App\Model\BusinessSetting::where(['type'=>'company_web_logo'])->first()->value)
-                <img class="mb-4" height="40" src="{{asset(env('PUBLIC_STORAGE_PATH')."/company/".$e_commerce_logo)}}" alt="Logo"
+                <img class="mb-4" height="40" src="{{asset(config('app.public_storage_path')."/company/".$e_commerce_logo)}}" alt="Logo"
                      onerror="this.src='{{asset('assets/back-end/img/400x400/img2.jpg')}}'">
                 <h2 class="h3 font-weight-bold mb-1">{{\App\CPU\translate('Security Verification')}}</h2>
                 <p class="text-muted mb-0">{{\App\CPU\translate('Please enter the 6-digit OTP code sent to your registered email address.')}}</p>

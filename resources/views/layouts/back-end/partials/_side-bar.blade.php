@@ -9,7 +9,7 @@
                     <a class="navbar-brand" href="{{ route('admin.dashboard.index') }}" aria-label="Front">
                         <img onerror="this.src='{{ asset('assets/back-end/img/900x400/img1.jpg') }}'"
                             class="navbar-brand-logo-mini for-web-logo max-h-30"
-                            src="{{ asset(env('PUBLIC_STORAGE_PATH') . "/company/$e_commerce_logo") }}" alt="Logo">
+                            src="{{ asset(config('app.public_storage_path') . "/company/$e_commerce_logo") }}" alt="Logo">
                     </a>
                     <!-- Navbar Vertical Toggle -->
                     <button type="button"
@@ -577,6 +577,30 @@
                             <!--    </ul>-->
                             <!--</li>-->
                         @endif
+
+                        <!--Product Edit/Change Requests-->
+                        <li class="nav-item {{ Request::is('admin/product/edit-requests*') || Request::is('admin/product/change-requests*') ? 'active' : '' }}">
+                            <small class="nav-subtitle" title="">{{ \App\CPU\translate('Product Approval') }}</small>
+                            <small class="tio-more-horizontal nav-subtitle-replacer"></small>
+                        </li>
+                        <li class="nav-item {{ Request::is('admin/product/edit-requests*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('admin.product.edit-requests') }}">
+                                <i class="tio-edit nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                    {{ \App\CPU\translate('Edit Requests') }}
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item {{ Request::is('admin/product/change-requests*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('admin.product.change-requests') }}">
+                                <i class="tio-repeat nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                    {{ \App\CPU\translate('Change Requests') }}
+                                </span>
+                            </a>
+                        </li>
+                        <!--Product Edit/Change Requests Ends-->
+
                         <!--Product Management Ends-->
 
                         @if (\App\CPU\Helpers::module_permission_check('promotion_management'))
@@ -1027,10 +1051,10 @@
                             <li
                                 class="navbar-vertical-aside-has-menu {{ Request::is('admin/employee*') || Request::is('admin/custom-role*') ? 'active' : '' }}">
                                 <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle"
-                                    href="javascript:" title="{{ \App\CPU\translate('employees') }}">
+                                    href="javascript:" title="{{ \App\CPU\translate('Employees') }}">
                                     <i class="tio-user nav-icon"></i>
                                     <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
-                                        {{ \App\CPU\translate('employees') }}
+                                        {{ \App\CPU\translate('Employees') }}
                                     </span>
                                 </a>
                                 <ul class="js-navbar-vertical-aside-submenu nav nav-sub"

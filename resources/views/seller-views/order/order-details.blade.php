@@ -210,7 +210,7 @@
                                                                     @if ($detail->digital_file_after_sell)
                                                                         <div class="mb-4">
                                                                             {{ \App\CPU\translate('uploaded_file') }} :
-                                                                            <a href="{{ asset(env('PUBLIC_STORAGE_PATH') . '/product/digital-product/' . $detail->digital_file_after_sell) }}"
+                                                                            <a href="{{ asset(config('app.public_storage_path') . '/product/digital-product/' . $detail->digital_file_after_sell) }}"
                                                                                 class="btn btn-success btn-sm"
                                                                                 title="Download" download><i
                                                                                     class="tio-download"></i>
@@ -452,7 +452,7 @@
                                 <div class="mr-3">
                                     <img class="avatar rounded-circle avatar-70"
                                         onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                        src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/profile/' . $order->customer->image) }}"
+                                        src="{{ asset(config('app.public_storage_path') . '/profile/' . $order->customer->image) }}"
                                         alt="Image">
                                 </div>
                                 <div class="media-body d-flex flex-column gap-1">
@@ -599,7 +599,7 @@
                             <div class="mr-3">
                                 <img class="avatar rounded avatar-70"
                                     onerror="this.src='https://6valley.6amtech.com/public/assets/front-end/img/image-place-holder.png'"
-                                    src="{{ !empty($order->seller->shop) ? asset(env('PUBLIC_STORAGE_PATH') . '/seller/' . auth('seller')->user()->image) : '' }}"
+                                    src="{{ !empty($order->seller->shop) ? asset(config('app.public_storage_path') . '/seller/' . auth('seller')->user()->image) : '' }}"
                                     onerror="this.src='{{ asset('assets/back-end/img/160x160/img2.jpg') }}'"
                                     alt="">
                             </div>
@@ -1001,7 +1001,7 @@
                 google.maps.event.addListener(marker, 'click', (function(marker) {
                     return function() {
                         infowindow.setContent(
-                            "<div style='float:left'><img style='max-height:40px;wide:auto;' src='{{ asset(env('PUBLIC_STORAGE_PATH') . '/profile/') }}{{ $order->customer->image ??
+                            "<div style='float:left'><img style='max-height:40px;wide:auto;' src='{{ asset(config('app.public_storage_path') . '/profile/') }}{{ $order->customer->image ??
                                 "
                                                                             " }}'></div><div style='float:right; padding: 10px;'><b>{{ $order->customer->f_name ??
                                 "

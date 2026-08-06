@@ -11,7 +11,7 @@
     <!--to make http ajax request to https-->
     <!--    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset(env('PUBLIC_STORAGE_PATH').'/company/2026-01-16-696a1a8e76ddb.png') }}">
+    <link rel="shortcut icon" href="{{ asset(config('app.public_storage_path').'/company/2026-01-16-696a1a8e76ddb.png') }}">
     <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,7 +62,7 @@
         <div id="loading" class="d--none">
             <center>
                 <img width="200"
-                     src="{{asset(env('PUBLIC_STORAGE_PATH').'/company')}}/{{\App\CPU\Helpers::get_business_settings('loader_gif')}}"
+                     src="{{asset(config('app.public_storage_path').'/company')}}/{{\App\CPU\Helpers::get_business_settings('loader_gif')}}"
                      onerror="this.src='{{asset('assets/front-end/img/loader.gif')}}'">
             </center>
         </div>

@@ -28,6 +28,8 @@ use App\Model\Cart;
 use App\Model\Order;
 use App\Model\OrderDetail;
 use App\Model\Tempproduct;
+use App\Model\ProductEditRequest;
+use App\Model\ProductChangeRequest;
 
 
 class ProductController extends BaseController
@@ -1629,5 +1631,273 @@ class ProductController extends BaseController
         }
         
         return response()->json(['success' => true, 'message' => 'Synced to Web successfully!']);
+    }
+
+    // Product Edit Request Methods
+    public function edit_requests(Request $request)
+    {
+        $query = ProductEditRequest::with(['product', 'seller']);
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->seller_id) {
+            $query->where('seller_id', $request->seller_id);
+        }
+
+        $requests = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        return view('admin-views.product.edit-requests', compact('requests'));
+    }
+
+    public function approve_edit_request(Request $request)
+    {
+        $editRequest = ProductEditRequest::find($request->id);
+
+        if (!$editRequest) {
+            Toastr::error('Request not found.');
+            return back();
+        }
+
+        $editRequest->status = 'approved';
+        $editRequest->admin_note = $request->admin_note;
+        $editRequest->reviewed_by = auth()->id();
+        $editRequest->reviewed_at = now();
+        $editRequest->save();
+
+        Toastr::success('Edit request approved. Seller can now edit the product.');
+        return back();
+    }
+
+    public function reject_edit_request(Request $request)
+    {
+        $editRequest = ProductEditRequest::find($request->id);
+
+        if (!$editRequest) {
+            Toastr::error('Request not found.');
+            return back();
+        }
+
+        $editRequest->status = 'rejected';
+        $editRequest->admin_note = $request->admin_note;
+        $editRequest->reviewed_by = auth()->id();
+        $editRequest->reviewed_at = now();
+        $editRequest->save();
+
+        Toastr::success('Edit request rejected.');
+        return back();
+    }
+
+    // Product Change Request Methods
+    public function change_requests(Request $request)
+    {
+        $query = ProductChangeRequest::with(['product', 'seller', 'editRequest']);
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->seller_id) {
+            $query->where('seller_id', $request->seller_id);
+        }
+
+        $requests = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        return view('admin-views.product.change-requests', compact('requests'));
+    }
+
+    public function view_change_request($id)
+    {
+        $changeRequest = ProductChangeRequest::with(['product', 'seller', 'editRequest'])->find($id);
+
+        if (!$changeRequest) {
+            Toastr::error('Request not found.');
+            return back();
+        }
+
+        return view('admin-views.product.view-change-request', compact('changeRequest'));
+    }
+
+    public function approve_change_request(Request $request)
+    {
+        $changeRequest = ProductChangeRequest::find($request->id);
+
+        if (!$changeRequest) {
+            Toastr::error('Request not found.');
+            return back();
+        }
+
+        $product = Product::find($changeRequest->product_id);
+        $newData = $changeRequest->new_data;
+
+        if (!$product || !$newData) {
+            Toastr::error('Product or change data not found.');
+            return back();
+        }
+
+        // Apply changes to product
+        $product->name = $newData['name'] ?? $product->name;
+        $product->description = $newData['description'] ?? $product->description;
+        $product->unit_price = $newData['unit_price'] ?? $product->unit_price;
+        $product->purchase_price = $newData['purchase_price'] ?? $product->purchase_price;
+        $product->discount = $newData['discount'] ?? $product->discount;
+        $product->discount_type = $newData['discount_type'] ?? $product->discount_type;
+        $product->tax = $newData['tax'] ?? $product->tax;
+        $product->tax_model = $newData['tax_model'] ?? $product->tax_model;
+        $product->unit = $newData['unit'] ?? $product->unit;
+        $product->minimum_order_qty = $newData['minimum_order_qty'] ?? $product->minimum_order_qty;
+        $product->code = $newData['code'] ?? $product->code;
+        $product->video_provider = 'youtube';
+        $product->video_url = $newData['video_url'] ?? $product->video_url;
+        $product->meta_title = $newData['meta_title'] ?? $product->meta_title;
+        $product->meta_description = $newData['meta_description'] ?? $product->meta_description;
+        $product->brand_id = $newData['brand_id'] ?? $product->brand_id;
+        $product->category_ids = $newData['category_ids'] ?? $product->category_ids;
+        $product->colors = $newData['colors'] ?? $product->colors;
+        $product->attributes = $newData['attributes'] ?? $product->attributes;
+
+        // Handle shipping cost
+        if (isset($newData['shipping_cost'])) {
+            $product->shipping_cost = \App\CPU\BackEndHelper::usd($newData['shipping_cost']);
+        }
+
+        // Handle discount amount calculation
+        if (isset($newData['unit_price']) && isset($newData['discount']) && isset($newData['discount_type'])) {
+            if ($newData['discount_type'] == 'flat') {
+                $product->discount_amount = $newData['unit_price'] - $newData['discount'];
+            } else {
+                $product->discount_amount = $newData['unit_price'] * ($newData['discount'] / 100);
+            }
+            $product->actual_amount = $newData['unit_price'] - $product->discount_amount;
+        }
+
+        // Handle uploaded images from temp folder
+        $tempImages = $newData['temp_images'] ?? [];
+        $product_images = json_decode($product->images, true) ?: [];
+
+        if (!empty($tempImages['images'])) {
+            foreach ($tempImages['images'] as $tempImg) {
+                $tempPath = storage_path('app/public/temp/product_images/' . $tempImg);
+                if (file_exists($tempPath)) {
+                    $newName = time() . '_' . rand(1000, 9999) . '.' . pathinfo($tempImg, PATHINFO_EXTENSION);
+                    rename($tempPath, public_path('storage/product/' . $newName));
+                    $product_images[] = $newName;
+                }
+            }
+            $product->images = json_encode($product_images);
+        }
+
+        if (!empty($tempImages['thumbnail'])) {
+            $tempPath = storage_path('app/public/temp/product_images/' . $tempImages['thumbnail']);
+            if (file_exists($tempPath)) {
+                $newName = time() . '_thumb.' . pathinfo($tempImages['thumbnail'], PATHINFO_EXTENSION);
+                rename($tempPath, public_path('storage/product/thumbnail/' . $newName));
+                $product->thumbnail = $newName;
+            }
+        }
+
+        if (!empty($tempImages['meta_image'])) {
+            $tempPath = storage_path('app/public/temp/product_images/' . $tempImages['meta_image']);
+            if (file_exists($tempPath)) {
+                $newName = time() . '_meta.' . pathinfo($tempImages['meta_image'], PATHINFO_EXTENSION);
+                rename($tempPath, public_path('storage/product/meta/' . $newName));
+                $product->meta_image = $newName;
+            }
+        }
+
+        if (!empty($tempImages['digital_file_ready'])) {
+            $tempPath = storage_path('app/public/temp/product_images/' . $tempImages['digital_file_ready']);
+            if (file_exists($tempPath)) {
+                $newName = time() . '_digital.' . pathinfo($tempImages['digital_file_ready'], PATHINFO_EXTENSION);
+                rename($tempPath, public_path('storage/product/digital-product/' . $newName));
+                $product->digital_file_ready = $newName;
+            }
+        }
+
+        // Restore approval status
+        $product->approval_status = 'approved';
+        $product->edit_status = 'none';
+        $product->save();
+
+        // Handle translations
+        $translations = $newData['translations'] ?? [];
+        foreach ($translations as $locale => $data) {
+            if ($locale != 'en') {
+                if (!empty($data['name'])) {
+                    \App\Model\Translation::updateOrInsert(
+                        [
+                            'translationable_type' => 'App\Model\Product',
+                            'translationable_id' => $product->id,
+                            'locale' => $locale,
+                            'key' => 'name'
+                        ],
+                        ['value' => $data['name']]
+                    );
+                }
+                if (!empty($data['description'])) {
+                    \App\Model\Translation::updateOrInsert(
+                        [
+                            'translationable_type' => 'App\Model\Product',
+                            'translationable_id' => $product->id,
+                            'locale' => $locale,
+                            'key' => 'description'
+                        ],
+                        ['value' => $data['description']]
+                    );
+                }
+            }
+        }
+
+        // Update change request status
+        $changeRequest->status = 'approved';
+        $changeRequest->admin_note = $request->admin_note;
+        $changeRequest->reviewed_by = auth()->id();
+        $changeRequest->reviewed_at = now();
+        $changeRequest->save();
+
+        Toastr::success('Changes approved and applied to product.');
+        return back();
+    }
+
+    public function reject_change_request(Request $request)
+    {
+        $changeRequest = ProductChangeRequest::find($request->id);
+
+        if (!$changeRequest) {
+            Toastr::error('Request not found.');
+            return back();
+        }
+
+        // Clean up temp images
+        $tempImages = $changeRequest->new_data['temp_images'] ?? [];
+        foreach ($tempImages as $type => $files) {
+            if (is_array($files)) {
+                foreach ($files as $file) {
+                    $path = storage_path('app/public/temp/product_images/' . $file);
+                    if (file_exists($path)) unlink($path);
+                }
+            } elseif (is_string($files)) {
+                $path = storage_path('app/public/temp/product_images/' . $files);
+                if (file_exists($path)) unlink($path);
+            }
+        }
+
+        // Restore product approval status
+        $product = Product::find($changeRequest->product_id);
+        if ($product) {
+            $product->approval_status = 'approved';
+            $product->edit_status = 'none';
+            $product->save();
+        }
+
+        $changeRequest->status = 'rejected';
+        $changeRequest->admin_note = $request->admin_note;
+        $changeRequest->reviewed_by = auth()->id();
+        $changeRequest->reviewed_at = now();
+        $changeRequest->save();
+
+        Toastr::success('Change request rejected.');
+        return back();
     }
 }

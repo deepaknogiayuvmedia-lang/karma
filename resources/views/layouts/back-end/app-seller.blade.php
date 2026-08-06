@@ -12,7 +12,7 @@
     <!--to make http ajax request to https-->
     <!--    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset(env('PUBLIC_STORAGE_PATH').'/company/2026-01-16-696a1a8e76ddb.png') }}">
+    <link rel="shortcut icon" href="{{ asset(config('app.public_storage_path').'/company/2026-01-16-696a1a8e76ddb.png') }}">
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <!-- CSS Implementing Plugins -->
@@ -40,7 +40,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #073b74 0%, #073b74 100%);
             color: #fff;
             display: flex;
             align-items: center;
@@ -105,7 +105,7 @@
             <div id="loading" style="display: none;">
                 <center>
                     <img width="200"
-                        src="{{ asset(env('PUBLIC_STORAGE_PATH').'/company') }}/{{ \App\CPU\Helpers::get_business_settings('loader_gif') }}"
+                        src="{{ asset(config('app.public_storage_path').'/company') }}/{{ \App\CPU\Helpers::get_business_settings('loader_gif') }}"
                         onerror="this.src='{{ asset('assets/front-end/img/loader.gif') }}'">
                 </center>
             </div>

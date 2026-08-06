@@ -5,13 +5,13 @@
 
     @push('css_or_js')
         <meta property="og:image"
-            content="{{ asset(env('PUBLIC_STORAGE_PATH') . '/company') }}/{{ $web_config['web_logo']->value }}" />
+            content="{{ asset(config('app.public_storage_path') . '/company') }}/{{ $web_config['web_logo']->value }}" />
         <meta property="og:title" content="Welcome To {{ $web_config['name']->value }} Home" />
         <meta property="og:url" content="{{ env('APP_URL') }}">
         <meta property="og:description" content="{!! substr($web_config['about']->value, 0, 100) !!}">
 
         <meta property="twitter:card"
-            content="{{ asset(env('PUBLIC_STORAGE_PATH') . '/company') }}/{{ $web_config['web_logo']->value }}" />
+            content="{{ asset(config('app.public_storage_path') . '/company') }}/{{ $web_config['web_logo']->value }}" />
         <meta property="twitter:title" content="Welcome To {{ $web_config['name']->value }} Home" />
         <meta property="twitter:url" content="{{ env('APP_URL') }}">
         <meta property="twitter:description" content="{!! substr($web_config['about']->value, 0, 100) !!}">
@@ -573,7 +573,7 @@
                 @foreach ($categories as $category)
                     <a class="cate-item"
                         href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
-                        <img src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/category/' . $category->icon) }}"
+                        <img src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
                             onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                             alt="{{ $category->name }}">
                         <span>{{ $category->name }}</span>
@@ -606,7 +606,7 @@
                                                         href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
                                                         <div class="__img overflow-hidden rounded-circle">
                                                             <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                                src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/category/' . $category->icon) }}"
+                                                                src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
                                                                 alt="{{ $category->name }}">
                                                         </div>
                                                         <p class="text-center  mt-2">{{ Str::limit($category->name, 12) }}
@@ -651,7 +651,7 @@
                                                 href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
                                                 <div class="__img">
                                                     <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                        src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/category/' . $category->icon) }}"
+                                                        src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
                                                         alt="{{ $category->name }}">
                                                     <p class="text-center small mt-1">
                                                         {{ Str::limit($category->name, 12) }}</p>
@@ -946,7 +946,7 @@
 
                                             <img class="d-block"
                                                 onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/banner') }}/{{ $mainbanner['photo'] }}">
+                                                src="{{ asset(config('app.public_storage_path') . '/banner') }}/{{ $mainbanner['photo'] }}">
                                         </a>
                                     </div>
                                 @endforeach
@@ -986,7 +986,7 @@
                                 <div class="bg-white w-100 mx-auto">
                                     <a href="{{ route('products', ['id' => $brand['id'], 'data_from' => 'brand', 'page' => 1]) }}"
                                         class="__brand-item">
-                                        <img src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/brand/' . $brand->image) }}"
+                                        <img src="{{ asset(config('app.public_storage_path') . '/brand/' . $brand->image) }}"
                                             alt="{{ $brand->name }}">
                                     </a>
                                 </div>
@@ -1190,7 +1190,7 @@
                                 class="cursor-pointer d-block  __cate-product-side-img">
                                 <img class=""
                                     onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                    src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/category') }}/{{ $category['icon'] }}">
+                                    src="{{ asset(config('app.public_storage_path') . '/category') }}/{{ $category['icon'] }}">
                             </a>
                         </div>
                         <div class="col-md-10 col-12 ">
@@ -1283,7 +1283,7 @@
                                     <a href="{{ $banner->url }}" class="d-block">
                                         <img class="footer_banner_img"
                                             onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                            src="{{ asset(env('PUBLIC_STORAGE_PATH') . '/banner') }}/{{ $banner['photo'] }}">
+                                            src="{{ asset(config('app.public_storage_path') . '/banner') }}/{{ $banner['photo'] }}">
                                     </a>
                                 </div>
                             @endforeach

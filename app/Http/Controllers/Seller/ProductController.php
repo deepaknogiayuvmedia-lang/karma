@@ -30,6 +30,8 @@ use App\Model\Seller;
 use App\CPU\Tallymethod;
 use App\Model\OrderDetail;
 use App\Model\Order;
+use App\Model\ProductEditRequest;
+use App\Model\ProductChangeRequest;
 use App\Model\Tempproduct;
 use App\Model\Wishlist;
 use Nwidart\Modules\Json;
@@ -735,6 +737,19 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::withoutGlobalScopes()->with('translations')->find($id);
+
+        // Check if seller has an approved edit request for this product
+        $editRequest = ProductEditRequest::where('product_id', $id)
+            ->where('seller_id', auth('seller')->id())
+            ->where('status', 'approved')
+            ->latest()
+            ->first();
+
+        if (!$editRequest) {
+            Toastr::info(__('You need admin approval to edit this product. Please submit an edit request.'));
+            return redirect()->route('seller.product.list');
+        }
+
         $product_category = json_decode($product->category_ids);
         $product->colors = json_decode($product->colors);
         $categories = Category::where(['parent_id' => 0])->get();
@@ -1078,55 +1093,193 @@ class ProductController extends Controller
             if ($request->file('meta_image')) {
                 $product->meta_image = ImageManager::update('product/meta/', $product->meta_image, 'png', $request->file('meta_image'));
             }
-            $product->save();
 
-            $tag_ids = [];
-            if ($request->tags != null) {
-                $tags = explode(",", $request->tags);
-            }
-            if (isset($tags)) {
-                foreach ($tags as $key => $value) {
-                    $tag = Tag::firstOrNew(
-                        ['tag' => trim($value)]
-                    );
-                    $tag->save();
-                    $tag_ids[] = $tag->id;
-                }
-            }
-            $product->tags()->sync($tag_ids);
+            // Capture old product data for change request
+            $oldData = [
+                'name' => $product->name,
+                'description' => $product->description,
+                'unit_price' => $product->unit_price,
+                'purchase_price' => $product->purchase_price,
+                'discount' => $product->discount,
+                'discount_type' => $product->discount_type,
+                'tax' => $product->tax,
+                'tax_model' => $product->tax_model,
+                'unit' => $product->unit,
+                'minimum_order_qty' => $product->minimum_order_qty,
+                'shipping_cost' => $product->shipping_cost,
+                'category_ids' => $product->category_ids,
+                'brand_id' => $product->brand_id,
+                'colors' => $product->colors,
+                'attributes' => $product->attributes,
+                'choice_attributes' => $product->choice_attributes,
+                'stocks' => $product->stocks,
+                'sku' => $product->sku,
+                'code' => $product->code,
+                'video_provider' => $product->video_provider,
+                'video_url' => $product->video_url,
+                'meta_title' => $product->meta_title,
+                'meta_description' => $product->meta_description,
+            ];
 
-            foreach ($request->lang as $index => $key) {
-                if ($request->name[$index] && $key != 'en') {
-                    Translation::updateOrInsert(
-                        [
-                            'translationable_type' => 'App\Model\Product',
-                            'translationable_id' => $product->id,
-                            'locale' => $key,
-                            'key' => 'name'
-                        ],
-                        ['value' => $request->name[$index]]
-                    );
-                }
-                if ($request->description[$index] && $key != 'en') {
-                    Translation::updateOrInsert(
-                        [
-                            'translationable_type' => 'App\Model\Product',
-                            'translationable_id' => $product->id,
-                            'locale' => $key,
-                            'key' => 'description'
-                        ],
-                        ['value' => $request->description[$index]]
-                    );
+            // Build new data from request
+            $newData = [
+                'name' => $request->name[0] ?? $product->name,
+                'description' => $request->description[0] ?? $product->description,
+                'unit_price' => $request->unit_price,
+                'purchase_price' => $request->purchase_price ?? $product->purchase_price,
+                'discount' => $request->discount_type == 'flat' ? $request->discount : $request->discount,
+                'discount_type' => $request->discount_type,
+                'tax' => $request->tax,
+                'tax_model' => $request->tax_model,
+                'unit' => $request->unit,
+                'minimum_order_qty' => $request->minimum_order_qty,
+                'shipping_cost' => $request->shipping_cost,
+                'category_ids' => json_encode($request->category),
+                'brand_id' => $request->brand_id ?? $product->brand_id,
+                'colors' => json_encode($request->colors ?? []),
+                'attributes' => json_encode($request->choice_attributes ?? []),
+                'choice_attributes' => json_encode($request->choice_attributes ?? []),
+                'stocks' => $request->stocks,
+                'sku' => $request->sku,
+                'code' => $request->code,
+                'video_provider' => 'youtube',
+                'video_url' => $request->video_link,
+                'meta_title' => $request->meta_title,
+                'meta_description' => $request->meta_description,
+                'product_type' => $request->product_type,
+                'digital_product_type' => $request->digital_product_type ?? null,
+            ];
+
+            // Store uploaded images in temp folder
+            $tempImages = [];
+            if ($request->file('images')) {
+                foreach ($request->file('images') as $img) {
+                    $imageName = time() . '_' . rand(1000, 9999) . '.' . $img->getClientOriginalExtension();
+                    $img->move(storage_path('app/public/temp/product_images'), $imageName);
+                    $tempImages['images'][] = $imageName;
                 }
             }
-            Toastr::success('Product updated successfully.');
+            if ($request->file('image')) {
+                $thumbName = time() . '_thumb.' . $request->file('image')->getClientOriginalExtension();
+                $request->file('image')->move(storage_path('app/public/temp/product_images'), $thumbName);
+                $tempImages['thumbnail'] = $thumbName;
+            }
+            if ($request->file('meta_image')) {
+                $metaName = time() . '_meta.' . $request->file('meta_image')->getClientOriginalExtension();
+                $request->file('meta_image')->move(storage_path('app/public/temp/product_images'), $metaName);
+                $tempImages['meta_image'] = $metaName;
+            }
+            if ($request->file('digital_file_ready')) {
+                $digitalName = time() . '_digital.' . $request->file('digital_file_ready')->getClientOriginalExtension();
+                $request->file('digital_file_ready')->move(storage_path('app/public/temp/product_images'), $digitalName);
+                $tempImages['digital_file_ready'] = $digitalName;
+            }
+            $newData['temp_images'] = $tempImages;
+
+            // Create change request
+            $editRequest = ProductEditRequest::where('product_id', $id)
+                ->where('seller_id', auth('seller')->id())
+                ->where('status', 'approved')
+                ->latest()
+                ->first();
+
+            ProductChangeRequest::create([
+                'product_id' => $id,
+                'seller_id' => auth('seller')->id(),
+                'edit_request_id' => $editRequest->id,
+                'old_data' => $oldData,
+                'new_data' => $newData,
+                'status' => 'pending',
+                'seller_note' => 'Product edit submitted for admin approval',
+            ]);
+
+            // Set product to pending_edit status
+            if ($product->approval_status === 'approved') {
+                $product->approval_status = 'pending_edit';
+                $product->edit_status = 'pending_edit';
+                $product->save();
+            }
+
+            // Invalidate the edit request so seller can't edit again without new request
+            $editRequest->status = 'used';
+            $editRequest->save();
+
+            Toastr::success('Change request sent to admin for approval.');
             return back();
         }
     }
 
+    public function request_edit(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'note' => 'required|string|min:5',
+        ]);
+
+        $productId = $request->product_id;
+        $product = Product::find($productId);
+
+        if (!$product) {
+            Toastr::error('Product not found.');
+            return back();
+        }
+
+        // Check if there's already a pending request
+        $existingRequest = ProductEditRequest::where('product_id', $productId)
+            ->where('seller_id', auth('seller')->id())
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($existingRequest) {
+            Toastr::info('Edit request already pending for this product.');
+            return back();
+        }
+
+        // Check if there's already an approved request (seller can edit directly)
+        $approvedRequest = ProductEditRequest::where('product_id', $productId)
+            ->where('seller_id', auth('seller')->id())
+            ->where('status', 'approved')
+            ->exists();
+
+        if ($approvedRequest) {
+            Toastr::info('You already have edit access for this product.');
+            return back();
+        }
+
+        ProductEditRequest::create([
+            'product_id' => $productId,
+            'seller_id' => auth('seller')->id(),
+            'status' => 'pending',
+            'seller_note' => $request->note ?? 'Requesting edit access for product',
+        ]);
+
+        Toastr::success('Edit request sent to admin for approval.');
+        return back();
+    }
+
+    public function edit_requests()
+    {
+        $requests = ProductEditRequest::with('product')
+            ->where('seller_id', auth('seller')->id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('seller-views.product.edit-requests', compact('requests'));
+    }
+
+    public function change_requests()
+    {
+        $requests = ProductChangeRequest::with('product', 'editRequest')
+            ->where('seller_id', auth('seller')->id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('seller-views.product.change-requests', compact('requests'));
+    }
+
     public function view($id)
     {
-        $product = Product::with(['reviews'])->where(['id' => $id])->first();
+        $product = Product::with(['reviews', 'translations', 'rating', 'tags'])->where(['id' => $id])->first();
         $reviews = Review::where(['product_id' => $id])->paginate(Helpers::pagination_limit());
         return view('seller-views.product.view', compact('product', 'reviews'));
     }
@@ -1534,7 +1687,7 @@ class ProductController extends Controller
                 'data' => $data,
                 'bidstatus' => $alldata->status,
                 'document' => $alldata->vendor_invoice,
-                'document_url' => asset(env('PUBLIC_STORAGE_PATH') . '/' . $alldata->vendor_invoice),
+                'document_url' => asset(config('app.public_storage_path') . '/' . $alldata->vendor_invoice),
 
             ]);
         } else {

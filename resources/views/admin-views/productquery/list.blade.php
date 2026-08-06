@@ -24,7 +24,7 @@
                 <div class="px-3 py-4">
                     <div class="row align-items-center">
                         <div class="col-lg-4">
-                            <h1>Self Biddings</h1>
+                            <h1>{{\App\CPU\translate('Self Biddings')}}</h1>
                         </div>
                         <div class="col-lg-8 mt-3 mt-lg-0 d-flex flex-wrap gap-3 justify-content-lg-end">
                             <form action="{{ url()->current() }}" method="GET">
@@ -53,7 +53,7 @@
                             <tr>
                                 <th>{{\App\CPU\translate('SL')}}</th>
                                 <th>{{\App\CPU\translate('Product Name')}}</th>
-                                <th>Product Quantity</th>
+                                <th>{{\App\CPU\translate('Product Quantity')}}</th>
                                 <th>{{\App\CPU\translate('pBid price')}}</th>
                                 <th>{{\App\CPU\translate('Description')}}</th>
                                 <th>{{\App\CPU\translate('status')}}</th>
@@ -70,7 +70,7 @@
                                 <td>{{ $product->product_bit }}</td>
                                 <td>{{ $product->description }}</td>
                                 <td>
-                                  <span class="badge  {{$product->status == 'close'?' badge-warning':' badge-info' }}"> {{$product->status == 'close'?'Win':'Pending' }}</span>
+                                  <span class="badge  {{$product->status == 'close'?' badge-warning':' badge-info' }}"> {{$product->status == 'close'? \App\CPU\translate('Win') : \App\CPU\translate('Pending') }}</span>
                                 </td>
                                 <td>
                                     @if ($product->bedders != null)
@@ -79,7 +79,7 @@
                                     </button>
                                     @else
                                     <button class="btn btn-outline--primary btn-sm  " data-id="{{$product->id}}">
-                                        No Bidding
+                                        {{\App\CPU\translate('No Bidding')}}
                                     </button>
                                     @endif
 
@@ -117,7 +117,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header d-flex justify-content-between">
-                <h5 class="modal-title" id="exampleModalLongTitle">Add Bidding</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">{{\App\CPU\translate('Add Bidding')}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -126,10 +126,10 @@
                 <table id="bidsTable" class="table">
                     <thead>
                         <tr>
-                            <th>Select</th>
-                            <th>Vendor Name</th>
-                            <th>Vendor number</th>
-                            <th>Price</th>
+                            <th>{{\App\CPU\translate('Select')}}</th>
+                            <th>{{\App\CPU\translate('Vendor Name')}}</th>
+                            <th>{{\App\CPU\translate('Vendor number')}}</th>
+                            <th>{{\App\CPU\translate('Price')}}</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
