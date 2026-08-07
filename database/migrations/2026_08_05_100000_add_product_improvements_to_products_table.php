@@ -30,14 +30,10 @@ class AddProductImprovementsToProductsTable extends Migration
             $table->string('approval_status', 20)->default('draft')->after('admin_commission_type');
             $table->string('edit_status', 20)->default('none')->after('approval_status');
 
-            // Smart Product Ranking (Phase 10)
-            $table->decimal('ranking_score', 10, 4)->default(0)->after('edit_status');
-
             // Add indexes for performance
             $table->index('priority');
             $table->index('verified');
             $table->index('approval_status');
-            $table->index('ranking_score');
             $table->index(['approval_status', 'status']);
             $table->index(['seller_id', 'approval_status']);
         });
@@ -62,7 +58,6 @@ class AddProductImprovementsToProductsTable extends Migration
                 'admin_commission_type',
                 'approval_status',
                 'edit_status',
-                'ranking_score',
             ]);
         });
     }

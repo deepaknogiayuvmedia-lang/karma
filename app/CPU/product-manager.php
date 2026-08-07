@@ -34,7 +34,7 @@ class ProductManager
         //change review to ratting
         $paginator = Product::with(['rating','tags'])->active()
             ->where('featured', 1)
-            ->withCount(['order_details'])->orderBy('priority', 'desc')->orderBy('ranking_score', 'desc')
+            ->withCount(['order_details'])->orderBy('priority', 'desc')->orderBy('indexing', 'asc')
             ->paginate($limit, ['*'], 'page', $offset);
 
         return [
@@ -142,7 +142,7 @@ class ProductManager
                     $query->where('tag', 'like', "%{$value}%");
                 });
             }
-        })->orderBy('ranking_score', 'desc')
+        })->orderBy('indexing', 'asc')
           ->orderBy('priority', 'desc')
           ->paginate($limit, ['*'], 'page', $offset);
 

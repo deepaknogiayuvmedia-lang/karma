@@ -30,7 +30,7 @@ class ProductRanking
     }
 
     /**
-     * Calculate and update ranking score for all products.
+     * Calculate and update indexing for all products.
      */
     public static function recalculateAll()
     {
@@ -40,7 +40,15 @@ class ProductRanking
 
         foreach ($products as $product) {
             $score = self::calculateScore($product);
-            $product->update(['ranking_score' => $score]);
+            // Map score (0-1) to indexing 1-3
+            if ($score >= 0.67) {
+                $indexing = 1;
+            } elseif ($score >= 0.34) {
+                $indexing = 2;
+            } else {
+                $indexing = 3;
+            }
+            $product->update(['indexing' => $indexing]);
         }
     }
 

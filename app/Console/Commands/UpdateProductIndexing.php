@@ -93,7 +93,7 @@ JOIN (
                 THEN 3
 
                 -- 4️⃣ बाकी सब
-                ELSE 4
+                ELSE 3
 
             END as priority
 

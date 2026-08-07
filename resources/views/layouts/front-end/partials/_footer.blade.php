@@ -351,14 +351,7 @@
                             class="{{ Session::get('direction') === 'rtl' ? 'text-right ' : 'text-left' }} __text-16px">
                             {{ $web_config['copyright_text']->value }}</p>
                     </div>
-                    <div class="">
-                        <a class="d-block" href="{{ route('home') }}">
-                            <img class="{{ Session::get('direction') === 'rtl' ? 'rightalign' : '' }}"
-                                src="{{ asset('assets/front-end/img/payment.png') }}"
-                                onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                alt="{{ $web_config['name']->value }}" />
-                        </a>
-                    </div>
+                    
                 </div>
             </div>
         </div>

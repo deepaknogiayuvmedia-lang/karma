@@ -81,7 +81,7 @@ class WebController extends Controller
                 ->lowestPricePerPid()
                 ->where('category_ids', 'like', "%{$id}%")
                 ->orderBy('priority', 'desc')
-                ->orderBy('ranking_score', 'desc')
+                ->orderBy('indexing', 'asc')
                 ->take(12)
                 ->get()
                 ->unique('name')
@@ -104,7 +104,7 @@ class WebController extends Controller
             ->where('featured', 1)
             ->withCount(['order_details'])
             ->orderBy('priority', 'desc')
-            ->orderBy('ranking_score', 'desc')
+            ->orderBy('indexing', 'asc')
             ->take(12)
             ->get()
             ->unique('name')
@@ -117,7 +117,7 @@ class WebController extends Controller
             ->active()
             ->lowestPricePerPid()
             ->orderBy('priority', 'desc')
-            ->orderBy('ranking_score', 'desc')
+            ->orderBy('indexing', 'asc')
             ->orderBy('id', 'desc')
             ->take(10)
             ->get()
@@ -801,7 +801,7 @@ class WebController extends Controller
                 ->when($product->pid, function ($query) use ($product) {
                     return $query->where('pid', '!=', $product->pid);
                 })
-                ->orderBy('ranking_score', 'desc')
+                ->orderBy('indexing', 'asc')
                 ->orderBy('priority', 'desc')
                 ->limit(12)
                 ->get()
@@ -937,7 +937,7 @@ class WebController extends Controller
 
             $query = $porduct_data->whereIn('id', $product_ids);
         } elseif ($request['data_from'] == 'featured') {
-            $query = Product::active()->with(['reviews'])->where('featured', 1)->whereNotNull('indexing')->lowestPricePerPid()->orderBy('priority', 'desc')->orderBy('ranking_score', 'desc');
+            $query = Product::active()->with(['reviews'])->where('featured', 1)->whereNotNull('indexing')->lowestPricePerPid()->orderBy('priority', 'desc')->orderBy('indexing', 'asc');
         } elseif ($request['data_from'] == 'featured_deal') {
             $deal_id = FlashDeal::where('status', 1)
                 ->where('deal_type', 'feature_deal')
@@ -986,7 +986,7 @@ class WebController extends Controller
         // -----------------------------
 
         if ($request['sort_by'] == 'latest') {
-            $fetched = $query->orderBy('ranking_score', 'desc')->latest();
+            $fetched = $query->orderBy('indexing', 'asc')->latest();
         } elseif ($request['sort_by'] == 'low-high') {
             $fetched = $query->orderBy('unit_price', 'ASC');
         } elseif ($request['sort_by'] == 'high-low') {
@@ -996,7 +996,7 @@ class WebController extends Controller
         } elseif ($request['sort_by'] == 'z-a') {
             $fetched = $query->orderBy('name', 'DESC');
         } else {
-            $fetched = $query->orderBy('ranking_score', 'desc')->latest();
+            $fetched = $query->orderBy('indexing', 'asc')->latest();
         }
 
         // -----------------------------
@@ -1123,7 +1123,7 @@ class WebController extends Controller
         }
 
         if ($request['data_from'] == 'featured') {
-            $query = Product::with(['reviews'])->active()->where('featured', 1)->orderBy('priority', 'desc')->orderBy('ranking_score', 'desc');
+            $query = Product::with(['reviews'])->active()->where('featured', 1)->orderBy('priority', 'desc')->orderBy('indexing', 'asc');
         }
 
         if ($request['data_from'] == 'search') {

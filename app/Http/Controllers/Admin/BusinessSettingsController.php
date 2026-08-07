@@ -254,12 +254,7 @@ class BusinessSettingsController extends Controller
         $digital_product = \App\Model\BusinessSetting::where('type','digital_product')->first()->value;
         $brand = \App\Model\BusinessSetting::where('type','product_brand')->first()->value;
 
-        $rankingSetting = BusinessSetting::where('type', 'ranking_weights')->first();
-        $rankingWeights = $rankingSetting && $rankingSetting->value
-            ? json_decode($rankingSetting->value, true)
-            : ['price' => 20, 'dispatch' => 15, 'cancel_return' => 20, 'damage' => 15, 'review' => 15, 'delivery' => 15];
-
-        return view('admin-views.business-settings.product-settings', compact('company_name','company_email','company_phone','digital_product','brand','rankingWeights'));
+        return view('admin-views.business-settings.product-settings', compact('company_name','company_email','company_phone','digital_product','brand'));
     }
 
     public function updateInfo(Request $request)
@@ -1034,53 +1029,6 @@ class BusinessSettingsController extends Controller
 
         Toastr::success(\App\CPU\translate('product_brand_updated'));
         return back();
-    }
-
-    public function saveRankingWeights(Request $request)
-    {
-        $request->validate([
-            'weight_price'         => 'required|numeric|min:0|max:100',
-            'weight_dispatch'      => 'required|numeric|min:0|max:100',
-            'weight_cancel_return' => 'required|numeric|min:0|max:100',
-            'weight_damage'        => 'required|numeric|min:0|max:100',
-            'weight_review'        => 'required|numeric|min:0|max:100',
-            'weight_delivery'      => 'required|numeric|min:0|max:100',
-        ]);
-
-        $total = $request->weight_price + $request->weight_dispatch + $request->weight_cancel_return
-               + $request->weight_damage + $request->weight_review + $request->weight_delivery;
-
-        if ($total != 100) {
-            Toastr::error(\App\CPU\translate('Total weight must equal 100. Current total: ') . $total);
-            return back();
-        }
-
-        $weights = json_encode([
-            'price'         => (int) $request->weight_price,
-            'dispatch'      => (int) $request->weight_dispatch,
-            'cancel_return' => (int) $request->weight_cancel_return,
-            'damage'        => (int) $request->weight_damage,
-            'review'        => (int) $request->weight_review,
-            'delivery'      => (int) $request->weight_delivery,
-        ]);
-
-        BusinessSetting::updateOrInsert(
-            ['type' => 'ranking_weights'],
-            ['value' => $weights, 'updated_at' => now()]
-        );
-
-        Toastr::success(\App\CPU\translate('Ranking weights saved successfully'));
-        return back();
-    }
-
-    public function recalculateRanking()
-    {
-        try {
-            \App\CPU\ProductRanking::recalculateAll();
-            return response()->json(['success' => true, 'message' => \App\CPU\translate('Ranking scores recalculated for all products')]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()]);
-        }
     }
 
     public function countryRestrictionStatusChange(Request $request){

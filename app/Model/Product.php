@@ -42,7 +42,7 @@ class Product extends Model
         'admin_commission' => 'float',
         'approval_status' => 'string',
         'edit_status' => 'string',
-        'ranking_score' => 'float',
+
     ];
 
     protected $fillable = [
@@ -62,7 +62,6 @@ class Product extends Model
         'admin_commission_type',
         'approval_status',
         'edit_status',
-        'ranking_score',
     ];
 
     public function translations()
@@ -212,12 +211,6 @@ class Product extends Model
     public function scopeByPriority($query)
     {
         return $query->orderBy('priority', 'desc');
-    }
-
-    // Phase 1: By Ranking Score scope
-    public function scopeByRanking($query)
-    {
-        return $query->orderBy('ranking_score', 'desc');
     }
 
     public function getNameAttribute($name)

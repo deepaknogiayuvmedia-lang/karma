@@ -220,8 +220,6 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('stock-limit-warning', 'BusinessSettingsController@stock_limit_warning')->name('stock-limit-warning');
             Route::post('update-digital-product', 'BusinessSettingsController@updateDigitalProduct')->name('update-digital-product');
             Route::post('update-product-brand', 'BusinessSettingsController@updateProductBrand')->name('update-product-brand');
-            Route::post('save-ranking-weights', 'BusinessSettingsController@saveRankingWeights')->name('save-ranking-weights');
-            Route::post('recalculate-ranking', 'BusinessSettingsController@recalculateRanking')->name('recalculate-ranking');
         });
 
         Route::group(['prefix' => 'currency', 'as' => 'currency.','middleware'=>['module:system_settings']], function () {
