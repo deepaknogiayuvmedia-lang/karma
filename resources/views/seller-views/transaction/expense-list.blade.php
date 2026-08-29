@@ -60,7 +60,7 @@
                         <h6 class="subtext">
                             <span>{{\App\CPU\translate('Total_Expense')}}</span>
                             <span class="ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('free_delivery_coupon')}}, {{\App\CPU\translate('coupon_discount_will_be_shown_here')}}">
-                                <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                             </span>
                         </h6>
                     </div>
@@ -79,7 +79,7 @@
                         <h6 class="subtext">
                             <span>{{\App\CPU\translate('Coupon_Discount')}}</span>
                             <span class="ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('discount_on_purchase_and_first_delivery_coupon_amount_will_be_shown_here')}}">
-                                <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                             </span>
                         </h6>
                     </div>

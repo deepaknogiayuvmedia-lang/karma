@@ -3,6 +3,12 @@
 @section('title', \App\CPU\translate('Payment Method'))
 
 @push('css_or_js')
+<style>
+    .test-msg-card { border: 2px dashed #00d26a; }
+    .test-msg-card .card-header { background: #00d26a; color: #fff; }
+    #testResult { display: none; }
+    #testResult.show { display: block; }
+</style>
 @endpush
 
 @section('content')
@@ -84,7 +90,94 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Send Test Message Section -->
+            <div class="col-md-12">
+                <div class="card test-msg-card">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-uppercase">
+                            <i class="tio-success"></i> Send Test WhatsApp Message
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="form-group col-lg-4">
+                                <label class="d-flex title-color">Phone Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="testPhone"
+                                    placeholder="Enter phone number (e.g. 9876543210)">
+                                <small class="text-muted">10 digit number ya full number with country code</small>
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label class="d-flex title-color">Select Template <span class="text-danger">*</span></label>
+                                <select class="form-control" id="testTemplate">
+                                    <option value="">-- Select Template --</option>
+                                    <option value="hello_world" selected>hello_world</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-4 d-flex align-items-end">
+                                <button type="button" class="btn btn-success px-4" id="sendTestBtn" onclick="sendTestMessage()">
+                                    <i class="tio-send"></i> Send Test Message
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Result Alert -->
+                        <div id="testResult" class="mt-3">
+                            <div id="testResultMsg" class="alert"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
+
+@push('script')
+<script>
+    function sendTestMessage() {
+        var phone = $('#testPhone').val().trim();
+        var templateName = $('#testTemplate').val();
+
+        if (!phone) {
+            alert('Please enter a phone number');
+            return;
+        }
+        if (!templateName) {
+            alert('Please select a template');
+            return;
+        }
+
+        var btn = $('#sendTestBtn');
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sending...');
+
+        $.ajax({
+            url: '{{ route("admin.business-settings.whatsapp.send-test") }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                phone: phone,
+                template_name: templateName
+            },
+            success: function(response) {
+                $('#testResult').addClass('show');
+                if (response.status == 1) {
+                    $('#testResultMsg').removeClass('alert-danger').addClass('alert-success')
+                        .html('<strong>Success!</strong> ' + response.message);
+                } else {
+                    $('#testResultMsg').removeClass('alert-success').addClass('alert-danger')
+                        .html('<strong>Error!</strong> ' + response.message);
+                }
+                btn.prop('disabled', false).html('<i class="tio-send"></i> Send Test Message');
+            },
+            error: function(xhr) {
+                $('#testResult').addClass('show');
+                var msg = xhr.responseJSON ? xhr.responseJSON.message : 'Something went wrong';
+                $('#testResultMsg').removeClass('alert-success').addClass('alert-danger')
+                    .html('<strong>Error!</strong> ' + msg);
+                btn.prop('disabled', false).html('<i class="tio-send"></i> Send Test Message');
+            }
+        });
+    }
+</script>
+@endpush
 

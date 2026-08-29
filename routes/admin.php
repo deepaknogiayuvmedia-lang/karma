@@ -619,6 +619,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
                 Route::get('sync-templates', 'WhatsAppController@sync_templates')->name('sync-templates');
                 Route::post('update-template-type', 'WhatsAppController@update_template_type')->name('update-template-type');
                 Route::post('status', 'WhatsAppController@status')->name('status');
+                Route::post('send-test', 'WhatsAppController@send_test_message')->name('send-test');
             });
         });
 

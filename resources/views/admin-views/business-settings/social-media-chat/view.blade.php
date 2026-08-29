@@ -76,7 +76,7 @@
                                     <div class="form-group">
                                         <label class="title-color font-weight-bold text-capitalize">{{\App\CPU\translate('whatsapp_phone_number')}}</label>
                                         <span class="ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('provide_a_WhatsApp_number_without_country_code')}}">
-                                            <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                            <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                                         </span>
                                         <input type="text" class="form-control form-ellipsis" name="phone" value="{{ $whatsapp['phone'] }}">
                                     </div>

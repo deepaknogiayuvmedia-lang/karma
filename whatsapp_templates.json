@@ -1,7 +1,144 @@
 [
     {
+        "id": "1704872583956143",
+        "name": "order_confirmation_2",
+        "components": [
+            {
+                "type": "HEADER",
+                "format": "TEXT",
+                "text": "Order Confirmation"
+            },
+            {
+                "type": "BODY",
+                "text": "Hi {{name}}! \n\nCongratulations!  Your order for the *{{p_name1}}* has been confirmed. \n\nOrder Details: \n\nProduct: {{p_name2}}\n\nQuantity: {{qty}}\n\nOrder ID: {{o_id}}\n\nDelivery Address: {{d_address}}\n\nEstimated Delivery Date: {{d_date}}\n\nWe're thrilled to be sending you your new {{category}}, and we're sure you're going to love them! \n\nIf you have any questions or need assistance, feel free to reach out to us anytime.\n\nThank you for choosing {{ps_name}}! We appreciate your support.",
+                "example": {
+                    "body_text_named_params": [
+                        { "param_name": "name", "example": "Shivam" },
+                        { "param_name": "p_name1", "example": "product name" },
+                        { "param_name": "p_name2", "example": "product name" },
+                        { "param_name": "qty", "example": "45" },
+                        { "param_name": "o_id", "example": "#1234" },
+                        { "param_name": "d_address", "example": "Chawri Bazar" },
+                        { "param_name": "d_date", "example": "26th May" },
+                        { "param_name": "category", "example": "Bassheads" },
+                        { "param_name": "ps_name", "example": "Headway" }
+                    ]
+                }
+            }
+        ],
+        "category": "UTILITY",
+        "language": "en",
+        "status": "APPROVED",
+        "status_type": ["pending", "confirmed"],
+        "is_active": 1
+    },
+    {
+        "id": "1819136345945574",
+        "name": "packaging_order",
+        "components": [
+            {
+                "type": "HEADER",
+                "format": "TEXT",
+                "text": "Packaging order"
+            },
+            {
+                "type": "BODY",
+                "text": "Hello {{name}},\n\nThank you for placing your order with us.\n\nYour order {{o_id}} has been successfully confirmed.\n\nOrder Details:\n\nProduct: {{p_name}}\nQuantity: {{qty}}\nOrder Status: Confirmed\n\nOur team has received your order and will begin processing it shortly.\n\nEstimated Delivery Date: {{d_date}}\n\nYou will receive another update once your order has been shipped.\n\nThank you for choosing {{s_name}} as your trusted shopping partner.",
+                "example": {
+                    "body_text_named_params": [
+                        { "param_name": "name", "example": "Shivam" },
+                        { "param_name": "o_id", "example": "#1234" },
+                        { "param_name": "p_name", "example": "Headway Bassheads 225" },
+                        { "param_name": "qty", "example": "23" },
+                        { "param_name": "d_date", "example": "26th May" },
+                        { "param_name": "s_name", "example": "pro Kissan store" }
+                    ]
+                }
+            }
+        ],
+        "category": "UTILITY",
+        "language": "en",
+        "status": "APPROVED",
+        "status_type": ["processing"],
+        "is_active": 1
+    },
+    {
+        "id": "1373826448288272",
+        "name": "out_of_delivery",
+        "components": [
+            {
+                "type": "BODY",
+                "text": "Your order {{o_id}} is out for delivery and is expected to arrive by {{time}}.\n\nThank you for your business.",
+                "example": {
+                    "body_text_named_params": [
+                        { "param_name": "o_id", "example": "#1234" },
+                        { "param_name": "time", "example": "14:30 or 2:30 PM" }
+                    ]
+                }
+            }
+        ],
+        "category": "UTILITY",
+        "language": "en_US",
+        "status": "APPROVED",
+        "status_type": ["out_for_delivery"],
+        "is_active": 1
+    },
+    {
+        "id": "1624681859271913",
+        "name": "order_delivered",
+        "components": [
+            {
+                "type": "HEADER",
+                "format": "TEXT",
+                "text": "Order Delivered"
+            },
+            {
+                "type": "BODY",
+                "text": "Hi {{name}},\n\nGreat news! Your order {{o_id}} has been successfully delivered. \n\nThank you for shopping with us! \n\nWe hope you enjoy your purchase. If you have any questions or need assistance, please contact our support team.",
+                "example": {
+                    "body_text_named_params": [
+                        { "param_name": "name", "example": "Deepak" },
+                        { "param_name": "o_id", "example": "#123" }
+                    ]
+                }
+            }
+        ],
+        "category": "UTILITY",
+        "language": "en",
+        "status": "APPROVED",
+        "status_type": ["delivered"],
+        "is_active": 1
+    },
+    {
+        "id": "1761965758456967",
+        "name": "order_cancelled",
+        "components": [
+            {
+                "type": "HEADER",
+                "format": "TEXT",
+                "text": "Order Cancelled"
+            },
+            {
+                "type": "BODY",
+                "text": "Hi {{name}}!\n\nYour order {{id}} amounting to {{amount}} has been cancelled. \n\nWe're sorry that this order didn't work out for you, but we hope to see you again!",
+                "example": {
+                    "body_text_named_params": [
+                        { "param_name": "name", "example": "Shivam" },
+                        { "param_name": "id", "example": "#1234" },
+                        { "param_name": "amount", "example": "Rs 549" }
+                    ]
+                }
+            }
+        ],
+        "category": "MARKETING",
+        "language": "en",
+        "status": "APPROVED",
+        "status_type": ["canceled", "failed"],
+        "is_active": 1
+    },
+    {
+        "id": "2874491669576940",
         "name": "order_recovery",
-        "parameter_format": "NAMED",
         "components": [
             {
                 "type": "HEADER",
@@ -13,182 +150,22 @@
                 "text": "Hi {{name}}, \n\nyour broadband connection has been disconnected. To return your device, please follow these steps: {{s_name}} \n\nYou can also contact us at {{email}} for assistance.",
                 "example": {
                     "body_text_named_params": [
-                        {
-                            "param_name": "name",
-                            "example": "John"
-                        },
-                        {
-                            "param_name": "s_name",
-                            "example": "Return to store"
-                        },
-                        {
-                            "param_name": "email",
-                            "example": "support@telco.com"
-                        }
+                        { "param_name": "name", "example": "John" },
+                        { "param_name": "s_name", "example": "Return to store" },
+                        { "param_name": "email", "example": "support@telco.com" }
                     ]
                 }
             }
         ],
-        "language": "en_US",
-        "status": "APPROVED",
         "category": "UTILITY",
-        "sub_category": "CUSTOM",
-        "is_primary_device_delivery_only": false,
-        "id": "744896218500573",
-        "type": "returned"
-    },
-    {
-        "name": "packaging_order",
-        "parameter_format": "NAMED",
-        "components": [
-            {
-                "type": "HEADER",
-                "format": "TEXT",
-                "text": "Packaging order"
-            },
-            {
-                "type": "BODY",
-                "text": "Hi {{name}}! \ud83d\udce6\u2728\n\nGood news! \ud83c\udf89  \nYour order {{o_id}} is now being carefully packed by our team.\n\nOrder Details:\nProduct: {{p_name}}\nQuantity: {{qty}}\n\nWe\u2019re making sure everything is perfectly packed and ready to reach you safely. \ud83d\udc99\n\nEstimated Delivery Date: {{d_date}}\n\nYou will receive another update once your order is shipped.\n\nThank you for shopping with {{s_name}}! \ud83d\udecd\ufe0f",
-                "example": {
-                    "body_text_named_params": [
-                        {
-                            "param_name": "name",
-                            "example": "Shivam"
-                        },
-                        {
-                            "param_name": "o_id",
-                            "example": "#1234"
-                        },
-                        {
-                            "param_name": "p_name",
-                            "example": "Headway Bassheads 225"
-                        },
-                        {
-                            "param_name": "qty",
-                            "example": "23"
-                        },
-                        {
-                            "param_name": "d_date",
-                            "example": "26th May"
-                        },
-                        {
-                            "param_name": "s_name",
-                            "example": "pro Kissan store"
-                        }
-                    ]
-                }
-            }
-        ],
-        "language": "en_US",
-        "status": "APPROVED",
-        "category": "UTILITY",
-        "sub_category": "CUSTOM",
-        "is_primary_device_delivery_only": false,
-        "id": "35064359163162815",
-        "type" : "processing"
-    },
-    {
-        "name": "order_confirmation_2",
-        "parameter_format": "NAMED",
-        "components": [
-            {
-                "type": "HEADER",
-                "format": "TEXT",
-                "text": "Order Confirmation"
-            },
-            {
-                "type": "BODY",
-                "text": "Hi {{name}}! \ud83c\udfa7\ud83d\uded2\n\nCongratulations! \ud83c\udf89 Your order for the *{{p_name1}}* has been confirmed. \ud83d\ude4c\n\nOrder Details: \nProduct: {{p_name2}}\nQuantity: {{qty}}\nOrder ID: {{o_id}}\nDelivery Address: {{d_address}}\n\nEstimated Delivery Date: {{d_date}}\n\nWe're thrilled to be sending you your new {{category}}, and we're sure you're going to love them! \ud83c\udfb6 \n\nIf you have any questions or need assistance, feel free to reach out to us anytime.\n\nThank you for choosing {{ps_name}}! We appreciate your support. \ud83d\udc99",
-                "example": {
-                    "body_text_named_params": [
-                        {
-                            "param_name": "name",
-                            "example": "Shivam"
-                        },
-                        {
-                            "param_name": "p_name1",
-                            "example": "product name"
-                        },
-                        {
-                            "param_name": "p_name2",
-                            "example": "product name"
-                        },
-                        {
-                            "param_name": "qty",
-                            "example": "45"
-                        },
-                        {
-                            "param_name": "o_id",
-                            "example": "#1234"
-                        },
-                        {
-                            "param_name": "d_address",
-                            "example": "Chawri Bazar"
-                        },
-                        {
-                            "param_name": "d_date",
-                            "example": "26th May"
-                        },
-                        {
-                            "param_name": "category",
-                            "example": "Bassheads"
-                        },
-                        {
-                            "param_name": "ps_name",
-                            "example": "Headway"
-                        }
-                    ]
-                }
-            }
-        ],
         "language": "en",
-        "status": "PENDING",
-        "category": "UTILITY",
-        "is_primary_device_delivery_only": false,
-        "id": "1982688169264296",
-        "type" : "confirmed"
-    },
-    {
-        "name": "order_cancelled",
-        "previous_category": "UTILITY",
-        "parameter_format": "NAMED",
-        "components": [
-            {
-                "type": "HEADER",
-                "format": "TEXT",
-                "text": "Order Cancelled"
-            },
-            {
-                "type": "BODY",
-                "text": "Hi {{name}}!\n\nYour order {{id}} amounting to {{amount}} has been cancelled. \n\nWe\u2019re sorry that this order didn\u2019t work out for you, but we hope to see you again! \ud83d\ude42",
-                "example": {
-                    "body_text_named_params": [
-                        {
-                            "param_name": "name",
-                            "example": "Shivam"
-                        },
-                        {
-                            "param_name": "id",
-                            "example": "#1234"
-                        },
-                        {
-                            "param_name": "amount",
-                            "example": "Rs 549"
-                        }
-                    ]
-                }
-            }
-        ],
-        "language": "en_US",
         "status": "APPROVED",
-        "category": "MARKETING",
-        "is_primary_device_delivery_only": false,
-        "id": "1242255024012598",
-        "type" : "canceled"
+        "status_type": ["returned"],
+        "is_active": 1
     },
     {
+        "id": "899533666186223",
         "name": "hello_world",
-        "parameter_format": "POSITIONAL",
         "components": [
             {
                 "type": "HEADER",
@@ -204,11 +181,10 @@
                 "text": "WhatsApp Business Platform sample message"
             }
         ],
+        "category": "UTILITY",
         "language": "en_US",
         "status": "APPROVED",
-        "category": "UTILITY",
-        "is_primary_device_delivery_only": false,
-        "id": "1574449583665427",
-        "type": "test"
+        "status_type": [],
+        "is_active": 1
     }
 ]

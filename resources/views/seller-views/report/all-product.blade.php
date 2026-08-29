@@ -100,7 +100,7 @@
                         <h6 class="subtext">
                             {{\App\CPU\translate('Total_Discount_Given')}}
                             <span class="ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('product_wise_discounted_amount_will_be_shown_here')}}">
-                                <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                             </span>
                         </h6>
                     </div>
@@ -114,7 +114,7 @@
                     <h3 class="title">
                         {{\App\CPU\translate('Product_Statistics')}}
                         <span class="ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('The_product_report_will_show_based_on_the_product_added_date')}}">
-                            <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                            <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                         </span></h3>
                 </div>
                 <canvas id="updatingData" class="store-center-chart"

@@ -77,7 +77,7 @@
                             <div class="d-flex">
                                 <span>{{\App\CPU\translate('canceled')}}</span>
                                 <span class="ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('this_count_is_the_summation_of')}} {{\App\CPU\translate('failed_to_deliver')}}, {{\App\CPU\translate('canceled')}}, {{\App\CPU\translate('and')}} {{\App\CPU\translate('returned_orders')}}">
-                                    <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                    <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                                 </span>
                             </div>
                         </div>
@@ -86,7 +86,7 @@
                             <div class="d-flex">
                                 <span>{{\App\CPU\translate('ongoing')}}</span>
                                 <span class="ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('this_count_is_the_summation_of')}} {{\App\CPU\translate('pending')}}, {{\App\CPU\translate('confirmed')}}, {{\App\CPU\translate('packaging')}}, {{\App\CPU\translate('out_for_delivery_orders')}}">
-                                    <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                    <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                                 </span>
                             </div>
                         </div>
@@ -95,7 +95,7 @@
                             <div class="d-flex">
                                 <span>{{\App\CPU\translate('completed')}}</span>
                                 <span class="ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('this_count_is_the_summation_of_delivered_orders')}}">
-                                    <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                    <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                                 </span>
                             </div>
                         </div>
@@ -117,7 +117,7 @@
                             <div class="d-flex">
                                 <span>{{\App\CPU\translate('Due_Amount')}}</span>
                                 <span class="trx-y-2 ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('the_ongoing_order_amount_will_be_shown_here')}}">
-                                    <img src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                    <img src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                                 </span>
                             </div>
                         </div>
@@ -128,7 +128,7 @@
                             <div class="d-flex">
                                 <span>{{\App\CPU\translate('Already_Settled')}}</span>
                                 <span class="trx-y-2 ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('after_the_order_is_delivered_total_order_amount_will_be_shown_here')}}">
-                                    <img src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                    <img src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                                 </span>
                             </div>
                         </div>

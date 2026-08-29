@@ -137,7 +137,7 @@
                 {{ \App\CPU\translate('3rd_party') }}
             </h2>
         </div>
-        <!-- End Page Title -->
+        <!-- End Page Title --> 
 
         <!-- Inlile Menu -->
         @include('admin-views.business-settings.third-party-inline-menu')
@@ -146,40 +146,14 @@
         <div class="row gy-3">
             <div class="col-md-12 ">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-center align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 text-capitalize">{{ \App\CPU\translate('WhatsApp Template Mapping') }}</h5>
-                        {{-- <div class="d-flex align-items-center gap-4">
-                            @php
-                                $types = [
-                                    
-                                    'order_confirmation' => 'Order Confirmation Message',
-                                    'order_returned' => 'Order Returned Message',
-                                    'order_cancelled' => 'Order Cancelled Message',
-                                    'packaging_order' => 'Order Packaging Message',
-                                    'order_recovery' => 'Order Recovery Message',
-                                  
-                                ];
-                            @endphp
-                            <select name="type" id="type" class="form-control">
-                                <option value="" disabled selected>Select Type</option>
-                                @foreach ($types as $key => $value)
-                                    <option value="{{ $key }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
-
-                            <select name="id" id="id" class="form-control">
-                                <option value="" disabled selected>Select Template</option>
-                                @foreach ($templetes as $key => $templete)
-                                    <option value="{{ $templete['id'] }}">{{ $templete['name'] }}</option>
-                                @endforeach
-                            </select>
-                        </div> --}}
-                        {{-- <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2">
                             <a href="{{ route('admin.business-settings.whatsapp.sync-templates') }}"
-                                class="btn btn-info btn-sm">
-                                <i class="tio-sync"></i> {{ \App\CPU\translate('sync_from_api') }}
+                                class="btn btn-info btn-sm" id="syncBtn" onclick="showSyncLoader()">
+                                <i class="tio-sync" id="syncIcon"></i> <span id="syncText">{{ \App\CPU\translate('sync_from_api') }}</span>
                             </a>
-                        </div> --}}
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="alert alert-soft-warning border-warning border mb-0 p-3">
@@ -229,13 +203,22 @@
                 <div class="mt-3">
                     <div class="row gy-3 justify-content-center">
                         @foreach ($templetes as $key => $templete)
+                            @php
+                                $statusType = $templete['status_type'] ?? [];
+                            @endphp
                             <div class="col-sm-6 col-xxl-4">
                                 <div class="card h-100 shadow-sm border-0">
                                     <div
                                         class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
                                         <h6 class="mb-0 text-truncate " style="max-width: 70%;"
-                                            title="{{ $templete['name'] }}"><span class="fw-bold">Templete Name:</span> {{ $templete['name'] }}</h6>
-                                       
+                                            title="{{ $templete['name'] }}"><span class="fw-bold">Template:</span> {{ $templete['name'] }}</h6>
+                                        @if(!empty($statusType))
+                                            <div class="d-flex flex-wrap gap-1 justify-content-end">
+                                                @foreach($statusType as $st)
+                                                    <span class="badge badge-success">{{ $st }}</span>
+                                                @endforeach
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="card-body py-3">
                                       
@@ -336,53 +319,18 @@
 @endsection
 
 @push('script_2')
-    {{-- <script>
-        $(document).ready(function() {
-            $('#type, #id').on('change', function() {
-                let type = $('#type').val();
-                let template_id = $('#id').val();
+    <script>
+        function showSyncLoader() {
+            var btn = document.getElementById('syncBtn');
+            var icon = document.getElementById('syncIcon');
+            var text = document.getElementById('syncText');
 
-                if (type && template_id) {
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                        }
-                    });
-
-                    $.ajax({
-                        url: "{{ route('admin.business-settings.whatsapp.update-template-type') }}",
-                        method: 'POST',
-                        data: {
-                            type: type,
-                            template_id: template_id
-                        },
-                        beforeSend: function() {
-                            $('#loading').show();
-                        },
-                        success: function(response) {
-                            if (response.status == 1) {
-                                toastr.success(response.message);
-                                setTimeout(function() {
-                                    location.reload();
-                                }, 1000);
-                            } else {
-                                toastr.error(response.message);
-                            }
-                        },
-                        error: function(xhr) {
-                            let errorMsg = "{{ \App\CPU\translate('Something went wrong') }}";
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errorMsg = xhr.responseJSON.message;
-                            }
-                            toastr.error(errorMsg);
-                        },
-                        complete: function() {
-                            $('#loading').hide();
-                        }
-                    });
-                }
-            });
-        });
-    </script> --}}
+            btn.classList.add('disabled');
+            btn.style.pointerEvents = 'none';
+            icon.classList.remove('tio-sync');
+            icon.classList.add('fas', 'fa-spinner', 'fa-spin');
+            text.innerText = 'Syncing...';
+        }
+    </script>
 @endpush
 

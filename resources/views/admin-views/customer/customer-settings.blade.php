@@ -48,7 +48,7 @@
                                 <span class="title-color">{{\App\CPU\translate('refund_to_wallet')}}<span
                                         class="input-label-secondary"
                                         title="{{\App\CPU\translate('refund_to_wallet_hint')}}"><img
-                                            src="{{asset('/public/assets/back-end/img/info-circle.svg')}}"
+                                            src="{{asset('/assets/back-end/img/info-circle.svg')}}"
                                             alt="{{\App\CPU\translate('show_hide_food_menu')}}"></span> :</span>
 
                                 <label class="switcher" for="refund_to_wallet">

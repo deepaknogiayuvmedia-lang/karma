@@ -531,59 +531,53 @@ class Helpers
                 'message' => 'WhatsApp configuration missing'
             ];
         }
-        // Map order status → template "type" value stored in JSON
-        $status_map = [
-            'pending'   => 'confirmed',
-            'confirmed' => 'confirmed',
-            'processing' => 'processing',
-            'out_for_delivery' => 'processing',
-            'canceled'  => 'canceled',
-            'returned'  => 'returned',
-            'failed'    => 'canceled',
-        ];
 
-        $type = $status_map[$status] ?? $status;
-        // dd($type);
-        // Load templates from JSON and find the one matching the type
+        // Load templates from JSON
         $json      = file_get_contents(base_path('whatsapp_templates.json'));
         $templates = json_decode($json, true) ?? [];
-        $template  = collect($templates)->firstWhere('type', $type);
+
+        // Find template whose status_type array contains the current order status
+        $template = null;
+        foreach ($templates as $tpl) {
+            $statusType = $tpl['status_type'] ?? [];
+            if (in_array($status, $statusType)) {
+                $template = $tpl;
+                break;
+            }
+        }
 
         if (!$template) {
             return [
                 'status'  => 0,
-                'message' => 'No WhatsApp template found in JSON for type: ' . $status
+                'message' => 'No WhatsApp template found for status: ' . $status
             ];
         }
 
-        // Fetch order + relations for building template parameters
-        $order = null;
-        if ($order_id) {
-            $order = \App\Model\Order::with(['customer', 'details.product', 'shippingAddress'])->find($order_id);
+        // Check if template is active
+        if (isset($template['is_active']) && $template['is_active'] != 1) {
+            return [
+                'status'  => 0,
+                'message' => 'WhatsApp template is disabled: ' . $template['name']
+            ];
         }
-        dump($template);
+
         // Clean phone number - keep digits only
-        dump($phone);
         $phone = preg_replace('/[^0-9]/', '', $phone);
-        // Auto-add India country code if 10-digit number
         if (strlen($phone) === 10) {
             $phone = '91' . $phone;
         }
-
-        // Remove leading zero (e.g. 0XXXXXXXXXX → 91XXXXXXXXXX)
         if (strlen($phone) === 11 && $phone[0] === '0') {
             $phone = '91' . substr($phone, 1);
         }
 
-        // Validate phone is not empty
         if (empty($phone)) {
             return [
                 'status'  => 0,
                 'message' => 'Phone number is empty or invalid'
             ];
         }
-        $url = "https://graph.facebook.com/v25.0/{$config->phone_number_id}/messages";
-        dump($url);
+
+        $url = "https://graph.facebook.com/v26.0/{$config->phone_number_id}/messages";
 
         $body = [
             "messaging_product" => "whatsapp",
@@ -596,8 +590,13 @@ class Helpers
                 ]
             ]
         ];
-        dump($body);
+
         // Build named parameters from order data based on each template's variables
+        $order = null;
+        if ($order_id) {
+            $order = \App\Model\Order::with(['customer', 'details.product', 'shippingAddress'])->find($order_id);
+        }
+
         if ($order) {
             $customer_name = trim(($order->customer->f_name ?? '') . ' ' . ($order->customer->l_name ?? '')) ?: 'Customer';
             $first_detail  = $order->details->first();
@@ -611,50 +610,40 @@ class Helpers
             $address      = $order->shippingAddress?->address ?? 'N/A';
             $order_id_str = (string)$order->id;
 
-            /*
-             * Parameter maps per template name
-             * order_confirmation_2 : name, p_name, qty, o_id, d_address, d_date, category, ps_name
-             * packaging_order      : name, o_id, p_name, qty, d_date, s_name
-             * order_cancelled      : name, id, amount
-             * order_recovery       : name, s_name, email
-             */
-            $param_map = [
-                'order_confirmation_2' => [
-                    ['parameter_name' => 'name',      'text' => $customer_name],
-                    ['parameter_name' => 'p_name1',    'text' => $product_name],
-                    ['parameter_name' => 'p_name2',    'text' => $product_name],
-                    ['parameter_name' => 'qty',       'text' => (string)$qty],
-                    ['parameter_name' => 'o_id',      'text' => '#' . $order_id_str],
-                    ['parameter_name' => 'd_address', 'text' => $address],
-                    ['parameter_name' => 'd_date',    'text' => $delivery_date],
-                    ['parameter_name' => 'category',  'text' => 'Order'],
-                    ['parameter_name' => 'ps_name',   'text' => $shop_name],
-                ],
-                'packaging_order' => [
-                    ['parameter_name' => 'name',   'text' => $customer_name],
-                    ['parameter_name' => 'o_id',   'text' => '#' . $order_id_str],
-                    ['parameter_name' => 'p_name', 'text' => $product_name],
-                    ['parameter_name' => 'qty',    'text' => (string)$qty],
-                    ['parameter_name' => 'd_date', 'text' => $delivery_date],
-                    ['parameter_name' => 's_name', 'text' => $shop_name],
-                ],
-                'order_cancelled' => [
-                    ['parameter_name' => 'name',   'text' => $customer_name],
-                    ['parameter_name' => 'id',     'text' => '#' . $order_id_str],
-                    ['parameter_name' => 'amount', 'text' => $order_amount],
-                ],
-                'order_recovery' => [
-                    ['parameter_name' => 'name',   'text' => $customer_name],
-                    ['parameter_name' => 's_name', 'text' => $shop_name],
-                    ['parameter_name' => 'email',  'text' => $order->customer?->email ?? ''],
-                ],
+            // All possible variable values from order data
+            $all_values = [
+                'name'      => $customer_name,
+                'p_name1'   => $product_name,
+                'p_name2'   => $product_name,
+                'p_name'    => $product_name,
+                'qty'       => (string)$qty,
+                'o_id'      => '#' . $order_id_str,
+                'id'        => '#' . $order_id_str,
+                'd_address' => $address,
+                'd_date'    => $delivery_date,
+                'category'  => 'Order',
+                'ps_name'   => $shop_name,
+                's_name'    => $shop_name,
+                'amount'    => $order_amount,
+                'email'     => $order->customer?->email ?? '',
+                'time'      => date('h:i A'),
             ];
 
-            if (isset($param_map[$template['name']])) {
-                $parameters = array_map(
-                    function($p) { return array_merge(['type' => 'text'], $p); },
-                    $param_map[$template['name']]
-                );
+            // Auto-build parameters from template's body text named_params
+            $bodyComponent = collect($template['components'] ?? [])->firstWhere('type', 'BODY');
+            $namedParams   = $bodyComponent['example']['body_text_named_params'] ?? [];
+
+            $parameters = [];
+            foreach ($namedParams as $param) {
+                $paramName = $param['param_name'];
+                $parameters[] = [
+                    'type'           => 'text',
+                    'parameter_name' => $paramName,
+                    'text'           => $all_values[$paramName] ?? $param['example'] ?? '',
+                ];
+            }
+
+            if (!empty($parameters)) {
                 $body['template']['components'] = [
                     [
                         'type'       => 'body',
@@ -663,16 +652,16 @@ class Helpers
                 ];
             }
         }
-        dump($body);
+
         try {
-            $response = \Illuminate\Support\Facades\Http::withToken($config->access_token)
+            $response = \Illuminate\Support\Facades\Http::withoutVerifying()->withToken($config->access_token)
                 ->post($url, $body);
 
             \Illuminate\Support\Facades\Log::info('WhatsApp Send Request', [
                 'url'  => $url,
                 'body' => $body,
             ]);
-             dump($response->body());
+
             if ($response->successful()) {
                 \Illuminate\Support\Facades\Log::info('WhatsApp Send Success', $response->json());
                 return [

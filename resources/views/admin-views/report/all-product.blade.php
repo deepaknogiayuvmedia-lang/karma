@@ -120,7 +120,7 @@
                         <h6 class="subtext d-flex">
                             {{\App\CPU\translate('Total_Discount_Given')}}
                             <span class="ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('product_wise_discounted_amount_will_be_shown_here')}}">
-                                <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                             </span>
                         </h6>
                     </div>
@@ -133,7 +133,7 @@
                 <div class="center-chart-header">
                     <h3 class="title d-flex">{{\App\CPU\translate('Product_Statistics')}}
                         <span class="ml-2" data-toggle="tooltip" data-placement="top" title="{{\App\CPU\translate('The_product_report_will_show_based_on_the_product_added_date')}}">
-                            <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                            <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                         </span>
                     </h3>
                 </div>
@@ -258,7 +258,7 @@
                                 <div class="d-flex">
                                     <span>{{\App\CPU\translate('Average_Product_Value')}} </span>
                                     <span class="ml-2" data-toggle="tooltip" data-placement="right" title="lorem ipsum dolor set amet">
-                                        <img class="info-img" src="{{asset('/public/assets/back-end/img/info-circle.svg')}}" alt="img">
+                                        <img class="info-img" src="{{asset('/assets/back-end/img/info-circle.svg')}}" alt="img">
                                     </span>
                                 </div>
                             </th>

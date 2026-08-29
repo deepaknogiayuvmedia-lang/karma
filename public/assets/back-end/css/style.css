@@ -5211,6 +5211,7 @@ select {
 
 .info-img {
     width: 15px !important;
+    color: #6c757d;
 }
 
 .label-hide .apexcharts-tooltip-text-y-value {
