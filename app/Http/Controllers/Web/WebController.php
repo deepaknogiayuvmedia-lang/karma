@@ -899,18 +899,7 @@ class WebController extends Controller
         // -----------------------------
 
         if ($request['data_from'] == 'category') {
-            $products = $porduct_data->get();
-            $product_ids = [];
-
-            foreach ($products as $product) {
-                foreach (json_decode($product['category_ids'], true) as $category) {
-                    if ($category['id'] == $request['id']) {
-                        $product_ids[] = $product['id'];
-                    }
-                }
-            }
-
-            $query = $porduct_data->whereIn('id', $product_ids);
+            $query = $porduct_data->whereJsonContains('category_ids', [['id' => (string)$request['id']]]);
         } elseif ($request['data_from'] == 'brand') {
             $query = $porduct_data->where('brand_id', $request['id']);
         } elseif ($request['data_from'] == 'latest') {
@@ -1064,16 +1053,7 @@ class WebController extends Controller
         $porduct_data = Product::active()->with(['reviews'])->lowestPricePerPid();
 
         if ($request['data_from'] == 'category') {
-            $products = $porduct_data->get();
-            $product_ids = [];
-            foreach ($products as $product) {
-                foreach (json_decode($product['category_ids'], true) as $category) {
-                    if ($category['id'] == $request['id']) {
-                        array_push($product_ids, $product['id']);
-                    }
-                }
-            }
-            $query = $porduct_data->whereIn('id', $product_ids);
+            $query = $porduct_data->whereJsonContains('category_ids', [['id' => (string)$request['id']]]);
         }
 
         if ($request['data_from'] == 'brand') {

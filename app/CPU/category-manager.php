@@ -21,9 +21,7 @@ class CategoryManager
 
     public static function products($category_id)
     {
-        $id = '"'.$category_id.'"';
         return Product::active()
-            ->where('category_ids', 'like', "%{$id}%")->get();
-            /*->whereJsonContains('category_ids', ["id" => (string)$data['id']])*/
+            ->whereJsonContains('category_ids', [['id' => (string)$category_id]])->get();
     }
 }
