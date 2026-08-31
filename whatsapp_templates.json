@@ -111,7 +111,7 @@
     },
     {
         "id": "1761965758456967",
-        "name": "order_cancelled",
+        "name": "order_cancelled_2",
         "components": [
             {
                 "type": "HEADER",
@@ -130,7 +130,7 @@
                 }
             }
         ],
-        "category": "MARKETING",
+        "category": "UTILITY",
         "language": "en",
         "status": "APPROVED",
         "status_type": ["canceled", "failed"],
@@ -184,7 +184,7 @@
         "category": "UTILITY",
         "language": "en_US",
         "status": "APPROVED",
-        "status_type": [],
+        "status_type": ["Test"],
         "is_active": 1
     }
 ]

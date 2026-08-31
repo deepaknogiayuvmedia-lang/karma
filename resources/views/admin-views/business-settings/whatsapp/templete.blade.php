@@ -148,12 +148,12 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 text-capitalize">{{ \App\CPU\translate('WhatsApp Template Mapping') }}</h5>
-                        <div class="d-flex align-items-center gap-2">
+                        <!-- <div class="d-flex align-items-center gap-2">
                             <a href="{{ route('admin.business-settings.whatsapp.sync-templates') }}"
                                 class="btn btn-info btn-sm" id="syncBtn" onclick="showSyncLoader()">
                                 <i class="tio-sync" id="syncIcon"></i> <span id="syncText">{{ \App\CPU\translate('sync_from_api') }}</span>
                             </a>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="card-body">
                         <div class="alert alert-soft-warning border-warning border mb-0 p-3">
