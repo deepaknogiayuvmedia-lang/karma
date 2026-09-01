@@ -281,9 +281,7 @@
 
     .cta{
       padding:100px 20px;
-      background:
-      linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.65)),
-      url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1400&auto=format&fit=crop');
+      background:linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1400&auto=format&fit=crop');
       background-size:cover;
       background-position:center;
       text-align:center;
