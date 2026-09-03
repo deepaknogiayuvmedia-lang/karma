@@ -63,6 +63,10 @@ class RazorPayController extends Controller
 
     public function success()
     {
+        if (session()->has('payment_mode') && session('payment_mode') == 'app') {
+            return redirect()->route('payment-success');
+        }
+        
         if (auth('customer')->check()) {
             Toastr::success('Payment success.');
             return redirect('/account-oder');
@@ -72,6 +76,10 @@ class RazorPayController extends Controller
 
     public function fail()
     {
+        if (session()->has('payment_mode') && session('payment_mode') == 'app') {
+            return redirect()->route('payment-fail');
+        }
+        
         if (auth('customer')->check()) {
             Toastr::error('Payment failed.');
             return redirect('/account-oder');

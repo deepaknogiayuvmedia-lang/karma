@@ -17,17 +17,12 @@
 
 @section('content')
     <div class="  rtl" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
-
-                
-
   <style>
-
     *{
       margin:0;
       padding:0;
       box-sizing:border-box;
     }
-
     :root{
       --primary:#00695C;
       --secondary:#26350F;
@@ -38,21 +33,16 @@
       --text:#1f1f1f;
       --gray:#666666;
     }
-
     body{
       font-family:'Poppins',sans-serif;
       background:var(--bg);
       color:var(--text);
       line-height:1.8;
     }
-
     a{
       text-decoration:none;
     }
-
-
     /* HERO */
-
     .hero{
       background: linear-gradient(rgb(0 105 92 / 58%), rgb(15 99 82 / 83%)),
       url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1400&auto=format&fit=crop');
@@ -63,49 +53,40 @@
       text-align:center;
       color:var(--white);
     }
-
     .hero h1{
       font-size:60px;
       margin-bottom:15px;
     }
-
     .hero p{
       max-width:750px;
       margin:auto;
       font-size:18px;
       opacity:0.95;
     }
-
     /* CONTENT */
-
     .policy-section{
       padding:80px 0;
     }
-
     .policy-wrapper{
       background:var(--white);
       padding:60px;
       border-radius:24px;
       box-shadow:0 10px 30px rgba(0,0,0,0.06);
     }
-
     .policy-wrapper h2{
       color:var(--primary);
       margin-bottom:18px;
       margin-top:40px;
       font-size:30px;
     }
-
     .policy-wrapper h2:first-child{
       margin-top:0;
     }
-
     .policy-wrapper p{
       color:var(--gray);
       margin-bottom:18px;
       font-size:16px;
     }
-
     .policy-wrapper ul{
       margin-bottom:20px;
       padding-left:20px;

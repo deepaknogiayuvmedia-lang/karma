@@ -212,6 +212,10 @@ class PhonePeController extends Controller
             return response()->json(['status' => 'ERROR']);
         }
 
+        if ($this->isV2($config)) {
+            return response()->json(['status' => 'OK']);
+        }
+
         $saltKey = $config['phone_pe_secret_key'] ?? '';
         $saltIndex = $config['phone_pe_salt_index'] ?? 1;
 
@@ -245,6 +249,10 @@ class PhonePeController extends Controller
                                     array_push($order_ids, $order_id);
                                 }
                                 CartManager::cart_clean();
+                                
+                                if (session()->has('payment_mode') && session('payment_mode') == 'app') {
+                                    // For app mode, cart is already cleaned, response() will handle redirect
+                                }
                             }
                         }
                     }
@@ -268,6 +276,10 @@ class PhonePeController extends Controller
             $merchantTransactionId = $request->input('transactionId');
         }
 
+        if ($this->isV2($config) && !$merchantTransactionId && $request->has('merchantOrderId')) {
+            $merchantTransactionId = $request->input('merchantOrderId');
+        }
+
         $statusData = $this->checkStatus($config, $merchantTransactionId);
        
         if ($statusData && isset($statusData['success']) && $statusData['success'] == true && $statusData['code'] == 'PAYMENT_SUCCESS') {
@@ -287,12 +299,11 @@ class PhonePeController extends Controller
             }
 
             session()->forget('phonepe_txn_id');
+            CartManager::cart_clean();
 
             if (session()->has('payment_mode') && session('payment_mode') == 'app') {
-                CartManager::cart_clean();
                 return redirect()->route('payment-success');
             } else {
-                CartManager::cart_clean();
                 return view('web-views.checkout-complete');
             }
         }

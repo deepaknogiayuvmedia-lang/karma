@@ -85,6 +85,11 @@ class StripePaymentController extends Controller
             array_push($order_ids, $order_id);
         }
         CartManager::cart_clean();
+        
+        if (session()->has('payment_mode') && session('payment_mode') == 'app') {
+            return redirect()->route('payment-success');
+        }
+        
         if (auth('customer')->check()) {
             Toastr::success('Payment success.');
             return view('web-views.checkout-complete');
@@ -94,9 +99,13 @@ class StripePaymentController extends Controller
 
     public function fail()
     {
+        if (session()->has('payment_mode') && session('payment_mode') == 'app') {
+            return redirect()->route('payment-fail');
+        }
+        
         if (auth('customer')->check()) {
             Toastr::error('Payment failed.');
-            return redirect('/account-order');
+            return redirect('/account-oder');
         }
         return response()->json(['message' => 'Payment failed'], 403);
     }

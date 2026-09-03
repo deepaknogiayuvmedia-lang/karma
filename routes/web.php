@@ -215,14 +215,14 @@ return view('stripe-test');
 });*/
 Route::get('pay-stripe', 'StripePaymentController@payment_process_3d')->name('pay-stripe');
 Route::get('pay-stripe/success', 'StripePaymentController@success')->name('pay-stripe.success');
-Route::get('pay-stripe/fail', 'StripePaymentController@success')->name('pay-stripe.fail');
+Route::get('pay-stripe/fail', 'StripePaymentController@fail')->name('pay-stripe.fail');
 
 // Get Route For Show Payment razorpay Form
 Route::get('paywithrazorpay', 'RazorPayController@payWithRazorpay')->name('paywithrazorpay');
 Route::post('payment-razor', 'RazorPayController@payment')->name('payment-razor');
 Route::post('payment-razor/payment2', 'RazorPayController@payment_mobile')->name('payment-razor.payment2');
 Route::get('payment-razor/success', 'RazorPayController@success')->name('payment-razor.success');
-Route::get('payment-razor/fail', 'RazorPayController@success')->name('payment-razor.fail');
+Route::get('payment-razor/fail', 'RazorPayController@fail')->name('payment-razor.fail');
 
 Route::get('payment-success', 'Customer\PaymentController@success')->name('payment-success');
 Route::get('payment-fail', 'Customer\PaymentController@fail')->name('payment-fail');

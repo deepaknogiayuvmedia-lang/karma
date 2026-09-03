@@ -86,11 +86,29 @@ class MercadoPagoController extends Controller
             } catch (\Exception $e) {
             }
         }
-        if (auth('customer')->check()) {
-            Toastr::success('Payment success.');
-            return view('web-views.checkout-complete');
+        
+        if (session()->has('payment_mode') && session('payment_mode') == 'app') {
+            if ($payment->status == 'approved') {
+                return redirect()->route('payment-success');
+            } else {
+                return redirect()->route('payment-fail');
+            }
         }
-        return response()->json(['message' => 'Payment succeeded'], 200);
+        
+        if (auth('customer')->check()) {
+            if ($payment->status == 'approved') {
+                Toastr::success('Payment success.');
+                return view('web-views.checkout-complete');
+            } else {
+                Toastr::error('Payment failed.');
+                return redirect('/');
+            }
+        }
+        
+        if ($payment->status == 'approved') {
+            return response()->json(['message' => 'Payment succeeded'], 200);
+        }
+        return response()->json(['message' => 'Payment failed'], 403);
     }
     public function get_test_user(Request $request)
     {
