@@ -1759,7 +1759,7 @@ class ProductController extends BaseController
 
         // Handle shipping cost
         if (isset($newData['shipping_cost'])) {
-            $product->shipping_cost = \App\CPU\BackEndHelper::usd($newData['shipping_cost']);
+            $product->shipping_cost = \App\CPU\BackEndHelper::currency_to_usd($newData['shipping_cost']);
         }
 
         // Handle discount amount calculation
