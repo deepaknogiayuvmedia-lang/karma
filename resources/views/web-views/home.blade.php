@@ -1311,8 +1311,7 @@
             navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
             dots: false,
             autoplayHoverPause: true,
-            '{{ session('
-                                                                                    direction ') }}': false,
+            '{{ session('direction') }}': false,
             // center: true,
             responsive: {
                 //X-Small

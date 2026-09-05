@@ -145,13 +145,10 @@ class ProductController extends Controller
 
     public function featured_status(Request $request)
     {
-        if ($request->ajax()) {
-            $product = Product::find($request->id);
-            $product->featured_status = $request->status;
-            $product->save();
-            $data = $request->status;
-            return response()->json($data);
-        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Only Admin can update featured status'
+        ], 403);
     }
 
     public function store(Request $request)
@@ -235,6 +232,7 @@ class ProductController extends Controller
         $product->user_id = auth('seller')->id();
         $product->added_by = "seller";
         $product->name = $request->name[array_search('en', $request->lang)];
+        $product->technical_name = $request->technical_name;
         $product->tally_name = $request->prn[0];
         $product->slug = Str::slug($request->name[array_search('en', $request->lang)], '-') . '-' . Str::random(6);
 
@@ -703,6 +701,7 @@ class ProductController extends Controller
         }
         return response()->json([
             'select_tag' => $res,
+            'count' => $cat->count(),
         ]);
     }
 
@@ -890,6 +889,7 @@ class ProductController extends Controller
         }
 
         $product->name = $request->name[array_search('en', $request->lang)];
+        $product->technical_name = $request->technical_name;
         $product->tally_name = $request->prn[0];
 
         $category = [];

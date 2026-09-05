@@ -523,59 +523,28 @@
                                     </li>
                                 </ul>
                             </li>
-                            <!--<li class="navbar-vertical-aside-has-menu {{ Request::is('admin/product/list/seller*') || Request::is('admin/product/updated-product-list') ? 'active' : '' }}">-->
-                            <!--    <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle"-->
-                            <!--       href="javascript:"-->
-                            <!--       title="{{ \App\CPU\translate('Seller') }} {{ \App\CPU\translate('Products') }}">-->
-                            <!--        <i class="tio-airdrop nav-icon"></i>-->
-                            <!--        <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">-->
-                            <!--            {{ \App\CPU\translate('Seller') }} {{ \App\CPU\translate('Products') }}-->
-                            <!--        </span>-->
-                            <!--    </a>-->
-                            <!--    <ul class="js-navbar-vertical-aside-submenu nav nav-sub"-->
-                            <!--        style="display: {{ Request::is('admin/product/list/seller*') || Request::is('admin/product/updated-product-list') ? 'block' : '' }}">-->
+                            <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/product/list/seller*') || Request::is('admin/product/updated-product-list') ? 'active' : '' }}">
+                                <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle"
+                                   href="javascript:"
+                                   title="{{ \App\CPU\translate('Seller') }} {{ \App\CPU\translate('Products') }}">
+                                    <i class="tio-airdrop nav-icon"></i>
+                                    <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                        {{ \App\CPU\translate('Seller') }} {{ \App\CPU\translate('Products') }}
+                                    </span>
+                                </a>
+                                <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
+                                    style="display: {{ Request::is('admin/product/list/seller*') || Request::is('admin/product/updated-product-list') ? 'block' : 'none' }}">
 
-                            <!--        @if (\App\CPU\Helpers::get_business_settings('product_wise_shipping_cost_approval') == 1)
--->
-                            <!--            <li class="nav-item {{ Request::is('admin/product/updated-product-list') ? 'active' : '' }}">-->
-                            <!--                <a class="nav-link" title="{{ \App\CPU\translate('updated_products') }}"-->
-                            <!--                   href="{{ route('admin.product.updated-product-list') }}">-->
-                            <!--                    <span class="tio-circle nav-indicator-icon"></span>-->
-                            <!--                    <span-->
-                            <!--                        class="text-truncate">{{ \App\CPU\translate('updated_products') }} </span>-->
-                            <!--                </a>-->
-                            <!--            </li>-->
-                            <!--
-@endif-->
-                            <!--        <li class="nav-item {{ str_contains(url()->current() . '?status=' . request()->get('status'), '/admin/product/list/seller?status=0') == 1 ? 'active' : '' }}">-->
-                            <!--            <a class="nav-link"-->
-                            <!--               title="{{ \App\CPU\translate('New') }} {{ \App\CPU\translate('Products') }}"-->
-                            <!--               href="{{ route('admin.product.list', ['seller', 'status' => '0']) }}">-->
-                            <!--                <span class="tio-circle nav-indicator-icon"></span>-->
-                            <!--                <span-->
-                            <!--                    class="text-truncate">{{ \App\CPU\translate('New') }} {{ \App\CPU\translate('Products') }} </span>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item {{ str_contains(url()->current() . '?status=' . request()->get('status'), '/admin/product/list/seller?status=1') == 1 ? 'active' : '' }}">-->
-                            <!--            <a class="nav-link"-->
-                            <!--               title="{{ \App\CPU\translate('Approved') }} {{ \App\CPU\translate('Products') }}"-->
-                            <!--               href="{{ route('admin.product.list', ['seller', 'status' => '1']) }}">-->
-                            <!--                <span class="tio-circle nav-indicator-icon"></span>-->
-                            <!--                <span-->
-                            <!--                    class="text-truncate">{{ \App\CPU\translate('Approved') }} {{ \App\CPU\translate('Products') }}</span>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item {{ str_contains(url()->current() . '?status=' . request()->get('status'), '/admin/product/list/seller?status=2') == 1 ? 'active' : '' }}">-->
-                            <!--            <a class="nav-link"-->
-                            <!--               title="{{ \App\CPU\translate('Denied') }} {{ \App\CPU\translate('Products') }}"-->
-                            <!--               href="{{ route('admin.product.list', ['seller', 'status' => '2']) }}">-->
-                            <!--                <span class="tio-circle nav-indicator-icon"></span>-->
-                            <!--                <span-->
-                            <!--                    class="text-truncate">{{ \App\CPU\translate('Denied') }} {{ \App\CPU\translate('Products') }}</span>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--    </ul>-->
-                            <!--</li>-->
+                                    <li class="nav-item {{ Request::is('admin/product/list/seller') && !request()->has('status') && !request()->has('verified') ? 'active' : '' }}">
+                                        <a class="nav-link"
+                                           title="{{ \App\CPU\translate('All') }} {{ \App\CPU\translate('Products') }}"
+                                           href="{{ route('admin.product.list', ['seller']) }}">
+                                            <span class="tio-circle nav-indicator-icon"></span>
+                                            <span class="text-truncate">{{ \App\CPU\translate('All Seller Products') }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
                         @endif
 
                         <!--Product Edit/Change Requests-->

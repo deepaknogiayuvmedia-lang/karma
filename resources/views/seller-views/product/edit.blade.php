@@ -82,28 +82,35 @@
                                 }
                                 ?>
                                 <div class="{{ $lang != 'en' ? 'd-none' : '' }} lang_form" id="{{ $lang }}-form">
-                                    <div class="row">
-                                        <div class="col-md-6 form-group">
-                                            <label class="title-color"
-                                                for="{{ $lang }}_name">{{ \App\CPU\translate('Name') }}
-                                                ({{ strtoupper($lang) }})
-                                            </label>
-                                            <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="name[]"
-                                                id="{{ $lang }}_name"
-                                                value="{{ $translate[$lang]['name'] ?? $product['name'] }}"
-                                                class="form-control" placeholder="New Product" required>
-                                        </div>
-                                        <div class="col-md-6 form-group">
-                                            <label class="title-color"
-                                                for="{{ $lang }}_name">{{ \App\CPU\translate('Product Register Name') }}<span
-                                                    class="text-danger">*</span>
-                                                ({{ strtoupper($lang) }})</label>
-                                            <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="prn[]"
-                                                id="prn_name" value="{{ $product->tally_name ?? '' }}"
-                                                class="form-control"
-                                                placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
-                                        </div>
-                                    </div>
+                                     <div class="row">
+                                         <div class="col-md-4 form-group">
+                                             <label class="title-color"
+                                                 for="{{ $lang }}_name">{{ \App\CPU\translate('Name') }}
+                                                 ({{ strtoupper($lang) }})
+                                             </label>
+                                             <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="name[]"
+                                                 id="{{ $lang }}_name"
+                                                 value="{{ $translate[$lang]['name'] ?? $product['name'] }}"
+                                                 class="form-control" placeholder="New Product" required>
+                                         </div>
+                                         <div class="col-md-4 form-group">
+                                             <label class="title-color"
+                                                 for="technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
+                                             <input type="text" name="technical_name" id="technical_name"
+                                                 class="form-control" value="{{ old('technical_name', $product->technical_name ?? '') }}"
+                                                 placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                         </div>
+                                         <div class="col-md-4 form-group">
+                                             <label class="title-color"
+                                                 for="{{ $lang }}_name">{{ \App\CPU\translate('Product Register Name') }}<span
+                                                     class="text-danger">*</span>
+                                                 ({{ strtoupper($lang) }})</label>
+                                             <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="prn[]"
+                                                 id="prn_name" value="{{ $product->tally_name ?? '' }}"
+                                                 class="form-control"
+                                                 placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
+                                         </div>
+                                     </div>
                                     <input type="hidden" name="lang[]" value="{{ $lang }}">
                                     <div class="form-group pt-4">
                                         <label class="title-color">{{ \App\CPU\translate('description') }}
@@ -194,9 +201,9 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-4 mb-3">
+                                    <div class="col-md-4 mb-3" id="sub-category-select-div" style="{{ count($product_category) >= 2 ? '' : 'display: none;' }}">
                                         <label for="name"
-                                            class="title-color">{{ \App\CPU\translate('Sub_category') }}</label>
+                                            class="title-color">{{ \App\CPU\translate('Sub Category') }}</label>
                                         <select
                                             class="js-example-basic-multiple js-states js-example-responsive form-control"
                                             name="sub_category_id" id="sub-category-select"
@@ -204,9 +211,9 @@
                                             onchange="getRequest('{{ url('/') }}/seller/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
                                         </select>
                                     </div>
-                                    <div class="col-md-4 mb-3">
+                                    <div class="col-md-4 mb-3" id="sub-sub-category-select-div" style="{{ count($product_category) >= 3 ? '' : 'display: none;' }}">
                                         <label for="name"
-                                            class="title-color">{{ \App\CPU\translate('Sub_sub_category') }}</label>
+                                            class="title-color">{{ \App\CPU\translate('Sub Sub Category') }}</label>
 
                                         <select
                                             class="js-example-basic-multiple js-states js-example-responsive form-control"
@@ -349,9 +356,9 @@
                                             required>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="title-color">{{ \App\CPU\translate('Purchase_price') }}</label>
+                                        <label class="title-color">{{ \App\CPU\translate('Market price') }}</label>
                                         <input type="number" min="0" step="0.01"
-                                            placeholder="{{ \App\CPU\translate('Purchase price') }}"
+                                            placeholder="{{ \App\CPU\translate('Market price') }}"
                                             name="purchase_price" class="form-control"
                                             value={{ \App\CPU\BackEndHelper::usd_to_currency($product->purchase_price) }}
                                             required>
@@ -791,7 +798,18 @@
                 dataType: 'json',
                 success: function(data) {
                     if (type == 'select') {
-                        $('#' + id).empty().append(data.select_tag);
+                        let divId = id + '-div';
+                        if (data.count && data.count > 0) {
+                            $('#' + id).empty().append(data.select_tag);
+                            $('#' + divId).show();
+                        } else {
+                            $('#' + id).empty();
+                            $('#' + divId).hide();
+                            if (id === 'sub-category-select') {
+                                $('#sub-sub-category-select').empty();
+                                $('#sub-sub-category-select-div').hide();
+                            }
+                        }
                     }
                 },
             });

@@ -48,7 +48,7 @@
                                 <div class="{{ $lang != $default_lang ? 'd-none' : '' }} lang_form"
                                     id="{{ $lang }}-form">
                                     <div class="row">
-                                        <div class="col-md-6 form-group">
+                                        <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="{{ $lang }}_name">{{ \App\CPU\translate('name') }}
                                                 ({{ strtoupper($lang) }})
@@ -57,7 +57,14 @@
                                                 id="{{ $lang }}_name" class="form-control" placeholder="New Product"
                                                 required>
                                         </div>
-                                        <div class="col-md-6 form-group">
+                                        <div class="col-md-4 form-group">
+                                            <label class="title-color"
+                                                for="technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
+                                            <input type="text" name="technical_name" id="technical_name"
+                                                class="form-control" value="{{ old('technical_name') }}"
+                                                placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                        </div>
+                                        <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="{{ $lang }}_name">{{ \App\CPU\translate('Product Register Name') }}<span
                                                     class="text-danger">*</span>
@@ -134,18 +141,17 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-4 mb-3 ">
-                                        <label for="name" class="title-color">{{ \App\CPU\translate('Sub_category') }}</label>
+                                    <div class="col-md-4 mb-3 " id="sub-category-select-div" style="display: none;">
+                                        <label for="name" class="title-color">{{ \App\CPU\translate('Sub Category') }}</label>
                                         <select class="js-example-basic-multiple form-control" name="sub_category_id"
                                             id="sub-category-select"
                                             onchange="getRequest('{{ url('/') }}/seller/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
                                         </select>
                                     </div>
-                                    <div class="col-md-4 mb-3 ">
-                                        <label for="name" class="title-color">{{ \App\CPU\translate('Sub_sub_category') }}</label>
+                                    <div class="col-md-4 mb-3 " id="sub-sub-category-select-div" style="display: none;">
+                                        <label for="name" class="title-color">{{ \App\CPU\translate('Sub Sub Category') }}</label>
                                         <select class="js-example-basic-multiple form-control" name="sub_sub_category_id"
                                             id="sub-sub-category-select">
-
                                         </select>
                                     </div>
                                     <div class="col-md-4 mb-3 ">
@@ -255,9 +261,9 @@
                                             value="{{ old('unit_price') }}" class="form-control" required>
                                     </div>
                                     <div class="col-md-4 mb-3">
-                                        <label class="title-color">{{ \App\CPU\translate('Purchase_price') }}</label>
+                                        <label class="title-color">{{ \App\CPU\translate('Market price') }}</label>
                                         <input type="number" min="0" step="0.01"
-                                            placeholder="{{ \App\CPU\translate('Purchase_price') }}"
+                                            placeholder="{{ \App\CPU\translate('Market price') }}"
                                             name="purchase_price" value="{{ old('purchase_price') }}"
                                             class="form-control" required>
                                     </div>
@@ -565,7 +571,18 @@
                 dataType: 'json',
                 success: function(data) {
                     if (type == 'select') {
-                        $('#' + id).empty().append(data.select_tag);
+                        let divId = id + '-div';
+                        if (data.count && data.count > 0) {
+                            $('#' + id).empty().append(data.select_tag);
+                            $('#' + divId).show();
+                        } else {
+                            $('#' + id).empty();
+                            $('#' + divId).hide();
+                            if (id === 'sub-category-select') {
+                                $('#sub-sub-category-select').empty();
+                                $('#sub-sub-category-select-div').hide();
+                            }
+                        }
                     }
                 },
             });

@@ -48,6 +48,22 @@ class ProductController extends BaseController
         $product = Product::find($request->id);
         $product->featured = ($product['featured'] == 0 || $product['featured'] == null) ? 1 : 0;
         $product->save();
+
+        if ($product->featured == 1) {
+            // Determine the original product id:
+            // If this product is a copy (has pid), use pid as original.
+            // If this product is original (no pid), use its own id.
+            $originalId = !empty($product->pid) ? $product->pid : $product->id;
+
+            // Unfeature ALL related products: original + all seller copies, except current
+            Product::where(function ($q) use ($originalId) {
+                $q->where('id', $originalId)        // the original product
+                  ->orWhere('pid', $originalId);    // all seller copies
+            })
+            ->where('id', '!=', $product->id)
+            ->update(['featured' => 0]);
+        }
+
         $data = $request->status;
         return response()->json($data);
     }
@@ -84,7 +100,7 @@ class ProductController extends BaseController
     {
         $sellers = Product::where('pid', $id)
             ->where('added_by', 'seller')
-            ->select('id', 'user_id', 'unit_price', 'current_stock', 'status')
+            ->select('id', 'user_id', 'unit_price', 'current_stock', 'status', 'featured')
             ->get();
 
         $sellerData = [];
@@ -92,18 +108,52 @@ class ProductController extends BaseController
             $seller = \App\Model\Seller::find($s->user_id);
             if ($seller) {
                 $shop = $seller->shop ?? null;
-                $sellerData[] = [
-                    'id' => $s->id,
-                    'name' => $seller->f_name . ' ' . $seller->l_name,
-                    'shop_name' => $shop ? $shop->name : 'N/A',
-                    'price' => $s->unit_price,
-                    'stock' => $s->current_stock,
-                    'status' => $s->status,
-                ];
-            }
+                    $sellerData[] = [
+                        'id' => $s->id,
+                        'name' => $seller->f_name . ' ' . $seller->l_name,
+                        'shop_name' => $shop ? $shop->name : 'N/A',
+                        'price' => $s->unit_price,
+                        'stock' => $s->current_stock,
+                        'status' => $s->status,
+                        'featured' => $s->featured,
+                    ];    }
         }
 
         return response()->json(['sellers' => $sellerData]);
+    }
+
+    // Toggle featured status for a seller's product copy (admin only via modal)
+    public function toggleSellerFeatured(Request $request)
+    {
+        $request->validate([
+            'seller_product_id' => 'required|exists:products,id',
+        ]);
+        $product = Product::find($request->seller_product_id);
+
+        // Toggle: if currently featured → unfeature; if not featured → feature
+        $newFeatured = ($product->featured == 1) ? 0 : 1;
+        $product->featured = $newFeatured;
+        $product->save();
+
+        // Only cascade unfeature others when we are SETTING featured=1
+        if ($newFeatured == 1) {
+            // Determine the original product id
+            $originalId = !empty($product->pid) ? $product->pid : $product->id;
+
+            // Unfeature ALL related products: original + ALL seller copies, except current
+            Product::where(function ($q) use ($originalId) {
+                $q->where('id', $originalId)      // the original (admin) product
+                  ->orWhere('pid', $originalId);  // all seller copies
+            })
+            ->where('id', '!=', $product->id)
+            ->update(['featured' => 0]);
+        }
+
+        return response()->json([
+            'success'  => true,
+            'featured' => $newFeatured,
+            'message'  => $newFeatured ? 'Product set as Featured' : 'Product removed from Featured',
+        ]);
     }
 
     public function approve_status(Request $request)
@@ -308,6 +358,7 @@ class ProductController extends BaseController
         $p->user_id  = auth('admin')->id();
         $p->added_by = "admin";
         $p->name     = $request->name[array_search('en', $request->lang)];
+        $p->technical_name = $request->technical_name;
         $p->tally_name = $request->prn[0];
         $p->code     = $request->code;  // Removed since already set
         $p->slug     = Str::slug($request->name[array_search('en', $request->lang)], '-') . '-' . Str::random(6);
@@ -573,9 +624,12 @@ class ProductController extends BaseController
         $query_param = [];
         $search = $request['search'];
         if ($type == 'in_house') {
-            $pro = Product::where(['added_by' => 'admin']);
+            $pro = Product::with(['seller.shop'])->where(['added_by' => 'admin']);
         } else {
-            $pro = Product::where(['added_by' => 'seller'])->where('request_status', $request->status);
+            $pro = Product::with(['seller.shop'])->where(['added_by' => 'seller'])->whereNull('pid');
+            if ($request->has('status') && $request->status !== null && $request->status !== '' && $request->status !== 'all') {
+                $pro->where('request_status', $request->status);
+            }
         }
 
         // Verified filter
@@ -596,20 +650,27 @@ class ProductController extends BaseController
             $query_param = ['search' => $request['search']];
         }
 
-        $request_status = $request['status'];
-        $pro = $pro->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends(['status' => $request['status']])->appends(['verified' => $verified_filter])->appends($query_param);
+        $request_status = $request['status'] ?? 'all';
+        $pro = $pro->orderBy('id', 'DESC')
+            ->paginate(Helpers::pagination_limit())
+            ->appends(['status' => $request_status])
+            ->appends(['verified' => $verified_filter])
+            ->appends($query_param);
 
         // Counts for tabs
         $all_count = Product::where('added_by', $type == 'in_house' ? 'admin' : 'seller')
-            ->when($type != 'in_house', fn($q) => $q->where('request_status', $request_status))
+            ->when($type != 'in_house', fn($q) => $q->whereNull('pid'))
+            ->when($type != 'in_house' && $request_status !== 'all' && $request_status !== null, fn($q) => $q->where('request_status', $request_status))
             ->count();
         $verified_count = Product::where('added_by', $type == 'in_house' ? 'admin' : 'seller')
+            ->when($type != 'in_house', fn($q) => $q->whereNull('pid'))
             ->where('verified', 1)
-            ->when($type != 'in_house', fn($q) => $q->where('request_status', $request_status))
+            ->when($type != 'in_house' && $request_status !== 'all' && $request_status !== null, fn($q) => $q->where('request_status', $request_status))
             ->count();
         $unverified_count = Product::where('added_by', $type == 'in_house' ? 'admin' : 'seller')
+            ->when($type != 'in_house', fn($q) => $q->whereNull('pid'))
             ->where('verified', 0)
-            ->when($type != 'in_house', fn($q) => $q->where('request_status', $request_status))
+            ->when($type != 'in_house' && $request_status !== 'all' && $request_status !== null, fn($q) => $q->where('request_status', $request_status))
             ->count();
 
         return view('admin-views.product.list', compact('pro', 'search', 'request_status', 'type', 'verified_filter', 'all_count', 'verified_count', 'unverified_count'));
@@ -847,6 +908,7 @@ class ProductController extends BaseController
         }
         return response()->json([
             'select_tag' => $res,
+            'count' => $cat->count(),
         ]);
     }
 
@@ -1043,6 +1105,7 @@ class ProductController extends BaseController
         }
 
         $product->name = $request->name[array_search('en', $request->lang)];
+        $product->technical_name = $request->technical_name;
         $product->tally_name = $request->prn[0];
         $categoryName = null;
         $category = [];

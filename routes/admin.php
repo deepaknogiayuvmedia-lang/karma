@@ -395,6 +395,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('sysc-web', 'ProductController@sysc_web')->name('sysc-web');
             Route::post('set-commission', 'ProductController@set_commission')->name('set-commission');
             Route::get('get-sellers/{id}', 'ProductController@get_sellers')->name('get-sellers');
+            Route::post('toggle-seller-featured', 'ProductController@toggleSellerFeatured')->name('toggle-seller-featured');
 
             // Product Edit/Change Request Routes
             Route::get('edit-requests', 'ProductController@edit_requests')->name('edit-requests');

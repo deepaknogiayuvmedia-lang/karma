@@ -67,7 +67,7 @@
                                 <div class="{{ $lang != 'en' ? 'd-none' : '' }} lang_form" id="{{ $lang }}-form">
 
                                     <div class="row">
-                                        <div class="col-md-6 form-group">
+                                        <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="{{ $lang }}_name">{{ \App\CPU\translate('name') }}<span
                                                     class="text-danger">*</span>
@@ -80,7 +80,14 @@
                                                 required>
                                             <input type="hidden" name="lang[]" value="{{ $lang }}">
                                         </div>
-                                        <div class="col-md-6 form-group">
+                                        <div class="col-md-4 form-group">
+                                            <label class="title-color"
+                                                for="technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
+                                            <input type="text" name="technical_name" id="technical_name"
+                                                class="form-control" value="{{ old('technical_name', $product->technical_name ?? '') }}"
+                                                placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                        </div>
+                                        <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="{{ $lang }}_name">{{ \App\CPU\translate('Product Register Name') }}<span
                                                     class="text-danger">*</span>
@@ -181,7 +188,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4" id="sub-category-select-div" style="{{ count($product_category) >= 2 ? '' : 'display: none;' }}">
                                     <label for="name"
                                         class="title-color">{{ \App\CPU\translate('Sub Category') }}</label>
                                     <select class="js-example-basic-multiple js-states js-example-responsive form-control"
@@ -190,7 +197,7 @@
                                         onchange="getRequest('{{ url('/') }}/admin/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4" id="sub-sub-category-select-div" style="{{ count($product_category) >= 3 ? '' : 'display: none;' }}">
                                     <label for="name"
                                         class="title-color">{{ \App\CPU\translate('Sub Sub Category') }}</label>
 
@@ -200,7 +207,9 @@
 
                                     </select>
                                 </div>
+                            </div>
 
+                            <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="title-color"
@@ -322,7 +331,7 @@
                         <div class="card-body">
                             <div class="row align-items-end">
                                 <div class="col-md-6 form-group">
-                                    <label class="title-color">{{ \App\CPU\translate('Unit price') }}</label>
+                                    <label class="title-color">{{ \App\CPU\translate('Market price') }}</label>
                                     <input type="number" min="0" step="0.01"
                                         placeholder="{{ \App\CPU\translate('Unit price') }}" name="unit_price"
                                         class="form-control" value={{ \App\CPU\Convert::default($product->unit_price) }}
@@ -793,7 +802,18 @@
                 dataType: 'json',
                 success: function(data) {
                     if (type == 'select') {
-                        $('#' + id).empty().append(data.select_tag);
+                        let divId = id + '-div';
+                        if (data.count && data.count > 0) {
+                            $('#' + id).empty().append(data.select_tag);
+                            $('#' + divId).show();
+                        } else {
+                            $('#' + id).empty();
+                            $('#' + divId).hide();
+                            if (id === 'sub-category-select') {
+                                $('#sub-sub-category-select').empty();
+                                $('#sub-sub-category-select-div').hide();
+                            }
+                        }
                     }
                 },
             });

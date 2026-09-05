@@ -50,7 +50,7 @@
                                     id="{{ $lang }}-form">
 
                                     <div class="row">
-                                        <div class="col-md-6 form-group">
+                                        <div class="col-md-4 form-group">
                                             <div class="form-group">
                                                 <label class="title-color"
                                                     for="{{ $lang }}_name">{{ \App\CPU\translate('name') }}
@@ -62,7 +62,14 @@
                                             </div>
                                             <input type="hidden" name="lang[]" value="{{ $lang }}">
                                         </div>
-                                        <div class="col-md-6 form-group">
+                                        <div class="col-md-4 form-group">
+                                            <label class="title-color"
+                                                for="technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
+                                            <input type="text" name="technical_name" id="technical_name"
+                                                class="form-control" value="{{ old('technical_name') }}"
+                                                placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                        </div>
+                                        <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="{{ $lang }}_name">{{ \App\CPU\translate('Product Register Name') }}<span
                                                     class="text-danger">*</span>
@@ -80,7 +87,8 @@
                                             ({{ strtoupper($lang) }})</label>
                                         <div style="position:relative;">
                                             <textarea name="description[]" class="w-100 tiny-editor" rows="10">{{ old('details') }}</textarea>
-                                            <div id="editor-loading" class="text-center border rounded" style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
+                                            <div id="editor-loading" class="text-center border rounded"
+                                                style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
                                                 <div class="spinner-border text-primary" role="status">
                                                     <span class="sr-only">Loading...</span>
                                                 </div>
@@ -152,7 +160,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" id="sub-category-select-div" style="display: none;">
                                         <label for="name"
                                             class="title-color">{{ \App\CPU\translate('Sub Category') }}</label>
                                         <select class="js-example-basic-multiple form-control" name="sub_category_id"
@@ -160,7 +168,7 @@
                                             onchange="getRequest('{{ url('/') }}/admin/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
                                         </select>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" id="sub-sub-category-select-div" style="display: none;">
                                         <label for="name"
                                             class="title-color">{{ \App\CPU\translate('Sub Sub Category') }}</label>
                                         <select class="js-example-basic-multiple form-control" name="sub_sub_category_id"
@@ -278,14 +286,15 @@
                                                 value="{{ old('unit_price') }}" class="form-control" required>
                                         </div>
                                         <div class="col-md-6 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Purchase price') }}</label>
+                                            <label class="title-color">{{ \App\CPU\translate('Market price') }}</label>
                                             <input type="number" min="0" step="0.01"
-                                                placeholder="{{ \App\CPU\translate('Purchase price') }}"
+                                                placeholder="{{ \App\CPU\translate('Market price') }}"
                                                 value="{{ old('purchase_price') }}" name="purchase_price"
                                                 class="form-control" required>
                                         </div>
                                         <div class="col-md-3 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Admin Commission') }} ({{ \App\CPU\translate('optional') }})</label>
+                                            <label class="title-color">{{ \App\CPU\translate('Admin Commission') }}
+                                                ({{ \App\CPU\translate('optional') }})</label>
                                             <input type="number" min="0" step="0.01"
                                                 placeholder="{{ \App\CPU\translate('Commission') }}"
                                                 value="{{ old('admin_commission') }}" name="admin_commission"
@@ -294,8 +303,10 @@
                                         <div class="col-md-3 form-group">
                                             <label class="title-color">{{ \App\CPU\translate('Commission Type') }}</label>
                                             <select name="admin_commission_type" class="form-control">
-                                                <option value="percentage">{{ \App\CPU\translate('Percentage') }} (%)</option>
-                                                <option value="fixed">{{ \App\CPU\translate('Fixed') }} ({{ \App\CPU\translate('INR') }})</option>
+                                                <option value="percentage">{{ \App\CPU\translate('Percentage') }} (%)
+                                                </option>
+                                                <option value="fixed">{{ \App\CPU\translate('Fixed') }}
+                                                    ({{ \App\CPU\translate('INR') }})</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4 form-group">
@@ -657,7 +668,18 @@
                 dataType: 'json',
                 success: function(data) {
                     if (type == 'select') {
-                        $('#' + id).empty().append(data.select_tag);
+                        let divId = id + '-div';
+                        if (data.count && data.count > 0) {
+                            $('#' + id).empty().append(data.select_tag);
+                            $('#' + divId).show();
+                        } else {
+                            $('#' + id).empty();
+                            $('#' + divId).hide();
+                            if (id === 'sub-category-select') {
+                                $('#sub-sub-category-select').empty();
+                                $('#sub-sub-category-select-div').hide();
+                            }
+                        }
                     }
                 },
             });
@@ -864,7 +886,8 @@
                                         CloseButton: true,
                                         ProgressBar: true
                                     });
-                                window.location.href = '{{ route('admin.product.list', ['in_house']) }}';
+                                window.location.href =
+                                    '{{ route('admin.product.list', ['in_house']) }}';
                             }
                         }
                     });
@@ -933,4 +956,3 @@
         }
     </script>
 @endpush
-

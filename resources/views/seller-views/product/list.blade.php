@@ -134,6 +134,7 @@
                                     <th>{{ \App\CPU\translate('price_suggestion') }}</th>
                                     <th>{{ \App\CPU\translate('verify_status') }}</th>
                                     <th>{{ \App\CPU\translate('Admin_Verified') }}</th>
+                                    <th>{{ \App\CPU\translate('Featured') }}</th>
                                     <th>{{ \App\CPU\translate('Active') }} {{ \App\CPU\translate('status') }}</th>
                                     <th class="text-center __w-5px">{{ \App\CPU\translate('Action') }}</th>
                                 </tr>
@@ -202,6 +203,13 @@
                                             @else
                                                 <label class="badge badge-soft-warning"><i class="tio-warning"></i>
                                                     {{ \App\CPU\translate('Unverified') }}</label>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if (isset($p->featured) && $p->featured == 1)
+                                                <span class="badge badge-soft-success"><i class="tio-star"></i> {{ \App\CPU\translate('Featured') }}</span>
+                                            @else
+                                                <span class="badge badge-soft-secondary">{{ \App\CPU\translate('Not Featured') }}</span>
                                             @endif
                                         </td>
                                         <td>
