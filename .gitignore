@@ -15,4 +15,4 @@ composer-setup.php
 *.zip
 /installation
 /database backup
-*.zip
+*.md
