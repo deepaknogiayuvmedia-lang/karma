@@ -33,6 +33,7 @@ class ProductManager
     {
         //change review to ratting
         $paginator = Product::with(['rating','tags'])->active()
+            ->lowestPricePerPid()
             ->where('featured', 1)
             ->withCount(['order_details'])->orderBy('priority', 'desc')->orderBy('indexing', 'asc')
             ->paginate($limit, ['*'], 'page', $offset);

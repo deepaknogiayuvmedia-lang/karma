@@ -34,6 +34,7 @@ class Product extends Model
         'multiply_qty' => 'integer',
         'temp_shipping_cost' => 'float',
         'is_shipping_cost_updated' => 'integer',
+        'choice_attributes' => 'json',
         // Phase 1: New fields
         'priority' => 'integer',
         'verified' => 'boolean',
@@ -54,6 +55,7 @@ class Product extends Model
         'code',
         'pid',
         'indexing',
+        'choice_attributes',
         // Phase 1: New fields
         'priority',
         'verified',

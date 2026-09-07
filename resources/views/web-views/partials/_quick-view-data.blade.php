@@ -1,433 +1,570 @@
 @php
     $overallRating = \App\CPU\ProductManager::get_overall_rating($product->reviews);
-    $rating = \App\CPU\ProductManager::get_rating($product->reviews);
-    $productReviews = \App\CPU\ProductManager::get_product_review($product->id);
+    $cartItems = \App\CPU\CartManager::get_cart();
+    $productCartItems = $cartItems ? $cartItems->where('product_id', $product->id) : collect();
+
+    $rawVariations = json_decode($product->variation, true) ?? [];
+    $choiceOptions = json_decode($product->choice_options, true) ?? [];
+    $colors = json_decode($product->colors, true) ?? [];
+
+    $firstChoiceName = !empty($choiceOptions) ? $choiceOptions[0]['name'] : null;
+    $firstChoiceTitle = !empty($choiceOptions) ? $choiceOptions[0]['title'] : \App\CPU\translate('Choose a Size');
+    $firstColor = !empty($colors) ? $colors[0] : null;
+
+    $brandName = $product->brand ? $product->brand->name : ($product->seller && isset($product->seller->shop) ? $product->seller->shop->name : '');
+
+    $variationsList = [];
+
+    if (!empty($rawVariations) && count($rawVariations) > 0) {
+        foreach ($rawVariations as $var) {
+            $variantType = $var['type'];
+            $basePrice = $var['price'];
+            $stock = $var['qty'];
+
+            $discountAmount = 0;
+            if ($product->discount > 0) {
+                if ($product->discount_type == 'percent') {
+                    $discountAmount = ($basePrice * $product->discount) / 100;
+                } else {
+                    $discountAmount = $product->discount;
+                }
+            }
+            $salePrice = max(0, $basePrice - $discountAmount);
+            $saveAmount = $discountAmount;
+
+            $discountPct = 0;
+            if ($basePrice > 0 && $discountAmount > 0) {
+                $discountPct = round(($discountAmount / $basePrice) * 100);
+            }
+
+            // Check if this variant is in cart
+            $inCartItem = $productCartItems->where('variant', $variantType)->first();
+
+            $variationsList[] = [
+                'type' => $variantType,
+                'sale_price' => $salePrice,
+                'original_price' => $basePrice,
+                'discount_amount' => $discountAmount,
+                'discount_pct' => $discountPct,
+                'save_amount' => $saveAmount,
+                'stock' => $stock,
+                'in_cart_item' => $inCartItem
+            ];
+        }
+    } else {
+        // Single product without variations
+        $basePrice = $product->unit_price;
+        $discountAmount = \App\CPU\Helpers::get_product_discount($product, $basePrice);
+        $salePrice = max(0, $basePrice - $discountAmount);
+        $discountPct = 0;
+        if ($basePrice > 0 && $discountAmount > 0) {
+            $discountPct = round(($discountAmount / $basePrice) * 100);
+        }
+        $inCartItem = $productCartItems->first();
+
+        $variationsList[] = [
+            'type' => $product->name,
+            'sale_price' => $salePrice,
+            'original_price' => $basePrice,
+            'discount_amount' => $discountAmount,
+            'discount_pct' => $discountPct,
+            'save_amount' => $discountAmount,
+            'stock' => $product->current_stock,
+            'in_cart_item' => $inCartItem
+        ];
+    }
 @endphp
 
 <style>
-    .product-title2 {
-        font-family: 'Roboto', sans-serif !important;
-        font-weight: 400 !important;
-        font-size: 22px !important;
-        color: #000000 !important;
+    /* Quick View Compact 300px UI Styling */
+    .qv-modal-card {
+        border-radius: 20px !important;
+        border: none !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+        overflow: hidden !important;
+        background: #ffffff !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         position: relative;
-        display: inline-block;
-        word-wrap: break-word;
+        padding: 16px !important;
+        width: 450px !important;
+        max-width: 450px !important;
+        margin: 0 auto;
+    }
+
+ 
+    .qv-close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: transparent;
+        border: none;
+        color: #1e293b;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+font-weight: 400;
+        }
+
+        @media (max-width: 768px) {
+            .qv-modal-card {
+                width: 80% !important;
+                max-width: 80% !important;
+                padding: 12px !important;
+                margin: 0 auto !important;
+            }
+         
+            .qv-product-thumb-box {
+                width: 120px;
+                height: 120px;
+            }
+            .qv-btn-go-cart {
+                width: 100%;
+                justify-content: center;
+            }
+        }        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 10;
+        line-height: 1;
+        padding: 0;
+    }
+
+    .qv-close-btn:hover {
+        color: #ef4444;
+        transform: scale(1.1);
+    }
+
+    /* Top Product Card */
+    .qv-top-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+        padding-right: 20px;
+    }
+
+    .qv-product-thumb-box {
+        width: 70px;
+        height: 70px;
+        min-width: 70px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         overflow: hidden;
-        max-height: 1.2em; /* (Number of lines you want visible) * (line-height) */
-        line-height: 1.2em;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
     }
 
-    .cz-product-gallery {
-        display: block;
-    }
-
-    .cz-preview {
-        width: 100%;
-        margin-top: 0;
-        margin- {{Session::get('direction') === "rtl" ? 'right' : 'left'}}: 0;
-        max-height: 100% !important;
-    }
-
-    .cz-preview-item > img {
-        width: 80%;
-    }
-
-    .details {
-        border: 1px solid #E2F0FF;
-        border-radius: 3px;
-        padding: 16px;
-    }
-
-    img, figure {
+    .qv-product-thumb-box img {
         max-width: 100%;
-        vertical-align: middle;
+        max-height: 100%;
+        object-fit: contain;
     }
 
-    .cz-thumblist-item {
-        display: block;
-        position: relative;
-        width: 64px;
-        height: 64px;
-        margin: .625rem;
-        transition: border-color 0.2s ease-in-out;
-        border: 1px solid #E2F0FF;
-        border-radius: .3125rem;
-        text-decoration: none !important;
+    .qv-top-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .qv-product-title-ref {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.3;
+        margin-bottom: 2px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
+        text-decoration: none !important;
     }
 
-    .for-hover-bg {
-        font-size: 18px;
-        height: 45px;
-    }
-
-    .cz-thumblist-item > img {
+    .qv-brand-subtext {
+        font-size: 11px;
+        color: #94a3b8;
+        font-weight: 500;
+        margin-bottom: 6px;
         display: block;
-        width: 80%;
-        transition: opacity .2s ease-in-out;
-        max-height: 58px;
-        opacity: .6;
     }
 
-    @media (max-width: 767.98px) and (min-width: 576px) {
-        .cz-preview-item > img {
-            width: 100%;
-        }
+    .qv-btn-go-cart {
+        background: #2e7d32;
+        color: #ffffff !important;
+        font-weight: 600;
+        font-size: 12px;
+        padding: 5px 14px;
+        border-radius: 6px;
+        text-decoration: none !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: background 0.2s ease, transform 0.15s ease;
+        box-shadow: 0 2px 5px rgba(46, 125, 50, 0.2);
     }
 
-    @media (max-width: 575.98px) {
-        .cz-thumblist {
-            display: -ms-flexbox;
-            display: flex;
-            -ms-flex-wrap: wrap;
-            flex-wrap: wrap;
-            -ms-flex-pack: center;
-            justify-content: center;
-            margin- {{Session::get('direction') === "rtl" ? 'right' : 'left'}}: 0;
-            padding-top: 1rem;
-            padding-right: 40px;
-            padding-bottom: 10px;
-        }
+    .qv-btn-go-cart:hover {
+        background: #1b5e20;
+        color: #ffffff !important;
+    }
 
-        .cz-thumblist-item {
-            margin: 0px;
-        }
+    /* Section Title */
+    .qv-section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-top: 6px;
+        margin-bottom: 8px;
+    }
 
-        .cz-thumblist {
-            padding-top: 8px !important;
-        }
+    /* Variant List Rows */
+    .qv-variant-list {
+        display: flex;
+        flex-direction: column;
+        max-height: 340px;
+        overflow-y: auto;
+        padding-right: 2px;
+    }
 
-        .cz-preview-item > img {
-            width: 100%;
-        }
+    .qv-variant-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #f1f5f9;
+        gap: 8px;
+    }
+
+    .qv-variant-row:last-child {
+        border-bottom: none;
+    }
+
+    .qv-var-left {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .qv-var-name {
+        font-size: 20px;
+        font-weight: 500;
+        color: #0f172a;
+        margin-bottom: 2px;
+        line-height: 1.25;
+    }
+
+    .qv-var-price-line {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-bottom: 2px;
+    }
+
+    .qv-var-price {
+        font-size: 14px;
+        font-weight: 400;
+        color: #0f172a;
+    }
+
+    .qv-var-old-price {
+        font-size: 11px;
+        color: #94a3b8;
+        text-decoration: line-through;
+        font-weight: 500;
+    }
+
+    .qv-var-badge {
+        background: #ff9800;
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 1px 5px;
+        border-radius: 4px;
+    }
+
+    .qv-var-save {
+        font-size: 11px;
+        font-weight: 600;
+        color: #16a34a;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 1px;
+    }
+
+    .qv-save-badge-icon {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #dcfce7;
+        color: #16a34a;
+        font-size: 9px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Action Control (Right Column) */
+    .qv-btn-add-var {
+        background: #ff9800;
+        color: #ffffff !important;
+        border: none;
+        padding: 7px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(255, 152, 0, 0.25);
+        white-space: nowrap;
+    }
+
+    .qv-btn-add-var:hover {
+        background: #f57c00;
+    }
+
+    .qv-btn-add-var:disabled {
+        background: #cbd5e1;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    /* Stepper Control [ 🗑 | Qty | + ] */
+    .qv-stepper-box {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #ffffff;
+        height: 32px;
+    }
+
+    .qv-stepper-btn-trash {
+        width: 28px;
+        height: 32px;
+        border: none;
+        background: #ffffff;
+        color: #ff9800;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-right: 1px solid #e2e8f0;
+        padding: 0;
+    }
+
+    .qv-stepper-btn-trash:hover {
+        background: #fff7ed;
+        color: #ef4444;
+    }
+
+    .qv-stepper-count {
+        width: 32px;
+        height: 32px;
+        background: #2e7d32;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .qv-stepper-btn-plus {
+        width: 28px;
+        height: 32px;
+        border: none;
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-left: 1px solid #e2e8f0;
+        padding: 0;
+    }
+
+    .qv-stepper-btn-plus:hover {
+        background: #f8fafc;
+        color: #2e7d32;
     }
 </style>
 
-<div class="modal-header rtl">
-    <div>
-        <h4 class="modal-title product-title">
-            <a class="product-title2" href="{{route('product',$product->slug)}}" data-toggle="tooltip"
-               data-placement="right"
-               title="Go to product page">{{$product['name']}}
-                <i class="czi-arrow-{{Session::get('direction') === "rtl" ? 'left mr-2' : 'right ml-2'}} font-size-lg"
-                   style="margin-right: 0px !important;"></i>
-            </a>
-        </h4>
+<!-- Close Button -->
+<button class="qv-close-btn call-when-done" type="button" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+</button>
+
+<!-- Top Product Summary Card -->
+<div class="qv-top-card">
+    <div class="qv-product-thumb-box">
+        <img onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
+             src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$product['thumbnail']}}"
+             alt="{{$product['name']}}">
     </div>
-    <div>
-        <button class="close call-when-done" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
+
+    <div class="qv-top-info">
+        <a href="{{route('product',$product->slug)}}" class="qv-product-title-ref" title="{{$product['name']}}">
+            {{$product['name']}}
+        </a>
+
+        @if(!empty($brandName))
+            <span class="qv-brand-subtext">{{$brandName}}</span>
+        @endif
+
+        <a href="{{route('shop-cart')}}" class="qv-btn-go-cart">
+            {{\App\CPU\translate('Go to Cart')}}
+        </a>
     </div>
 </div>
 
-<div class="modal-body rtl">
-    <div class="row g-3">
-        <div class="col-lg-6 col-md-6">
-            <div class="cz-product-gallery">
-                <div class="cz-preview">
-                    @if($product->images!=null && json_decode($product->images)>0)
-                        @if(json_decode($product->colors) && $product->color_image)
-                            @foreach (json_decode($product->color_image) as $key => $photo)
-                                @if($photo->color != null)
-                                    <div
-                                        class="cz-preview-item d-flex align-items-center justify-content-center  {{$key==0?'active':''}}">
-                                        <img class="show-imag img-responsive" style="max-height: 500px!important;"
-                                             onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                                             src="{{asset(config('app.public_storage_path')."/product/$photo->image_name")}}"
-                                             alt="Product image" width="">
-                                    </div>
-                                @else
-                                    <div
-                                        class="cz-preview-item d-flex align-items-center justify-content-center  {{$key==0?'active':''}}">
-                                        <img class="show-imag img-responsive" style="max-height: 500px!important;"
-                                             onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                                             src="{{asset(config('app.public_storage_path')."/product/$photo->image_name")}}"
-                                             alt="Product image" width="">
-                                    </div>
-                                @endif
-                            @endforeach
-                        @else
-                            @foreach (json_decode($product->images) as $key => $photo)
-                                <div
-                                    class="cz-preview-item d-flex align-items-center justify-content-center  {{$key==0?'active':''}}">
-                                    <img class="show-imag img-responsive" style="max-height: 500px!important;"
-                                         onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                                         src="{{asset(config('app.public_storage_path')."/product/$photo")}}"
-                                         alt="Product image" width="">
-                                </div>
-                            @endforeach
+<!-- Section Heading -->
+<div class="qv-section-title">
+    {{ $firstChoiceTitle ?? \App\CPU\translate('Choose a Size') }}
+</div>
+
+<!-- Variant List Rows -->
+<div class="qv-variant-list">
+    @foreach ($variationsList as $varItem)
+        <div class="qv-variant-row">
+            <!-- Left Info -->
+            <div class="qv-var-left">
+                <div class="qv-var-name">{{ $varItem['type'] }}</div>
+                
+                <div class="qv-var-price-line">
+                    <span class="qv-var-price">{{\App\CPU\Helpers::currency_converter($varItem['sale_price'])}}</span>
+
+                    @if ($varItem['discount_amount'] > 0)
+                        <span class="qv-var-old-price">{{\App\CPU\Helpers::currency_converter($varItem['original_price'])}}</span>
+                        
+                        @if ($varItem['discount_pct'] > 0)
+                            <span class="qv-var-badge">{{ $varItem['discount_pct'] }}% OFF</span>
                         @endif
                     @endif
                 </div>
-                <div class="table-responsive" style="max-height: 515px;">
-                    <div class="d-flex">
-                        @if($product->images!=null && json_decode($product->images)>0)
-                            @if(json_decode($product->colors) && $product->color_image)
-                                @foreach (json_decode($product->color_image) as $key => $photo)
-                                    @if($photo->color != null)
-                                        <div class="cz-thumblist">
-                                            <a href="javascript:"
-                                               class=" cz-thumblist-item d-flex align-items-center justify-content-center">
-                                                <img class="click-img" id="preview-img{{$photo->color}}"
-                                                     src="{{asset(config('app.public_storage_path')."/product/$photo->image_name")}}"
-                                                     onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                                                     alt="Product thumb">
-                                            </a>
-                                        </div>
-                                    @else
-                                        <div class="cz-thumblist">
-                                            <a href="javascript:"
-                                               class=" cz-thumblist-item d-flex align-items-center justify-content-center">
-                                                <img class="click-img" id="preview-img{{$key}}"
-                                                     src="{{asset(config('app.public_storage_path')."/product/$photo->image_name")}}"
-                                                     onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                                                     alt="Product thumb">
-                                            </a>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            @else
-                                @foreach (json_decode($product->images) as $key => $photo)
-                                    <div class="cz-thumblist">
-                                        <a href="javascript:"
-                                           class=" cz-thumblist-item d-flex align-items-center justify-content-center">
-                                            <img class="click-img" id="preview-img{{$key}}"
-                                                 src="{{asset(config('app.public_storage_path')."/product/$photo")}}"
-                                                 onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                                                 alt="Product thumb">
-                                        </a>
-                                    </div>
-                                @endforeach
-                            @endif
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Product details-->
-        <div class="col-lg-6 col-md-6">
-            <div class="details __h-100">
-                <a href="{{route('product',$product->slug)}}" class="h3 mb-2 product-title">{{$product->name}}</a>
-                <div class="d-flex flex-wrap align-items-center mb-2 pro">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <span
-                            class="d-inline-block font-size-sm text-body align-middle mt-1 {{Session::get('direction') === "rtl" ? 'ml-2 pl-2' : 'mr-2 pr-2'}}">{{$overallRating[0]}}</span>
-                        <div class="star-rating">
-                            @for($inc=0;$inc<5;$inc++)
-                                @if($inc<$overallRating[0])
-                                    <i class="sr-star czi-star-filled active"></i>
-                                @else
-                                    <i class="sr-star czi-star"></i>
-                                @endif
-                            @endfor
-                        </div>
-                        <span
-                            class="d-inline-block font-size-sm text-body align-middle mt-1 {{Session::get('direction') === "rtl" ? 'ml-2 mr-1' : 'ml-1 mr-2'}} pl-2 pr-2">{{$overallRating[1]}} {{\App\CPU\translate('reviews')}}</span>
-                        <span style="width: 0px;height: 10px;border: 0.5px solid #707070; margin-top: 6px"></span>
-                        <span
-                            class="d-inline-block font-size-sm text-body align-middle mt-1 {{Session::get('direction') === "rtl" ? 'ml-2 mr-1' : 'ml-1 mr-2'}} pl-2 pr-2">{{$countOrder}} {{\App\CPU\translate('orders')}}  </span>
-                        <span style="width: 0px;height: 10px;border: 0.5px solid #707070; margin-top: 6px">    </span>
-                        <span
-                            class="d-inline-block font-size-sm text-body align-middle mt-1 {{Session::get('direction') === "rtl" ? 'ml-2 mr-1' : 'ml-1 mr-2'}} pl-2 pr-2">  {{$countWishlist}}  {{\App\CPU\translate('wishlist')}}</span>
 
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <span
-                        class="h3 font-weight-normal text-accent {{Session::get('direction') === "rtl" ? 'ml-1' : 'mr-1'}}">
-                        {{\App\CPU\Helpers::get_price_range($product) }}
-                    </span>
-                    @if($product->discount > 0)
-                        <strike style="font-size: 12px!important;color: grey!important;">
-                            {{\App\CPU\Helpers::currency_converter($product->unit_price)}}
-                        </strike>
-                    @endif
-                </div>
-
-                @if($product->discount > 0)
-                    <div class="flex-start mb-3">
-                        <div><strong>{{\App\CPU\translate('discount')}} : </strong></div>
-                        <div><strong id="set-discount-amount" class="mx-2"></strong></div>
+                @if ($varItem['save_amount'] > 0)
+                    <div class="qv-var-save">
+                        <span class="qv-save-badge-icon">%</span>
+                        {{\App\CPU\translate('Save')}} {{\App\CPU\Helpers::currency_converter($varItem['save_amount'])}}
                     </div>
                 @endif
+            </div>
 
-                <div class="flex-start mb-3">
-                    <div><strong>{{\App\CPU\translate('tax')}} : </strong></div>
-                    <div><strong id="set-tax-amount" class="mx-2"></strong></div>
-                </div>
-
-                <form id="add-to-cart-form" class="mb-2">
-                    @csrf
-                    <input type="hidden" name="id" value="{{ $product->id }}">
-                    <div class="position-relative {{Session::get('direction') === "rtl" ? 'ml-n4' : 'mr-n4'}} mb-3">
-                        @if (count(json_decode($product->colors)) > 0)
-                            <div class="flex-start">
-                                <div class="product-description-label mt-1">
-                                    {{\App\CPU\translate('color')}}:
-                                </div>
-                                <div class="__pl-15">
-                                    <ul class="flex-start checkbox-color mb-0 p-0" style="list-style: none;">
-                                        @foreach (json_decode($product->colors) as $key => $color)
-                                            <li>
-                                                <input type="radio"
-                                                       id="{{ $product->id }}-color-{{ str_replace('#','',$color) }}"
-                                                       name="color" value="{{ $color }}"
-                                                       @if($key == 0) checked @endif>
-                                                <label style="background: {{ $color }};"
-                                                       for="{{ $product->id }}-color-{{ str_replace('#','',$color) }}"
-                                                       data-toggle="tooltip"
-                                                       onclick="quick_view_preview_image_by_color('{{ str_replace('#','',$color) }}')">
-                                                    <span class="outline" style="border-color: {{ $color }}"></span>
-                                                </label>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
-                        @endif
-                        @php
-                            $qty = 0;
-                            foreach (json_decode($product->variation) as $key => $variation) {
-                                $qty += $variation->qty;
-                            }
-                        @endphp
-
-                    </div>
-                    @foreach (json_decode($product->choice_options) as $key => $choice)
-                        <div class="flex-start">
-                            <div class="product-description-label mt-1">
-                                {{ $choice->title }}:
-                            </div>
-                            <div>
-                                <ul class=" checkbox-alphanumeric checkbox-alphanumeric--style-1 mb-2">
-                                    @foreach ($choice->options as $key => $option)
-                                        <span>
-                                            <input type="radio"
-                                                   id="{{ $choice->name }}-{{ $option }}"
-                                                   name="{{ $choice->name }}" value="{{ $option }}"
-                                                   @if($key == 0) checked @endif>
-                                            <label for="{{ $choice->name }}-{{ $option }}">{{ $option }}</label>
-                                        </span>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    @endforeach
-
-                    <!-- Quantity + Add to cart -->
-                    <div class="d-flex __gap-6 mt-0">
-                        <div class="product-description-label mt-2 mr-2">{{\App\CPU\translate('Quantity')}}:</div>
-                        <div class="product-quantity d-flex align-items-center">
-                            <div class="input-group input-group--style-2 pr-3"
-                                 style="width: 160px;">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-number" type="button"
-                                            data-type="minus" data-field="quantity"
-                                            disabled="disabled" style="padding: 10px">
-                                        -
-                                    </button>
-                                </span>
-                                <input type="text" name="quantity"
-                                       class="form-control input-number text-center cart-qty-field"
-                                       placeholder="1" value="{{ $product->minimum_order_qty ?? 1 }}"
-                                       product-type="{{ $product->product_type }}"
-                                       min="{{ $product->minimum_order_qty ?? 1 }}" max="100">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-number" product-type="{{ $product->product_type }}"
-                                            type="button" data-type="plus"
-                                            data-field="quantity" style="padding: 10px">
-                                        +
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex flex-wrap mt-3 __gap-15" id="chosen_price_div">
-                        <div>
-                            <div class="product-description-label">{{\App\CPU\translate('Total Price')}}:</div>
-                        </div>
-                        <div>
-                            <div class="product-price">
-                                <strong id="chosen_price"></strong>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            @if(($product['product_type'] == 'physical') && ($product['current_stock']<=0))
-                                <h5 class="mt-3" style="color: red">{{\App\CPU\translate('out_of_stock')}}</h5>
-                            @endif
-                        </div>
-                        <!-- Variant Out of Stock Message -->
-                        <div id="qv-variant-out-of-stock" class="col-12 d-none">
-                            <h5 class="mt-3 text-danger font-weight-bold">
-                                <i class="tio-warning"></i> {{\App\CPU\translate('out_of_stock')}}
-                            </h5>
-                        </div>
-                    </div>
-                    {{--to do--}}
-                    <div class="__btn-grp align-items-center mt-2">
-                        @if(($product->added_by == 'seller' && ($seller_temporary_close || (isset($product->seller->shop) && $product->seller->shop->vacation_status && $current_date >= $seller_vacation_start_date && $current_date <= $seller_vacation_end_date))) ||
-                             ($product->added_by == 'admin' && ($inhouse_temporary_close || ($inhouse_vacation_status && $current_date >= $inhouse_vacation_start_date && $current_date <= $inhouse_vacation_end_date))))
-                            <button class="btn btn-secondary" type="button" disabled>
-                                {{\App\CPU\translate('buy_now')}}
-                            </button>
-                            <button class="btn btn--primary string-limit" type="button" disabled>
-                                {{\App\CPU\translate('add_to_cart')}}
-                            </button>
-                        @else
-                            <button class="btn btn-secondary btn-buy-now" onclick="buy_now()" type="button">
-                                {{\App\CPU\translate('buy_now')}}
-                            </button>
-                            <button class="btn btn--primary string-limit btn-add-to-cart" onclick="addToCart()" type="button">
-                                {{\App\CPU\translate('add_to_cart')}}
-                            </button>
-                            <button class="btn btn-danger btn-oos d-none" type="button" disabled>
-                                {{\App\CPU\translate('out_of_stock')}}
-                            </button>
-                        @endif
-                        <button type="button" onclick="addWishlist('{{$product['id']}}')"
-                                class="text-danger btn string-limit">
-                            <i class="fa fa-heart-o mr-2"
-                               aria-hidden="true"></i>
-                            <span class="countWishlist-{{$product['id']}}">{{$countWishlist}}</span>
+            <!-- Right Action / Stepper -->
+            <div class="qv-var-right">
+                @if (!empty($varItem['in_cart_item']))
+                    <!-- Stepper Control: [ 🗑 | Qty | + ] -->
+                    <div class="qv-stepper-box">
+                        <button type="button" class="qv-stepper-btn-trash" title="Remove"
+                                onclick="quickRemoveFromCart('{{ $varItem['in_cart_item']['id'] }}', '{{ $product->id }}')">
+                            <i class="fa fa-trash-o"></i>
                         </button>
+                        
+                        <div class="qv-stepper-count">
+                            {{ $varItem['in_cart_item']['quantity'] }}
+                        </div>
 
-                        @if(($product->added_by == 'seller' && ($seller_temporary_close || (isset($product->seller->shop) && $product->seller->shop->vacation_status && $current_date >= $seller_vacation_start_date && $current_date <= $seller_vacation_end_date))) ||
-                             ($product->added_by == 'admin' && ($inhouse_temporary_close || ($inhouse_vacation_status && $current_date >= $inhouse_vacation_start_date && $current_date <= $inhouse_vacation_end_date))))
-                            <div class="alert alert-danger" role="alert">
-                                {{\App\CPU\translate('this_shop_is_temporary_closed_or_on_vacation._You_cannot_add_product_to_cart_from_this_shop_for_now')}}
-                            </div>
-                        @endif
+                        <button type="button" class="qv-stepper-btn-plus" title="Add More"
+                                onclick="quickUpdateCartQty('{{ $varItem['in_cart_item']['id'] }}', {{ $varItem['in_cart_item']['quantity'] + 1 }}, '{{ $product->id }}')">
+                            +
+                        </button>
                     </div>
-                </form>
-                <!-- Product panels-->
+                @else
+                    <!-- Add to Cart Button -->
+                    @if ($varItem['stock'] > 0)
+                        <button type="button" class="qv-btn-add-var"
+                                onclick="quickAddVariant('{{ $product->id }}', '{{ $firstChoiceName }}', '{{ $varItem['type'] }}', '{{ $firstColor }}')">
+                            {{\App\CPU\translate('Add to Cart')}}
+                        </button>
+                    @else
+                        <button type="button" class="qv-btn-add-var" disabled>
+                            {{\App\CPU\translate('Stock Out')}}
+                        </button>
+                    @endif
+                @endif
             </div>
         </div>
-    </div>
+    @endforeach
 </div>
+
 <script type="text/javascript">
-    cartQuantityInitialize();
-    getVariantPrice();
-    $('#add-to-cart-form input').on('change', function () {
-        getVariantPrice();
-    });
+    function quickAddVariant(productId, choiceName, choiceValue, colorValue) {
+        var formData = {
+            _token: '{{ csrf_token() }}',
+            id: productId,
+            quantity: 1
+        };
+        if (choiceName && choiceValue) {
+            formData[choiceName] = choiceValue;
+        }
+        if (colorValue) {
+            formData['color'] = colorValue;
+        }
 
-    $(document).ready(function () {
-
-        $('[data-toggle="tooltip"]').tooltip(), $('[data-toggle="popover"]').popover()
-
-        $('.click-img').click(function () {
-            var idimg = $(this).attr('id');
-            var srcimg = $(this).attr('src');
-            $(".show-imag").attr('src', srcimg);
+        $.ajax({
+            url: '{{ route("cart.add") }}',
+            type: 'POST',
+            data: formData,
+            beforeSend: function() {
+                $('#loading').show();
+            },
+            success: function(response) {
+                if (response.status == 1) {
+                    updateNavCart();
+                    toastr.success(response.message);
+                    quickView(productId);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Cart',
+                        text: response.message
+                    });
+                }
+            },
+            complete: function() {
+                $('#loading').hide();
+            }
         });
-    });
+    }
 
-    function quick_view_preview_image_by_color(key) {
-        let id = $('#preview-img' + key);
-        $(id).click();
+    function quickRemoveFromCart(cartKey, productId) {
+        $.post('{{ route("cart.remove") }}', {
+            _token: '{{ csrf_token() }}',
+            key: cartKey
+        }, function(response) {
+            updateNavCart();
+            toastr.info('{{ \App\CPU\translate("Item has been removed from cart") }}');
+            quickView(productId);
+        });
+    }
+
+    function quickUpdateCartQty(cartKey, newQty, productId) {
+        if (newQty < 1) {
+            quickRemoveFromCart(cartKey, productId);
+            return;
+        }
+        $.post('{{ route("cart.updateQuantity") }}', {
+            _token: '{{ csrf_token() }}',
+            key: cartKey,
+            quantity: newQty
+        }, function(response) {
+            if (response.status == 0) {
+                toastr.error(response.message);
+            } else {
+                updateNavCart();
+                quickView(productId);
+            }
+        });
     }
 </script>
-

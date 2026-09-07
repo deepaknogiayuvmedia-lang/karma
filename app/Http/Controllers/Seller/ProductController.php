@@ -7,6 +7,7 @@ use App\CPU\Convert;
 use App\CPU\Helpers;
 use App\CPU\ImageManager;
 use App\Http\Controllers\Controller;
+use App\Model\Attribute;
 use App\Model\Brand;
 use App\Model\BusinessSetting;
 use App\Model\Category;
@@ -166,7 +167,7 @@ class ProductController extends Controller
             'tax_model'             => 'required',
             'unit_price'            => 'required|numeric|gt:0',
             'purchase_price'        => 'required|numeric|gt:0',
-            'discount'              => 'required|gt:-1',
+            'discount'              => 'nullable|numeric|min:0',
             'shipping_cost'         => 'required_if:product_type,==,physical|gt:-1',
             'code'                  => 'required|numeric|min:1|digits_between:6,20|unique:products',
             'minimum_order_qty'     => 'required|numeric|min:1',
@@ -204,19 +205,21 @@ class ProductController extends Controller
             });
         }
 
-        if ($request['discount_type'] == 'percent') {
-            $dis = ($request['unit_price'] / 100) * $request['discount'];
-        } else {
-            $dis = $request['discount'];
-        }
+        if ($request->filled('discount')) {
+            if ($request['discount_type'] == 'percent') {
+                $dis = ($request['unit_price'] / 100) * $request['discount'];
+            } else {
+                $dis = $request['discount'];
+            }
 
-        if ($request['unit_price'] <= $dis) {
-            $validator->after(function ($validator) {
-                $validator->errors()->add(
-                    'unit_price',
-                    'Discount can not be more or equal to the price!'
-                );
-            });
+            if ($request['unit_price'] <= $dis) {
+                $validator->after(function ($validator) {
+                    $validator->errors()->add(
+                        'unit_price',
+                        'Discount can not be more or equal to the price!'
+                    );
+                });
+            }
         }
 
         if (is_null($request->name[array_search('en', $request->lang)])) {
@@ -735,21 +738,9 @@ class ProductController extends Controller
 
     public function edit($id)
     {
-        $product = Product::withoutGlobalScopes()->with('translations')->find($id);
+        $product = Product::withoutGlobalScopes()->find($id);
 
-        // Check if seller has an approved edit request for this product
-        $editRequest = ProductEditRequest::where('product_id', $id)
-            ->where('seller_id', auth('seller')->id())
-            ->where('status', 'approved')
-            ->latest()
-            ->first();
-
-        if (!$editRequest) {
-            Toastr::info(__('You need admin approval to edit this product. Please submit an edit request.'));
-            return redirect()->route('seller.product.list');
-        }
-
-        $product_category = json_decode($product->category_ids);
+        $product_category = json_decode($product->category_ids, true) ?? [];
         $product->colors = json_decode($product->colors);
         $categories = Category::where(['parent_id' => 0])->get();
         $br = Brand::orderBY('name', 'ASC')->get();
@@ -773,7 +764,7 @@ class ProductController extends Controller
             'tax_model'             => 'required',
             'unit_price'            => 'required|numeric|gt:0',
             'purchase_price'        => 'required|numeric|gt:0',
-            'discount'              => 'required|gt:-1',
+            'discount'              => 'nullable|numeric|min:0',
             'shipping_cost'         => 'required_if:product_type,==,physical|gt:-1',
             'code'                  => 'required|numeric|min:1|digits_between:6,20|unique:products,code,' . $product->id,
             'minimum_order_qty'     => 'required|numeric|min:1',
@@ -800,16 +791,18 @@ class ProductController extends Controller
             });
         }
 
-        if ($request['discount_type'] == 'percent') {
-            $dis = ($request['unit_price'] / 100) * $request['discount'];
-        } else {
-            $dis = $request['discount'];
-        }
+        if ($request->filled('discount')) {
+            if ($request['discount_type'] == 'percent') {
+                $dis = ($request['unit_price'] / 100) * $request['discount'];
+            } else {
+                $dis = $request['discount'];
+            }
 
-        if ($request['unit_price'] <= $dis) {
-            $validator->after(function ($validator) {
-                $validator->errors()->add('unit_price', 'Discount can not be more or equal to the price!');
-            });
+            if ($request['unit_price'] <= $dis) {
+                $validator->after(function ($validator) {
+                    $validator->errors()->add('unit_price', 'Discount can not be more or equal to the price!');
+                });
+            }
         }
 
         if (is_null($request->name[array_search('en', $request->lang)])) {
@@ -1034,6 +1027,8 @@ class ProductController extends Controller
         $product->current_stock     = $request->product_type == 'physical' ? abs($stock_count) : 0;
         $product->shipping_cost     = $request->product_type == 'physical' ? (Helpers::get_business_settings('product_wise_shipping_cost_approval') == 1 ? $product->shipping_cost : Convert::usd($request->shipping_cost)) : 0;
         $product->multiply_qty      = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
+        // Update category_ids
+        $product->category_ids = json_encode($request->category ?? []);
         // Phase 8: Approval Workflow - approved products need re-approval after edit
         if ($product->approval_status === 'approved') {
             $product->approval_status = 'pending_edit';
@@ -1097,7 +1092,9 @@ class ProductController extends Controller
             // Capture old product data for change request
             $oldData = [
                 'name' => $product->name,
-                'description' => $product->description,
+                'technical_name' => $product->technical_name,
+                'tally_name' => $product->tally_name,
+                'description' => $product->details,
                 'unit_price' => $product->unit_price,
                 'purchase_price' => $product->purchase_price,
                 'discount' => $product->discount,
@@ -1112,6 +1109,7 @@ class ProductController extends Controller
                 'colors' => $product->colors,
                 'attributes' => $product->attributes,
                 'choice_attributes' => $product->choice_attributes,
+                'variation' => $product->variation,
                 'stocks' => $product->stocks,
                 'sku' => $product->sku,
                 'code' => $product->code,
@@ -1119,12 +1117,25 @@ class ProductController extends Controller
                 'video_url' => $product->video_url,
                 'meta_title' => $product->meta_title,
                 'meta_description' => $product->meta_description,
+                'product_type' => $product->product_type,
+                'digital_product_type' => $product->digital_product_type,
+                'digital_file_ready' => $product->digital_file_ready,
+                'images' => $product->images,
+                'thumbnail' => $product->thumbnail,
+                'meta_image' => $product->meta_image,
+                'color_image' => $product->color_image,
+                'choice_options' => $product->choice_options,
+                'admin_commission' => $product->admin_commission,
+                'admin_commission_type' => $product->admin_commission_type,
+                'priority' => $product->priority,
             ];
 
             // Build new data from request
             $newData = [
                 'name' => $request->name[0] ?? $product->name,
-                'description' => $request->description[0] ?? $product->description,
+                'technical_name' => $request->technical_name ?? $product->technical_name,
+                'tally_name' => $request->prn[0] ?? $product->tally_name,
+                'description' => $request->description[0] ?? $product->details,
                 'unit_price' => $request->unit_price,
                 'purchase_price' => $request->purchase_price ?? $product->purchase_price,
                 'discount' => $request->discount_type == 'flat' ? $request->discount : $request->discount,
@@ -1134,11 +1145,12 @@ class ProductController extends Controller
                 'unit' => $request->unit,
                 'minimum_order_qty' => $request->minimum_order_qty,
                 'shipping_cost' => $request->shipping_cost,
-                'category_ids' => json_encode($request->category),
+                'category_ids' => json_encode($request->category ?? []),
                 'brand_id' => $request->brand_id ?? $product->brand_id,
                 'colors' => json_encode($request->colors ?? []),
                 'attributes' => json_encode($request->choice_attributes ?? []),
                 'choice_attributes' => json_encode($request->choice_attributes ?? []),
+                'variation' => $request->variation ?? $product->variation,
                 'stocks' => $request->stocks,
                 'sku' => $request->sku,
                 'code' => $request->code,
@@ -1148,7 +1160,33 @@ class ProductController extends Controller
                 'meta_description' => $request->meta_description,
                 'product_type' => $request->product_type,
                 'digital_product_type' => $request->digital_product_type ?? null,
+                'digital_file_ready' => $product->digital_file_ready,
+                'images' => $product->images,
+                'thumbnail' => $product->thumbnail,
+                'meta_image' => $product->meta_image,
+                'color_image' => $product->color_image,
+                'choice_options' => $product->choice_options,
+                'admin_commission' => $request->admin_commission ?? $product->admin_commission,
+                'admin_commission_type' => $request->admin_commission_type ?? $product->admin_commission_type,
+                'priority' => $request->priority ?? $product->priority,
             ];
+
+            // Add translations
+            $translations = [];
+            foreach ($request->lang as $index => $locale) {
+                if ($locale != 'en') {
+                    $translations[$locale] = [];
+                    if (!empty($request->name[$index])) {
+                        $translations[$locale]['name'] = $request->name[$index];
+                    }
+                    if (!empty($request->description[$index])) {
+                        $translations[$locale]['description'] = $request->description[$index];
+                    }
+                }
+            }
+            if (!empty($translations)) {
+                $newData['translations'] = $translations;
+            }
 
             // Store uploaded images in temp folder
             $tempImages = [];
@@ -1175,6 +1213,17 @@ class ProductController extends Controller
                 $tempImages['digital_file_ready'] = $digitalName;
             }
             $newData['temp_images'] = $tempImages;
+
+            // Check if there's already a pending change request for this product
+            $existingChangeRequest = ProductChangeRequest::where('product_id', $id)
+                ->where('seller_id', auth('seller')->id())
+                ->where('status', 'pending')
+                ->exists();
+
+            if ($existingChangeRequest) {
+                Toastr::error('You already have a pending change request for this product. Please wait for admin approval before submitting a new one.');
+                return back();
+            }
 
             // Create change request
             $editRequest = ProductEditRequest::where('product_id', $id)
@@ -1275,6 +1324,71 @@ class ProductController extends Controller
             ->paginate(20);
 
         return view('seller-views.product.change-requests', compact('requests'));
+    }
+
+    public function view_change_request($id)
+    {
+        $changeRequest = ProductChangeRequest::with(['product', 'editRequest'])
+            ->where('seller_id', auth('seller')->id())
+            ->find($id);
+
+        if (!$changeRequest) {
+            Toastr::error('Request not found.');
+            return back();
+        }
+
+        // Gather related IDs for human‑readable display
+        $brandIds = collect([
+            $changeRequest->old_data['brand_id'] ?? null,
+            $changeRequest->new_data['brand_id'] ?? null,
+        ])->filter()->unique()->toArray();
+
+        // Category IDs are stored as array of objects with 'id' key
+        $categoryIds = collect();
+        foreach (['category_ids'] as $key) {
+            $oldCats = $changeRequest->old_data[$key] ?? [];
+            $newCats = $changeRequest->new_data[$key] ?? [];
+            $oldCats = is_string($oldCats) ? json_decode($oldCats, true) : $oldCats;
+            $newCats = is_string($newCats) ? json_decode($newCats, true) : $newCats;
+            $categoryIds = $categoryIds->merge(collect($oldCats))->merge(collect($newCats));
+        }
+        $categoryIds = $categoryIds->pluck('id')->filter()->unique()->toArray();
+
+        // Attributes & Choice Attributes (may be stored as JSON strings)
+        $oldAttrs = $changeRequest->old_data['attributes'] ?? [];
+        $newAttrs = $changeRequest->new_data['attributes'] ?? [];
+        $oldAttrs = is_string($oldAttrs) ? json_decode($oldAttrs, true) : $oldAttrs;
+        $newAttrs = is_string($newAttrs) ? json_decode($newAttrs, true) : $newAttrs;
+        $attributeIds = collect($oldAttrs)->merge($newAttrs)->filter()->unique()->toArray();
+
+        $oldChoice = $changeRequest->old_data['choice_attributes'] ?? [];
+        $newChoice = $changeRequest->new_data['choice_attributes'] ?? [];
+        $oldChoice = is_string($oldChoice) ? json_decode($oldChoice, true) : $oldChoice;
+        $newChoice = is_string($newChoice) ? json_decode($newChoice, true) : $newChoice;
+        $choiceAttrIds = collect($oldChoice)->merge($newChoice)->filter()->unique()->toArray();
+
+        // Colors
+        $oldColors = $changeRequest->old_data['colors'] ?? [];
+        $newColors = $changeRequest->new_data['colors'] ?? [];
+        $oldColors = is_string($oldColors) ? json_decode($oldColors, true) : $oldColors;
+        $newColors = is_string($newColors) ? json_decode($newColors, true) : $newColors;
+        $colorIds = collect($oldColors)->merge($newColors)->pluck('id')->filter()->unique()->toArray();
+
+        // Load mappings to avoid N+1 queries
+        $brandMap = $brandIds ? Brand::whereIn('id', $brandIds)->pluck('name', 'id')->toArray() : [];
+        $categoryMap = $categoryIds ? Category::whereIn('id', $categoryIds)->pluck('name', 'id')->toArray() : [];
+        $attributeMap = $attributeIds ? Attribute::whereIn('id', $attributeIds)->pluck('name', 'id')->toArray() : [];
+        $choiceAttrMap = $choiceAttrIds ? Attribute::whereIn('id', $choiceAttrIds)->pluck('name', 'id')->toArray() : [];
+        $colorMap = $colorIds ? \App\Model\Color::whereIn('id', $colorIds)->pluck('code', 'id')->toArray() : [];
+
+        return view('admin-views.product.view-change-request', compact(
+            'changeRequest',
+            'brandMap',
+            'categoryMap',
+            'attributeMap',
+            'choiceAttrMap',
+            'colorMap'
+        ));
     }
 
     public function view($id)

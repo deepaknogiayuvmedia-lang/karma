@@ -127,8 +127,8 @@ class WebController extends Controller
         $categories = Category::where(['position' => 0])->priority()->take(11)->get();
         $brands = Brand::active()->take(15)->get();
 
-        // best sell product - with eager loading
-        $bestSellProduct = OrderDetail::with(['product.reviews', 'product.translations' => function ($query) {
+        // best sell product - mapped to group featured (indexing = 1) products
+        $bestSellOrderDetails = OrderDetail::with(['product.reviews', 'product.translations' => function ($query) {
             $query->where('locale', Helpers::default_lang());
         }])
             ->whereHas('product', function ($query) {
@@ -137,29 +137,55 @@ class WebController extends Controller
             ->select('product_id', DB::raw('COUNT(product_id) as count'))
             ->groupBy('product_id')
             ->orderBy('count', 'desc')
-            ->take(4)
+            ->take(15)
             ->get();
 
-        // Top rated - with eager loading
-        $topRated = Review::with(['product.reviews', 'product.translations' => function ($query) {
-            $query->where('locale', Helpers::default_lang());
-        }])
-            ->whereHas('product', function ($query) {
-                $query->active();
-            })
-            ->select('product_id', DB::raw('AVG(rating) as count'))
-            ->groupBy('product_id')
-            ->orderBy('count', 'desc')
-            ->take(4)
-            ->get();
+        $bestSellProduct = $bestSellOrderDetails->map(function ($bs) {
+            if (!$bs->product) return null;
+            $grpId = !empty($bs->product->pid) ? $bs->product->pid : $bs->product->id;
+            $featuredProd = Product::active()
+                ->where(function ($q) use ($grpId) {
+                    $q->where('id', $grpId)->orWhere('pid', $grpId);
+                })
+                ->where('indexing', 1)
+                ->first();
+            if (!$featuredProd) {
+                $featuredProd = Product::active()
+                    ->where(function ($q) use ($grpId) {
+                        $q->where('id', $grpId)->orWhere('pid', $grpId);
+                    })
+                    ->orderBy('indexing', 'asc')
+                    ->first();
+            }
+            if ($featuredProd) {
+                $bs->product = $featuredProd;
+                $bs->product_id = $featuredProd->id;
+            }
+            return $bs;
+        })
+        ->filter()
+        ->unique('product_id')
+        ->take(4)
+        ->values();
 
         if ($bestSellProduct->count() == 0) {
-            $bestSellProduct = $latest_products;
+            $fallbackProducts = Product::active()
+                ->where('indexing', 1)
+                ->orderBy('priority', 'desc')
+                ->take(4)
+                ->get();
+            if ($fallbackProducts->count() == 0) {
+                $fallbackProducts = Product::active()->orderBy('indexing', 'asc')->take(4)->get();
+            }
+            $bestSellProduct = $fallbackProducts->map(function ($p) {
+                $item = new \stdClass();
+                $item->product = $p;
+                $item->product_id = $p->id;
+                return $item;
+            });
         }
 
-        if ($topRated->count() == 0) {
-            $topRated = $bestSellProduct;
-        }
+        $topRated = collect([]);
 
         $deal_of_the_day = DealOfTheDay::join('products', 'products.id', '=', 'deal_of_the_days.product_id')
             ->select('deal_of_the_days.*', 'products.unit_price')
@@ -174,8 +200,27 @@ class WebController extends Controller
             }])
                 ->where('user_id', auth('customer')->id())
                 ->orderBy('id', 'desc')
+                ->take(15)
+                ->get()
+                ->map(function ($rv) {
+                    if (!$rv->product) return null;
+                    $grpId = !empty($rv->product->pid) ? $rv->product->pid : $rv->product->id;
+                    $featuredProd = Product::active()
+                        ->where(function ($q) use ($grpId) {
+                            $q->where('id', $grpId)->orWhere('pid', $grpId);
+                        })
+                        ->lowestPricePerPid()
+                        ->first();
+                    if ($featuredProd) {
+                        $rv->product = $featuredProd;
+                        $rv->product_id = $featuredProd->id;
+                    }
+                    return $rv;
+                })
+                ->filter()
+                ->unique('product_id')
                 ->take(5)
-                ->get();
+                ->values();
         }
 
         return view(
@@ -834,17 +879,45 @@ class WebController extends Controller
 
             $recentlyViewed = [];
             if (auth('customer')->check()) {
+                $grpId = !empty($product->pid) ? $product->pid : $product->id;
+                $currentGroupFeatured = Product::active()
+                    ->where(function ($q) use ($grpId) {
+                        $q->where('id', $grpId)->orWhere('pid', $grpId);
+                    })
+                    ->lowestPricePerPid()
+                    ->first();
+                $targetProductId = $currentGroupFeatured ? $currentGroupFeatured->id : $product->id;
+
                 \App\Model\RecentlyViewedProduct::updateOrCreate(
-                    ['user_id' => auth('customer')->id(), 'product_id' => $product->id],
+                    ['user_id' => auth('customer')->id(), 'product_id' => $targetProductId],
                     ['updated_at' => now()]
                 );
 
                 $recentlyViewed = \App\Model\RecentlyViewedProduct::with(['product.reviews'])
                     ->where('user_id', auth('customer')->id())
-                    ->where('product_id', '!=', $product->id)
+                    ->where('product_id', '!=', $targetProductId)
                     ->orderBy('id', 'desc')
+                    ->take(15)
+                    ->get()
+                    ->map(function ($rv) {
+                        if (!$rv->product) return null;
+                        $grpId = !empty($rv->product->pid) ? $rv->product->pid : $rv->product->id;
+                        $featuredProd = Product::active()
+                            ->where(function ($q) use ($grpId) {
+                                $q->where('id', $grpId)->orWhere('pid', $grpId);
+                            })
+                            ->lowestPricePerPid()
+                            ->first();
+                        if ($featuredProd) {
+                            $rv->product = $featuredProd;
+                            $rv->product_id = $featuredProd->id;
+                        }
+                        return $rv;
+                    })
+                    ->filter()
+                    ->unique('product_id')
                     ->take(5)
-                    ->get();
+                    ->values();
             }
 
             return view(
@@ -1103,7 +1176,7 @@ class WebController extends Controller
         }
 
         if ($request['data_from'] == 'featured') {
-            $query = Product::with(['reviews'])->active()->where('featured', 1)->orderBy('priority', 'desc')->orderBy('indexing', 'asc');
+            $query = Product::with(['reviews'])->active()->lowestPricePerPid()->where('featured', 1)->orderBy('priority', 'desc')->orderBy('indexing', 'asc');
         }
 
         if ($request['data_from'] == 'search') {

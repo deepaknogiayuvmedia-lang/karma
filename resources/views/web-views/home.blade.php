@@ -932,21 +932,34 @@
 
 
 
-        <div class="container mb-4" style="padding:0">
-            <div class="row ">
+        {{-- Dynamic Banner Section above Brands --}}
+        @php(
+            $main_section_banners = \App\Model\Banner::where('banner_type', 'Brand Section Banner')->where('published', 1)->orderBy('id', 'desc')->get()
+        )
+        @if($main_section_banners->count() == 0)
+            @php(
+                $main_section_banners = \App\Model\Banner::where('banner_type', 'Main Section Banner')->where('published', 1)->orderBy('id', 'desc')->get()
+            )
+        @endif
+        @if($main_section_banners->count() == 0)
+            @php(
+                $main_section_banners = \App\Model\Banner::where('published', 1)->orderBy('id', 'desc')->take(4)->get()
+            )
+        @endif
 
-                <div class="col-md-12">
-                    <div style="over-flow:hidden">
-                        <div class="carousel-wrap p-1">
-                            <div class="owl-carousel owl-theme " id="main_section_banner">
-                                @foreach (\App\Model\Banner::where('banner_type', 'Main Section Banner')->where('published', 1)->orderBy('id', 'desc')->get() as $mainbanner)
-                                    <div class="col-12">
-
-                                        <a href="{{ $mainbanner->url }}" class="d-block">
-
-                                            <img class="d-block"
+        @if(count($main_section_banners) > 0)
+            <div class="container mt-4" style="padding:0">
+                <div class="row m-0">
+                    <div class="col-md-12 p-0">
+                        <div class="carousel-wrap">
+                            <div class="owl-carousel owl-theme" id="main_section_banner_slider">
+                                @foreach ($main_section_banners as $mainbanner)
+                                    <div class="item">
+                                        <a href="{{ $mainbanner->url && $mainbanner->url != '#' ? $mainbanner->url : 'javascript:' }}" class="d-block">
+                                            <img class="d-block w-100 rounded __shadow-sm" style="max-height: 280px; object-fit: cover;"
                                                 onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                src="{{ asset(config('app.public_storage_path') . '/banner') }}/{{ $mainbanner['photo'] }}">
+                                                src="{{ asset(config('app.public_storage_path') . '/banner') }}/{{ $mainbanner['photo'] }}"
+                                                alt="Banner">
                                         </a>
                                     </div>
                                 @endforeach
@@ -955,7 +968,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
     </div>
 
     {{-- brands --}}
@@ -1002,7 +1015,7 @@
         <div class="row m-0">
 
             <!-- Best Selling -->
-            <div class="col-md-6">
+            <div class="col-12">
                 <div class="card card __shadow h-100">
                     <div class="card-body p-xl-35">
 
@@ -1015,10 +1028,10 @@
 
                         <div class="row g-3">
                             @foreach ($bestSellProduct as $key => $bestSell)
-                                @if ($bestSell->product && $key < 2)
+                                @if ($bestSell->product && $key < 4)
                                     @php($product = $bestSell->product)
 
-                                    <div class="col-md-6">
+                                    <div class="col-sm-6 col-md-3">
                                         <a href="{{ route('product', $product->slug) }}" class="__best-selling">
 
                                             {{-- Discount Badge --}}
@@ -1055,77 +1068,6 @@
                                                     {{-- Save --}}
                                                     @if ($product->discount > 0)
                                                         <div style="color:green;" class="__text-12px">
-                                                            Save
-                                                            {{ \App\CPU\Helpers::currency_converter(\App\CPU\Helpers::get_product_discount($product, $product->unit_price)) }}
-                                                        </div>
-                                                    @endif
-
-                                                </div>
-                                            </div>
-
-                                        </a>
-                                    </div>
-                                @endif
-                            @endforeach
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-            <!-- Top Rated -->
-            <div class="col-md-6">
-                <div class="card card __shadow h-100">
-                    <div class="card-body p-xl-35">
-
-                        <div class="d-flex justify-content-between mb-3">
-                            <div>
-                                <img class="size-30" src="{{ asset('assets/front-end/png/top-rated.png') }}">
-                                <span class="font-bold pl-1">Top Rated</span>
-                            </div>
-                        </div>
-
-                        <div class="row g-3">
-                            @foreach ($topRated as $key => $top)
-                                @if ($top->product && $key < 2)
-                                    @php($product = $top->product)
-
-                                    <div class="col-md-6">
-                                        <a href="{{ route('product', $product->slug) }}" class="__best-selling">
-
-                                            {{-- Discount --}}
-                                            @if ($product->discount > 0)
-                                                <span class="for-discoutn-value">
-                                                    {{ $product->discount }}
-                                                    {{ $product->discount_type == 'percent' ? '%' : '' }} off
-                                                </span>
-                                            @endif
-
-                                            <div class="row p-2 align-items-center">
-                                                <div class="col-3"> 
-                                                    <img class="rounded"
-                                                        src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product->thumbnail }}"
-                                                        width="60">
-                                                </div>
-                                                <div class="pl-2 col-9">
-                                                     <h6 class="__text-12px">{{ Str::limit($product->name, 50) }}</h6>
-
-                                                    {{-- Price --}}
-                                                   <span class="text-accent __text-16px">
-                                                        {{ \App\CPU\Helpers::currency_converter(
-                                                            $product->unit_price - \App\CPU\Helpers::get_product_discount($product, $product->unit_price),
-                                                        ) }}
-                                                    </span>
-
-                                                    @if ($product->discount > 0)
-                                                       <strike class="__text-12px">
-                                                            {{ \App\CPU\Helpers::currency_converter($product->unit_price) }}
-                                                        </strike>
-                                                    @endif
-
-                                                    {{-- Save --}}
-                                                    @if ($product->discount > 0)
-                                                         <div style="color:green;" class="__text-12px">
                                                             Save
                                                             {{ \App\CPU\Helpers::currency_converter(\App\CPU\Helpers::get_product_discount($product, $product->unit_price)) }}
                                                         </div>
@@ -1798,6 +1740,22 @@
                 },
                 480: {
                     items: 2
+                }
+            }
+        });
+
+        $('#main_section_banner_slider, #footer_banner_list').owlCarousel({
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 3500,
+            margin: 10,
+            nav: false,
+            dots: true,
+            autoplayHoverPause: true,
+            '{{ session('direction') }}': true,
+            responsive: {
+                0: {
+                    items: 1
                 }
             }
         });

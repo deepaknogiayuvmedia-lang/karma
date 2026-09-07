@@ -45,6 +45,7 @@
                                             <option value="Footer Banner" {{$banner['banner_type']=='Footer Banner'?'selected':''}}>Footer Banner</option>
                                             <option value="Popup Banner" {{$banner['banner_type']=='Popup Banner'?'selected':''}}>Popup Banner</option>
                                             <option value="Main Section Banner" {{$banner['banner_type']=='Main Section Banner'?'selected':''}}>{{ \App\CPU\translate('Main Section Banner')}}</option>
+                                            <option value="Brand Section Banner" {{$banner['banner_type']=='Brand Section Banner'?'selected':''}}>{{ \App\CPU\translate('Brand Section Banner')}}</option>
                                         </select>
                                     </div>
 

@@ -65,6 +65,9 @@ JOIN (
 
             CASE 
 
+                -- 0️⃣ Featured product gets top priority in group
+                WHEN p_sub.featured = 1 THEN 0
+
                 -- 1️⃣ Cheapest + High Reviews + High Stock
                 WHEN 
                     p_sub.actual_amount =

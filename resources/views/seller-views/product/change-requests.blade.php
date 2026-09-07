@@ -21,6 +21,7 @@
                                 <tr>
                                     <th>{{ \App\CPU\translate('SL') }}</th>
                                     <th>{{ \App\CPU\translate('Product Name') }}</th>
+                                    <th>{{ \App\CPU\translate('Action') }}</th>
                                     <th>{{ \App\CPU\translate('Status') }}</th>
                                     <th>{{ \App\CPU\translate('Changes Summary') }}</th>
                                     <th>{{ \App\CPU\translate('Admin Note') }}</th>
@@ -39,6 +40,11 @@
                                             @else
                                                 <span class="text-muted">-</span>
                                             @endif
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('seller.product.view-change-request', [$req->id]) }}" class="btn btn-sm btn-outline-primary">
+                                                {{ \App\CPU\translate('View') }}
+                                            </a>
                                         </td>
                                         <td>
                                             @if($req->status == 'pending')

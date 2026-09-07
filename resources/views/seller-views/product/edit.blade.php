@@ -196,7 +196,7 @@
                                                 ---{{ \App\CPU\translate('Select') }}---</option>
                                             @foreach ($categories as $category)
                                                 <option value="{{ $category['id'] }}"
-                                                    {{ $category->id == $product_category[0]->id ? 'selected' : '' }}>
+                                                    {{ (isset($product_category[0]['id']) && $category['id'] == $product_category[0]['id']) ? 'selected' : '' }}>
                                                     {{ $category['name'] }}</option>
                                             @endforeach
                                         </select>
@@ -207,7 +207,7 @@
                                         <select
                                             class="js-example-basic-multiple js-states js-example-responsive form-control"
                                             name="sub_category_id" id="sub-category-select"
-                                            data-id="{{ count($product_category) >= 2 ? $product_category[1]->id : '' }}"
+                                            data-id="{{ (count($product_category) >= 2 && isset($product_category[1]['id'])) ? $product_category[1]['id'] : '' }}"
                                             onchange="getRequest('{{ url('/') }}/seller/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
                                         </select>
                                     </div>
@@ -217,7 +217,7 @@
 
                                         <select
                                             class="js-example-basic-multiple js-states js-example-responsive form-control"
-                                            data-id="{{ count($product_category) >= 3 ? $product_category[2]->id : '' }}"
+                                            data-id="{{ (count($product_category) >= 3 && isset($product_category[2]['id'])) ? $product_category[2]['id'] : '' }}"
                                             name="sub_sub_category_id" id="sub-sub-category-select">
 
                                         </select>
@@ -304,25 +304,6 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-6 form-group">
-                                    <label for="attributes" class="title-color">
-                                        {{ \App\CPU\translate('Attributes') }} :
-                                    </label>
-                                    <select class="form-control js-select2-custom" name="choice_attributes[]"
-                                        id="choice_attributes" multiple="multiple">
-                                        @foreach (\App\Model\Attribute::orderBy('name', 'asc')->get() as $key => $a)
-                                            @if ($product['attributes'] != 'null')
-                                                <option value="{{ $a['id'] }}"
-                                                    {{ in_array($a->id, json_decode($product['attributes'], true)) ? 'selected' : '' }}>
-                                                    {{ $a['name'] }}
-                                                </option>
-                                            @else
-                                                <option value="{{ $a['id'] }}">{{ $a['name'] }}</option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                </div>
-
                                 <div class="col-md-12 mt-2 mb-2">
                                     <div class="customer_choice_options" id="customer_choice_options">
                                         @include('seller-views.product.partials._choices', [
@@ -381,25 +362,6 @@
                                             <option value="exclude"
                                                 {{ $product->tax_model == 'exclude' ? 'selected' : '' }}>
                                                 {{ \App\CPU\translate('exclude') }}</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="title-color">{{ \App\CPU\translate('Discount') }}</label>
-                                        <input type="number" min="0"
-                                            value={{ $product->discount_type == 'flat' ? \App\CPU\BackEndHelper::usd_to_currency($product->discount) : $product->discount }}
-                                            step="0.01" placeholder="{{ \App\CPU\translate('Discount') }}"
-                                            name="discount" class="form-control" required>
-                                    </div>
-                                    <div class="col-md-2 mb-3">
-                                        <label for=""
-                                            class="title-color">{{ \App\CPU\translate('Discount_Type') }}</label>
-                                        <select class="form-control js-select2-custom" name="discount_type">
-                                            <option value="percent"
-                                                {{ $product['discount_type'] == 'percent' ? 'selected' : '' }}>
-                                                {{ \App\CPU\translate('Percent') }}</option>
-                                            <option value="flat" {{ $product['discount_type'] == 'flat' ? 'selected' : '' }}>
-                                                {{ \App\CPU\translate('Flat') }}</option>
-
                                         </select>
                                     </div>
                                 </div>

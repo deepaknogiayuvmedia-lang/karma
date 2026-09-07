@@ -1,146 +1,164 @@
 <style>
-    .product {
-        background-color: #fcfcfc;
-        border: 2px solid #efefef;
-        margin-bottom: 10px;
-    }
-
-    .product_pic {
-        width: 40%;
-    }
-
-    .product_details {
-        width: 60%;
-        padding: 5px;
-    }
-
-    .image_center {
-        height: 126px;
-    }
-
-    .image_center img {
-        min-width: 100px;
-        vertical-align: middle;
-    }
-
-    .product-title {
+    .inline-product-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 10px;
+        margin-bottom: 12px;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none !important;
         position: relative;
-    }
-
-    .product-title>a {
-        color: #373f50;
-    }
-
-    .star-rating>i {
-        font-size: 8px !important;
-    }
-
-    .ptr1 {
-        position: relative;
-        display: inline-block;
-        word-wrap: break-word;
         overflow: hidden;
-        max-height: 2.4em;
-        line-height: 1.2em;
     }
 
-    .ptr {
-        font-weight: 600;
-        font-size: 16px !important;
+    .inline-product-card:hover {
+        border-color: var(--pd-primary, #2563eb);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.08);
     }
 
-    .inline_product_image {
-        height: 100px;
+    .inline-product-img-box {
+        width: 85px;
+        height: 85px;
+        min-width: 85px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        overflow: hidden;
     }
 
-    .ptp {
+    .inline-product-img-box img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+
+    .inline-product-card:hover .inline-product-img-box img {
+        transform: scale(1.06);
+    }
+
+    .inline-product-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .inline-product-title {
+        font-size: 13px;
         font-weight: 700;
-        font-size: 16px !important;
+        color: #0f172a;
+        line-height: 1.35;
+        margin-bottom: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
-    .star-rating .sr-star {
-        margin: 0 !important;
+    .inline-product-rating {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        margin-bottom: 4px;
+        font-size: 11px;
     }
 
-    @media (max-width: 768px) {
-        .product_pic {
-            width: 200px !important;
-        }
-
-        .product {
-            margin-right: 16px;
-        }
-
-        .product_details {
-            width: 100% !important;
-        }
+    .inline-product-price-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 3px;
     }
 
-    .stock-out-side {
-        position: absolute;
-        left: 47% !important;
-        top: 83% !important;
-        color: white !important;
-        font-weight: 900;
+    .inline-product-price {
         font-size: 15px;
+        font-weight: 800;
+        color: #0f172a;
     }
 
-    .stock-card {
-        filter: contrast(0.8) !important;
+    .inline-product-old-price {
+        font-size: 11px;
+        color: #94a3b8;
+        text-decoration: line-through;
+        font-weight: 500;
+    }
+
+    .inline-product-save-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 6px;
+    }
+
+    .inline-stock-out-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #ef4444;
+        color: #ffffff;
+        font-size: 9px;
+        font-weight: 800;
+        padding: 2px 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
     }
 </style>
+
 @php
     $overallRating = \App\CPU\ProductManager::get_overall_rating($product->reviews);
-    $variations = json_decode($product->variation, true);
+    $discount = \App\CPU\Helpers::get_product_discount($product, $product->unit_price);
 @endphp
-<div class="d-flex product justify-content-between inline_product" style="cursor: pointer;"
-    data-href="{{route('product',$product->slug)}}">
-    <div class="product_pic d-flex align-items-center justify-content-center" style=" text-align: center;">
-        <a href="{{route('product',$product->slug)}}" class="image_center">
-            <img class="inline_product_image"
-                onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
-                src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$product['thumbnail']}}"
-                width="100%" style="height: 100%;">
-        </a>
-    </div>
-    <div class="product_details {{$product['current_stock']==0?'stock-card':''}}">
-        <h3 class="product-title">
-            <a class="ptr ptr1" href="{{route('product',$product->slug)}}">{{$product['name']}}</a>
-        </h3>
-        <h6 class="ptr">
-            @for($inc=0;$inc<5;$inc++)
-                @if($inc<$overallRating[0])
-                <i class="sr-star czi-star-filled active" style="color: gold"></i>
-                @else
-                <i class="sr-star czi-star active"></i>
-                @endif
-                @endfor
-        </h6>
-        <div class="product-price">
-            <span class="text-accent ptp">
-                {{\App\CPU\Helpers::currency_converter(
-            $product->unit_price-(\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
-            )}}
-            </span>
-            @if($product->discount > 0)
-            <strike style="font-size: 12px!important;color: #E96A6A!important;">
-                {{\App\CPU\Helpers::currency_converter($product->unit_price)}}
-            </strike>
-            @endif
-        </div>
-        @if($product->discount > 0)
-        <div class="__text-12px" style="color: #4eaa6f;">
-            <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.665 3.04a4 4 0 0 0-5.33 0l-.242.216a2 2 0 0 1-1.22.506l-.324.018a4 4 0 0 0-3.77 3.77l-.017.323a2 2 0 0 1-.506 1.22l-.216.242a4 4 0 0 0 0 5.33l.216.242a2 2 0 0 1 .506 1.22l.018.324a4 4 0 0 0 3.769 3.769l.324.018a2 2 0 0 1 1.22.506l.242.216a4 4 0 0 0 5.33 0l.242-.216a2 2 0 0 1 1.22-.506l.324-.018a4 4 0 0 0 3.769-3.77l.018-.323a2 2 0 0 1 .505-1.22l.216-.242a4 4 0 0 0 0-5.33l-.216-.242a2 2 0 0 1-.505-1.22l-.018-.324a4 4 0 0 0-3.77-3.769l-.323-.018a2 2 0 0 1-1.22-.506l-.242-.216Zm1.042 5.253a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0ZM16 14.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="#4eaa6f"></path>
-            </svg>
-            save {{\App\CPU\Helpers::currency_converter(
-                            (\App\CPU\Helpers::get_product_discount($product,$product->unit_price))
-                        )}}
-        </div>
-        @endif
-        @if($product['current_stock']<=0)
-            <label class="badge badge-danger stock-out-side">{{\App\CPU\translate('Stock Out')}}</label>
-            @endif
-    </div>
-</div>
 
+<a href="{{ route('product', $product->slug) }}" class="inline-product-card">
+    @if ($product['current_stock'] <= 0)
+        <span class="inline-stock-out-badge">{{ \App\CPU\translate('Stock Out') }}</span>
+    @endif
+
+    <div class="inline-product-img-box">
+        <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
+            src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product['thumbnail'] }}"
+            alt="{{ $product['name'] }}">
+    </div>
+
+    <div class="inline-product-details">
+        <div class="inline-product-title" title="{{ $product['name'] }}">
+            {{ $product['name'] }}
+        </div>
+
+      
+
+        <div class="inline-product-price-row">
+            <span class="inline-product-price">
+                {{ \App\CPU\Helpers::currency_converter($product->unit_price - $discount) }}
+            </span>
+            @if ($product->discount > 0)
+                <span class="inline-product-old-price">
+                    {{ \App\CPU\Helpers::currency_converter($product->unit_price) }}
+                </span>
+            @endif
+        </div>
+
+        @if ($discount > 0)
+            <div>
+                <span class="inline-product-save-badge">
+                    <i class="fa fa-tag"></i>
+                    {{ \App\CPU\translate('save') }} {{ \App\CPU\Helpers::currency_converter($discount) }}
+                </span>
+            </div>
+        @endif
+    </div>
+</a>

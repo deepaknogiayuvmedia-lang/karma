@@ -50,6 +50,8 @@
                                                 value="Popup Banner">{{ \App\CPU\translate('Popup Banner')}}</option>
                                             <option
                                                 value="Main Section Banner">{{ \App\CPU\translate('Main Section Banner')}}</option>
+                                            <option
+                                                value="Brand Section Banner">{{ \App\CPU\translate('Brand Section Banner')}}</option>
                                         </select>
                                     </div>
 
