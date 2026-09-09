@@ -58,7 +58,7 @@
             ?>
             <h3 class="mb-3">{{\App\CPU\translate('description')}}</h3>
             <span class="d-block text-dark">
-                {!! $product->description !!}
+                {!! $product->details !!}
             </span>
             <form id="add-to-cart-form">
                 @csrf

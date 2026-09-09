@@ -64,9 +64,9 @@
                                         </div>
                                         <div class="col-md-4 form-group">
                                             <label class="title-color"
-                                                for="technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
-                                            <input type="text" name="technical_name" id="technical_name"
-                                                class="form-control" value="{{ old('technical_name') }}"
+                                                for="{{ $lang }}_technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
+                                            <input type="text" name="technical_name[]" id="{{ $lang }}_technical_name"
+                                                class="form-control" value="{{ old('technical_name')[$loop->index] ?? '' }}"
                                                 placeholder="{{ \App\CPU\translate('Technical Name') }}">
                                         </div>
                                         <div class="col-md-4 form-group">

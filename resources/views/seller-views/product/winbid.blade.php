@@ -87,7 +87,7 @@
                                 <td>
                                     {{ $bidprice }}
                                 </td>
-                                <td>{{ $product->description }}</td>
+                                <td>{{ $product->details }}</td>
 
                                 <td>
                                     <button class="btn btn-warning btn-sm " data-id="{{$product->id}}">

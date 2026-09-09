@@ -132,6 +132,22 @@ class ProductController extends Controller
 
             $duplicate->save();
 
+            // Copy translations (name, description, technical_name) from original product
+            $translations = \App\Model\Translation::where('translationable_type', 'App\Model\Product')
+                ->where('translationable_id', $product->id)
+                ->whereIn('key', ['name', 'description', 'technical_name'])
+                ->get();
+
+            foreach ($translations as $t) {
+                \App\Model\Translation::insert([
+                    'translationable_type' => 'App\Model\Product',
+                    'translationable_id' => $duplicate->id,
+                    'locale' => $t->locale,
+                    'key' => $t->key,
+                    'value' => $t->value,
+                ]);
+            }
+
             return response()->json([
                 'success' => 1,
                 'message' => 'Product Added successfully',
@@ -651,6 +667,80 @@ class ProductController extends Controller
         } else {
             return response()->json(['success' => false, 'message' => 'Quantity cannot be less than 0']);
         }
+    }
+
+    public function update_price_variants(Request $request)
+    {
+        $product = Product::find($request->id);
+
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'Product not found']);
+        }
+
+        if ($product->added_by === 'seller' && $product->user_id !== auth('seller')->id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized']);
+        }
+
+        // Update price fields
+        if ($request->has('unit_price')) {
+            $product->unit_price = BackEndHelper::currency_to_usd(abs($request->unit_price));
+        }
+        if ($request->has('purchase_price')) {
+            $product->purchase_price = BackEndHelper::currency_to_usd(abs($request->purchase_price));
+        }
+        if ($request->has('discount')) {
+            $product->discount = $request->discount_type == 'flat'
+                ? BackEndHelper::currency_to_usd(abs($request->discount))
+                : abs($request->discount);
+            $product->discount_type = $request->discount_type ?? 'flat';
+        }
+        if ($request->has('tax')) {
+            $product->tax = $request->tax_model == 'flat'
+                ? BackEndHelper::currency_to_usd(abs($request->tax))
+                : abs($request->tax);
+            $product->tax_model = $request->tax_model ?? 'include';
+        }
+        if ($request->has('shipping_cost')) {
+            $product->shipping_cost = BackEndHelper::currency_to_usd(abs($request->shipping_cost));
+        }
+        if ($request->has('minimum_order_qty')) {
+            $product->minimum_order_qty = abs($request->minimum_order_qty);
+        }
+        if ($request->has('current_stock')) {
+            $product->current_stock = abs($request->current_stock);
+        }
+
+        // Update variations
+        if ($request->has('variants') && is_array($request->variants)) {
+            $variations = json_decode($product->variation, true) ?? [];
+            $stock_count = 0;
+
+            foreach ($request->variants as $variantData) {
+                $variantType = $variantData['type'] ?? '';
+                $variantPrice = BackEndHelper::currency_to_usd(abs($variantData['price'] ?? 0));
+                $variantQty = abs(intval($variantData['qty'] ?? 0));
+                $variantSku = $variantData['sku'] ?? '';
+
+                foreach ($variations as &$item) {
+                    if ($item['type'] == $variantType) {
+                        $item['price'] = $variantPrice;
+                        $item['qty'] = $variantQty;
+                        if ($variantSku !== '') {
+                            $item['sku'] = $variantSku;
+                        }
+                    }
+                    $stock_count += $item['qty'];
+                }
+                unset($item);
+            }
+
+            $product->variation = json_encode($variations);
+            $product->current_stock = $stock_count;
+        }
+
+        $product->save();
+
+        return response()->json(['success' => true, 'message' => 'Product updated successfully']);
     }
 
     /**

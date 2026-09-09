@@ -31,6 +31,8 @@ class ProductUpdateRequest extends FormRequest
             'shipping_cost'        => 'required_if:product_type,physical|nullable|numeric|min:0',
             'code'                 => ['required', 'numeric', 'min:1', 'digits_between:6,20', Rule::unique('products', 'code')->ignore($productId)],
             'minimum_order_qty'    => 'required|numeric|min:1',
+            'technical_name'       => 'nullable|array',
+            'technical_name.*'     => 'nullable|string|max:255',
             'admin_commission'     => 'nullable|numeric|min:0',
             'admin_commission_type' => 'nullable|in:percentage,fixed',
             'priority'             => 'nullable|integer|min:0|max:5',

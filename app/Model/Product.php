@@ -49,6 +49,7 @@ class Product extends Model
     protected $fillable = [
         'name',
         'technical_name',
+        'tally_name',
         'price',
         'product_type',
         'added_by',
@@ -242,6 +243,20 @@ class Product extends Model
             }
         }
         return $detail;
+    }
+
+    public function getTechnicalNameAttribute($value)
+    {
+        if (strpos(url()->current(), '/admin') || strpos(url()->current(), '/seller')) {
+            return $value;
+        }
+        $locale = Helpers::default_lang();
+        foreach ($this->translations as $t) {
+            if ($t->locale === $locale && !empty($t->value) && $t->key === 'technical_name') {
+                return $t->value;
+            }
+        }
+        return $value;
     }
 
     protected static function boot()

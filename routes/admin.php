@@ -372,6 +372,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('stock-limit-list/{type}', 'ProductController@stock_limit_list')->name('stock-limit-list');
             Route::get('get-variations', 'ProductController@get_variations')->name('get-variations');
             Route::post('update-quantity', 'ProductController@update_quantity')->name('update-quantity');
+            Route::post('update-price-variants', 'ProductController@update_price_variants')->name('update-price-variants');
             Route::get('edit/{id}', 'ProductController@edit')->name('edit');
             Route::post('update/{id}', 'ProductController@update')->name('update');
             Route::post('featured-status', 'ProductController@featured_status')->name('featured-status');

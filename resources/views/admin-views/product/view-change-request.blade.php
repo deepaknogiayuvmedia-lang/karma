@@ -87,9 +87,7 @@
                                             );
                                             // Fields to skip from comparison
                                             $skipKeys = [
-                                                'temp_images',
                                                 'discount_type',
-                                                'discount',
                                                 'choice_options',
                                                 'translations',
                                                 'priority',
@@ -201,41 +199,48 @@
                 </div>
 
                 <!-- Uploaded Images Preview -->
-                @php $tempImages = $changeRequest->new_data['temp_images'] ?? []; @endphp
-                @if (!empty($tempImages))
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">{{ \App\CPU\translate('Uploaded Images') }}</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                @if (!empty($tempImages['thumbnail']))
-                                    <div class="col-md-3 mb-3">
-                                        <label>{{ \App\CPU\translate('Thumbnail') }}</label>
-                                        <img src="{{ asset('storage/temp/product_images/' . $tempImages['thumbnail']) }}"
-                                            class="img-fluid rounded border" alt="Thumbnail">
-                                    </div>
-                                @endif
-                                @if (!empty($tempImages['images']))
-                                    @foreach ($tempImages['images'] as $img)
-                                        <div class="col-md-3 mb-3">
-                                            <label>{{ \App\CPU\translate('Image') }} {{ $loop->iteration }}</label>
-                                            <img src="{{ asset('storage/temp/product_images/' . $img) }}"
-                                                class="img-fluid rounded border" alt="Product Image">
+@php $tempImages = $changeRequest->new_data['temp_images'] ?? []; @endphp
+                                @if (!empty($tempImages))
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">{{ \App\CPU\translate('Uploaded Images') }}</h5>
                                         </div>
-                                    @endforeach
-                                @endif
-                                @if (!empty($tempImages['meta_image']))
-                                    <div class="col-md-3 mb-3">
-                                        <label>{{ \App\CPU\translate('Meta Image') }}</label>
-                                        <img src="{{ asset('storage/temp/product_images/' . $tempImages['meta_image']) }}"
-                                            class="img-fluid rounded border" alt="Meta Image">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                @if (isset($tempImages['thumbnail']) && $tempImages['thumbnail'])
+                                                    <div class="col-md-3 mb-3">
+                                                        <label>{{ \App\CPU\translate('Thumbnail') }}</label>
+                                                        <img src="{{ asset('storage/temp/product_images/' . $tempImages['thumbnail']) }}"
+                                                            class="img-fluid rounded border" alt="Thumbnail">
+                                                    </div>
+                                                @endif
+                                                @if (isset($tempImages['images']) && is_array($tempImages['images']))
+                                                    @foreach ($tempImages['images'] as $img)
+                                                        <div class="col-md-3 mb-3">
+                                                            <label>{{ \App\CPU\translate('Image') }} {{ $loop->iteration }}</label>
+                                                            <img src="{{ asset('storage/temp/product_images/' . $img) }}"
+                                                                class="img-fluid rounded border" alt="Product Image">
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                                @if (isset($tempImages['meta_image']) && $tempImages['meta_image'])
+                                                    <div class="col-md-3 mb-3">
+                                                        <label>{{ \App\CPU\translate('Meta Image') }}</label>
+                                                        <img src="{{ asset('storage/temp/product_images/' . $tempImages['meta_image']) }}"
+                                                            class="img-fluid rounded border" alt="Meta Image">
+                                                    </div>
+                                                @endif
+                                                @if (isset($tempImages['digital_file_ready']) && $tempImages['digital_file_ready'])
+                                                    <div class="col-md-3 mb-3">
+                                                        <label>{{ \App\CPU\translate('Digital File') }}</label>
+                                                        <img src="{{ asset('storage/temp/product_images/' . $tempImages['digital_file_ready']) }}"
+                                                            class="img-fluid rounded border" alt="Digital File">
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                 @endif
-                            </div>
-                        </div>
-                    </div>
-                @endif
             </div>
 
             <div class="col-md-4">

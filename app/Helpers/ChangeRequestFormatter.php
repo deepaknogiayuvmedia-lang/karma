@@ -73,9 +73,21 @@ class ChangeRequestFormatter
             return self::formatImages($value);
         }
 
-        // Thumbnail / Meta image
-        if (in_array($key, ['thumbnail', 'meta_image']) && is_string($value)) {
-            return $value;
+        // Thumbnail / Meta image - return <img> tag
+        if ($key === 'thumbnail' && is_string($value) && $value !== '') {
+            $storagePath = config('app.public_storage_path');
+            $imgUrl = asset($storagePath . '/product/thumbnail/' . $value);
+            return '<img src="' . $imgUrl . '" style="max-height:80px;" alt="Thumbnail">';
+        }
+        if ($key === 'meta_image' && is_string($value) && $value !== '') {
+            $storagePath = config('app.public_storage_path');
+            $imgUrl = asset($storagePath . '/product/meta/' . $value);
+            return '<img src="' . $imgUrl . '" style="max-height:80px;" alt="Meta Image">';
+        }
+
+        // Tags - show tag names
+        if ($key === 'tags' && is_array($value)) {
+            return self::formatTags($value);
         }
 
         // Translations - show language codes
@@ -356,7 +368,8 @@ class ChangeRequestFormatter
         if (empty($images)) {
             return '—';
         }
-        return implode(', ', array_map(fn($img) => basename($img), $images));
+        $storagePath = config('app.public_storage_path');
+        return implode(' ', array_map(fn($img) => '<img src="' . asset($storagePath . '/product/' . $img) . '" style="max-height:80px;" alt="Image">', $images));
     }
 
     /**
@@ -454,6 +467,17 @@ class ChangeRequestFormatter
 
     return implode('; ', $parts);
 }   
+    /**
+     * Format tags array.
+     */
+    private static function formatTags(array $tags): string
+    {
+        if (empty($tags)) {
+            return '—';
+        }
+        return implode(', ', array_map(fn($t) => is_object($t) ? ($t->tag ?? $t->name ?? '—') : $t, $tags));
+    }
+
     /**
      * Generic array formatting.
      */

@@ -61,7 +61,7 @@
                                 </form>
                             </div>
                             <div class="col-lg-8 mt-3 mt-lg-0 d-flex flex-wrap gap-3 justify-content-lg-end">
-                                @if (auth('seller')->user()->tally_sync_enabled)
+                                @if (auth('seller')->user()->tally_sync)
                                     <div>
                                         <button type="button" class="btn btn-outline--primary" data-toggle="dropdown">
                                             <i class="tio-download-to"></i>
@@ -233,6 +233,22 @@
                                                     <i class="tio-invisible"></i>
                                                 </a>
 
+                                                <button type="button" class="btn btn-outline-primary btn-sm square-btn edit-price-btn"
+                                                    title="{{ \App\CPU\translate('Edit Price & Variants') }}"
+                                                    data-id="{{ $p['id'] }}"
+                                                    data-unit-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['unit_price']) }}"
+                                                    data-purchase-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['purchase_price']) }}"
+                                                    data-discount="{{ $p['discount'] ?? 0 }}"
+                                                    data-discount-type="{{ $p['discount_type'] ?? 'flat' }}"
+                                                    data-tax="{{ $p['tax'] ?? 0 }}"
+                                                    data-tax-model="{{ $p['tax_model'] ?? 'include' }}"
+                                                    data-shipping-cost="{{ \App\CPU\BackEndHelper::usd_to_currency($p['shipping_cost'] ?? 0) }}"
+                                                    data-min-order="{{ $p['minimum_order_qty'] ?? 1 }}"
+                                                    data-current-stock="{{ $p['current_stock'] ?? 0 }}"
+                                                    data-name="{{ $p['name'] }}">
+                                                    <i class="tio-money"></i>
+                                                </button>
+
                                                 @php
                                                     $editReq = \App\Model\ProductEditRequest::where('product_id', $p['id'])
                                                         ->where('seller_id', auth('seller')->id())
@@ -322,6 +338,111 @@
             </div>
         </div>
     </div>
+
+    <!-- Edit Price & Variants Modal -->
+    <div class="modal fade" id="editPriceVariantsModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
+                <div class="modal-header" style="border-bottom: 1px solid #dee2e6; padding: 12px 20px; background: #f8f9fa;">
+                    <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
+                        <i class="tio-money mr-1"></i> {{ \App\CPU\translate('Edit Price & Variants') }}
+                        <span class="text-primary ml-1" id="modalProductName" style="font-size: 14px;"></span>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" style="padding: 4px 8px;">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 20px;">
+                    <input type="hidden" id="editProductId">
+
+                    <div class="card mb-3" style="border: 1px solid #e9ecef;">
+                        <div class="card-header py-2" style="background: #f1f3f5;">
+                            <h6 class="mb-0 font-weight-bold" style="font-size: 13px;">
+                                <i class="tio-money mr-1"></i> {{ \App\CPU\translate('Product_price_&_stock') }}
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col-md-4 form-group mb-2">
+                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Unit_price') }} <span class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editUnitPrice">
+                                </div>
+                                <div class="col-md-4 form-group mb-2">
+                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Market price') }} <span class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editPurchasePrice">
+                                </div>
+                                <div class="col-md-4 form-group mb-2">
+                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Tax') }}</label>
+                                    <label class="badge badge-soft-info mb-1" style="font-size: 10px;">{{ \App\CPU\translate('Percent') }} ( % )</label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editTax">
+                                    <input type="hidden" name="tax_type" value="percent">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 form-group mb-2">
+                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Tax_Model') }}</label>
+                                    <select class="form-control form-control-sm" id="editTaxModel">
+                                        <option value="include">{{ \App\CPU\translate('include') }}</option>
+                                        <option value="exclude">{{ \App\CPU\translate('exclude') }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group mb-2">
+                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('discount_type') }}</label>
+                                    <select class="form-control form-control-sm" id="editDiscountType">
+                                        <option value="flat">{{ \App\CPU\translate('Flat') }}</option>
+                                        <option value="percent">{{ \App\CPU\translate('Percent') }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group mb-2">
+                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Discount') }}</label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editDiscount">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 form-group mb-2">
+                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('total') }} {{ \App\CPU\translate('Quantity') }}</label>
+                                    <input type="number" min="0" step="1" class="form-control form-control-sm" id="editCurrentStock">
+                                </div>
+                                <div class="col-md-4 form-group mb-2">
+                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('minimum_order_quantity') }}</label>
+                                    <input type="number" min="1" step="1" class="form-control form-control-sm" id="editMinOrder">
+                                </div>
+                                <div class="col-md-4 form-group mb-2">
+                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('shipping_cost') }}</label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editShippingCost">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border: 1px solid #e9ecef;">
+                        <div class="card-header py-2" style="background: #f1f3f5;">
+                            <h6 class="mb-0 font-weight-bold" style="font-size: 13px;">
+                                <i class="tio-list mr-1"></i> {{ \App\CPU\translate('Variants') }}
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <div id="editVariantsContainer">
+                                <p class="text-muted text-center mb-0">
+                                    <i class="fa fa-spinner fa-spin mr-1"></i> {{ \App\CPU\translate('Loading variants...') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid #dee2e6; padding: 12px 20px; background: #f8f9fa;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
+                        <i class="tio-clear mr-1"></i> {{ \App\CPU\translate('Cancel') }}
+                    </button>
+                    <button type="button" class="btn btn--primary btn-sm" id="savePriceVariantsBtn">
+                        <i class="tio-save mr-1"></i>
+                        <span id="saveBtnText">{{ \App\CPU\translate('Save Changes') }}</span>
+                        <span id="saveBtnLoader" class="d-none"><i class="fa fa-spinner fa-spin mr-1"></i></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('script')
@@ -383,5 +504,141 @@
                 }
             });
         }
+
+        // Edit Price & Variants Modal
+        $(document).on('click', '.edit-price-btn', function() {
+            var btn = $(this);
+            var productId = btn.data('id');
+
+            $('#editProductId').val(productId);
+            $('#modalProductName').text(btn.data('name'));
+            $('#editUnitPrice').val(btn.data('unit-price'));
+            $('#editPurchasePrice').val(btn.data('purchase-price'));
+            $('#editDiscount').val(btn.data('discount'));
+            $('#editDiscountType').val(btn.data('discount-type'));
+            $('#editTax').val(btn.data('tax'));
+            $('#editTaxModel').val(btn.data('tax-model'));
+            $('#editShippingCost').val(btn.data('shipping-cost'));
+            $('#editMinOrder').val(btn.data('min-order'));
+            $('#editCurrentStock').val(btn.data('current-stock'));
+
+            // Load variations via AJAX
+            $.ajaxSetup({
+                headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
+            });
+            $.ajax({
+                url: "{{ route('seller.product.get-variations') }}",
+                method: 'POST',
+                data: { id: productId },
+                success: function(data) {
+                    var container = $('#editVariantsContainer');
+                    container.empty();
+
+                    if (data.variations && data.variations.length > 0) {
+                        data.variations.forEach(function(variant) {
+                            container.append(`
+                                <div class="row mb-2 variant-row align-items-center p-2" style="background: #f8f9fa; border-radius: 4px;">
+                                    <div class="col-md-3">
+                                        <label class="title-color mb-0" style="font-size: 12px; font-weight: 600;">${variant.type}</label>
+                                        <input type="hidden" class="variant-type" value="${variant.type}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="title-color mb-0" style="font-size: 11px;">{{ \App\CPU\translate('Price') }}</label>
+                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm variant-price" value="${variant.price || 0}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="title-color mb-0" style="font-size: 11px;">{{ \App\CPU\translate('Quantity') }}</label>
+                                        <input type="number" min="0" class="form-control form-control-sm variant-qty" value="${variant.qty || 0}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="title-color mb-0" style="font-size: 11px;">SKU</label>
+                                        <input type="text" class="form-control form-control-sm variant-sku" value="${variant.sku || ''}">
+                                    </div>
+                                </div>
+                            `);
+                        });
+                    } else {
+                        container.append(`
+                            <div class="row mb-2 variant-row align-items-center p-2" style="background: #f8f9fa; border-radius: 4px;">
+                                <div class="col-md-3">
+                                    <label class="title-color mb-0" style="font-size: 12px; font-weight: 600;">Default</label>
+                                    <input type="hidden" class="variant-type" value="default">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="title-color mb-0" style="font-size: 11px;">{{ \App\CPU\translate('Price') }}</label>
+                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm variant-price" value="0">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="title-color mb-0" style="font-size: 11px;">{{ \App\CPU\translate('Quantity') }}</label>
+                                    <input type="number" min="0" class="form-control form-control-sm variant-qty" value="0">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="title-color mb-0" style="font-size: 11px;">SKU</label>
+                                    <input type="text" class="form-control form-control-sm variant-sku" value="">
+                                </div>
+                            </div>
+                        `);
+                    }
+                }
+            });
+
+            $('#editPriceVariantsModal').modal('show');
+        });
+
+        // Save Price & Variants
+        $('#savePriceVariantsBtn').on('click', function() {
+            var productId = $('#editProductId').val();
+            var variants = [];
+
+            $('.variant-row').each(function() {
+                variants.push({
+                    type: $(this).find('.variant-type').val(),
+                    price: $(this).find('.variant-price').val(),
+                    qty: $(this).find('.variant-qty').val(),
+                    sku: $(this).find('.variant-sku').val()
+                });
+            });
+
+            $('#saveBtnText').addClass('d-none');
+            $('#saveBtnLoader').removeClass('d-none');
+            $('#savePriceVariantsBtn').prop('disabled', true);
+
+            $.ajaxSetup({
+                headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
+            });
+            $.ajax({
+                url: "{{ route('seller.product.update-price-variants') }}",
+                method: 'POST',
+                data: {
+                    id: productId,
+                    unit_price: $('#editUnitPrice').val(),
+                    purchase_price: $('#editPurchasePrice').val(),
+                    discount: $('#editDiscount').val(),
+                    discount_type: $('#editDiscountType').val(),
+                    tax: $('#editTax').val(),
+                    tax_model: $('#editTaxModel').val(),
+                    shipping_cost: $('#editShippingCost').val(),
+                    minimum_order_qty: $('#editMinOrder').val(),
+                    variants: variants
+                },
+                success: function(data) {
+                    if (data.success) {
+                        toastr.success(data.message);
+                        $('#editPriceVariantsModal').modal('hide');
+                        location.reload();
+                    } else {
+                        toastr.error(data.message);
+                    }
+                },
+                error: function() {
+                    toastr.error('{{ \App\CPU\translate("Something went wrong") }}');
+                },
+                complete: function() {
+                    $('#saveBtnText').removeClass('d-none');
+                    $('#saveBtnLoader').addClass('d-none');
+                    $('#savePriceVariantsBtn').prop('disabled', false);
+                }
+            });
+        });
     </script>
 @endpush

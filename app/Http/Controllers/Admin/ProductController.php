@@ -281,6 +281,8 @@ class ProductController extends BaseController
             'shipping_cost' => 'required_if:product_type,==,physical|gt:-1',
             'code' => 'required|numeric|min:1|digits_between:6,20|unique:products',
             'minimum_order_qty' => 'required|numeric|min:1',
+            'technical_name' => 'nullable|array',
+            'technical_name.*' => 'nullable|string|max:255',
         ], [
             'image.required' => 'Product thumbnail is required!',
             'category_id.required' => 'Category is required!',
@@ -366,7 +368,7 @@ class ProductController extends BaseController
         $p->user_id = auth('admin')->id();
         $p->added_by = 'admin';
         $p->name = $request->name[array_search('en', $request->lang)];
-        $p->technical_name = $request->technical_name;
+        $p->technical_name = $request->technical_name[array_search('en', $request->lang)];
         $p->tally_name = $request->prn[0];
         $p->code = $request->code;  // Removed since already set
         $p->slug = Str::slug($request->name[array_search('en', $request->lang)], '-') . '-' . Str::random(6);
@@ -612,6 +614,15 @@ class ProductController extends BaseController
                     'locale' => $key,
                     'key' => 'description',
                     'value' => $request->description[$index],
+                ));
+            }
+            if ($request->technical_name[$index] && $key != 'en') {
+                array_push($data, array(
+                    'translationable_type' => 'App\Model\Product',
+                    'translationable_id' => $p->id,
+                    'locale' => $key,
+                    'key' => 'technical_name',
+                    'value' => $request->technical_name[$index],
                 ));
             }
         }
@@ -862,6 +873,76 @@ class ProductController extends BaseController
         }
     }
 
+    public function update_price_variants(Request $request)
+    {
+        $product = Product::find($request->id);
+
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'Product not found']);
+        }
+
+        // Update price fields
+        if ($request->has('unit_price')) {
+            $product->unit_price = BackEndHelper::currency_to_usd(abs($request->unit_price));
+        }
+        if ($request->has('purchase_price')) {
+            $product->purchase_price = BackEndHelper::currency_to_usd(abs($request->purchase_price));
+        }
+        if ($request->has('discount')) {
+            $product->discount = $request->discount_type == 'flat'
+                ? BackEndHelper::currency_to_usd(abs($request->discount))
+                : abs($request->discount);
+            $product->discount_type = $request->discount_type ?? 'flat';
+        }
+        if ($request->has('tax')) {
+            $product->tax = $request->tax_model == 'flat'
+                ? BackEndHelper::currency_to_usd(abs($request->tax))
+                : abs($request->tax);
+            $product->tax_model = $request->tax_model ?? 'include';
+        }
+        if ($request->has('shipping_cost')) {
+            $product->shipping_cost = BackEndHelper::currency_to_usd(abs($request->shipping_cost));
+        }
+        if ($request->has('minimum_order_qty')) {
+            $product->minimum_order_qty = abs($request->minimum_order_qty);
+        }
+        if ($request->has('current_stock')) {
+            $product->current_stock = abs($request->current_stock);
+        }
+
+        // Update variations
+        if ($request->has('variants') && is_array($request->variants)) {
+            $variations = json_decode($product->variation, true) ?? [];
+            $stock_count = 0;
+
+            foreach ($request->variants as $variantData) {
+                $variantType = $variantData['type'] ?? '';
+                $variantPrice = BackEndHelper::currency_to_usd(abs($variantData['price'] ?? 0));
+                $variantQty = abs(intval($variantData['qty'] ?? 0));
+                $variantSku = $variantData['sku'] ?? '';
+
+                foreach ($variations as &$item) {
+                    if ($item['type'] == $variantType) {
+                        $item['price'] = $variantPrice;
+                        $item['qty'] = $variantQty;
+                        if ($variantSku !== '') {
+                            $item['sku'] = $variantSku;
+                        }
+                    }
+                    $stock_count += $item['qty'];
+                }
+                unset($item);
+            }
+
+            $product->variation = json_encode($variations);
+            $product->current_stock = $stock_count;
+        }
+
+        $product->save();
+
+        return response()->json(['success' => true, 'message' => 'Product updated successfully']);
+    }
+
     public function status_update(Request $request)
     {
         $product = Product::where(['id' => $request['id']])->first();
@@ -943,8 +1024,15 @@ class ProductController extends BaseController
     public function get_variations(Request $request)
     {
         $product = Product::find($request['id']);
-        return response()->json(data: [
-            'view' => view('admin-views.product.partials._update_stock', compact('product'))->render()
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        $variations = json_decode($product->variation, true) ?? [];
+
+        return response()->json([
+            'variations' => $variations,
+            'product_name' => $product->name,
         ]);
     }
 
@@ -982,6 +1070,8 @@ class ProductController extends BaseController
             'shipping_cost' => 'required_if:product_type,==,physical|gt:-1',
             'code' => 'required|numeric|min:1|digits_between:6,20|unique:products,code,' . $product->id,
             'minimum_order_qty' => 'required|numeric|min:1',
+            'technical_name' => 'nullable|array',
+            'technical_name.*' => 'nullable|string|max:255',
         ], [
             'name.required' => 'Product name is required!',
             'prn.required' => 'Product PRN is required!',
@@ -1106,7 +1196,7 @@ class ProductController extends BaseController
         }
 
         $product->name = $request->name[array_search('en', $request->lang)];
-        $product->technical_name = $request->technical_name;
+        $product->technical_name = $request->technical_name[array_search('en', $request->lang)];
         $product->tally_name = $request->prn[0];
         $categoryName = null;
         $category = [];
@@ -1263,9 +1353,7 @@ class ProductController extends BaseController
         $product->admin_commission_type = $request->admin_commission_type ?? 'percentage';
         // Phase 7: Product Priority
         $product->priority = $request->priority ?? 0;
-        if ($request->ajax()) {
-            return response()->json([], 200);
-        } else {
+
             if ($request->file('images')) {
                 foreach ($request->file('images') as $img) {
                     $image_name = ImageManager::upload('product/', 'png', $img);
@@ -1345,10 +1433,98 @@ class ProductController extends BaseController
                         ['value' => $request->description[$index]]
                     );
                 }
+                if ($request->technical_name[$index] && $key != 'en') {
+                    Translation::updateOrInsert(
+                        [
+                            'translationable_type' => 'App\Model\Product',
+                            'translationable_id' => $product->id,
+                            'locale' => $key,
+                            'key' => 'technical_name'
+                        ],
+                        ['value' => $request->technical_name[$index]]
+                    );
+                }
             }
+
+            // Sync all values to seller copies (except seller-specific fields)
+            $copies = Product::where('pid', $product->id)->get();
+            foreach ($copies as $copy) {
+                // Sync translations (name, description, technical_name)
+                foreach ($request->lang as $index => $key) {
+                    if ($request->name[$index] && $key != 'en') {
+                        Translation::updateOrInsert(
+                            [
+                                'translationable_type' => 'App\Model\Product',
+                                'translationable_id' => $copy->id,
+                                'locale' => $key,
+                                'key' => 'name'
+                            ],
+                            ['value' => $request->name[$index]]
+                        );
+                    }
+                    if ($request->description[$index] && $key != 'en') {
+                        Translation::updateOrInsert(
+                            [
+                                'translationable_type' => 'App\Model\Product',
+                                'translationable_id' => $copy->id,
+                                'locale' => $key,
+                                'key' => 'description'
+                            ],
+                            ['value' => $request->description[$index]]
+                        );
+                    }
+                    if ($request->technical_name[$index] && $key != 'en') {
+                        Translation::updateOrInsert(
+                            [
+                                'translationable_type' => 'App\Model\Product',
+                                'translationable_id' => $copy->id,
+                                'locale' => $key,
+                                'key' => 'technical_name'
+                            ],
+                            ['value' => $request->technical_name[$index]]
+                        );
+                    }
+                }
+
+                // Sync all column fields (replicated from original at copy time)
+                $copy->name = $request->name[array_search('en', $request->lang)];
+                $copy->technical_name = $request->technical_name[array_search('en', $request->lang)];
+                $copy->details = $request->description[array_search('en', $request->lang)] ?? $copy->details;
+                $copy->tally_name = $request->prn[0];
+                $copy->product_type = $request->product_type;
+                $copy->category_ids = $product->category_ids;
+                $copy->brand_id = $product->brand_id;
+                $copy->unit = $product->unit;
+                $copy->digital_product_type = $product->digital_product_type;
+                $copy->colors = $product->colors;
+                $copy->choice_options = $product->choice_options;
+                $copy->attributes = $product->attributes;
+                $copy->images = $product->images;
+                $copy->color_image = $product->color_image;
+                $copy->thumbnail = $product->thumbnail;
+                $copy->video_provider = $product->video_provider;
+                $copy->video_url = $product->video_url;
+                $copy->meta_title = $product->meta_title;
+                $copy->meta_description = $product->meta_description;
+                $copy->meta_image = $product->meta_image;
+                $copy->minimum_order_qty = $request->minimum_order_qty;
+                $copy->refundable = $product->refundable;
+                $copy->digital_file_ready = $product->digital_file_ready;
+                $copy->save();
+
+                // Sync tags
+                $tag_ids = [];
+                if ($request->tags) {
+                    foreach (explode(',', $request->tags) as $tag) {
+                        $t = Tag::firstOrCreate(['name' => trim($tag)]);
+                        $tag_ids[] = $t->id;
+                    }
+                }
+                $copy->tags()->sync($tag_ids);
+            }
+
             Toastr::success('Product updated successfully.');
             return back();
-        }
     }
 
     public function remove_image(Request $request)

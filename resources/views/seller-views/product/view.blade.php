@@ -86,7 +86,7 @@
                             <div class="col-md-12">
                                 <div class="mb-0">
                                     <span class="text-muted">{{\App\CPU\translate('description')}}:</span>
-                                    <div class="mt-1">{!! $product->description !!}</div>
+                                    <div class="mt-1">{!! $product->details !!}</div>
                                 </div>
                                 @php
                                     $desc_hi = $product->translations->where('locale','hi')->where('key','description')->first();
