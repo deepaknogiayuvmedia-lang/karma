@@ -68,8 +68,7 @@ class ProductController extends BaseController
 
         \Illuminate\Support\Facades\Artisan::call('products:update-indexing');
 
-        $data = $request->status;
-        return response()->json($data);
+        return response()->json(['success' => true, 'featured' => $product->featured]);
     }
 
     public function set_commission(Request $request)
@@ -191,72 +190,9 @@ class ProductController extends BaseController
         return redirect()->route('admin.product.list', ['seller', 'status' => 2]);
     }
 
-    // Phase 9: Admin Verify Product
-    public function verify(Request $request)
-    {
-        $product = Product::find($request->id);
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
-
-        $product->verified = !$product->verified;
-        $product->verified_by = $product->verified ? auth('admin')->id() : null;
-        $product->verified_at = $product->verified ? now() : null;
-        $product->save();
-
-        // Send notification to seller
-        if ($product->seller_id && $product->verified) {
-            $seller = \App\Model\Seller::find($product->seller_id);
-            if ($seller && !empty($seller->cm_firebase_token)) {
-                $title = 'Product Verified';
-                $body = "Your product \"{$product->name}\" has been verified by admin.";
-                \App\CPU\Helpers::send_push_notif_to_device($seller->cm_firebase_token, [
-                    'title' => $title,
-                    'body' => $body,
-                ]);
-            }
-        }
-
-        $status = $product->verified ? 'verified' : 'unverified';
-        return response()->json(['status' => $status, 'message' => "Product {$status} successfully"]);
-    }
-
-    // Phase 9: Bulk Verify Products
-    public function bulk_verify(Request $request)
-    {
-        $productIds = $request->product_ids;
-        if (empty($productIds)) {
-            return response()->json(['error' => 'No products selected'], 400);
-        }
-
-        $products = Product::whereIn('id', $productIds)->get();
-        Product::whereIn('id', $productIds)->update([
-            'verified' => 1,
-            'verified_by' => auth('admin')->id(),
-            'verified_at' => now(),
-        ]);
-
-        // Send notifications to sellers
-        foreach ($products as $product) {
-            if ($product->seller_id) {
-                $seller = \App\Model\Seller::find($product->seller_id);
-                if ($seller && !empty($seller->cm_firebase_token)) {
-                    $title = 'Product Verified';
-                    $body = "Your product \"{$product->name}\" has been verified by admin.";
-                    \App\CPU\Helpers::send_push_notif_to_device($seller->cm_firebase_token, [
-                        'title' => $title,
-                        'body' => $body,
-                    ]);
-                }
-            }
-        }
-
-        return response()->json(['message' => count($productIds) . ' products verified successfully']);
-    }
-
     public function view($id)
     {
-        $product = Product::with(['reviews'])->where(['id' => $id])->first();
+        $product = Product::with(['reviews', 'translations', 'rating', 'tags'])->where(['id' => $id])->first();
         $reviews = Review::where(['product_id' => $id])->whereNull('delivery_man_id')->paginate(Helpers::pagination_limit());
         return view('admin-views.product.view', compact('product', 'reviews'));
     }
@@ -537,9 +473,6 @@ class ProductController extends BaseController
         $p->video_provider = 'youtube';
         $p->video_url = $request->video_link;
         $p->request_status = 1;
-        $p->verified = 1;
-        $p->verified_by = auth('admin')->id();
-        $p->verified_at = now();
         $p->shipping_cost = $request->product_type == 'physical' ? BackEndHelper::currency_to_usd($request->shipping_cost) : 0;
         $p->multiply_qty = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
         // Phase 6: Per-Product Commission
@@ -647,14 +580,6 @@ class ProductController extends BaseController
             }
         }
 
-        // Verified filter
-        $verified_filter = $request->verified ?? null;
-        if ($verified_filter === 'verified') {
-            $pro->where('verified', 1);
-        } elseif ($verified_filter === 'unverified') {
-            $pro->where('verified', 0);
-        }
-
         if ($request->has('search')) {
             $key = explode(' ', $request['search']);
             $pro = $pro->where(function ($q) use ($key) {
@@ -670,7 +595,6 @@ class ProductController extends BaseController
             ->orderBy('id', 'DESC')
             ->paginate(Helpers::pagination_limit())
             ->appends(['status' => $request_status])
-            ->appends(['verified' => $verified_filter])
             ->appends($query_param);
 
         // Counts for tabs
@@ -678,18 +602,8 @@ class ProductController extends BaseController
             ->when($type != 'in_house', fn($q) => $q->whereNull('pid'))
             ->when($type != 'in_house' && $request_status !== 'all' && $request_status !== null, fn($q) => $q->where('request_status', $request_status))
             ->count();
-        $verified_count = Product::where('added_by', $type == 'in_house' ? 'admin' : 'seller')
-            ->when($type != 'in_house', fn($q) => $q->whereNull('pid'))
-            ->where('verified', 1)
-            ->when($type != 'in_house' && $request_status !== 'all' && $request_status !== null, fn($q) => $q->where('request_status', $request_status))
-            ->count();
-        $unverified_count = Product::where('added_by', $type == 'in_house' ? 'admin' : 'seller')
-            ->when($type != 'in_house', fn($q) => $q->whereNull('pid'))
-            ->where('verified', 0)
-            ->when($type != 'in_house' && $request_status !== 'all' && $request_status !== null, fn($q) => $q->where('request_status', $request_status))
-            ->count();
 
-        return view('admin-views.product.list', compact('pro', 'search', 'request_status', 'type', 'verified_filter', 'all_count', 'verified_count', 'unverified_count'));
+        return view('admin-views.product.list', compact('pro', 'search', 'request_status', 'type', 'all_count'));
     }
 
     /**
@@ -882,6 +796,9 @@ class ProductController extends BaseController
         }
 
         // Update price fields
+        if ($request->has('unit')) {
+            $product->unit = $request->unit;
+        }
         if ($request->has('unit_price')) {
             $product->unit_price = BackEndHelper::currency_to_usd(abs($request->unit_price));
         }
@@ -913,6 +830,7 @@ class ProductController extends BaseController
         // Update variations
         if ($request->has('variants') && is_array($request->variants)) {
             $variations = json_decode($product->variation, true) ?? [];
+            $existingTypes = array_column($variations, 'type');
             $stock_count = 0;
 
             foreach ($request->variants as $variantData) {
@@ -921,6 +839,7 @@ class ProductController extends BaseController
                 $variantQty = abs(intval($variantData['qty'] ?? 0));
                 $variantSku = $variantData['sku'] ?? '';
 
+                $found = false;
                 foreach ($variations as &$item) {
                     if ($item['type'] == $variantType) {
                         $item['price'] = $variantPrice;
@@ -928,10 +847,33 @@ class ProductController extends BaseController
                         if ($variantSku !== '') {
                             $item['sku'] = $variantSku;
                         }
+                        $found = true;
                     }
-                    $stock_count += $item['qty'];
                 }
                 unset($item);
+
+                // New variant - not found in existing, add it
+                if (!$found && $variantType !== '' && $variantType !== 'default') {
+                    $variations[] = [
+                        'type' => $variantType,
+                        'price' => $variantPrice,
+                        'qty' => $variantQty,
+                        'sku' => $variantSku,
+                    ];
+                }
+            }
+
+            // Remove deleted variants
+            $deletedVariants = $request->deleted_variants ?? [];
+            if (!empty($deletedVariants) && is_array($deletedVariants)) {
+                $variations = array_filter($variations, function ($item) use ($deletedVariants) {
+                    return !in_array($item['type'], $deletedVariants);
+                });
+                $variations = array_values($variations);
+            }
+
+            foreach ($variations as $item) {
+                $stock_count += $item['qty'];
             }
 
             $product->variation = json_encode($variations);

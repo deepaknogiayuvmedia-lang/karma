@@ -17,13 +17,8 @@ class AddProductImprovementsToProductsTable extends Migration
             // Product Priority (Phase 7)
             $table->tinyInteger('priority')->default(0)->after('indexing');
 
-            // Admin Verified Products (Phase 9)
-            $table->boolean('verified')->default(0)->after('priority');
-            $table->unsignedBigInteger('verified_by')->nullable()->after('verified');
-            $table->timestamp('verified_at')->nullable()->after('verified_by');
-
             // Per-Product Commission (Phase 6)
-            $table->decimal('admin_commission', 10, 2)->default(0)->after('verified_at');
+            $table->decimal('admin_commission', 10, 2)->default(0)->after('priority');
             $table->string('admin_commission_type', 20)->default('percentage')->after('admin_commission');
 
             // Product Approval Workflow (Phase 8)
@@ -32,7 +27,6 @@ class AddProductImprovementsToProductsTable extends Migration
 
             // Add indexes for performance
             $table->index('priority');
-            $table->index('verified');
             $table->index('approval_status');
             $table->index(['approval_status', 'status']);
             $table->index(['seller_id', 'approval_status']);
@@ -51,9 +45,6 @@ class AddProductImprovementsToProductsTable extends Migration
             $table->dropIndex(['seller_id', 'approval_status']);
             $table->dropColumn([
                 'priority',
-                'verified',
-                'verified_by',
-                'verified_at',
                 'admin_commission',
                 'admin_commission_type',
                 'approval_status',

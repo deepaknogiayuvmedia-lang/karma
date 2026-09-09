@@ -37,9 +37,6 @@ class Product extends Model
         'choice_attributes' => 'json',
         // Phase 1: New fields
         'priority' => 'integer',
-        'verified' => 'boolean',
-        'verified_by' => 'integer',
-        'verified_at' => 'datetime',
         'admin_commission' => 'float',
         'approval_status' => 'string',
         'edit_status' => 'string',
@@ -59,9 +56,6 @@ class Product extends Model
         'choice_attributes',
         // Phase 1: New fields
         'priority',
-        'verified',
-        'verified_by',
-        'verified_at',
         'admin_commission',
         'admin_commission_type',
         'approval_status',
@@ -90,7 +84,7 @@ class Product extends Model
             });
         })->when(!$brand_setting, function ($q) {
             $q->whereNull('brand_id');
-        })->where(['status' => 1])->where('verified', 1)->where(function ($query) {
+        })->where(['status' => 1])->where(function ($query) {
             $query->where('approval_status', 'approved')
                   ->orWhereNull('approval_status');
         })->SellerApproved()->whereIn('product_type', $product_type);
@@ -173,12 +167,6 @@ class Product extends Model
         return $this->belongsToMany(Tag::class);
     }
 
-    // Phase 1: Verified By relationship
-    public function verifiedBy()
-    {
-        return $this->belongsTo(Admin::class, 'verified_by');
-    }
-
     // Phase 1: Approval Status Scopes
     public function scopeDraft($query)
     {
@@ -203,12 +191,6 @@ class Product extends Model
     public function scopePendingEdit($query)
     {
         return $query->where('approval_status', 'pending_edit');
-    }
-
-    // Phase 1: Verified scope
-    public function scopeVerified($query)
-    {
-        return $query->where('verified', 1);
     }
 
     // Phase 1: By Priority scope

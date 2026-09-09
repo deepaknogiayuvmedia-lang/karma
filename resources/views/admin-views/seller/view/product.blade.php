@@ -136,7 +136,6 @@
                                         <th>{{\App\CPU\translate('purchase_price')}}</th>
                                         <th>{{\App\CPU\translate('selling_price')}}</th>
                                         <th>{{\App\CPU\translate('Commission')}}</th>
-                                        <th class="text-center">{{\App\CPU\translate('Verified')}}</th>
                                         <th class="text-center">{{\App\CPU\translate('featured')}}</th>
                                         <th class="text-center">{{\App\CPU\translate('Active')}} {{\App\CPU\translate('status')}}</th>
                                         <th class="text-center">{{\App\CPU\translate('Action')}}</th>
@@ -173,13 +172,6 @@
                                                         <i class="tio-settings"></i> {{\App\CPU\translate('Set')}}
                                                     @endif
                                                 </span>
-                                            </td>
-                                            <td>
-                                                <label class="mx-auto switcher">
-                                                    <input type="checkbox" class="switcher_input"
-                                                           onclick="toggle_verified('{{$p['id']}}')" {{ isset($p->verified) && $p->verified == 1 ? 'checked' : '' }}>
-                                                    <span class="switcher_control"></span>
-                                                </label>
                                             </td>
                                             <td>
                                                 <label class="mx-auto switcher">
@@ -340,27 +332,6 @@
                 },
                 success: function () {
                     toastr.success('{{\App\CPU\translate('Featured status updated successfully')}}');
-                }
-            });
-        }
-
-        function toggle_verified(id) {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                }
-            });
-            $.ajax({
-                url: "{{ route('admin.product.verify') }}",
-                method: 'POST',
-                data: { id: id },
-                success: function(data) {
-                    if (data.message) {
-                        toastr.success(data.message);
-                    }
-                },
-                error: function(data) {
-                    toastr.error(data.responseJSON.error || 'Something went wrong');
                 }
             });
         }

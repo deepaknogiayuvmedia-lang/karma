@@ -68,7 +68,7 @@
                                 <td>{{$product->product_name}}</td>
                                 <td>{{$product->product_qty}}</td>
                                 <td>{{ $product->product_bit }}</td>
-                                <td>{{ $product->details }}</td>
+                                <td>{{ $product->description }}</td>
                                 <td>
                                   <span class="badge  {{$product->status == 'close'?' badge-warning':' badge-info' }}"> {{$product->status == 'close'? \App\CPU\translate('Win') : \App\CPU\translate('Pending') }}</span>
                                 </td>

@@ -492,6 +492,11 @@
         });
         @endif
     </script>
+    <script>
+        function getRndInteger() {
+            return Math.floor(Math.random() * 90000) + 100000;
+        }
+    </script>
 </body>
 
 </html>

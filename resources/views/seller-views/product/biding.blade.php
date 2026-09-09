@@ -78,7 +78,7 @@
                                 <td>{{$product->product_name}}</td>
                                 <td>{{$product->product_qty}}</td>
 
-                                <td>{{ $product->details }}</td>
+                                <td>{{ $product->description }}</td>
                                 <td>
                                     <label class="switcher">
                                         <input type="checkbox" class="status switcher_input"
@@ -181,7 +181,7 @@
                                 <td>{{$product1->product_name}}</td>
                                 <td>{{$product1->product_qty}}</td>
 
-                                <td>{{ $product1->details }}</td>
+                                <td>{{ $product1->description }}</td>
                                 <td>
                                     @php
                                     $bidders = json_decode($product1->bedders);

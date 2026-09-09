@@ -682,6 +682,9 @@ class ProductController extends Controller
         }
 
         // Update price fields
+        if ($request->has('unit')) {
+            $product->unit = $request->unit;
+        }
         if ($request->has('unit_price')) {
             $product->unit_price = BackEndHelper::currency_to_usd(abs($request->unit_price));
         }
@@ -713,6 +716,7 @@ class ProductController extends Controller
         // Update variations
         if ($request->has('variants') && is_array($request->variants)) {
             $variations = json_decode($product->variation, true) ?? [];
+            $existingTypes = array_column($variations, 'type');
             $stock_count = 0;
 
             foreach ($request->variants as $variantData) {
@@ -721,6 +725,7 @@ class ProductController extends Controller
                 $variantQty = abs(intval($variantData['qty'] ?? 0));
                 $variantSku = $variantData['sku'] ?? '';
 
+                $found = false;
                 foreach ($variations as &$item) {
                     if ($item['type'] == $variantType) {
                         $item['price'] = $variantPrice;
@@ -728,10 +733,33 @@ class ProductController extends Controller
                         if ($variantSku !== '') {
                             $item['sku'] = $variantSku;
                         }
+                        $found = true;
                     }
-                    $stock_count += $item['qty'];
                 }
                 unset($item);
+
+                // New variant - not found in existing, add it
+                if (!$found && $variantType !== '' && $variantType !== 'default') {
+                    $variations[] = [
+                        'type' => $variantType,
+                        'price' => $variantPrice,
+                        'qty' => $variantQty,
+                        'sku' => $variantSku,
+                    ];
+                }
+            }
+
+            // Remove deleted variants
+            $deletedVariants = $request->deleted_variants ?? [];
+            if (!empty($deletedVariants) && is_array($deletedVariants)) {
+                $variations = array_filter($variations, function ($item) use ($deletedVariants) {
+                    return !in_array($item['type'], $deletedVariants);
+                });
+                $variations = array_values($variations);
+            }
+
+            foreach ($variations as $item) {
+                $stock_count += $item['qty'];
             }
 
             $product->variation = json_encode($variations);
@@ -1550,7 +1578,7 @@ class ProductController extends Controller
                         return back();
                     }
                 } else {
-                    $response = Tallymethod::deleteItem($product->tally_name . '-' . $item['type'] . '-' . $product->id);
+                    $response = Tallymethod::deleteItem($product->tally_name . '-' . $item['type'] . '-' . $product->id, auth('seller')->id());
                     if (!Tallymethod::isSuccess($response)) {
                         Toastr::error(translate('Tally item deletion failed for item: ') . $product->tally_name . '-' . $item['type']);
                         return back();
@@ -1570,7 +1598,7 @@ class ProductController extends Controller
                     return back();
                 }
             } else {
-                $response = Tallymethod::deleteItem($product->tally_name . '-' . $product->id);
+                $response = Tallymethod::deleteItem($product->tally_name . '-' . $product->id, auth('seller')->id());
                 if (!Tallymethod::isSuccess($response)) {
                     Toastr::error(translate('Tally item deletion failed for item: ') . $product->tally_name);
                     return back();

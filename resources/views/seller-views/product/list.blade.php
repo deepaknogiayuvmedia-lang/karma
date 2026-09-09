@@ -133,7 +133,6 @@
                                     <th>{{ \App\CPU\translate('Commission') }}</th>
                                     <th>{{ \App\CPU\translate('price_suggestion') }}</th>
                                     <th>{{ \App\CPU\translate('verify_status') }}</th>
-                                    <th>{{ \App\CPU\translate('Admin_Verified') }}</th>
                                     <th>{{ \App\CPU\translate('Featured') }}</th>
                                     <th>{{ \App\CPU\translate('Active') }} {{ \App\CPU\translate('status') }}</th>
                                     <th class="text-center __w-5px">{{ \App\CPU\translate('Action') }}</th>
@@ -197,15 +196,6 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if (isset($p->verified) && $p->verified == 1)
-                                                <label class="badge badge-soft-success"><i class="tio-check-circle"></i>
-                                                    {{ \App\CPU\translate('Verified') }}</label>
-                                            @else
-                                                <label class="badge badge-soft-warning"><i class="tio-warning"></i>
-                                                    {{ \App\CPU\translate('Unverified') }}</label>
-                                            @endif
-                                        </td>
-                                        <td>
                                             @if (isset($p->featured) && $p->featured == 1)
                                                 <span class="badge badge-soft-success"><i class="tio-star"></i> {{ \App\CPU\translate('Featured') }}</span>
                                             @else
@@ -236,6 +226,7 @@
                                                 <button type="button" class="btn btn-outline-primary btn-sm square-btn edit-price-btn"
                                                     title="{{ \App\CPU\translate('Edit Price & Variants') }}"
                                                     data-id="{{ $p['id'] }}"
+                                                    data-unit="{{ $p['unit'] ?? 'pc' }}"
                                                     data-unit-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['unit_price']) }}"
                                                     data-purchase-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['purchase_price']) }}"
                                                     data-discount="{{ $p['discount'] ?? 0 }}"
@@ -259,17 +250,17 @@
                                                 @endphp
 
                                                 @if($hasApprovedEdit)
-                                                    <a class="btn btn-outline-primary btn-sm square-btn"
+                                                    <a class="btn btn-outline-primary btn-sm square-btn"  style="display: none;"
                                                         title="{{ \App\CPU\translate('Edit') }}"
                                                         href="{{ route('seller.product.edit', [$p['id']]) }}">
                                                         <i class="tio-edit"></i>
                                                     </a>
                                                 @elseif($hasPendingEdit)
-                                                    <span class="btn btn-outline-warning btn-sm square-btn" title="{{ \App\CPU\translate('Edit request pending') }}">
+                                                    <span class="btn btn-outline-warning btn-sm square-btn" style="display: none;" title="{{ \App\CPU\translate('Edit request pending') }}">
                                                         <i class="tio-time"></i>
                                                     </span>
                                                 @else
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm square-btn"
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm square-btn" style="display: none;"
                                                         title="{{ \App\CPU\translate('Request Edit Access') }}"
                                                         data-toggle="modal" data-target="#editRequestModal{{ $p['id'] }}">
                                                         <i class="tio-lock"></i>
@@ -354,6 +345,8 @@
                 </div>
                 <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 20px;">
                     <input type="hidden" id="editProductId">
+                    <input type="hidden" id="deletedVariants" value="">
+                    <input type="hidden" id="newVariantsAdded" value="0">
 
                     <div class="card mb-3" style="border: 1px solid #e9ecef;">
                         <div class="card-header py-2" style="background: #f1f3f5;">
@@ -363,15 +356,23 @@
                         </div>
                         <div class="card-body p-3">
                             <div class="row">
-                                <div class="col-md-4 form-group mb-2">
+                                <div class="col-md-3 form-group mb-2">
+                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Unit') }} <span class="text-danger">*</span></label>
+                                    <select class="form-control form-control-sm" id="editUnit">
+                                        @foreach (\App\CPU\Helpers::units() as $x)
+                                            <option value="{{ $x }}">{{ $x }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3 form-group mb-2">
                                     <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Unit_price') }} <span class="text-danger">*</span></label>
                                     <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editUnitPrice">
                                 </div>
-                                <div class="col-md-4 form-group mb-2">
+                                <div class="col-md-3 form-group mb-2">
                                     <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Market price') }} <span class="text-danger">*</span></label>
                                     <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editPurchasePrice">
                                 </div>
-                                <div class="col-md-4 form-group mb-2">
+                                <div class="col-md-3 form-group mb-2">
                                     <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Tax') }}</label>
                                     <label class="badge badge-soft-info mb-1" style="font-size: 10px;">{{ \App\CPU\translate('Percent') }} ( % )</label>
                                     <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editTax">
@@ -416,16 +417,48 @@
                     </div>
 
                     <div class="card" style="border: 1px solid #e9ecef;">
-                        <div class="card-header py-2" style="background: #f1f3f5;">
+                        <div class="card-header py-2 d-flex justify-content-between align-items-center" style="background: #f1f3f5;">
                             <h6 class="mb-0 font-weight-bold" style="font-size: 13px;">
                                 <i class="tio-list mr-1"></i> {{ \App\CPU\translate('Variants') }}
                             </h6>
+                            <button type="button" class="btn btn--primary btn-sm" id="addVariantBtn" style="font-size: 12px; padding: 3px 10px;">
+                                <i class="tio-add mr-1"></i> {{ \App\CPU\translate('Add Variant') }}
+                            </button>
                         </div>
                         <div class="card-body p-3">
                             <div id="editVariantsContainer">
                                 <p class="text-muted text-center mb-0">
                                     <i class="fa fa-spinner fa-spin mr-1"></i> {{ \App\CPU\translate('Loading variants...') }}
                                 </p>
+                            </div>
+
+                            <div id="addVariantForm" class="mt-3 d-none" style="border: 1px dashed #4e73df; border-radius: 6px; padding: 12px; background: #f0f4ff;">
+                                <div class="row align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Variant Name') }} <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="newVariantType" placeholder="e.g. Red-XL">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Price') }} <span class="text-danger">*</span></label>
+                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="newVariantPrice" placeholder="0.00">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Quantity') }} <span class="text-danger">*</span></label>
+                                        <input type="number" min="0" class="form-control form-control-sm" id="newVariantQty" placeholder="0">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="title-color mb-1" style="font-size: 12px;">SKU</label>
+                                        <input type="text" class="form-control form-control-sm" id="newVariantSku" placeholder="SKU">
+                                    </div>
+                                    <div class="col-md-3 d-flex gap-1">
+                                        <button type="button" class="btn btn--primary btn-sm" id="confirmAddVariantBtn" style="font-size: 12px; padding: 5px 12px;">
+                                            <i class="tio-check mr-1"></i> {{ \App\CPU\translate('Add') }}
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm" id="cancelAddVariantBtn" style="font-size: 12px; padding: 5px 12px;">
+                                            <i class="tio-clear mr-1"></i> {{ \App\CPU\translate('Cancel') }}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -512,6 +545,7 @@
 
             $('#editProductId').val(productId);
             $('#modalProductName').text(btn.data('name'));
+            $('#editUnit').val(btn.data('unit') || 'pc');
             $('#editUnitPrice').val(btn.data('unit-price'));
             $('#editPurchasePrice').val(btn.data('purchase-price'));
             $('#editDiscount').val(btn.data('discount'));
@@ -533,12 +567,14 @@
                 success: function(data) {
                     var container = $('#editVariantsContainer');
                     container.empty();
+                    $('#deletedVariants').val('');
+                    $('#newVariantsAdded').val('0');
 
                     if (data.variations && data.variations.length > 0) {
                         data.variations.forEach(function(variant) {
                             container.append(`
                                 <div class="row mb-2 variant-row align-items-center p-2" style="background: #f8f9fa; border-radius: 4px;">
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <label class="title-color mb-0" style="font-size: 12px; font-weight: 600;">${variant.type}</label>
                                         <input type="hidden" class="variant-type" value="${variant.type}">
                                     </div>
@@ -546,7 +582,7 @@
                                         <label class="title-color mb-0" style="font-size: 11px;">{{ \App\CPU\translate('Price') }}</label>
                                         <input type="number" step="0.01" min="0" class="form-control form-control-sm variant-price" value="${variant.price || 0}">
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <label class="title-color mb-0" style="font-size: 11px;">{{ \App\CPU\translate('Quantity') }}</label>
                                         <input type="number" min="0" class="form-control form-control-sm variant-qty" value="${variant.qty || 0}">
                                     </div>
@@ -554,13 +590,19 @@
                                         <label class="title-color mb-0" style="font-size: 11px;">SKU</label>
                                         <input type="text" class="form-control form-control-sm variant-sku" value="${variant.sku || ''}">
                                     </div>
+                                    <div class="col-md-2 text-right">
+                                        <label class="title-color mb-0 d-block" style="font-size: 11px; visibility: hidden;">-</label>
+                                        <button type="button" class="btn btn-danger btn-sm delete-variant-btn" title="{{ \App\CPU\translate('Delete Variant') }}" style="padding: 4px 8px; font-size: 11px;">
+                                            <i class="tio-delete"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             `);
                         });
                     } else {
                         container.append(`
                             <div class="row mb-2 variant-row align-items-center p-2" style="background: #f8f9fa; border-radius: 4px;">
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label class="title-color mb-0" style="font-size: 12px; font-weight: 600;">Default</label>
                                     <input type="hidden" class="variant-type" value="default">
                                 </div>
@@ -568,13 +610,19 @@
                                     <label class="title-color mb-0" style="font-size: 11px;">{{ \App\CPU\translate('Price') }}</label>
                                     <input type="number" step="0.01" min="0" class="form-control form-control-sm variant-price" value="0">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label class="title-color mb-0" style="font-size: 11px;">{{ \App\CPU\translate('Quantity') }}</label>
                                     <input type="number" min="0" class="form-control form-control-sm variant-qty" value="0">
                                 </div>
                                 <div class="col-md-3">
                                     <label class="title-color mb-0" style="font-size: 11px;">SKU</label>
                                     <input type="text" class="form-control form-control-sm variant-sku" value="">
+                                </div>
+                                <div class="col-md-2 text-right">
+                                    <label class="title-color mb-0 d-block" style="font-size: 11px; visibility: hidden;">-</label>
+                                    <button type="button" class="btn btn-danger btn-sm delete-variant-btn" title="{{ \App\CPU\translate('Delete Variant') }}" style="padding: 4px 8px; font-size: 11px;">
+                                        <i class="tio-delete"></i>
+                                    </button>
                                 </div>
                             </div>
                         `);
@@ -599,6 +647,8 @@
                 });
             });
 
+            var deletedVariants = $('#deletedVariants').val() ? $('#deletedVariants').val().split(',').filter(Boolean) : [];
+
             $('#saveBtnText').addClass('d-none');
             $('#saveBtnLoader').removeClass('d-none');
             $('#savePriceVariantsBtn').prop('disabled', true);
@@ -611,6 +661,7 @@
                 method: 'POST',
                 data: {
                     id: productId,
+                    unit: $('#editUnit').val(),
                     unit_price: $('#editUnitPrice').val(),
                     purchase_price: $('#editPurchasePrice').val(),
                     discount: $('#editDiscount').val(),
@@ -619,7 +670,8 @@
                     tax_model: $('#editTaxModel').val(),
                     shipping_cost: $('#editShippingCost').val(),
                     minimum_order_qty: $('#editMinOrder').val(),
-                    variants: variants
+                    variants: variants,
+                    deleted_variants: deletedVariants
                 },
                 success: function(data) {
                     if (data.success) {
@@ -637,6 +689,116 @@
                     $('#saveBtnText').removeClass('d-none');
                     $('#saveBtnLoader').addClass('d-none');
                     $('#savePriceVariantsBtn').prop('disabled', false);
+                }
+            });
+        });
+
+        // Add Variant - Show form
+        $(document).on('click', '#addVariantBtn', function() {
+            $('#addVariantForm').removeClass('d-none');
+            $('#newVariantType').val('').focus();
+            $('#newVariantPrice').val('');
+            $('#newVariantQty').val('');
+            $('#newVariantSku').val('');
+        });
+
+        // Cancel Add Variant
+        $(document).on('click', '#cancelAddVariantBtn', function() {
+            $('#addVariantForm').addClass('d-none');
+        });
+
+        // Confirm Add Variant
+        $(document).on('click', '#confirmAddVariantBtn', function() {
+            var variantType = $.trim($('#newVariantType').val());
+            var variantPrice = $('#newVariantPrice').val();
+            var variantQty = $('#newVariantQty').val();
+            var variantSku = $('#newVariantSku').val();
+
+            if (!variantType) {
+                toastr.error('{{ \App\CPU\translate("Variant name is required") }}');
+                $('#newVariantType').focus();
+                return;
+            }
+            if (!variantPrice || parseFloat(variantPrice) < 0) {
+                toastr.error('{{ \App\CPU\translate("Valid price is required") }}');
+                $('#newVariantPrice').focus();
+                return;
+            }
+            if (!variantQty || parseInt(variantQty) < 0) {
+                toastr.error('{{ \App\CPU\translate("Valid quantity is required") }}');
+                $('#newVariantQty').focus();
+                return;
+            }
+
+            var exists = false;
+            $('.variant-row').each(function() {
+                if ($(this).find('.variant-type').val() === variantType) {
+                    exists = true;
+                }
+            });
+            if (exists) {
+                toastr.error('{{ \App\CPU\translate("Variant with this name already exists") }}');
+                return;
+            }
+
+            var container = $('#editVariantsContainer');
+            container.append(`
+                <div class="row mb-2 variant-row align-items-center p-2" style="background: #f0fff4; border-radius: 4px; border: 1px solid #28a745;">
+                    <div class="col-md-2">
+                        <label class="title-color mb-0" style="font-size: 12px; font-weight: 600;">${variantType}</label>
+                        <input type="hidden" class="variant-type" value="${variantType}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="title-color mb-0" style="font-size: 11px;">{{ \App\CPU\translate('Price') }}</label>
+                        <input type="number" step="0.01" min="0" class="form-control form-control-sm variant-price" value="${variantPrice}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="title-color mb-0" style="font-size: 11px;">{{ \App\CPU\translate('Quantity') }}</label>
+                        <input type="number" min="0" class="form-control form-control-sm variant-qty" value="${variantQty}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="title-color mb-0" style="font-size: 11px;">SKU</label>
+                        <input type="text" class="form-control form-control-sm variant-sku" value="${variantSku || ''}">
+                    </div>
+                    <div class="col-md-2 text-right">
+                        <label class="title-color mb-0 d-block" style="font-size: 11px; visibility: hidden;">-</label>
+                        <button type="button" class="btn btn-danger btn-sm delete-variant-btn" title="{{ \App\CPU\translate('Delete Variant') }}" style="padding: 4px 8px; font-size: 11px;">
+                            <i class="tio-delete"></i>
+                        </button>
+                    </div>
+                </div>
+            `);
+
+            $('#addVariantForm').addClass('d-none');
+            toastr.success('{{ \App\CPU\translate("Variant added") }}');
+        });
+
+        // Delete Variant
+        $(document).on('click', '.delete-variant-btn', function() {
+            var btn = $(this);
+            var row = btn.closest('.variant-row');
+            var variantType = row.find('.variant-type').val();
+
+            swal({
+                title: "{{ \App\CPU\translate('Are you sure?') }}",
+                text: "{{ \App\CPU\translate('Are you sure you want to delete this variant?') }}",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                confirmButtonText: "{{ \App\CPU\translate('OK') }}",
+            }).then(function(willDelete) {
+                if (willDelete.value) {
+                    var deleted = $('#deletedVariants').val() ? $('#deletedVariants').val() : '';
+                    if (deleted) {
+                        deleted += ',' + variantType;
+                    } else {
+                        deleted = variantType;
+                    }
+                    $('#deletedVariants').val(deleted);
+
+                    row.fadeOut(300, function() {
+                        $(this).remove();
+                    });
                 }
             });
         });

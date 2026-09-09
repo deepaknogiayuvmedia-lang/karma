@@ -378,9 +378,6 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('featured-status', 'ProductController@featured_status')->name('featured-status');
             Route::get('approve-status', 'ProductController@approve_status')->name('approve-status');
             Route::post('deny', 'ProductController@deny')->name('deny');
-            // Phase 9: Verify Product routes
-            Route::post('verify', 'ProductController@verify')->name('verify');
-            Route::post('bulk-verify', 'ProductController@bulk_verify')->name('bulk-verify');
             Route::post('sku-combination', 'ProductController@sku_combination')->name('sku-combination');
             Route::get('get-categories', 'ProductController@get_categories')->name('get-categories');
             Route::delete('delete/{id}', 'ProductController@delete')->name('delete');

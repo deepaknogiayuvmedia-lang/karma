@@ -61,7 +61,7 @@
                                     </td>
                                     <td>
                                         <label class="switch">
-                                            <input type="checkbox"
+                                            <input type="checkbox" class="status"
                                                    onclick="featured_status('{{$p['id']}}')" {{$p->featured == 1?'checked':''}}>
                                             <span class="slider round"></span>
                                         </label>
