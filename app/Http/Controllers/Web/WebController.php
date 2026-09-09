@@ -366,6 +366,30 @@ class WebController extends Controller
         ]);
     }
 
+    public function search_suggestions(Request $request)
+    {
+        $name = $request->get('name', '');
+        if (!$name || strlen(trim($name)) < 2) {
+            return response()->json(['suggestions' => []]);
+        }
+
+        $result = ProductManager::search_products_web($name);
+        $products = $result['products'] ?? null;
+
+        if (!$products || (is_array($products) && empty($products)) || ($products instanceof Collection && $products->isEmpty())) {
+            $result = ProductManager::translated_product_search_web($name);
+            $products = $result['products'] ?? collect();
+        }
+
+        if (is_array($products)) {
+            $products = collect($products);
+        }
+
+        $suggestions = $products->take(10)->pluck('name')->unique()->values();
+
+        return response()->json(['suggestions' => $suggestions]);
+    }
+
     public function checkout_details(Request $request)
     {
         $cart_group_ids = CartManager::get_cart_group_ids();

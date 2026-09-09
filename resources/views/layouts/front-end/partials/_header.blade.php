@@ -184,6 +184,69 @@
         color: var(--primary_color);
         font-size: 0.75rem;
     }
+/* Mobile permanent search bar row */
+.mobile-search-row {
+    display: none;
+    padding: 8px 12px 10px;
+    background: #fff;
+    border-top: 1px solid #eee;
+}
+@media (max-width: 767px) {
+    .mobile-search-row { display: block; }
+}
+.mobile-search-row .input-group {
+    position: relative;
+}
+.mobile-search-row .form-control {
+    border-radius: 25px 0 0 25px;
+    border: 1.5px solid var(--primary_color);
+    padding-left: 16px;
+    height: 40px;
+    font-size: 0.9rem;
+    box-shadow: none;
+}
+.mobile-search-row .search-btn {
+    border-radius: 0 25px 25px 0;
+    background: var(--primary_color);
+    border: none;
+    color: #fff;
+    padding: 0 16px;
+    height: 40px;
+    cursor: pointer;
+}
+#mobileSuggestionBox {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 9999;
+    background: #fff;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    max-height: 320px;
+    overflow-y: auto;
+    display: none;
+}
+#mobileSuggestionBox .suggestion-item {
+    display: block;
+    padding: 10px 16px;
+    color: #333;
+    border-bottom: 1px solid #f1f1f1;
+    text-decoration: none;
+    font-size: 0.88rem;
+    cursor: pointer;
+}
+#mobileSuggestionBox .suggestion-item:hover {
+    background: #f7f7f7;
+}
+/* Desktop suggestion box fix */
+#desktopSearchOverlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 9999;
+}
 </style>
 @php($announcement=\App\CPU\Helpers::get_business_settings('announcement'))
 @if (isset($announcement) && $announcement['status']==1)
@@ -197,7 +260,7 @@
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
-<header class="box-shadow-sm rtl __inline-10">
+<header class="box-shadow-sm rtl __inline-10" style="position:relative;">
          @if(isset($language_status) && $language_status == 1)
     <!-- Topbar-->
     <div class="topbar">
@@ -258,6 +321,7 @@
   @endif
 
     <div class="navbar-sticky bg-light mobile-head">
+       
         <div class="navbar px-3 navbar-expand-md navbar-light">
             <div class="container ">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
@@ -276,7 +340,7 @@
                         onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
                         alt="{{$web_config['name']->value}}" />
                 </a>
-                <!-- Search-->
+                <!-- Search - Desktop-->
                 <div class="input-group-overlay d-none d-md-block mx-4"
                     style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}}">
                     <form action="{{route('products')}}" type="submit" class="search_form">
@@ -290,12 +354,17 @@
                                 <i class="czi-search text-white"></i>
                             </span>
                         </button>
-                                           
                         <input name="page" value="1" hidden>
-                        <diV class="card search-card __inline-13">
+                        <div class="card search-card __inline-13" id="desktopSearchOverlay" style="display:none;">
                             <div class="card-body search-result-box __h-400px overflow-x-hidden overflow-y-auto"></div>
-                        </diV>
+                        </div>
                     </form>
+                </div>
+                <!-- Search - Mobile Icon -->
+                <div class="d-md-none ml-auto">
+                    <span class="navbar-tool-icon-box bg-secondary rounded-circle" id="mobileSearchToggle" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                        <i class="czi-search" style="font-size:1.1rem;color:#fff;"></i>
+                    </span>
                 </div>
                 <!-- Toolbar-->
                 <div class="navbar-toolbar d-flex flex-shrink-0 align-items-center">
@@ -306,7 +375,7 @@
                             <i class="navbar-tool-icon czi-close close-icon"></i>
                         </div>
                     </a>
-                    <div class="navbar-tool dropdown {{Session::get('direction') === "rtl" ? 'mr-md-3' : 'ml-md-3'}}">
+                    {{-- <div class="navbar-tool dropdown {{Session::get('direction') === "rtl" ? 'mr-md-3' : 'ml-md-3'}}">
                         <a class="navbar-tool-icon-box bg-secondary dropdown-toggle" href="{{route('wishlists')}}">
                             <span class="navbar-tool-label">
                                 <span
@@ -314,9 +383,9 @@
                             </span>
                             <i class="navbar-tool-icon czi-heart"></i>
                         </a>
-                    </div>
+                    </div> --}}
                     @if(auth('customer')->check())
-                    <div class="navbar-tool dropdown {{Session::get('direction') === "rtl" ? 'mr-md-3' : 'ml-md-3'}}">
+                    {{-- <div class="navbar-tool dropdown {{Session::get('direction') === "rtl" ? 'mr-md-3' : 'ml-md-3'}}">
                         <a class="navbar-tool-icon-box bg-secondary dropdown-toggle" href="javascript:" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="notification_icon">
                             <span class="navbar-tool-label">
                                 <span class="countNotification">0</span>
@@ -337,7 +406,7 @@
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="dropdown">
                         <a class="navbar-tool ml-3" type="button" data-toggle="dropdown" aria-haspopup="true"
                             aria-expanded="false">
@@ -401,26 +470,7 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse"
                     style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}}; ">
 
-                    <!-- Search-->
-                    <div class="input-group-overlay d-md-none my-3">
-                        <form action="{{route('products')}}" type="submit" class="search_form">
-                            <input class="form-control appended-form-control search-bar-input-mobile" type="text"
-                                autocomplete="off"
-                                placeholder="{{\App\CPU\translate('search')}}" name="name">
-                            <input name="data_from" value="search" hidden>
-                            <input name="page" value="1" hidden>
-                            <button class="input-group-append-overlay search_button" type="submit"
-                                style="border-radius: {{Session::get('direction') === "rtl" ? '7px 0px 0px 7px; right: unset; left: 0' : '0px 7px 7px 0px; left: unset; right: 0'}};">
-                                <span class="input-group-text __text-20px">
-                                    <i class="czi-search text-white"></i>
-                                </span>
-                            </button>
-                            <diV class="card search-card __inline-13">
-                                <div class="card-body search-result-box" id=""
-                                    style="overflow:scroll; height:400px;overflow-x: hidden"></div>
-                            </diV>
-                        </form>
-                    </div>
+                    <!-- Search-- removed from here, now in main navbar -->
 
                     @php($categories=\App\Model\Category::with(['childes.childes'])->where('position', 0)->priority()->paginate(11))
                     <ul class="navbar-nav mega-nav pr-2 pl-2 {{Session::get('direction') === "rtl" ? 'mr-2' : 'mr-2'}} d-none d-xl-block __mega-nav">
@@ -640,6 +690,25 @@
                 </div>
             </div>
         </div>
+        <!-- Mobile Search Overlay -->
+        <div id="mobileSearchOverlay" class="d-md-none" style="background:#fff; padding:10px 15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border-top:1px solid #eee;">
+            <form action="{{route('products')}}" method="GET" id="mobileSearchForm">
+                <input name="data_from" value="search" hidden>
+                <input name="page" value="1" hidden>
+                <div class="input-group position-relative">
+                    <input class="form-control" type="text" autocomplete="off"
+                        placeholder="{{\App\CPU\translate('Search for products...')}}"
+                        name="name" id="mobileSearchInput">
+                    <button class="btn btn--primary" type="submit" style="flex-shrink:0;">
+                        <i class="czi-search"></i>
+                    </button>
+                    <div class="card search-card" style="display:none; position:absolute; left:0; right:0; top:100%; z-index:9999; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+                        <div class="card-body search-result-box" style="overflow:auto; max-height:400px; overflow-x:hidden;"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    
     </div>
 </header>
 <!-- Notification Modal -->
@@ -668,73 +737,167 @@
 </div>
 
 @push('script')
-{{-- <script src="{{ asset('firebase-messaging-sw.js') }}"></script> --}}
 <script>
-    function myFunction() {
-        $('#anouncement').slideUp(300)
-    }
+    jQuery(document).ready(function($) {
+        function myFunction() {
+            $('#anouncement').slideUp(300)
+        }
 
-    $(document).ready(function() {
         @if(auth('customer')->check())
             fetchNotifications();
         @endif
-    });
 
-    function fetchNotifications() {
-        $.get({
-            url: "{{route('get-notifications')}}",
-            dataType: 'json',
-            success: function (data) {
-                $('#notification-list').html(data.view);
-                if(data.count > 0){
-                    $('.countNotification').text(data.count).show();
-                    $('.countNotification').parent().addClass('animate__animated animate__pulse animate__infinite');
-                } else {
-                    // $('.countNotification').hide();
-                    $('.countNotification').parent().removeClass('animate__animated animate__pulse animate__infinite');
-                }
-            },
-        });
-    }
+        function fetchNotifications() {
+            $.get({
+                url: "{{route('get-notifications')}}",
+                dataType: 'json',
+                success: function (data) {
+                    $('#notification-list').html(data.view);
+                    if(data.count > 0){
+                        $('.countNotification').text(data.count).show();
+                        $('.countNotification').parent().addClass('animate__animated animate__pulse animate__infinite');
+                    } else {
+                        $('.countNotification').parent().removeClass('animate__animated animate__pulse animate__infinite');
+                    }
+                },
+            });
+        }
 
-    function openNotificationModal(id) {
-        $.get({
-            url: "{{route('read-notification')}}",
-            data: { id: id },
-            dataType: 'json',
-            beforeSend: function () {
-                $('#loading').show();
-            },
-            success: function (data) {
-                $('#notif-title').text(data.title);
-                $('#notif-description').text(data.description);
-                if (data.image && !data.image.includes('placeholder')) {
-                    $('#notif-image').attr('src', data.image).show();
-                    $('#notif-image-container').show();
-                } else {
-                    $('#notif-image-container').hide();
+        function openNotificationModal(id) {
+            $.get({
+                url: "{{route('read-notification')}}",
+                data: { id: id },
+                dataType: 'json',
+                beforeSend: function () {
+                    $('#loading').show();
+                },
+                success: function (data) {
+                    $('#notif-title').text(data.title);
+                    $('#notif-description').text(data.description);
+                    if (data.image && !data.image.includes('placeholder')) {
+                        $('#notif-image').attr('src', data.image).show();
+                        $('#notif-image-container').show();
+                    } else {
+                        $('#notif-image-container').hide();
+                    }
+                    $('#notificationModal').modal('show');
+                    fetchNotifications();
+                },
+                complete: function () {
+                    $('#loading').hide();
                 }
-                $('#notificationModal').modal('show');
-                fetchNotifications(); // Refresh to update unread count and read status in dropdown
-            },
-            complete: function () {
-                $('#loading').hide();
+            });
+        }
+
+        // Safe Firebase message listener
+        try {
+            if (typeof messaging !== 'undefined' && messaging) {
+                messaging.onMessage((payload) => {
+                    console.log(payload);
+                    new Notification(payload.notification.title, {
+                        body: payload.notification.body
+                    });
+                    fetchNotifications();
+                });
+            }
+        } catch(e) {
+            console.warn('Firebase messaging not available:', e);
+        }
+
+        // ==================== Search Suggestion ====================
+        function debounce(fn, delay) {
+            let timeout;
+            return function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => fn.apply(this, arguments), delay);
+            };
+        }
+
+        function fetchSuggestions(query, $box) {
+            if (!query || query.length < 2) {
+                $box.hide().empty();
+                return;
+            }
+            $.ajax({
+                url: '{{ route("search-suggestions") }}',
+                method: 'GET',
+                data: { name: query },
+                dataType: 'json',
+                success: function(data) {
+                    if (data && data.suggestions && data.suggestions.length > 0) {
+                        var html = '';
+                        $.each(data.suggestions, function(i, name) {
+                            var safeName = $('<div>').text(name).html();
+                            html += '<a class="suggestion-item" href="javascript:void(0)" data-name="' + safeName + '" style="display:block;padding:8px 12px;border-bottom:1px solid #eee;text-decoration:none;color:#333;">' + safeName + '</a>';
+                        });
+                        $box.html(html).show();
+                    } else {
+                        $box.hide().empty();
+                    }
+                },
+                error: function(xhr, status, err) {
+                    console.error('Suggestion AJAX error:', status, err);
+                    $box.hide().empty();
+                }
+            });
+        }
+
+        // Desktop search input
+        $(document).on('input', '.search-bar-input', debounce(function() {
+            var q = $(this).val().trim();
+            var $card = $(this).closest('.input-group-overlay').find('.search-card');
+            var $box = $card.find('.search-result-box');
+            if (!q || q.length < 2) { $card.hide(); return; }
+            $card.css('display', 'block');
+            fetchSuggestions(q, $box);
+        }, 350));
+
+        // Mobile search input
+        $(document).on('input', '#mobileSearchInput', debounce(function() {
+            var q = $(this).val().trim();
+            var $card = $('#mobileSearchOverlay .search-card');
+            var $box = $('#mobileSearchOverlay .search-result-box');
+            if (!q || q.length < 2) { $card.hide(); return; }
+            $card.css('display', 'block');
+            fetchSuggestions(q, $box);
+        }, 350));
+
+        // Clicking a suggestion item
+        $(document).on('click', '.suggestion-item', function(e) {
+            e.preventDefault();
+            var name = $(this).data('name') || $(this).text().trim();
+            if ($(this).closest('#mobileSearchOverlay').length) {
+                $('#mobileSearchInput').val(name);
+                $('#mobileSearchOverlay .search-card').hide().empty();
+                $('#mobileSearchOverlay').closest('form').submit();
+            } else {
+                $('.search-bar-input').val(name);
+                $('.search-card').hide();
+                $('.search_form').submit();
             }
         });
-    }
 
-messaging.onMessage((payload) => {
-    console.log(payload);   
-    // show popup
-    new Notification(payload.notification.title, {
-        body: payload.notification.body
-    });
+        // Close suggestion boxes when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#mobileSearchOverlay').length) {
+                $('#mobileSearchOverlay .search-card').hide().empty();
+            }
+        });
 
-    // reload bell data
-    fetchNotifications();
-});
-    $(document).on('click', '#notification_icon', function() {
-        fetchNotifications();
+        $(document).on('click', '#notification_icon', function() {
+            fetchNotifications();
+        });
+
+        // Mobile search toggle
+        $('#mobileSearchToggle').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $('#mobileSearchOverlay').slideToggle(200, function() {
+                if ($('#mobileSearchOverlay').is(':visible')) {
+                    $('#mobileSearchInput').focus();
+                }
+            });
+        });
     });
 </script>
 @endpush

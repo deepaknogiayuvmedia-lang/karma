@@ -1066,60 +1066,17 @@
             });
         }
 
-        jQuery(".search-bar-input").keyup(function() {
-            $(".search-card").css("display", "block");
-            let name = $(".search-bar-input").val();
-            if (name.length > 0) {
-                $.get({
-                    url: '{{ url('/') }}/searched-products',
-                    dataType: 'json',
-                    data: {
-                        name: name
-                    },
-                    beforeSend: function() {
-                        $('#loading').show();
-                    },
-                    success: function(data) {
-                        $('.search-result-box').empty().html(data.result)
-                    },
-                    complete: function() {
-                        $('#loading').hide();
-                    },
-                });
-            } else {
-                $('.search-result-box').empty();
-            }
-        });
-
-        jQuery(".search-bar-input-mobile").keyup(function() {
-            $(".search-card").css("display", "block");
-            let name = $(".search-bar-input-mobile").val();
-            if (name.length > 0) {
-                $.get({
-                    url: '{{ url('/') }}/searched-products',
-                    dataType: 'json',
-                    data: {
-                        name: name
-                    },
-                    beforeSend: function() {
-                        $('#loading').show();
-                    },
-                    success: function(data) {
-                        $('.search-result-box').empty().html(data.result)
-                    },
-                    complete: function() {
-                        $('#loading').hide();
-                    },
-                });
-            } else {
-                $('.search-result-box').empty();
-            }
-        });
-
         jQuery(document).mouseup(function(e) {
-            var container = $(".search-card");
+            var container = jQuery(".search-card");
             if (!container.is(e.target) && container.has(e.target).length === 0) {
                 container.hide();
+            }
+        });
+
+        // Close mobile search on click outside
+        jQuery(document).on('click', function(e) {
+            if (!jQuery(e.target).closest('#mobileSearchOverlay, #mobileSearchToggle').length) {
+                jQuery('#mobileSearchOverlay').slideUp(200);
             }
         });
 

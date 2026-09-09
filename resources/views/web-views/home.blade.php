@@ -442,129 +442,6 @@
                 </div>
             </div>
         </section>
-
-        @if (isset($recentlyViewed) && count($recentlyViewed) > 0)
-            <div class="container mb-4">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="feature-product-title">
-                            {{ \App\CPU\translate('recently_viewed') }}
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="feature-product">
-                            <div class="carousel-wrap p-1">
-                                <div class="owl-carousel owl-theme " id="recently_viewed_products_list">
-                                    @foreach ($recentlyViewed as $rv)
-                                        @if ($rv->product && $rv->product->indexing == 1)
-                                            <div>
-                                                @include('web-views.partials._feature-product', [
-                                                    'product' => $rv->product,
-                                                    'decimal_point_settings' => $decimal_point_settings,
-                                                ])
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-
-        {{-- flash deal --}}
-        @php(
-    $flash_deals = \App\Model\FlashDeal::with([
-        'products' => function ($query) {
-            $query->with('product')->whereHas('product', function ($q) {
-                $q->active();
-            });
-        }
-    ])->where(['status' => 1])->where(['deal_type' => 'flash_deal'])->whereDate('start_date', '<=', date('Y-m-d'))->whereDate('end_date', '>=', date('Y-m-d'))->first()
-)
-
-        @if (isset($flash_deals))
-            <section class="overflow-hidden">
-                <div class="container">
-                    <div class="flash-deal-view-all-web row d-none d-lg-flex justify-content-{{ Session::get(key: 'direction') === 'rtl' ? 'start' : 'end' }}"
-                        style="{{ Session::get('direction') === 'rtl' ? 'margin-left: 2px;' : 'margin-right:2px;' }}">
-                        @if (count($flash_deals->products) > 0)
-                            <a class="text-capitalize view-all-text"
-                                href="{{ route('flash-deals', [isset($flash_deals) ? $flash_deals['id'] : 0]) }}">
-                                {{ \App\CPU\translate('view_all') }}
-                                <i
-                                    class="czi-arrow-{{ Session::get('direction') === 'rtl' ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1' }}"></i>
-                            </a>
-                        @endif
-                    </div>
-                    <div class="row d-flex {{ Session::get('direction') === 'rtl' ? 'flex-row-reverse' : 'flex-row' }}">
-
-
-                        <div class="col-xl-3 col-lg-4 mt-2 countdown-card">
-                            <div class="m-2">
-                                <div class="flash-deal-text">
-                                    <span>{{ \App\CPU\translate('flash deal') }}</span>
-                                </div>
-                                <div class="text-center text-white">
-                                    <div class="countdown-background">
-                                        <span class="cz-countdown d-flex justify-content-center align-items-center"
-                                            data-countdown="{{ isset($flash_deals) ? date('m/d/Y', strtotime($flash_deals['end_date'])) : '' }} 11:59:00 PM">
-                                            <span class="cz-countdown-days">
-                                                <span class="cz-countdown-value"></span>
-                                                <span>{{ \App\CPU\translate('day') }}</span>
-                                            </span>
-                                            <span class="cz-countdown-value p-1">:</span>
-                                            <span class="cz-countdown-hours">
-                                                <span class="cz-countdown-value"></span>
-                                                <span>{{ \App\CPU\translate('hrs') }}</span>
-                                            </span>
-                                            <span class="cz-countdown-value p-1">:</span>
-                                            <span class="cz-countdown-minutes">
-                                                <span class="cz-countdown-value"></span>
-                                                <span>{{ \App\CPU\translate('min') }}</span>
-                                            </span>
-                                            <span class="cz-countdown-value p-1">:</span>
-                                            <span class="cz-countdown-seconds">
-                                                <span class="cz-countdown-value"></span>
-                                                <span>{{ \App\CPU\translate('sec') }}</span>
-                                            </span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flash-deal-view-all-mobile col-lg-12 d-block d-xl-none"
-                            style="{{ Session::get('direction') === 'rtl' ? 'margin-left: 2px;' : 'margin-right:2px;' }}">
-                        </div>
-                        <div class="col-xl-9 col-lg-8 {{ Session::get('direction') === 'rtl' ? 'pr-md-4' : 'pl-md-4' }}">
-                            <div class="d-lg-none {{ Session::get('direction') === 'rtl' ? 'text-left' : 'text-right' }}">
-                                <a class="mt-2 text-capitalize view-all-text"
-                                    href="{{ route('flash-deals', [isset($flash_deals) ? $flash_deals['id'] : 0]) }}">
-                                    {{ \App\CPU\translate('view_all') }}
-                                    <i
-                                        class="czi-arrow-{{ Session::get('direction') === 'rtl' ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1' }}"></i>
-                                </a>
-                            </div>
-                            <div class="carousel-wrap">
-                                <div class="owl-carousel owl-theme mt-2" id="flash-deal-slider">
-                                    @foreach ($flash_deals->products as $key => $deal)
-                                        @if ($deal->product)
-                                            @include('web-views.partials._product-card-1', [
-                                                'product' => $deal->product,
-                                                'decimal_point_settings' => $decimal_point_settings,
-                                            ])
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        @endif
-
         @php($business_mode = \App\CPU\Helpers::get_business_settings('business_mode'))
         {{-- categries --}}
 
@@ -667,6 +544,129 @@
             </div>
     </div>
     @endif
+    @if (isset($recentlyViewed) && count($recentlyViewed) > 0)
+        <div class="container mb-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="feature-product-title">
+                        {{ \App\CPU\translate('recently_viewed') }}
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="feature-product">
+                        <div class="carousel-wrap p-1">
+                            <div class="owl-carousel owl-theme " id="recently_viewed_products_list">
+                                @foreach ($recentlyViewed as $rv)
+                                    @if ($rv->product && $rv->product->indexing == 1)
+                                        <div>
+                                            @include('web-views.partials._feature-product', [
+                                                'product' => $rv->product,
+                                                'decimal_point_settings' => $decimal_point_settings,
+                                            ])
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+
+    {{-- flash deal --}}
+    @php(
+    $flash_deals = \App\Model\FlashDeal::with([
+        'products' => function ($query) {
+            $query->with('product')->whereHas('product', function ($q) {
+                $q->active();
+            });
+        }
+    ])->where(['status' => 1])->where(['deal_type' => 'flash_deal'])->whereDate('start_date', '<=', date('Y-m-d'))->whereDate('end_date', '>=', date('Y-m-d'))->first()
+)
+
+    @if (isset($flash_deals))
+        <section class="overflow-hidden">
+            <div class="container">
+                <div class="flash-deal-view-all-web row d-none d-lg-flex justify-content-{{ Session::get(key: 'direction') === 'rtl' ? 'start' : 'end' }}"
+                    style="{{ Session::get('direction') === 'rtl' ? 'margin-left: 2px;' : 'margin-right:2px;' }}">
+                    @if (count($flash_deals->products) > 0)
+                        <a class="text-capitalize view-all-text"
+                            href="{{ route('flash-deals', [isset($flash_deals) ? $flash_deals['id'] : 0]) }}">
+                            {{ \App\CPU\translate('view_all') }}
+                            <i
+                                class="czi-arrow-{{ Session::get('direction') === 'rtl' ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1' }}"></i>
+                        </a>
+                    @endif
+                </div>
+                <div class="row d-flex {{ Session::get('direction') === 'rtl' ? 'flex-row-reverse' : 'flex-row' }}">
+
+
+                    <div class="col-xl-3 col-lg-4 mt-2 countdown-card">
+                        <div class="m-2">
+                            <div class="flash-deal-text">
+                                <span>{{ \App\CPU\translate('flash deal') }}</span>
+                            </div>
+                            <div class="text-center text-white">
+                                <div class="countdown-background">
+                                    <span class="cz-countdown d-flex justify-content-center align-items-center"
+                                        data-countdown="{{ isset($flash_deals) ? date('m/d/Y', strtotime($flash_deals['end_date'])) : '' }} 11:59:00 PM">
+                                        <span class="cz-countdown-days">
+                                            <span class="cz-countdown-value"></span>
+                                            <span>{{ \App\CPU\translate('day') }}</span>
+                                        </span>
+                                        <span class="cz-countdown-value p-1">:</span>
+                                        <span class="cz-countdown-hours">
+                                            <span class="cz-countdown-value"></span>
+                                            <span>{{ \App\CPU\translate('hrs') }}</span>
+                                        </span>
+                                        <span class="cz-countdown-value p-1">:</span>
+                                        <span class="cz-countdown-minutes">
+                                            <span class="cz-countdown-value"></span>
+                                            <span>{{ \App\CPU\translate('min') }}</span>
+                                        </span>
+                                        <span class="cz-countdown-value p-1">:</span>
+                                        <span class="cz-countdown-seconds">
+                                            <span class="cz-countdown-value"></span>
+                                            <span>{{ \App\CPU\translate('sec') }}</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flash-deal-view-all-mobile col-lg-12 d-block d-xl-none"
+                        style="{{ Session::get('direction') === 'rtl' ? 'margin-left: 2px;' : 'margin-right:2px;' }}">
+                    </div>
+                    <div class="col-xl-9 col-lg-8 {{ Session::get('direction') === 'rtl' ? 'pr-md-4' : 'pl-md-4' }}">
+                        <div class="d-lg-none {{ Session::get('direction') === 'rtl' ? 'text-left' : 'text-right' }}">
+                            <a class="mt-2 text-capitalize view-all-text"
+                                href="{{ route('flash-deals', [isset($flash_deals) ? $flash_deals['id'] : 0]) }}">
+                                {{ \App\CPU\translate('view_all') }}
+                                <i
+                                    class="czi-arrow-{{ Session::get('direction') === 'rtl' ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1' }}"></i>
+                            </a>
+                        </div>
+                        <div class="carousel-wrap">
+                            <div class="owl-carousel owl-theme mt-2" id="flash-deal-slider">
+                                @foreach ($flash_deals->products as $key => $deal)
+                                    @if ($deal->product)
+                                        @include('web-views.partials._product-card-1', [
+                                            'product' => $deal->product,
+                                            'decimal_point_settings' => $decimal_point_settings,
+                                        ])
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
+
+
 
 
     <!-- Products grid (featured products)-->
@@ -933,21 +933,15 @@
 
 
         {{-- Dynamic Banner Section above Brands --}}
-        @php(
-            $main_section_banners = \App\Model\Banner::where('banner_type', 'Brand Section Banner')->where('published', 1)->orderBy('id', 'desc')->get()
-        )
-        @if($main_section_banners->count() == 0)
-            @php(
-                $main_section_banners = \App\Model\Banner::where('banner_type', 'Main Section Banner')->where('published', 1)->orderBy('id', 'desc')->get()
-            )
+        @php($main_section_banners = \App\Model\Banner::where('banner_type', 'Brand Section Banner')->where('published', 1)->orderBy('id', 'desc')->get())
+        @if ($main_section_banners->count() == 0)
+            @php($main_section_banners = \App\Model\Banner::where('banner_type', 'Main Section Banner')->where('published', 1)->orderBy('id', 'desc')->get())
         @endif
-        @if($main_section_banners->count() == 0)
-            @php(
-                $main_section_banners = \App\Model\Banner::where('published', 1)->orderBy('id', 'desc')->take(4)->get()
-            )
+        @if ($main_section_banners->count() == 0)
+            @php($main_section_banners = \App\Model\Banner::where('published', 1)->orderBy('id', 'desc')->take(4)->get())
         @endif
 
-        @if(count($main_section_banners) > 0)
+        @if (count($main_section_banners) > 0)
             <div class="container mt-4" style="padding:0">
                 <div class="row m-0">
                     <div class="col-md-12 p-0">
@@ -955,8 +949,10 @@
                             <div class="owl-carousel owl-theme" id="main_section_banner_slider">
                                 @foreach ($main_section_banners as $mainbanner)
                                     <div class="item">
-                                        <a href="{{ $mainbanner->url && $mainbanner->url != '#' ? $mainbanner->url : 'javascript:' }}" class="d-block">
-                                            <img class="d-block w-100 rounded __shadow-sm" style="max-height: 280px; object-fit: cover;"
+                                        <a href="{{ $mainbanner->url && $mainbanner->url != '#' ? $mainbanner->url : 'javascript:' }}"
+                                            class="d-block">
+                                            <img class="d-block w-100 rounded __shadow-sm"
+                                                style="max-height: 280px; object-fit: cover;"
                                                 onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                 src="{{ asset(config('app.public_storage_path') . '/banner') }}/{{ $mainbanner['photo'] }}"
                                                 alt="Banner">
@@ -1093,8 +1089,7 @@
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col_llqj  col-style">
             <div class="banners banners2">
                 <div class="banner">
-                    <a href="#"><img src="{{ asset('assets/front-end/img/id2-banner2.png') }}"
-                            alt="image"></a>
+                    <a href="#"><img src="{{ asset('assets/front-end/img/id2-banner2.png') }}" alt="image"></a>
                 </div>
             </div>
         </div>
@@ -1180,8 +1175,8 @@
                             <div class="item-inner">
                                 <div class="icon icon3"></div>
                                 <div class="content">
-                                    <a href="#">{{\App\CPU\translate('Original product / Verified.')}}</a>
-                                    <p>{{\App\CPU\translate('100% Genuine')}}</p>
+                                    <a href="#">{{ \App\CPU\translate('Original product / Verified.') }}</a>
+                                    <p>{{ \App\CPU\translate('100% Genuine') }}</p>
                                 </div>
                             </div>
                         </li>
@@ -1189,8 +1184,8 @@
                             <div class="item-inner">
                                 <div class="icon icon4"></div>
                                 <div class="content">
-                                    <a href="#">{{\App\CPU\translate('Best Price')}}</a>
-                                    <p>{{\App\CPU\translate('Guaranteed Lowest')}}</p>
+                                    <a href="#">{{ \App\CPU\translate('Best Price') }}</a>
+                                    <p>{{ \App\CPU\translate('Guaranteed Lowest') }}</p>
                                 </div>
                             </div>
                         </li>
@@ -1198,8 +1193,8 @@
                             <div class="item-inner">
                                 <div class="icon icon5"></div>
                                 <div class="content">
-                                    <a href="#">{{\App\CPU\translate("Farmer's Choice") }}</a>
-                                    <p>{{\App\CPU\translate('Direct from Farms')}}</p>
+                                    <a href="#">{{ \App\CPU\translate("Farmer's Choice") }}</a>
+                                    <p>{{ \App\CPU\translate('Direct from Farms') }}</p>
                                 </div>
                             </div>
                         </li>
@@ -1301,7 +1296,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                                    direction ') }}': true,
+                                                                                                direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1350,7 +1345,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                                    direction ') }}': true,
+                                                                                                direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1537,7 +1532,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                                    direction ') }}': false,
+                                                                                                direction ') }}': false,
             // center: true,
             responsive: {
                 //X-Small
@@ -1585,7 +1580,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                                    direction ') }}': false,
+                                                                                                direction ') }}': false,
             // center: true,
             responsive: {
                 //X-Small
@@ -1630,7 +1625,7 @@
             margin: 20,
             nav: false,
             '{{ session('
-                                                                                    direction ') }}': true,
+                                                                                                direction ') }}': true,
             dots: true,
             autoplayHoverPause: true,
             // center: true,
@@ -1680,7 +1675,7 @@
             dots: true,
             autoplayHoverPause: true,
             '{{ session('
-                                                                                    direction ') }}': true,
+                                                                                                direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
