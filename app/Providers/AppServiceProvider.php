@@ -66,7 +66,15 @@ class AppServiceProvider extends ServiceProvider
             //currency
             \App\CPU\Helpers::currency_load();
 
-            View::share(['web_config' => $web_config, 'language' => $language]);
+            $language_status = BusinessSetting::where('type', 'language_status')->first();
+            $currency_converter_status = BusinessSetting::where('type', 'currency_converter_status')->first();
+
+            View::share([
+                'web_config' => $web_config,
+                'language' => $language,
+                'language_status' => isset($language_status) ? $language_status->value : 0,
+                'currency_converter_status' => isset($currency_converter_status) ? $currency_converter_status->value : 0,
+            ]);
 
             Schema::defaultStringLength(191);
         } catch (\Exception $ex) {

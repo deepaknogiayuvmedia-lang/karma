@@ -53,6 +53,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
         Route::get('import-search-function-data', 'SystemController@importSearchFunctionData')->name('import-search-function-data');
         Route::get('search-function', 'SystemController@search_function')->name('search-function');
         Route::get('maintenance-mode', 'SystemController@maintenance_mode')->name('maintenance-mode');
+        Route::get('toggle-language-status', 'SystemController@toggle_language_status')->name('toggle-language-status');
+        Route::get('toggle-currency-converter-status', 'SystemController@toggle_currency_converter_status')->name('toggle-currency-converter-status');
         Route::get('/get-order-data', 'SystemController@order_data')->name('get-order-data');
 
         Route::group(['prefix' => 'custom-role', 'as' => 'custom-role.','middleware'=>['module:user_section']], function () {

@@ -77,4 +77,50 @@ class SystemController extends Controller
             'data' => ['new_order' => $new_order]
         ]);
     }
+
+    public function toggle_language_status()
+    {
+        $setting = BusinessSetting::where('type', 'language_status')->first();
+        if (isset($setting) == false) {
+            DB::table('business_settings')->insert([
+                'type' => 'language_status',
+                'value' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } else {
+            DB::table('business_settings')->where(['type' => 'language_status'])->update([
+                'value' => $setting->value == 1 ? 0 : 1,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if (isset($setting) && $setting->value) {
+            return response()->json(['message' => 'Language switcher is now off.']);
+        }
+        return response()->json(['message' => 'Language switcher is now on.']);
+    }
+
+    public function toggle_currency_converter_status()
+    {
+        $setting = BusinessSetting::where('type', 'currency_converter_status')->first();
+        if (isset($setting) == false) {
+            DB::table('business_settings')->insert([
+                'type' => 'currency_converter_status',
+                'value' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } else {
+            DB::table('business_settings')->where(['type' => 'currency_converter_status'])->update([
+                'value' => $setting->value == 1 ? 0 : 1,
+                'updated_at' => now(),
+            ]);
+        }
+
+        if (isset($setting) && $setting->value) {
+            return response()->json(['message' => 'Currency converter is now off.']);
+        }
+        return response()->json(['message' => 'Currency converter is now on.']);
+    }
 }

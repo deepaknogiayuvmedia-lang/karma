@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Model\BusinessSetting;
 use Closure;
 use Illuminate\Support\Facades\App;
 
@@ -16,6 +17,12 @@ class Localization
      */
     public function handle($request, Closure $next)
     {
+        $status = BusinessSetting::where('type', 'language_status')->first();
+        if (!isset($status) || $status->value != 1) {
+            App::setLocale('en');
+            return $next($request);
+        }
+
         if (session()->has('local')) {
             App::setLocale(session()->get('local'));
         } elseif (session()->has('locale')) {

@@ -188,11 +188,13 @@
                 <!-- Grid column -->
                 <div class="col-md-4 footer-web-logo">
                     <h6 class="text-uppercase mb-4 font-weight-bold footer-heder">Contact Info</h6>
-
+                    @if(\App\CPU\Helpers::get_business_settings('shop_address')!=null)
                     <div class=" mb-2">
                         <span class="__text-14px"><i class="fa fa-map-marker m-2"></i>
                             {{ \App\CPU\Helpers::get_business_settings('shop_address') }} </span>
                     </div>
+                    @endif
+                    @if(\App\CPU\Helpers::get_business_settings('company_phone')!=null)
                     <div class="mb-2">
                         <a class="widget-list-link" href="tel: {{ $web_config['phone']->value }}">
                             <span><i
@@ -201,6 +203,8 @@
                         </a>
 
                     </div>
+                    @endif
+                    @if(\App\CPU\Helpers::get_business_settings('company_email')!=null)
                     <div class="mb-2">
                         <a class="widget-list-link"
                             href="mailto: {{ \App\CPU\Helpers::get_business_settings('company_email') }}">
@@ -208,6 +212,7 @@
                                 {{ \App\CPU\Helpers::get_business_settings('company_email') }} </span>
                         </a>
                     </div>
+                    @endif
                 </div>
 
 

@@ -54,6 +54,7 @@
                             @php($default_lang = 'en')
 
                             @php($default_lang = json_decode($language)[0])
+                            @if(isset($language_status) && $language_status == 1)
                             <ul class="nav nav-tabs w-fit-content ">
                                 @foreach (json_decode($language) as $lang)
                                     <li class="nav-item text-capitalize">
@@ -63,34 +64,97 @@
                                     </li>
                                 @endforeach
                             </ul>
+                            @endif
                         </div>
                         
                     </div>
                         <div class="card-body">
-                            @foreach (json_decode($language) as $lang)
+                            @if(isset($language_status) && $language_status == 1)
+                                @foreach (json_decode($language) as $lang)
+                                    <?php
+                                    if (count($product['translations'])) {
+                                        $translate = [];
+                                        foreach ($product['translations'] as $t) {
+                                            if ($t->locale == $lang && $t->key == 'name') {
+                                                $translate[$lang]['name'] = $t->value;
+                                            }
+                                            if ($t->locale == $lang && $t->key == 'description') {
+                                                $translate[$lang]['description'] = $t->value;
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <div class="{{ $lang != 'en' ? 'd-none' : '' }} lang_form" id="{{ $lang }}-form">
+                                         <div class="row">
+                                             <div class="col-md-4 form-group">
+                                                 <label class="title-color"
+                                                     for="{{ $lang }}_name">{{ \App\CPU\translate('Name') }}
+                                                     ({{ strtoupper($lang) }})
+                                                 </label>
+                                                 <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="name[]"
+                                                     id="{{ $lang }}_name"
+                                                     value="{{ $translate[$lang]['name'] ?? $product['name'] }}"
+                                                     class="form-control" placeholder="New Product" required>
+                                             </div>
+                                             <div class="col-md-4 form-group">
+                                                 <label class="title-color"
+                                                     for="technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
+                                                 <input type="text" name="technical_name" id="technical_name"
+                                                     class="form-control" value="{{ old('technical_name', $product->technical_name ?? '') }}"
+                                                     placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                             </div>
+                                             <div class="col-md-4 form-group">
+                                                 <label class="title-color"
+                                                     for="{{ $lang }}_name">{{ \App\CPU\translate('Product Register Name') }}<span
+                                                         class="text-danger">*</span>
+                                                     ({{ strtoupper($lang) }})</label>
+                                                 <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="prn[]"
+                                                     id="prn_name" value="{{ $product->tally_name ?? '' }}"
+                                                     class="form-control"
+                                                     placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
+                                             </div>
+                                         </div>
+                                        <input type="hidden" name="lang[]" value="{{ $lang }}">
+                                        <div class="form-group pt-4">
+                                            <label class="title-color">{{ \App\CPU\translate('description') }}
+                                                ({{ strtoupper($lang) }})</label>
+                                            <div style="position:relative;">
+                                                <textarea name="description[]" class=" w-100 tiny-editor" rows="10" required>{!! $translate[$lang]['description'] ?? $product['details'] !!}</textarea>
+                                                <div id="editor-loading" class="text-center border rounded" style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="sr-only">Loading...</span>
+                                                    </div>
+                                                    <p class="mt-2 text-muted">Editor loading...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
                                 <?php
+                                $lang = 'en';
                                 if (count($product['translations'])) {
                                     $translate = [];
                                     foreach ($product['translations'] as $t) {
-                                        if ($t->locale == $lang && $t->key == 'name') {
-                                            $translate[$lang]['name'] = $t->value;
+                                        if ($t->locale == 'en' && $t->key == 'name') {
+                                            $translate['en']['name'] = $t->value;
                                         }
-                                        if ($t->locale == $lang && $t->key == 'description') {
-                                            $translate[$lang]['description'] = $t->value;
+                                        if ($t->locale == 'en' && $t->key == 'description') {
+                                            $translate['en']['description'] = $t->value;
                                         }
                                     }
                                 }
                                 ?>
-                                <div class="{{ $lang != 'en' ? 'd-none' : '' }} lang_form" id="{{ $lang }}-form">
+                                <div class="lang_form" id="en-form">
                                      <div class="row">
                                          <div class="col-md-4 form-group">
                                              <label class="title-color"
-                                                 for="{{ $lang }}_name">{{ \App\CPU\translate('Name') }}
-                                                 ({{ strtoupper($lang) }})
+                                                 for="en_name">{{ \App\CPU\translate('Name') }}
+                                                 
                                              </label>
-                                             <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="name[]"
-                                                 id="{{ $lang }}_name"
-                                                 value="{{ $translate[$lang]['name'] ?? $product['name'] }}"
+                                             <input type="text" name="name[]"
+                                                 id="en_name"
+                                                 value="{{ $translate['en']['name'] ?? $product['name'] }}"
                                                  class="form-control" placeholder="New Product" required>
                                          </div>
                                          <div class="col-md-4 form-group">
@@ -102,21 +166,21 @@
                                          </div>
                                          <div class="col-md-4 form-group">
                                              <label class="title-color"
-                                                 for="{{ $lang }}_name">{{ \App\CPU\translate('Product Register Name') }}<span
+                                                 for="en_name">{{ \App\CPU\translate('Product Register Name') }}<span
                                                      class="text-danger">*</span>
-                                                 ({{ strtoupper($lang) }})</label>
-                                             <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="prn[]"
+                                                 </label>
+                                             <input type="text" name="prn[]"
                                                  id="prn_name" value="{{ $product->tally_name ?? '' }}"
                                                  class="form-control"
                                                  placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
                                          </div>
                                      </div>
-                                    <input type="hidden" name="lang[]" value="{{ $lang }}">
+                                    <input type="hidden" name="lang[]" value="en">
                                     <div class="form-group pt-4">
                                         <label class="title-color">{{ \App\CPU\translate('description') }}
-                                            ({{ strtoupper($lang) }})</label>
+                                            </label>
                                         <div style="position:relative;">
-                                            <textarea name="description[]" class=" w-100 tiny-editor" rows="10" required>{!! $translate[$lang]['description'] ?? $product['details'] !!}</textarea>
+                                            <textarea name="description[]" class=" w-100 tiny-editor" rows="10" required>{!! $translate['en']['description'] ?? $product['details'] !!}</textarea>
                                             <div id="editor-loading" class="text-center border rounded" style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
                                                 <div class="spinner-border text-primary" role="status">
                                                     <span class="sr-only">Loading...</span>
@@ -126,7 +190,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
+                            @endif
                         </div>
                     </div>
 

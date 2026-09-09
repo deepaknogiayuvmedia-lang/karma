@@ -198,6 +198,7 @@
 <!-- End Google Tag Manager (noscript) -->
 
 <header class="box-shadow-sm rtl __inline-10">
+         @if(isset($language_status) && $language_status == 1)
     <!-- Topbar-->
     <div class="topbar">
         <div class="container px-5">
@@ -215,6 +216,7 @@
                 </div>
             </div>
 
+       
             <div>
                 @php( $local = \App\CPU\Helpers::default_lang())
                 <div class="topbar-text dropdown disable-autohide __language-bar text-capitalize">
@@ -250,9 +252,10 @@
                     </div>
                 </div>
             </div>
+          
         </div>
     </div>
-
+  @endif
 
     <div class="navbar-sticky bg-light mobile-head">
         <div class="navbar px-3 navbar-expand-md navbar-light">

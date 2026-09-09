@@ -130,7 +130,7 @@
                                         <span class="text">{{ \App\CPU\translate('Stock Report') }}</span>
                                     </a>
                                 @endif
-                                @if (!isset($request_status))
+                                @if (!isset($request_status) || $request_status == 'all')
                                     <a href="{{ route('admin.product.add-new') }}" class="btn btn--primary">
                                         <i class="tio-add"></i>
                                         <span class="text">{{ \App\CPU\translate('Add_New_Product') }}</span>

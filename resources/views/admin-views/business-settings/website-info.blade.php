@@ -43,15 +43,55 @@
                         </label>
                     </div>
                 </div>
-                <p>*{{\App\CPU\translate('By_turning_on_maintaince_mode,_all_your_app_and_customer_side_website_will_be_off._Only_admin_panel_and_seller_panel_will_be_functional')}}</p>
-            </div>
+            <p>*{{\App\CPU\translate('By_turning_on_maintaince_mode,_all_your_app_and_customer_side_website_will_be_off._Only_admin_panel_and_seller_panel_will_be_functional')}}</p>
         </div>
+    </div>
+
+    {{-- <div class="card mb-3">
+        <div class="card-body">
+            <div class="border rounded border-color-c1 px-4 py-3 d-flex justify-content-between mb-1">
+                @php($language_status=\App\CPU\Helpers::get_business_settings('language_status'))
+                <h5 class="mb-0 d-flex gap-1 c1">
+                    <i class="tio-globe"></i>
+                    {{\App\CPU\translate('Language Switcher')}}
+                </h5>
+                <div class="position-relative">
+                    <label class="switcher">
+                        <input type="checkbox" class="switcher_input" onclick="toggle_language_status()"
+                            {{isset($language_status) && $language_status?'checked':''}}>
+                        <span class="switcher_control"></span>
+                    </label>
+                </div>
+            </div>
+            <p>*{{\App\CPU\translate('Enable or disable the language switcher on the website and app')}}</p>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="border rounded border-color-c1 px-4 py-3 d-flex justify-content-between mb-1">
+                @php($currency_status=\App\CPU\Helpers::get_business_settings('currency_converter_status'))
+                <h5 class="mb-0 d-flex gap-1 c1">
+                    <i class="tio-money"></i>
+                    {{\App\CPU\translate('Currency Converter')}}
+                </h5>
+                <div class="position-relative">
+                    <label class="switcher">
+                        <input type="checkbox" class="switcher_input" onclick="toggle_currency_converter_status()"
+                            {{isset($currency_status) && $currency_status?'checked':''}}>
+                        <span class="switcher_control"></span>
+                    </label>
+                </div>
+            </div>
+            <p>*{{\App\CPU\translate('Enable or disable the currency converter on the website')}}</p>
+        </div>
+    </div> --}}
 
         <form action="{{ route('admin.business-settings.update-info') }}" method="POST"
                 enctype="multipart/form-data">
             @csrf
             <!-- Company Information -->
-            <div class="card mb-3">
+            <div class="card mb-3"> 
                 <div class="card-header">
                     <h5 class="mb-0 text-capitalize d-flex gap-1">
                         <i class="tio-user-big"></i>
@@ -1218,6 +1258,60 @@
                 }
             })
             @endif
+        };
+
+        function toggle_language_status() {
+            Swal.fire({
+                title: '{{\App\CPU\translate('Are you sure')}}?',
+                text: '{{\App\CPU\translate('This will enable or disable the language switcher')}}',
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonColor: 'default',
+                confirmButtonColor: '#377dff',
+                cancelButtonText: 'No',
+                confirmButtonText: 'Yes',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    $.get({
+                        url: '{{route('admin.toggle-language-status')}}',
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            toastr.success(data.message);
+                        },
+                    });
+                } else {
+                    location.reload();
+                }
+            })
+        };
+
+        function toggle_currency_converter_status() {
+            Swal.fire({
+                title: '{{\App\CPU\translate('Are you sure')}}?',
+                text: '{{\App\CPU\translate('This will enable or disable the currency converter')}}',
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonColor: 'default',
+                confirmButtonColor: '#377dff',
+                cancelButtonText: 'No',
+                confirmButtonText: 'Yes',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    $.get({
+                        url: '{{route('admin.toggle-currency-converter-status')}}',
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            toastr.success(data.message);
+                        },
+                    });
+                } else {
+                    location.reload();
+                }
+            })
         };
 
         function currency_symbol_position(route) {

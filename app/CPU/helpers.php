@@ -113,6 +113,11 @@ class Helpers
 
     public static function default_lang()
     {
+        $status = BusinessSetting::where('type', 'language_status')->first();
+        if (!isset($status) || $status->value != 1) {
+            return 'en';
+        }
+
         if (strpos(url()->current(), '/api')) {
             $lang = App::getLocale();
         } elseif (session()->has('local')) {
@@ -308,9 +313,12 @@ class Helpers
 
     public static function currency_converter($amount)
     {
-        // Multi-currency removed - website supports INR only
-        $rate = 1;
+        $status = BusinessSetting::where('type', 'currency_converter_status')->first();
+        if (!isset($status) || $status->value != 1) {
+            return Helpers::set_symbol(round($amount, 2));
+        }
 
+        $rate = 1;
         return Helpers::set_symbol(round($amount * $rate, 2));
     }
 

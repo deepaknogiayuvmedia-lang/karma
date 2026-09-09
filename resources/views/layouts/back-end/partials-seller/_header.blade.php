@@ -57,6 +57,7 @@
                         </div>
                     </li>
                     @endif
+                    @if(isset($language_status) && $language_status == 1)
                     <li class="nav-item d-none d-md-inline-block">
                         <div class="hs-unfold">
                             <div>
@@ -97,6 +98,7 @@
                             </div>
                         </div>
                     </li>
+                    @endif
 
                     <li class="nav-item d-none d-md-inline-block">
                         <!-- Notification -->
@@ -273,6 +275,7 @@
         <div id="website_info"
              style="display:none;" class="bg-secondary w-100">
             <div class="p-3">
+                @if(isset($language_status) && $language_status == 1)
                 <div class="bg-white p-1 rounded">
                     @php( $local = session()->has('local')?session('local'):'en')
                     @php($lang = \App\Model\BusinessSetting::where('type', 'language')->first())
@@ -308,6 +311,7 @@
                         </ul>
                     </div>
                 </div>
+                @endif
                 <div class="bg-white p-1 rounded mt-2">
                     <a title="Website home" class="p-2 title-color"
                        href="{{route('home')}}" target="_blank">

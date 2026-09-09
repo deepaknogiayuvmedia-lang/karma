@@ -3465,5 +3465,11 @@
    'Ranking scores recalculated for all products' => 'Ranking scores recalculated for all products',
    'Set_Variant_Quantities' => 'Set Variant Quantities',
   'Copy_Product' => 'Copy Product',
-  'This variant is currently out of stock' => 'This variant is currently out of stock',
+   'This variant is currently out of stock' => 'This variant is currently out of stock',
+   'Language Switcher' => 'Language Switcher',
+   'Enable or disable the language switcher on the website and app' => 'Enable or disable the language switcher on the website and app',
+   'Currency Converter' => 'Currency Converter',
+   'Enable or disable the currency converter on the website' => 'Enable or disable the currency converter on the website',
+   'This will enable or disable the language switcher' => 'This will enable or disable the language switcher',
+   'This will enable or disable the currency converter' => 'This will enable or disable the currency converter',
 );
