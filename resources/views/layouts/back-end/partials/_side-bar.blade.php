@@ -446,15 +446,15 @@
                                                 class="text-truncate">{{ \App\CPU\translate('Sub_Categories') }}</span>
                                         </a>
                                     </li>
-                                    <li
+                                    {{-- <li
                                         class="nav-item {{ Request::is('admin/sub-sub-category/view') ? 'active' : '' }}">
                                         <a class="nav-link " href="{{ route('admin.sub-sub-category.view') }}"
-                                            title="{{ \App\CPU\translate('Sub_Sub_Categories') }}">
+                                            title="{{ \App\CPU\translate('Technical_Name') }}">
                                             <span class="tio-circle nav-indicator-icon"></span>
                                             <span
-                                                class="text-truncate">{{ \App\CPU\translate('Sub_Sub_Categories') }}</span>
+                                                class="text-truncate">{{ \App\CPU\translate('Technical_Name') }}</span>
                                         </a>
-                                    </li>
+                                    </li> --}}
                                 </ul>
                             </li>
                             <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/brand*') ? 'active' : '' }}">
@@ -490,6 +490,16 @@
                                     <i class="tio-category-outlined nav-icon"></i>
                                     <span
                                         class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">{{ \App\CPU\translate('Product_Attributes') }}</span>
+                                </a>
+                            </li>
+                            <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/product/all-products') ? 'active' : '' }}">
+                                <a class="js-navbar-vertical-aside-menu-link nav-link"
+                                    href="{{ route('admin.product.all-products') }}"
+                                    title="{{ \App\CPU\translate('All Products') }}">
+                                    <i class="tio-list-numbered nav-icon"></i>
+                                    <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                        {{ \App\CPU\translate('All Products') }}
+                                    </span>
                                 </a>
                             </li>
                             <li

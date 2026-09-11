@@ -1,6 +1,6 @@
 @extends('layouts.back-end.app')
 
-@section('title', \App\CPU\translate('Sub Sub Category'))
+@section('title', \App\CPU\translate('Technical Name'))
 
 @push('css_or_js')
 
@@ -12,7 +12,7 @@
         <div class="mb-3">
             <h2 class="h1 mb-0 d-flex gap-2">
                 <img src="{{asset('/public/assets/back-end/img/brand-setup.png')}}" alt="">
-                {{\App\CPU\translate('Sub')}} {{\App\CPU\translate('Sub')}} {{\App\CPU\translate('Category')}} {{\App\CPU\translate('Setup')}}
+                {{\App\CPU\translate('Technical Name')}} {{\App\CPU\translate('Setup')}}
             </h2>
         </div>
         <!-- End Page Title -->
@@ -43,10 +43,10 @@
                                             class="col-12 form-group {{$lang != $default_lang ? 'd-none':''}} lang_form"
                                             id="{{$lang}}-form">
                                             <label class="title-color"
-                                                   for="exampleFormControlInput1">{{\App\CPU\translate('Sub_sub_category')}} {{\App\CPU\translate('name')}}<span class="text-danger">*</span>
+                                                   for="exampleFormControlInput1">{{\App\CPU\translate('Technical Name')}} {{\App\CPU\translate('name')}}<span class="text-danger">*</span>
                                                 ({{strtoupper($lang)}})</label>
                                             <input type="text" name="name[]" class="form-control"
-                                                   placeholder="{{\App\CPU\translate('New_Sub_Sub_Category')}}" {{$lang == $default_lang? 'required':''}}>
+                                                   placeholder="{{\App\CPU\translate('New_Technical_Name')}}" {{$lang == $default_lang? 'required':''}}>
                                         </div>
                                         <input type="hidden" name="lang[]" value="{{$lang}}">
                                     @endforeach
@@ -54,55 +54,15 @@
                                         <div class="col-12">
                                             <div class="form-group lang_form" id="{{$default_lang}}-form">
                                                 <label
-                                                    class="title-color">{{\App\CPU\translate('Sub_sub_category')}} {{\App\CPU\translate('name')}}<span class="text-danger">*</span>
-                                                    ({{strtoupper($lang)}})</label>
+                                                    class="title-color">{{\App\CPU\translate('Technical Name')}} {{\App\CPU\translate('name')}}<span class="text-danger">*</span>
+                                                    ({{strtoupper($default_lang)}})</label>
                                                 <input type="text" name="name[]" class="form-control"
-                                                       placeholder="{{\App\CPU\translate('New_Sub_Category')}}" required>
+                                                       placeholder="{{\App\CPU\translate('New_Technical_Name')}}" required>
                                             </div>
                                             <input type="hidden" name="lang[]" value="{{$default_lang}}">
                                         </div>
                                     @endif
 
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label
-                                                class="title-color">{{\App\CPU\translate('main')}} {{\App\CPU\translate('category')}}
-                                                <span class="text-danger">*</span></label>
-                                            <select class="form-control" id="cat_id" required>
-                                                <option value="" disabled selected>{{\App\CPU\translate('Select_main_category')}}</option>
-                                                @foreach(\App\Model\Category::where(['position'=>0])->get() as $category)
-                                                    <option value="{{$category['id']}}">{{$category['name']}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="title-color text-capitalize"
-                                                for="name">{{\App\CPU\translate('sub_category')}} {{\App\CPU\translate('name')}}<span class="text-danger">*</span></label>
-                                            <select name="parent_id" id="parent_id" class="form-control">
-
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="title-color text-capitalize" for="priority">{{\App\CPU\translate('priority')}}
-                                                <span>
-                                                    <i class="tio-info-outined" title="{{\App\CPU\translate('the_lowest_number_will_get_the_highest_priority')}}"></i>
-                                                </span>
-                                            </label>
-                                            <select class="form-control" name="priority" id="" required>
-                                                <option disabled selected>{{\App\CPU\translate('Set_Priority')}}</option>
-                                                @for ($i = 0; $i <= 10; $i++)
-                                                <option
-                                                value="{{$i}}" >{{$i}}</option>
-                                                @endfor
-                                            </select>
-                                        </div>
-                                    </div>
                                     <div class="col-12">
                                         <div class="d-flex flex-wrap gap-2 justify-content-end">
                                             <button type="reset" class="btn btn-secondary">{{\App\CPU\translate('reset')}}</button>
@@ -123,7 +83,7 @@
                         <div class="row align-items-center">
                             <div class="col-sm-5 col-md-6 col-lg-8 mb-2 mb-sm-0">
                                 <h5 class="text-capitalize d-flex gap-2">
-                                    {{ \App\CPU\translate('sub_sub_category_list')}}
+                                    {{ \App\CPU\translate('technical_name_list')}}
                                     <span class="badge badge-soft-dark radius-50 fz-12">{{ $categories->total() }}</span>
                                 </h5>
                             </div>
@@ -137,7 +97,7 @@
                                             </div>
                                         </div>
                                         <input id="datatableSearch_" type="search" name="search" class="form-control"
-                                            placeholder="{{\App\CPU\translate('Search_by_Sub_Sub_Category')}}" aria-label="Search orders" value="{{ $search }}" required>
+                                            placeholder="{{\App\CPU\translate('Search_by_Technical_Name')}}" aria-label="Search orders" value="{{ $search }}" required>
                                         <button type="submit" class="btn btn--primary">{{\App\CPU\translate('search')}}</button>
                                     </div>
                                 </form>
@@ -152,8 +112,7 @@
                             <thead class="thead-light thead-50 text-capitalize">
                             <tr>
                                 <th>{{ \App\CPU\translate('SL')}}</th>
-                                <th>{{ \App\CPU\translate('sub_sub_category_name')}}</th>
-                                <th>{{ \App\CPU\translate('priority')}}</th>
+                                <th>{{ \App\CPU\translate('technical_name')}}</th>
                                 <th class="text-center">{{ \App\CPU\translate('action')}}</th>
                             </tr>
                             </thead>
@@ -162,7 +121,6 @@
                                 <tr>
                                     <td>{{$category['id']}}</td>
                                     <td>{{$category['name']}}</td>
-                                    <td>{{$category['priority']}}</td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
                                             <a class="btn btn-outline-info btn-sm square-btn"
@@ -232,50 +190,6 @@
     </script>
 
     <script>
-        $( document ).ready(function() {
-
-            var id = $("#cat_id").val();
-            if (id) {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                    }
-                });
-                $.ajax({
-                    type: 'POST',
-                    url: '{{route('admin.sub-sub-category.getSubCategory')}}',
-                    data: {
-                        id: id
-                    },
-                    success: function (result) {
-                        $("#parent_id").html(result);
-                    }
-                });
-            }
-        });
-    </script>
-    <script>
-        $('#cat_id').on('change', function () {
-            var id = $(this).val();
-            if (id) {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                    }
-                });
-                $.ajax({
-                    type: 'POST',
-                    url: '{{route('admin.sub-sub-category.getSubCategory')}}',
-                    data: {
-                        id: id
-                    },
-                    success: function (result) {
-                        $("#parent_id").html(result);
-                    }
-                });
-            }
-        });
-
         $(document).on('click', '.delete', function () {
             var id = $(this).attr("id");
             Swal.fire({
@@ -299,7 +213,7 @@
                         method: 'POST',
                         data: {id: id},
                         success: function () {
-                            toastr.success('{{\App\CPU\translate('Sub_Sub_Category_Deleted_Successfully')}}.');
+                            toastr.success('{{\App\CPU\translate('Technical_Name_Deleted_Successfully')}}.');
                             location.reload();
                         }
                     });
@@ -308,4 +222,3 @@
         });
     </script>
 @endpush
-

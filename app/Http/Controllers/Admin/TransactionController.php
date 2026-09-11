@@ -8,6 +8,7 @@ use App\Model\OrderTransaction;
 use App\Model\Transaction;
 use App\User;
 use Illuminate\Http\Request;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class TransactionController extends Controller
 {

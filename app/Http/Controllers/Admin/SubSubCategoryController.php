@@ -36,18 +36,16 @@ class SubSubCategoryController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'parent_id' => 'required'
         ], [
-            'name.required' => 'Category name is required!',
-            'parent_id.required' => 'Sub Category field is required!',
+            'name.required' => 'Technical Name is required!',
         ]);
 
         $category = new Category;
         $category->name = $request->name[array_search('en', $request->lang)];
         $category->slug = Str::slug($request->name[array_search('en', $request->lang)]);
-        $category->parent_id = $request->parent_id;
+        $category->parent_id = 0;
         $category->position = 2;
-        $category->priority = $request->priority;
+        $category->priority = 0;
         $category->save();
         foreach($request->lang as $index=>$key)
         {
@@ -62,7 +60,7 @@ class SubSubCategoryController extends Controller
                 );
             }
         }
-        Toastr::success('Sub Sub Category updated successfully!');
+        Toastr::success('Technical Name added successfully!');
         return back();
     }
 

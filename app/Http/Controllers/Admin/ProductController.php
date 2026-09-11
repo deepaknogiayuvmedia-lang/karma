@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 use function App\CPU\translate;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class ProductController extends BaseController
 {
@@ -267,7 +268,7 @@ class ProductController extends BaseController
             });
         }
 
-        if (is_null($request->name[array_search('en', $request->lang)])) {
+        if (is_null($request->name[array_search('en', (array) $request->lang)])) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
                     'name',
@@ -303,11 +304,11 @@ class ProductController extends BaseController
 
         $p->user_id = auth('admin')->id();
         $p->added_by = 'admin';
-        $p->name = $request->name[array_search('en', $request->lang)];
-        $p->technical_name = $request->technical_name[array_search('en', $request->lang)];
+        $p->name = $request->name[array_search('en', (array) $request->lang)];
+        $p->technical_name = $request->technical_name[array_search('en', (array) $request->lang)];
         $p->tally_name = $request->prn[0];
         $p->code = $request->code;  // Removed since already set
-        $p->slug = Str::slug($request->name[array_search('en', $request->lang)], '-') . '-' . Str::random(6);
+        $p->slug = Str::slug($request->name[array_search('en', (array) $request->lang)], '-') . '-' . Str::random(6);
 
         $product_images = [];
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
@@ -558,6 +559,15 @@ class ProductController extends BaseController
                     'value' => $request->technical_name[$index],
                 ));
             }
+            if (isset($request->prn[$index]) && $request->prn[$index] && $key != 'en') {
+                array_push($data, array(
+                    'translationable_type' => 'App\Model\Product',
+                    'translationable_id' => $p->id,
+                    'locale' => $key,
+                    'key' => 'tally_name',
+                    'value' => $request->prn[$index],
+                ));
+            }
         }
         Translation::insert($data);
 
@@ -604,6 +614,54 @@ class ProductController extends BaseController
             ->count();
 
         return view('admin-views.product.list', compact('pro', 'search', 'request_status', 'type', 'all_count'));
+    }
+
+    public function all_products(Request $request)
+    {
+        $query_param = [];
+        $search = $request['search'] ?? '';
+        $seller_id = $request['seller_id'] ?? '';
+
+        $pro = Product::with(['seller.shop']);
+
+        if ($request->has('seller_id') && $seller_id != '') {
+            $pro->where('user_id', $seller_id)->where('added_by', 'seller');
+            $query_param['seller_id'] = $seller_id;
+        } else {
+            $pro->whereNull('pid');
+        }
+
+        if ($request->has('search') && $search != '') {
+            $key = explode(' ', $search);
+            $pro = $pro->where(function ($q) use ($key, $seller_id) {
+                foreach ($key as $value) {
+                    $q->where('name', 'like', "%{$value}%");
+                }
+                if (empty($seller_id)) {
+                    $q->orWhereHas('seller', function ($sq) use ($key) {
+                        foreach ($key as $value) {
+                            $sq->where('f_name', 'like', "%{$value}%")
+                               ->orWhere('l_name', 'like', "%{$value}%");
+                        }
+                    });
+                    $q->orWhereHas('seller.shop', function ($sq) use ($key) {
+                        foreach ($key as $value) {
+                            $sq->where('name', 'like', "%{$value}%");
+                        }
+                    });
+                }
+            });
+            $query_param['search'] = $search;
+        }
+
+        $pro = $pro->orderBy('id', 'DESC')
+            ->paginate(Helpers::pagination_limit())
+            ->appends($query_param);
+
+        $sellers = \App\Model\Seller::with('shop')->approved()->get();
+        $total_count = Product::whereNull('pid')->count();
+
+        return view('admin-views.product.all-products', compact('pro', 'search', 'total_count', 'sellers', 'seller_id'));
     }
 
     /**
@@ -936,6 +994,17 @@ class ProductController extends BaseController
         ]);
     }
 
+    public function search_categories(Request $request)
+    {
+        $query = $request->input('q', '');
+        $categories = Category::where('name', 'LIKE', "%{$query}%")
+            ->where('parent_id', '!=', 0)
+            ->limit(10)
+            ->pluck('name')
+            ->toArray();
+        return response()->json($categories);
+    }
+
     public function sku_combination(Request $request)
     {
         $options = [];
@@ -947,7 +1016,7 @@ class ProductController extends BaseController
         }
 
         $unit_price = $request->unit_price;
-        $product_name = $request->name[array_search('en', $request->lang)];
+        $product_name = $request->name[array_search('en', (array) $request->lang)];
 
         if ($request->has('choice_no')) {
             foreach ($request->choice_no as $key => $no) {
@@ -1061,7 +1130,7 @@ class ProductController extends BaseController
             });
         }
 
-        if (is_null($request->name[array_search('en', $request->lang)])) {
+        if (is_null($request->name[array_search('en', (array) $request->lang)])) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
                     'name',
@@ -1137,8 +1206,8 @@ class ProductController extends BaseController
             }
         }
 
-        $product->name = $request->name[array_search('en', $request->lang)];
-        $product->technical_name = $request->technical_name[array_search('en', $request->lang)];
+        $product->name = $request->name[array_search('en', (array) $request->lang)];
+        $product->technical_name = $request->technical_name[array_search('en', (array) $request->lang)];
         $product->tally_name = $request->prn[0];
         $categoryName = null;
         $category = [];
@@ -1386,12 +1455,23 @@ class ProductController extends BaseController
                         ['value' => $request->technical_name[$index]]
                     );
                 }
+                if (isset($request->prn[$index]) && $request->prn[$index] && $key != 'en') {
+                    Translation::updateOrInsert(
+                        [
+                            'translationable_type' => 'App\Model\Product',
+                            'translationable_id' => $product->id,
+                            'locale' => $key,
+                            'key' => 'tally_name'
+                        ],
+                        ['value' => $request->prn[$index]]
+                    );
+                }
             }
 
             // Sync all values to seller copies (except seller-specific fields)
             $copies = Product::where('pid', $product->id)->get();
             foreach ($copies as $copy) {
-                // Sync translations (name, description, technical_name)
+                // Sync translations (name, description, technical_name, tally_name)
                 foreach ($request->lang as $index => $key) {
                     if ($request->name[$index] && $key != 'en') {
                         Translation::updateOrInsert(
@@ -1426,12 +1506,23 @@ class ProductController extends BaseController
                             ['value' => $request->technical_name[$index]]
                         );
                     }
+                    if (isset($request->prn[$index]) && $request->prn[$index] && $key != 'en') {
+                        Translation::updateOrInsert(
+                            [
+                                'translationable_type' => 'App\Model\Product',
+                                'translationable_id' => $copy->id,
+                                'locale' => $key,
+                                'key' => 'tally_name'
+                            ],
+                            ['value' => $request->prn[$index]]
+                        );
+                    }
                 }
 
                 // Sync all column fields (replicated from original at copy time)
-                $copy->name = $request->name[array_search('en', $request->lang)];
-                $copy->technical_name = $request->technical_name[array_search('en', $request->lang)];
-                $copy->details = $request->description[array_search('en', $request->lang)] ?? $copy->details;
+                $copy->name = $request->name[array_search('en', (array) $request->lang)];
+                $copy->technical_name = $request->technical_name[array_search('en', (array) $request->lang)];
+                $copy->details = $request->description[array_search('en', (array) $request->lang)] ?? $copy->details;
                 $copy->tally_name = $request->prn[0];
                 $copy->product_type = $request->product_type;
                 $copy->category_ids = $product->category_ids;
@@ -1458,7 +1549,7 @@ class ProductController extends BaseController
                 $tag_ids = [];
                 if ($request->tags) {
                     foreach (explode(',', $request->tags) as $tag) {
-                        $t = Tag::firstOrCreate(['name' => trim($tag)]);
+                        $t = Tag::firstOrCreate(['tag' => trim($tag)]);
                         $tag_ids[] = $t->id;
                     }
                 }

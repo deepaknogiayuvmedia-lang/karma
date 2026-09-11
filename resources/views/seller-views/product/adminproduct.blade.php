@@ -25,7 +25,7 @@
                 <div class="px-3 py-4">
                     <div class="row align-items-center justify-content-between">
                          <div class="col-lg-6">
-                          <h1 > Admin Productlist</h1>
+                          <h1>{{\App\CPU\translate('Product List')}}</h1>
                         </div>
                         <div class="col-lg-4 ">
                             <form action="{{ url()->current() }}" method="GET">
@@ -54,9 +54,7 @@
                                 <th>{{\App\CPU\translate('Select Item')}}</th>
                                 <th>{{\App\CPU\translate('Product Name')}}</th>
                                 <th>{{\App\CPU\translate('Product Type')}}</th>
-                                <!-- <th>{{\App\CPU\translate('purchase_price')}}</th> -->
                                 <th>{{\App\CPU\translate('selling_price')}}</th>
-
                             </tr>
                         </thead>
                         <tbody>
@@ -79,9 +77,6 @@
                                     </a>
                                 </td>
                                 <td>{{ ucfirst($p['product_type']) }}</td>
-                                <!-- <td>
-                                    {{\App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['purchase_price']))}}
-                                </td> -->
                                 <td>
                                     <input type="text" class="form-control sellprice{{$p['id']}}" value="{{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['unit_price']))}}">
                                 </td>
@@ -99,76 +94,6 @@
                 </div>
 
                 @if(count($products)==0)
-                <div class="text-center p-4">
-                    <img class="mb-3 w-160" src="{{asset('assets/back-end')}}/svg/illustrations/sorry.svg" alt="Image Description">
-                    <p class="mb-0">{{\App\CPU\translate('No data to show')}}</p>
-                </div>
-                @endif
-            </div>
-            <div class="card mt-5">
-                <div class="px-3 py-4">
-                    <div class="row align-items-center">
-                        <div class="col-lg-4">
-                          <h1 > Other Seller Product</h1>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table id="datatable1" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};"
-                        class="table table-hover table-borderless table-thead-bordered table-nowrap table-align-middle card-table w-100">
-                        <thead class="thead-light thead-50 text-capitalize">
-                            <tr>
-                                <th>{{\App\CPU\translate('Select Item')}}</th>
-                                <th>{{\App\CPU\translate('Product Name')}}</th>
-                                <th>{{\App\CPU\translate('Product Type')}}</th>
-                                <!-- <th>{{\App\CPU\translate('purchase_price')}}</th> -->
-                                <th>{{\App\CPU\translate('selling_price')}}</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($productssell as $k=>$p)
-                          
-                            <tr>
-                                <th scope="row">
-                                    <label class="switcher">
-                                        <input type="checkbox" class="selectItem switcher_input"
-                                            id="{{$p['id']}}">
-                                        <span class="switcher_control"></span>
-                                    </label>
-                                </th>
-                                <td>
-                                    <a href="{{route('seller.product.view',[$p['id']])}}" class="media align-items-center gap-2 w-max-content">
-                                        <img src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$p['thumbnail']}}"
-                                            onerror="this.src='{{asset('/public/assets/back-end/img/brand-logo.png')}}'" class="avatar border" alt="">
-                                        <span class="media-body title-color hover-c1">
-                                            {{\Illuminate\Support\Str::limit($p['name'],30)}}
-                                        </span>
-                                    </a>
-                                </td>
-                                <td>{{ ucfirst($p['product_type']) }}</td>
-                                <!-- <td>
-                                    {{\App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['purchase_price']))}}
-                                </td> -->
-                                <td>
-                                    <input type="text" class="form-control sellprice{{$p['id']}}" value="{{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['unit_price']))}}">
-                                </td>
-                            </tr> 
-                            
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="table-responsive mt-4">
-                    <div class="px-4 d-flex justify-content-lg-end">
-                        <!-- Pagination -->
-                        {{$productssell->links()}}
-                    </div>
-                </div>
-
-                @if(count($productssell)==0)
                 <div class="text-center p-4">
                     <img class="mb-3 w-160" src="{{asset('assets/back-end')}}/svg/illustrations/sorry.svg" alt="Image Description">
                     <p class="mb-0">{{\App\CPU\translate('No data to show')}}</p>
@@ -220,7 +145,6 @@
 <script>
     $(document).ready(function() {
         $('#dataTable').DataTable();
-        $('#dataTable1').DataTable();
     });
 
     var pendingProductId = null;

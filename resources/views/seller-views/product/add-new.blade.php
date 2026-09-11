@@ -63,9 +63,11 @@
                                             <div class="col-md-4 form-group">
                                                 <label class="title-color"
                                                     for="technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
-                                                <input type="text" name="technical_name" id="technical_name"
-                                                    class="form-control" value="{{ old('technical_name') }}"
-                                                    placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                                <div style="position:relative;" class="tech-wrapper">
+                                                    <input type="text" name="technical_name[]" id="technical_name"
+                                                        class="form-control" value="{{ old('technical_name') }}"
+                                                        placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                                </div>
                                             </div>
                                             <div class="col-md-4 form-group">
                                                 <label class="title-color"
@@ -108,9 +110,11 @@
                                         <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
-                                            <input type="text" name="technical_name" id="technical_name"
-                                                class="form-control" value="{{ old('technical_name') }}"
-                                                placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                            <div style="position:relative;" class="tech-wrapper">
+                                                <input type="text" name="technical_name[]" id="technical_name"
+                                                    class="form-control" value="{{ old('technical_name') }}"
+                                                    placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                            </div>
                                         </div>
                                         <div class="col-md-4 form-group">
                                             <label class="title-color"
@@ -191,14 +195,7 @@
                                     <div class="col-md-4 mb-3 " id="sub-category-select-div" style="display: none;">
                                         <label for="name" class="title-color">{{ \App\CPU\translate('Sub Category') }}</label>
                                         <select class="js-example-basic-multiple form-control" name="sub_category_id"
-                                            id="sub-category-select"
-                                            onchange="getRequest('{{ url('/') }}/seller/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4 mb-3 " id="sub-sub-category-select-div" style="display: none;">
-                                        <label for="name" class="title-color">{{ \App\CPU\translate('Sub Sub Category') }}</label>
-                                        <select class="js-example-basic-multiple form-control" name="sub_sub_category_id"
-                                            id="sub-sub-category-select">
+                                            id="sub-category-select">
                                         </select>
                                     </div>
                                     <div class="col-md-4 mb-3 ">
@@ -625,10 +622,6 @@
                         } else {
                             $('#' + id).empty();
                             $('#' + divId).hide();
-                            if (id === 'sub-category-select') {
-                                $('#sub-sub-category-select').empty();
-                                $('#sub-sub-category-select-div').hide();
-                            }
                         }
                     }
                 },
@@ -866,6 +859,46 @@
                 $("#digital_file_ready").val('');
             }
         }
+
+        // Technical name oninput → category suggestions
+        $(document).on('input', 'input[name="technical_name[]"]', function() {
+            let input = $(this);
+            let val = input.val();
+            let $wrapper = input.closest('.tech-wrapper');
+            let $list = $wrapper.find('.tech-suggestions');
+            if (!$list.length) {
+                $list = $('<div class="tech-suggestions list-group" style="position:absolute;z-index:9999;width:100%;background:#fff;border:1px solid #ddd;display:none;max-height:200px;overflow-y:auto;"></div>');
+                $wrapper.append($list);
+            }
+            if (val.length < 2) {
+                $list.hide();
+                return;
+            }
+            $.get('{{ url("/") }}/seller/product/search-categories', {q: val}, function(data) {
+                $list.empty();
+                if (data.length > 0) {
+                    data.forEach(function(item) {
+                        $list.append('<button type="button" class="list-group-item list-group-item-action tech-suggestion-item" style="cursor:pointer;font-size:13px;">' + item + '</button>');
+                    });
+                    $list.show();
+                } else {
+                    $list.hide();
+                }
+            });
+        });
+
+        $(document).on('click', '.tech-suggestion-item', function(e) {
+            e.preventDefault();
+            let val = $(this).text();
+            $(this).closest('.tech-wrapper').find('input[name="technical_name[]"]').val(val);
+            $(this).closest('.tech-suggestions').hide();
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.tech-wrapper').length) {
+                $('.tech-suggestions').hide();
+            }
+        });
     </script>
 
     <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>

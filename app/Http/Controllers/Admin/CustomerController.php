@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Model\Subscription;
 use App\Model\BusinessSetting;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class CustomerController extends Controller
 {

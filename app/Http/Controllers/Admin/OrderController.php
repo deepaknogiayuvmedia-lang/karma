@@ -25,6 +25,7 @@ use App\CPU\CustomerManager;
 use App\CPU\Convert;
 use App\Mail\NotificationMail;
 use Illuminate\Support\Facades\Mail;
+use Rap2hpoutre\FastExcel\FastExcel;
 class OrderController extends Controller
 {
     use CommonTrait;

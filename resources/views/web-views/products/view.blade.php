@@ -75,7 +75,13 @@
     <div class="d-flex w-100 justify-content-center align-items-center mb-3 __min-h-70px __inline-35" style="background:{{$web_config['primary_color']}}10;">
 
         <div class="text-capitalize container text-center">
-            <span class="__text-18px font-semibold">{{\App\CPU\translate(str_replace('_',' ',$data['data_from']))}} {{\App\CPU\translate('products')}} {{ isset($brand_name) ? '('.$brand_name.')' : ''}}</span>
+            <span class="__text-18px font-semibold">
+                @if($data['data_from'] == 'technical_name')
+                    {{ \App\CPU\translate('Technical Name') }}: {{ $data['technical_name'] ?? '' }}
+                @else
+                    {{\App\CPU\translate(str_replace('_',' ',$data['data_from']))}} {{\App\CPU\translate('products')}} {{ isset($brand_name) ? '('.$brand_name.')' : ''}}
+                @endif
+            </span>
         </div>
 
     </div>

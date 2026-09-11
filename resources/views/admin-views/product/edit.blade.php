@@ -22,7 +22,7 @@
             </div>
         </div>
         <!-- End Page Title -->
-
+  
         <!-- Content Row -->
         <div class="row">
             <div class="col-md-12">
@@ -61,8 +61,14 @@
                                             if ($t->locale == $lang && $t->key == 'name') {
                                                 $translate[$lang]['name'] = $t->value;
                                             }
-                                            if ($t->locale == $lang && $t->key == 'description') {
-                                                $translate[$lang]['description'] = $t->value;
+                                            if ($t->locale == $lang && $t->key == 'detail') {
+                                                $translate[$lang]['detail'] = $t->value;
+                                            }
+                                            if ($t->locale == $lang && $t->key == 'technical_name') {
+                                                $translate[$lang]['technical_name'] = $t->value;
+                                            }
+                                            if ($t->locale == $lang && $t->key == 'tally_name') {
+                                                $translate[$lang]['tally_name'] = $t->value;
                                             }
                                         }
                                     }
@@ -86,9 +92,11 @@
                                             <div class="col-md-4 form-group">
                                                 <label class="title-color"
                                                     for="{{ $lang }}_technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
-                                                <input type="text" name="technical_name[]" id="{{ $lang }}_technical_name"
-                                                    class="form-control" value="{{ old('technical_name')[$loop->index] ?? $translate[$lang]['technical_name'] ?? $product->technical_name ?? '' }}"
-                                                    placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                                <div style="position:relative;" class="tech-wrapper">
+                                                    <input type="text" name="technical_name[]" id="{{ $lang }}_technical_name"
+                                                        class="form-control" value="{{ old('technical_name')[$loop->index] ?? $translate[$lang]['technical_name'] ?? $product->technical_name ?? '' }}"
+                                                        placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                                </div>
                                             </div>
                                             <div class="col-md-4 form-group">
                                                 <label class="title-color"
@@ -96,7 +104,7 @@
                                                         class="text-danger">*</span>
                                                     ({{ strtoupper($lang) }})</label>
                                                 <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="prn[]"
-                                                    id="prn_name" value="{{ $product->tally_name ?? '' }}"
+                                                    id="prn_name" value="{{ $translate[$lang]['tally_name'] ?? $product->tally_name ?? '' }}"
                                                     class="form-control"
                                                     placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
                                             </div>
@@ -128,6 +136,12 @@
                                         if ($t->locale == 'en' && $t->key == 'description') {
                                             $translate['description'] = $t->value;
                                         }
+                                        if ($t->locale == 'en' && $t->key == 'technical_name') {
+                                            $translate['technical_name'] = $t->value;
+                                        }
+                                        if ($t->locale == 'en' && $t->key == 'tally_name') {
+                                            $translate['tally_name'] = $t->value;
+                                        }
                                     }
                                 }
                                 ?>
@@ -139,27 +153,29 @@
                                                     class="text-danger">*</span>
                                                 
                                             </label>
-                                            <input type="text" required name="name"
+                                            <input type="text" required name="name[]"
                                                 id="en_name"
                                                 value="{{ $translate['name'] ?? $product['name'] }}"
                                                 class="form-control" placeholder="{{ \App\CPU\translate('New Product') }}"
                                                 required>
-                                            <input type="hidden" name="lang" value="en">
+                                            <input type="hidden" name="lang[]" value="en">
                                         </div>
                                         <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="en_technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
-                                            <input type="text" name="technical_name"
-                                                class="form-control" value="{{ $product->technical_name ?? '' }}"
-                                                placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                            <div style="position:relative;" class="tech-wrapper">
+                                                <input type="text" name="technical_name[]"
+                                                    class="form-control" value="{{ $translate['technical_name'] ?? $product->technical_name ?? '' }}"
+                                                    placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                            </div>
                                         </div>
                                         <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="en_name">{{ \App\CPU\translate('Product Register Name') }}<span
                                                     class="text-danger">*</span>
                                                 </label>
-                                            <input type="text" name="prn"
-                                                id="prn_name" value="{{ $product->tally_name ?? '' }}"
+                                            <input type="text" name="prn[]"
+                                                id="prn_name" value="{{ $translate['tally_name'] ?? $product->tally_name ?? '' }}"
                                                 class="form-control"
                                                 placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
                                         </div>
@@ -169,7 +185,7 @@
                                         <label class="title-color">{{ \App\CPU\translate('description') }}
                                             </label>
                                         <div style="position:relative;">
-                                            <textarea name="description" class="tiny-editor w-100" rows="10">{!! $translate['description'] ?? $product['details'] !!}</textarea>
+                                            <textarea name="description[]" class="tiny-editor w-100" rows="10">{!! $translate['description'] ?? $product['details'] !!}</textarea>
                                             <div id="editor-loading" class="text-center border rounded" style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
                                                 <div class="spinner-border text-primary" role="status">
                                                     <span class="sr-only">Loading...</span>
@@ -259,18 +275,7 @@
                                         class="title-color">{{ \App\CPU\translate('Sub Category') }}</label>
                                     <select class="js-example-basic-multiple js-states js-example-responsive form-control"
                                         name="sub_category_id" id="sub-category-select"
-                                        data-id="{{ count($product_category) >= 2 ? $product_category[1]->id : '' }}"
-                                        onchange="getRequest('{{ url('/') }}/admin/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
-                                    </select>
-                                </div>
-                                <div class="col-md-4" id="sub-sub-category-select-div" style="{{ count($product_category) >= 3 ? '' : 'display: none;' }}">
-                                    <label for="name"
-                                        class="title-color">{{ \App\CPU\translate('Sub Sub Category') }}</label>
-
-                                    <select class="js-example-basic-multiple js-states js-example-responsive form-control"
-                                        data-id="{{ count($product_category) >= 3 ? $product_category[2]->id : '' }}"
-                                        name="sub_sub_category_id" id="sub-sub-category-select">
-
+                                        data-id="{{ count($product_category) >= 2 ? $product_category[1]->id : '' }}">
                                     </select>
                                 </div>
                             </div>
@@ -875,10 +880,6 @@
                         } else {
                             $('#' + id).empty();
                             $('#' + divId).hide();
-                            if (id === 'sub-category-select') {
-                                $('#sub-sub-category-select').empty();
-                                $('#sub-sub-category-select-div').hide();
-                            }
                         }
                     }
                 },
@@ -1047,11 +1048,8 @@
             setTimeout(function() {
                 let category = $("#category_id").val();
                 let sub_category = $("#sub-category-select").attr("data-id");
-                let sub_sub_category = $("#sub-sub-category-select").attr("data-id");
                 getRequest('{{ url('/') }}/admin/product/get-categories?parent_id=' + category +
                     '&sub_category=' + sub_category, 'sub-category-select', 'select');
-                getRequest('{{ url('/') }}/admin/product/get-categories?parent_id=' + sub_category +
-                    '&sub_category=' + sub_sub_category, 'sub-sub-category-select', 'select');
             }, 100)
             // color select select2
             $('.color-var-select').select2({
@@ -1199,6 +1197,46 @@
                 $("#digital_file_ready").val('');
             }
         }
+
+        // Technical name oninput → category suggestions
+        $(document).on('input', 'input[name="technical_name[]"]', function() {
+            let input = $(this);
+            let val = input.val();
+            let $wrapper = input.closest('.tech-wrapper');
+            let $list = $wrapper.find('.tech-suggestions');
+            if (!$list.length) {
+                $list = $('<div class="tech-suggestions list-group" style="position:absolute;z-index:9999;width:100%;background:#fff;border:1px solid #ddd;display:none;max-height:200px;overflow-y:auto;"></div>');
+                $wrapper.append($list);
+            }
+            if (val.length < 2) {
+                $list.hide();
+                return;
+            }
+            $.get('{{ url("/") }}/admin/product/search-categories', {q: val}, function(data) {
+                $list.empty();
+                if (data.length > 0) {
+                    data.forEach(function(item) {
+                        $list.append('<button type="button" class="list-group-item list-group-item-action tech-suggestion-item" style="cursor:pointer;font-size:13px;">' + item + '</button>');
+                    });
+                    $list.show();
+                } else {
+                    $list.hide();
+                }
+            });
+        });
+
+        $(document).on('click', '.tech-suggestion-item', function(e) {
+            e.preventDefault();
+            let val = $(this).text();
+            $(this).closest('.tech-wrapper').find('input[name="technical_name[]"]').val(val);
+            $(this).closest('.tech-suggestions').hide();
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.tech-wrapper').length) {
+                $('.tech-suggestions').hide();
+            }
+        });
     </script>
 
 

@@ -214,6 +214,7 @@
     height: 40px;
     cursor: pointer;
 }
+
 #mobileSuggestionBox {
     position: absolute;
     left: 0;
@@ -228,7 +229,7 @@
     display: none;
 }
 #mobileSuggestionBox .suggestion-item {
-    display: block;
+    display: block !important;
     padding: 10px 16px;
     color: #333;
     border-bottom: 1px solid #f1f1f1;
@@ -349,10 +350,8 @@
                             placeholder="{{\App\CPU\translate('Search here ...')}}"
                             name="name">
                         <button class="input-group-append-overlay search_button" type="submit"
-                            style="border-radius: {{Session::get('direction') === "rtl" ? '7px 0px 0px 7px; right: unset; left: 0' : '0px 7px 7px 0px; left: unset; right: 0'}};top:0">
-                            <span class="input-group-text __text-20px">
-                                <i class="czi-search text-white"></i>
-                            </span>
+                            style="border-radius: {{Session::get('direction') === "rtl" ? '7px 0px 0px 7px; right: unset; left: 0' : '0px 7px 7px 0px; left: unset; right: 0'}};top:0;  border: none; color: #fff; font-size: 16px; font-weight: 600; padding: 0 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa fa-search"></i>
                         </button>
                         <input name="page" value="1" hidden>
                         <div class="card search-card __inline-13" id="desktopSearchOverlay" style="display:none;">
@@ -360,12 +359,14 @@
                         </div>
                     </form>
                 </div>
-                <!-- Search - Mobile Icon -->
-                <div class="d-md-none ml-auto">
-                    <span class="navbar-tool-icon-box bg-secondary rounded-circle" id="mobileSearchToggle" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-                        <i class="czi-search" style="font-size:1.1rem;color:#fff;"></i>
-                    </span>
+
+                <!-- Technical Names Button -->
+                <div class="d-none d-md-flex align-items-center mx-2">
+                    <a href="{{ route('technical-names') }}" class="btn btn-outline-primary btn-sm" style="border-radius: 20px; white-space: nowrap; font-size: 0.85rem; padding: 6px 16px;">
+                        <i class="fa fa-tags mr-1"></i> {{ \App\CPU\translate('Technical Names') }}
+                    </a>
                 </div>
+             
                 <!-- Toolbar-->
                 <div class="navbar-toolbar d-flex flex-shrink-0 align-items-center">
                     <a class="navbar-tool navbar-stuck-toggler" href="#">
@@ -696,11 +697,11 @@
                 <input name="data_from" value="search" hidden>
                 <input name="page" value="1" hidden>
                 <div class="input-group position-relative">
-                    <input class="form-control" type="text" autocomplete="off"
+                    <input class="form-control" type="text" autocomplete="off" value="{{ request()->name ?? '' }}"
                         placeholder="{{\App\CPU\translate('Search for products...')}}"
                         name="name" id="mobileSearchInput">
-                    <button class="btn btn--primary" type="submit" style="flex-shrink:0;">
-                        <i class="czi-search"></i>
+                    <button class="btn btn--primary" type="submit" style="flex-shrink:0; padding: 0 16px; font-size: 14px; font-weight: 500;">
+                        <i class="fa fa-search"></i>
                     </button>
                     <div class="card search-card" style="display:none; position:absolute; left:0; right:0; top:100%; z-index:9999; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
                         <div class="card-body search-result-box" style="overflow:auto; max-height:400px; overflow-x:hidden;"></div>
@@ -845,7 +846,7 @@
         // Desktop search input
         $(document).on('input', '.search-bar-input', debounce(function() {
             var q = $(this).val().trim();
-            var $card = $(this).closest('.input-group-overlay').find('.search-card');
+            var $card = $(this).closest('.input-group-overlay1').find('.search-card');
             var $box = $card.find('.search-result-box');
             if (!q || q.length < 2) { $card.hide(); return; }
             $card.css('display', 'block');
@@ -855,8 +856,8 @@
         // Mobile search input
         $(document).on('input', '#mobileSearchInput', debounce(function() {
             var q = $(this).val().trim();
-            var $card = $('#mobileSearchOverlay .search-card');
-            var $box = $('#mobileSearchOverlay .search-result-box');
+            var $card = $('#mobileSearchOverlay1 .search-card');
+            var $box = $('#mobileSearchOverlay1 .search-result-box');
             if (!q || q.length < 2) { $card.hide(); return; }
             $card.css('display', 'block');
             fetchSuggestions(q, $box);
@@ -866,38 +867,39 @@
         $(document).on('click', '.suggestion-item', function(e) {
             e.preventDefault();
             var name = $(this).data('name') || $(this).text().trim();
-            if ($(this).closest('#mobileSearchOverlay').length) {
+            if ($(this).closest('#mobileSearchOverlay1').length) {
                 $('#mobileSearchInput').val(name);
-                $('#mobileSearchOverlay .search-card').hide().empty();
-                $('#mobileSearchOverlay').closest('form').submit();
+                
+                $('#mobileSearchOverlay1').closest('form').submit();
             } else {
                 $('.search-bar-input').val(name);
-                $('.search-card').hide();
+               
                 $('.search_form').submit();
             }
         });
 
-        // Close suggestion boxes when clicking outside
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('#mobileSearchOverlay').length) {
-                $('#mobileSearchOverlay .search-card').hide().empty();
+        // Close search suggestions on click outside (only hide dropdown, not search bar)
+        $(document).on('mousedown', function(e) {
+            if (!$(e.target).closest('.search-bar-input').length && 
+                !$(e.target).closest('#mobileSearchInput').length &&
+                !$(e.target).closest('.search-card').length) {
+                
             }
         });
+
+        // Also close on Escape key
+        $(document).on('keyup', function(e) {
+            if (e.key === 'Escape') {
+                $('.search-bar-input, #mobileSearchInput').blur();
+            }
+        });
+
+      
 
         $(document).on('click', '#notification_icon', function() {
             fetchNotifications();
         });
 
-        // Mobile search toggle
-        $('#mobileSearchToggle').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            $('#mobileSearchOverlay').slideToggle(200, function() {
-                if ($('#mobileSearchOverlay').is(':visible')) {
-                    $('#mobileSearchInput').focus();
-                }
-            });
-        });
     });
 </script>
 @endpush

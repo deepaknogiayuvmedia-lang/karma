@@ -67,6 +67,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 16px;
+            overflow-x: hidden;
         }
 
         /* Breadcrumb */
@@ -79,14 +80,17 @@
             margin-bottom: 16px;
             flex-wrap: wrap;
         }
+
         .bhpdp-breadcrumb a {
             color: #666;
             text-decoration: none;
         }
+
         .bhpdp-breadcrumb a:hover {
             color: var(--pd-primary);
             text-decoration: underline;
         }
+
         .bhpdp-breadcrumb svg {
             width: 12px;
             height: 12px;
@@ -116,6 +120,7 @@
         .bhpdp-hero-right {
             flex: 1;
             padding: 0 8px;
+            width: 100%
         }
 
         /* Image Gallery */
@@ -133,6 +138,7 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
         .bhpdp-gallery-track::-webkit-scrollbar {
             display: none;
         }
@@ -164,7 +170,7 @@
             position: absolute;
             bottom: 10px;
             right: 10px;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             color: #fff;
             font-size: 12px;
             font-weight: 600;
@@ -179,23 +185,30 @@
             transform: translateY(-50%);
             width: 36px;
             height: 36px;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             border: none;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             z-index: 5;
             transition: all 0.2s;
         }
+
         .bhpdp-gallery-nav:hover {
             background: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        .bhpdp-gallery-nav.prev { left: 10px; }
-        .bhpdp-gallery-nav.next { right: 10px; }
+
+        .bhpdp-gallery-nav.prev {
+            left: 10px;
+        }
+
+        .bhpdp-gallery-nav.next {
+            right: 10px;
+        }
 
         /* Thumbnails */
         .bhpdp-thumbnails {
@@ -207,6 +220,7 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
         .bhpdp-thumbnails::-webkit-scrollbar {
             display: none;
         }
@@ -222,11 +236,13 @@
             transition: all 0.2s;
             background: #f3f4f6;
         }
+
         .bhpdp-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+
         .bhpdp-thumb.active,
         .bhpdp-thumb:hover {
             border-color: #000;
@@ -246,6 +262,7 @@
             font-weight: 600;
             color: #166534;
         }
+
         .bhpdp-social-proof svg {
             width: 18px;
             height: 18px;
@@ -269,6 +286,7 @@
             gap: 6px;
             margin-bottom: 12px;
         }
+
         .bhpdp-badge {
             display: inline-flex;
             align-items: center;
@@ -279,21 +297,25 @@
             font-weight: 600;
             white-space: nowrap;
         }
+
         .bhpdp-badge-green {
             background: #EFF6E7;
             color: #2E7D32;
             border: 1px solid #D6EEBA;
         }
+
         .bhpdp-badge-purple {
             background: #FAF5FF;
             color: #5E00B0;
             border: 1px solid #DFCDEE;
         }
+
         .bhpdp-badge-orange {
             background: #FFF4E9;
             color: #964600;
             border: 1px solid #FFE6CE;
         }
+
         .bhpdp-badge-blue {
             background: #DCEBFE;
             color: #1447E6;
@@ -308,20 +330,24 @@
             margin-bottom: 14px;
             flex-wrap: wrap;
         }
+
         .bhpdp-rating-stars {
             display: flex;
             gap: 2px;
         }
+
         .bhpdp-rating-stars svg {
             width: 14px;
             height: 14px;
             color: #f59e0b;
         }
+
         .bhpdp-rating-text {
             font-size: 13px;
             color: #666;
             font-weight: 500;
         }
+
         .bhpdp-rating-link {
             font-size: 13px;
             color: #666;
@@ -330,6 +356,7 @@
             padding-left: 10px;
             font-weight: 500;
         }
+
         .bhpdp-rating-link:hover {
             color: var(--pd-primary);
             text-decoration: underline;
@@ -339,23 +366,27 @@
         .bhpdp-price-section {
             margin-bottom: 16px;
         }
+
         .bhpdp-price-row {
             display: flex;
             align-items: baseline;
             gap: 10px;
             flex-wrap: wrap;
         }
+
         .bhpdp-price-current {
             font-size: 26px;
             font-weight: 700;
             color: var(--pd-dark);
         }
+
         .bhpdp-price-old {
             font-size: 16px;
             color: #999;
             text-decoration: line-through;
             font-weight: 400;
         }
+
         .bhpdp-price-discount {
             background: #dcfce7;
             color: #166534;
@@ -364,17 +395,20 @@
             padding: 3px 10px;
             border-radius: 6px;
         }
+
         .bhpdp-price-mrp {
             font-size: 14px;
             color: #666;
             margin-top: 4px;
         }
+
         .bhpdp-price-tax {
             font-size: 13px;
             color: #999;
             text-decoration: underline;
             margin-top: 4px;
         }
+
         .bhpdp-free-delivery {
             display: inline-flex;
             align-items: center;
@@ -397,6 +431,7 @@
             margin-bottom: 10px;
             margin-top: 16px;
         }
+
         .bhpdp-variant-scroll {
             display: flex;
             gap: 10px;
@@ -404,7 +439,11 @@
             padding-bottom: 8px;
             -ms-overflow-style: none;
             scrollbar-width: none;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            max-width: 100%;
         }
+
         .bhpdp-variant-scroll::-webkit-scrollbar {
             display: none;
         }
@@ -421,17 +460,20 @@
             background: #fff;
             text-align: center;
         }
+
         .bhpdp-variant-card:hover {
             border-color: #999;
         }
+
         .bhpdp-variant-card.active {
             border-color: var(--pd-green-border);
             background: var(--pd-green-light);
-            box-shadow: 0 0 0 2px rgba(46,125,50,0.1);
+            box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
         }
+
         .bhpdp-variant-discount {
             position: absolute;
-            top: -8px;
+            top: 0px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--pd-orange);
@@ -442,29 +484,34 @@
             border-radius: 0 0 6px 6px;
             white-space: nowrap;
         }
+
         .bhpdp-variant-name {
-            font-size: 13px;
+            font-size: 20px;
             font-weight: 600;
             color: var(--pd-dark);
             margin-top: 6px;
             margin-bottom: 6px;
         }
+
         .bhpdp-variant-price {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
         }
+
         .bhpdp-variant-sell {
             font-size: 14px;
             font-weight: 700;
             color: var(--pd-dark);
         }
+
         .bhpdp-variant-original {
             font-size: 11px;
             color: #aaa;
             text-decoration: line-through;
         }
+
         .bhpdp-variant-tag {
             background: #f3e8ff;
             color: #7c3aed;
@@ -483,15 +530,18 @@
             margin-bottom: 10px;
             flex-wrap: wrap;
         }
+
         .bhpdp-color-opt {
             position: relative;
         }
+
         .bhpdp-color-opt input {
             position: absolute;
             opacity: 0;
             width: 0;
             height: 0;
         }
+
         .bhpdp-color-swatch {
             display: block;
             width: 32px;
@@ -501,7 +551,8 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .bhpdp-color-opt input:checked + .bhpdp-color-swatch {
+
+        .bhpdp-color-opt input:checked+.bhpdp-color-swatch {
             border-color: var(--pd-dark);
             box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--pd-dark);
         }
@@ -517,11 +568,13 @@
             padding: 12px 16px;
             margin: 16px 0;
         }
+
         .bhpdp-qty-label {
             font-size: 14px;
             font-weight: 600;
             color: var(--pd-dark);
         }
+
         .bhpdp-qty-stepper {
             display: inline-flex;
             align-items: center;
@@ -530,6 +583,7 @@
             border-radius: 8px;
             overflow: hidden;
         }
+
         .bhpdp-qty-btn {
             width: 32px;
             height: 32px;
@@ -544,9 +598,11 @@
             color: var(--pd-dark);
             transition: background 0.15s;
         }
+
         .bhpdp-qty-btn:hover:not(:disabled) {
             background: #f3f4f6;
         }
+
         .bhpdp-qty-input {
             width: 40px;
             height: 32px;
@@ -567,6 +623,7 @@
             margin-bottom: 16px;
             flex-wrap: wrap;
         }
+
         .bhpdp-trust-item {
             display: flex;
             align-items: center;
@@ -575,6 +632,7 @@
             color: #555;
             font-weight: 500;
         }
+
         .bhpdp-trust-item svg {
             width: 18px;
             height: 18px;
@@ -588,6 +646,7 @@
             gap: 12px;
             margin-bottom: 16px;
         }
+
         .bhpdp-btn-cart {
             flex: 1;
             height: 46px;
@@ -604,9 +663,11 @@
             gap: 8px;
             transition: all 0.2s;
         }
+
         .bhpdp-btn-cart:hover {
             background: #f3f4f6;
         }
+
         .bhpdp-btn-buy {
             flex: 1;
             height: 46px;
@@ -623,11 +684,13 @@
             gap: 8px;
             transition: all 0.2s;
         }
+
         .bhpdp-btn-buy:hover {
             opacity: 0.92;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
+
         .bhpdp-btn-wish {
             width: 46px;
             height: 46px;
@@ -642,6 +705,7 @@
             transition: all 0.2s;
             flex-shrink: 0;
         }
+
         .bhpdp-btn-wish:hover {
             background: #fee2e2;
             transform: scale(1.05);
@@ -663,9 +727,219 @@
             justify-content: center;
             gap: 8px;
         }
+
         .bhpdp-mobile-cta .bhpdp-btn-oos {
             flex: 1;
             height: 44px;
+        }
+
+        /* Home-style Sections */
+        .bhpdp-home-section {
+            margin-top: 32px;
+        }
+
+        .bhpdp-home-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .bhpdp-home-section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--pd-dark);
+        }
+
+        .bhpdp-home-section-link {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            text-decoration: none;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 6px 14px;
+            transition: all 0.2s;
+        }
+
+        .bhpdp-home-section-link:hover {
+            background: #f3f4f6;
+            border-color: #ccc;
+        }
+
+        .bhpdp-scroll-carousel {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .bhpdp-scroll-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bhpdp-hcard {
+            flex-shrink: 0;
+            width: 190px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .bhpdp-hcard:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .bhpdp-hcard-img {
+            position: relative;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background: #f9fafb;
+        }
+
+        .bhpdp-hcard-img img {
+            max-height: 130px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .bhpdp-hcard-badge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 0 0 8px 0;
+        }
+
+        .bhpdp-hcard-info {
+            padding: 10px;
+        }
+
+        .bhpdp-hcard-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--pd-dark);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 4px;
+            min-height: 34px;
+        }
+
+        .bhpdp-hcard-price-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bhpdp-hcard-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--pd-dark);
+        }
+
+        .bhpdp-hcard-old {
+            font-size: 11px;
+            color: #aaa;
+            text-decoration: line-through;
+        }
+
+        .bhpdp-hcard-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .bhpdp-hcard-stars {
+            display: flex;
+            gap: 1px;
+        }
+
+        .bhpdp-hcard-stars svg {
+            width: 11px;
+            height: 11px;
+            color: #f59e0b;
+        }
+
+        .bhpdp-hcard-rating-text {
+            font-size: 10px;
+            color: #999;
+        }
+
+        .bhpdp-banner-card {
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            background: #f3f4f6;
+        }
+
+        .bhpdp-banner-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 200px;
+        }
+
+        .bhpdp-brand-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .bhpdp-brand-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bhpdp-brand-card {
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            transition: all 0.2s;
+        }
+
+        .bhpdp-brand-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .bhpdp-brand-card img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .bhpdp-brand-name {
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+            font-weight: 500;
         }
 
         /* Sticky Tabs */
@@ -674,9 +948,10 @@
             top: 0;
             background: #fff;
             z-index: 50;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             margin-top: 24px;
         }
+
         .bhpdp-tabs-inner {
             display: flex;
             gap: 8px;
@@ -685,9 +960,11 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
         .bhpdp-tabs-inner::-webkit-scrollbar {
             display: none;
         }
+
         .bhpdp-tab-btn {
             flex-shrink: 0;
             padding: 6px 18px;
@@ -701,9 +978,11 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
+
         .bhpdp-tab-btn:hover {
             border-color: #999;
         }
+
         .bhpdp-tab-btn.active {
             background: var(--pd-primary);
             color: #fff;
@@ -714,9 +993,11 @@
         .bhpdp-tab-content {
             padding: 24px 0;
         }
+
         .bhpdp-tab-pane {
             display: none;
         }
+
         .bhpdp-tab-pane.active {
             display: block;
         }
@@ -725,27 +1006,31 @@
         .bhpdp-desc-card {
             background: #fff;
             border-radius: 14px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
             padding: 20px;
             margin-bottom: 20px;
             border: 1px solid #f0f0f0;
         }
+
         .bhpdp-desc-title {
             font-size: 18px;
             font-weight: 700;
             color: var(--pd-dark);
             margin-bottom: 14px;
         }
+
         .bhpdp-desc-content {
             font-size: 14px;
             color: #444;
             line-height: 1.7;
         }
+
         .bhpdp-desc-content.collapsed {
             max-height: 300px;
             overflow: hidden;
             position: relative;
         }
+
         .bhpdp-desc-content.collapsed::after {
             content: '';
             position: absolute;
@@ -755,6 +1040,7 @@
             height: 60px;
             background: linear-gradient(transparent, #fff);
         }
+
         .bhpdp-view-more {
             display: flex;
             align-items: center;
@@ -771,6 +1057,7 @@
             margin: 12px auto 0;
             transition: all 0.2s;
         }
+
         .bhpdp-view-more:hover {
             background: #f9fafb;
         }
@@ -781,6 +1068,7 @@
             overflow: hidden;
             margin-bottom: 20px;
         }
+
         .bhpdp-video-wrap iframe {
             width: 100%;
             height: 360px;
@@ -796,41 +1084,49 @@
             border-bottom: 1px solid #eee;
             margin-bottom: 20px;
         }
+
         .bhpdp-reviews-big-rating {
             text-align: center;
             min-width: 120px;
         }
+
         .bhpdp-reviews-big-num {
             font-size: 48px;
             font-weight: 700;
             color: #f59e0b;
             line-height: 1;
         }
+
         .bhpdp-reviews-big-stars {
             display: flex;
             justify-content: center;
             gap: 2px;
             margin: 6px 0;
         }
+
         .bhpdp-reviews-big-count {
             font-size: 13px;
             color: #999;
         }
+
         .bhpdp-reviews-bars {
             flex: 1;
         }
+
         .bhpdp-review-bar-row {
             display: flex;
             align-items: center;
             gap: 8px;
             margin-bottom: 6px;
         }
+
         .bhpdp-review-bar-label {
             font-size: 12px;
             color: #888;
             width: 48px;
             flex-shrink: 0;
         }
+
         .bhpdp-review-bar-track {
             flex: 1;
             height: 6px;
@@ -838,11 +1134,13 @@
             border-radius: 4px;
             overflow: hidden;
         }
+
         .bhpdp-review-bar-fill {
             height: 100%;
             border-radius: 4px;
             transition: width 0.5s;
         }
+
         .bhpdp-review-bar-count {
             font-size: 12px;
             font-weight: 600;
@@ -856,12 +1154,14 @@
             padding: 16px 0;
             border-bottom: 1px solid #f3f4f6;
         }
+
         .bhpdp-review-header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 8px;
         }
+
         .bhpdp-review-avatar {
             width: 36px;
             height: 36px;
@@ -874,76 +1174,219 @@
             font-size: 14px;
             color: #666;
         }
+
         .bhpdp-review-name {
             font-size: 14px;
             font-weight: 600;
             color: var(--pd-dark);
         }
+
         .bhpdp-review-date {
             font-size: 12px;
             color: #999;
         }
+
         .bhpdp-review-stars {
             display: flex;
             gap: 2px;
             margin-bottom: 6px;
         }
+
         .bhpdp-review-text {
             font-size: 14px;
             color: #444;
             line-height: 1.6;
         }
 
-        /* Similar Products Carousel */
+        /* Similar Products Section */
         .bhpdp-similar-section {
             margin-top: 24px;
         }
+
         .bhpdp-section-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 14px;
+            margin-bottom: 18px;
         }
+
         .bhpdp-section-title {
             font-size: 20px;
             font-weight: 700;
             color: var(--pd-dark);
         }
+
         .bhpdp-section-link {
             font-size: 13px;
             font-weight: 600;
             color: #333;
             text-decoration: none;
-        }
-        .bhpdp-section-link:hover {
-            text-decoration: underline;
-            color: var(--pd-primary);
-        }
-        .bhpdp-products-scroll {
-            display: flex;
-            gap: 14px;
-            overflow-x: auto;
-            padding-bottom: 12px;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .bhpdp-products-scroll::-webkit-scrollbar {
-            display: none;
+            padding: 6px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            transition: all 0.2s;
         }
 
-        .bhpdp-product-card {
-            flex-shrink: 0;
-            width: 200px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            overflow: hidden;
+        .bhpdp-section-link:hover {
+            background: var(--pd-primary);
+            color: #fff;
+            border-color: var(--pd-primary);
+        }
+
+        /* Desktop: Grid */
+        .bhpdp-similar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        /* Mobile: Horizontal Slider */
+        @media (max-width: 767px) {
+            .bhpdp-similar-grid {
+                display: flex;
+                overflow-x: auto;
+                gap: 10px;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 8px;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .bhpdp-similar-grid::-webkit-scrollbar {
+                display: none;
+            }
+
+            .bhpdp-similar-card {
+                flex: 0 0 150px;
+                scroll-snap-align: start;
+            }
+        }
+
+        .bhpdp-similar-card {
             background: #fff;
-            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.25s ease;
+            text-decoration: none !important;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bhpdp-similar-card:hover {
+            border-color: var(--pd-primary, #2563eb);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.1);
+        }
+
+        .bhpdp-similar-card-img {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
             position: relative;
+            overflow: hidden;
         }
+
+        .bhpdp-similar-card-img img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .bhpdp-similar-card:hover .bhpdp-similar-card-img img {
+            transform: scale(1.08);
+        }
+
+        .bhpdp-similar-card-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .bhpdp-similar-card-stock {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #6b7280;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .bhpdp-similar-card-body {
+            padding: 10px 12px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bhpdp-similar-card-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.35;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 35px;
+        }
+
+        .bhpdp-similar-card-price {
+            font-size: 16px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 2px;
+        }
+
+        .bhpdp-similar-card-old {
+            font-size: 11px;
+            color: #94a3b8;
+            text-decoration: line-through;
+        }
+
+        .bhpdp-similar-card-save {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-top: 4px;
+            width: fit-content;
+        }
+
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        transition: all 0.2s;
+        position: relative;
+        }
+
         .bhpdp-product-card:hover {
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         }
+
         .bhpdp-product-img {
             position: relative;
             height: 160px;
@@ -953,11 +1396,13 @@
             padding: 10px;
             background: #f9fafb;
         }
+
         .bhpdp-product-img img {
             max-height: 140px;
             max-width: 100%;
             object-fit: contain;
         }
+
         .bhpdp-product-badge {
             position: absolute;
             top: 0;
@@ -969,13 +1414,14 @@
             padding: 3px 8px;
             border-radius: 0 0 8px 0;
         }
+
         .bhpdp-product-wish {
             position: absolute;
             top: 6px;
             right: 6px;
             width: 30px;
             height: 30px;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             border: none;
             border-radius: 50%;
             display: flex;
@@ -985,12 +1431,15 @@
             color: #999;
             transition: all 0.2s;
         }
+
         .bhpdp-product-wish:hover {
             color: var(--pd-red);
         }
+
         .bhpdp-product-info {
             padding: 10px;
         }
+
         .bhpdp-product-name {
             font-size: 13px;
             font-weight: 500;
@@ -1003,26 +1452,31 @@
             margin-bottom: 4px;
             min-height: 36px;
         }
+
         .bhpdp-product-brand {
             font-size: 11px;
             color: #999;
             margin-bottom: 6px;
         }
+
         .bhpdp-product-price-row {
             display: flex;
             align-items: center;
             gap: 6px;
         }
+
         .bhpdp-product-price {
             font-size: 15px;
             font-weight: 700;
             color: var(--pd-dark);
         }
+
         .bhpdp-product-old-price {
             font-size: 12px;
             color: #aaa;
             text-decoration: line-through;
         }
+
         .bhpdp-product-save {
             font-size: 11px;
             color: #16a34a;
@@ -1038,13 +1492,15 @@
             right: 0;
             background: #fff;
             padding: 10px 16px;
-            box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
             z-index: 100;
         }
+
         .bhpdp-mobile-cta-inner {
             display: flex;
             gap: 10px;
         }
+
         .bhpdp-mobile-cta .bhpdp-btn-cart,
         .bhpdp-mobile-cta .bhpdp-btn-buy {
             flex: 1;
@@ -1057,22 +1513,34 @@
                 flex-direction: column;
                 gap: 20px;
             }
+
             .bhpdp-hero-left {
                 position: static;
                 max-height: none;
+                width: 100%;
             }
+
             .bhpdp-gallery-slide {
                 min-height: 320px;
                 max-height: 400px;
             }
+
             .bhpdp-mobile-cta {
                 display: block;
             }
+
             .bhpdp-actions {
                 display: none;
             }
+
             body {
                 padding-bottom: 70px;
+            }
+
+            .bhpdp-section-title {
+                font-size: 15px;
+                font-weight: 700;
+                color: var(--pd-dark);
             }
         }
 
@@ -1081,24 +1549,46 @@
                 min-height: 260px;
                 max-height: 340px;
             }
+
             .bhpdp-gallery-slide img {
                 max-height: 320px;
             }
+
             .bhpdp-title {
                 font-size: 17px;
             }
+
             .bhpdp-price-current {
                 font-size: 22px;
             }
+
             .bhpdp-product-card {
                 width: 160px;
             }
+
             .bhpdp-product-img {
                 height: 130px;
             }
+
             .bhpdp-reviews-summary {
                 flex-direction: column;
                 gap: 16px;
+            }
+
+            .bhpdp-variant-scroll {
+                overflow-x: auto;
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 10px;
+                margin: 0 -15px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .bhpdp-section-title {
+                font-size: 15px;
+                font-weight: 700;
+                color: var(--pd-dark);
             }
         }
 
@@ -1111,13 +1601,14 @@
         .bhpdp-oos-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10;
             border-radius: 12px;
         }
+
         .bhpdp-oos-text {
             background: #fee2e2;
             color: #dc2626;
@@ -1144,14 +1635,23 @@
         {{-- Breadcrumb --}}
         <nav class="bhpdp-breadcrumb">
             <a href="{{ route('home') }}">Home</a>
-            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/></svg>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                    clip-rule="evenodd" />
+            </svg>
             @if (!empty($product->category_ids))
                 @php $cats = json_decode($product->category_ids); @endphp
                 @if (!empty($cats[0]))
                     @php $cat = \App\Model\Category::find($cats[0]->id); @endphp
                     @if ($cat)
-                        <a href="{{ route('products', ['id' => $cat->id, 'data_from' => 'category']) }}">{{ $cat->name }}</a>
-                        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/></svg>
+                        <a
+                            href="{{ route('products', ['id' => $cat->id, 'data_from' => 'category']) }}">{{ $cat->name }}</a>
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                                clip-rule="evenodd" />
+                        </svg>
                     @endif
                 @endif
             @endif
@@ -1163,12 +1663,20 @@
 
             {{-- Left Column: Image Gallery --}}
             <div class="bhpdp-hero-left">
-                <div class="bhpdp-gallery">
+                <div class="bhpdp-gallery" id="bhpdpGallery">
                     <button class="bhpdp-gallery-nav prev" onclick="bhGalleryPrev()" aria-label="Previous image">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                                clip-rule="evenodd" />
+                        </svg>
                     </button>
                     <button class="bhpdp-gallery-nav next" onclick="bhGalleryNext()" aria-label="Next image">
-                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                                clip-rule="evenodd" />
+                        </svg>
                     </button>
 
                     <div class="bhpdp-gallery-track" id="bhGalleryTrack">
@@ -1194,7 +1702,9 @@
 
                         @if ($product->video_url != null)
                             <div class="bhpdp-gallery-slide" data-index="video" style="padding:0; background:#000;">
-                                <iframe src="{{ $product->video_url }}" style="width:100%; height:100%; min-height:400px; border:none; border-radius:12px;" allowfullscreen></iframe>
+                                <iframe src="{{ $product->video_url }}"
+                                    style="width:100%; height:100%; min-height:400px; border:none; border-radius:12px;"
+                                    allowfullscreen></iframe>
                             </div>
                         @endif
                     </div>
@@ -1205,7 +1715,9 @@
                             $decoded = json_decode($product->images);
                             $totalImages = is_array($decoded) ? count($decoded) : 0;
                         }
-                        if ($product->video_url != null) $totalImages++;
+                        if ($product->video_url != null) {
+                            $totalImages++;
+                        }
                     @endphp
                     @if ($totalImages > 1)
                         <div class="bhpdp-gallery-counter" id="bhGalleryCounter">1 / {{ $totalImages }}</div>
@@ -1217,7 +1729,8 @@
                     @if ($product->images != null && json_decode($product->images) > 0)
                         @if (json_decode($product->colors) && $product->color_image)
                             @foreach (json_decode($product->color_image) as $key => $photo)
-                                <div class="bhpdp-thumb {{ $key == 0 ? 'active' : '' }}" data-index="{{ $key }}" onclick="bhGoToSlide({{ $key }})">
+                                <div class="bhpdp-thumb {{ $key == 0 ? 'active' : '' }}" data-index="{{ $key }}"
+                                    onclick="bhGoToSlide({{ $key }})">
                                     <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                         src="{{ asset(config('app.public_storage_path') . "/product/$photo->image_name") }}"
                                         alt="Thumb">
@@ -1225,7 +1738,8 @@
                             @endforeach
                         @else
                             @foreach (json_decode($product->images) as $key => $photo)
-                                <div class="bhpdp-thumb {{ $key == 0 ? 'active' : '' }}" data-index="{{ $key }}" onclick="bhGoToSlide({{ $key }})">
+                                <div class="bhpdp-thumb {{ $key == 0 ? 'active' : '' }}"
+                                    data-index="{{ $key }}" onclick="bhGoToSlide({{ $key }})">
                                     <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                         src="{{ asset(config('app.public_storage_path') . "/product/$photo") }}"
                                         alt="Thumb">
@@ -1235,8 +1749,11 @@
                     @endif
 
                     @if ($product->video_url != null)
-                        <div class="bhpdp-thumb" data-index="video" onclick="bhGoToSlide('video')" style="display:flex; align-items:center; justify-content:center; background:#000; color:#fff;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        <div class="bhpdp-thumb" data-index="video" onclick="bhGoToSlide('video')"
+                            style="display:flex; align-items:center; justify-content:center; background:#000; color:#fff;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
                         </div>
                     @endif
                 </div>
@@ -1251,7 +1768,10 @@
                 @endphp
                 @if ($orderCount > 0)
                     <div class="bhpdp-social-proof">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                        </svg>
                         <span>{{ number_format($orderCount) }}+ customers ordered recently</span>
                     </div>
                 @endif
@@ -1273,14 +1793,22 @@
                     <div class="bhpdp-rating-stars">
                         @for ($i = 0; $i < 5; $i++)
                             @if ($i < floor($overallRating[0]))
-                                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
                             @else
-                                <svg viewBox="0 0 20 20" fill="#e5e7eb"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                <svg viewBox="0 0 20 20" fill="#e5e7eb">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
                             @endif
                         @endfor
                     </div>
-                    <span class="bhpdp-rating-text">{{ number_format($overallRating[0], 1) }} | {{ $overallRating[1] }} Reviews</span>
-                    <a class="bhpdp-rating-link" href="#tab-reviews" onclick="bhSwitchTab('reviews')">{{ $countOrder ?? 0 }} orders</a>
+                    <span class="bhpdp-rating-text">{{ number_format($overallRating[0], 1) }} | {{ $overallRating[1] }}
+                        Reviews</span>
+                    <a class="bhpdp-rating-link" href="#tab-reviews"
+                        onclick="bhSwitchTab('reviews')">{{ $countOrder ?? 0 }} orders</a>
                 </div>
 
                 {{-- Price Section --}}
@@ -1288,7 +1816,8 @@
                     <div class="bhpdp-price-row">
                         <span class="bhpdp-price-current">{{ \App\CPU\Helpers::get_price_range($product) }}</span>
                         @if ($product->discount > 0)
-                            <span class="bhpdp-price-old">{{ \App\CPU\Helpers::currency_converter($product->unit_price) }}</span>
+                            <span
+                                class="bhpdp-price-old">{{ \App\CPU\Helpers::currency_converter($product->unit_price) }}</span>
                             @php
                                 $main_discount_percent = 0;
                                 if ($product->discount_type == 'percent') {
@@ -1302,10 +1831,14 @@
                             @endif
                         @endif
                     </div>
-                    <div class="bhpdp-price-mrp">MRP: {{ \App\CPU\Helpers::currency_converter($product->unit_price) }}</div>
+                    <div class="bhpdp-price-mrp">MRP: {{ \App\CPU\Helpers::currency_converter($product->unit_price) }}
+                    </div>
                     <div class="bhpdp-price-tax">(tax incl.)</div>
                     <div class="bhpdp-free-delivery">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+                        </svg>
                         Free Delivery
                     </div>
                 </div>
@@ -1320,7 +1853,8 @@
                         <div class="bhpdp-colors">
                             @foreach (json_decode($product->colors) as $key => $color)
                                 <label class="bhpdp-color-opt">
-                                    <input type="radio" name="color" value="{{ $color }}" {{ $key == 0 ? 'checked' : '' }}
+                                    <input type="radio" name="color" value="{{ $color }}"
+                                        {{ $key == 0 ? 'checked' : '' }}
                                         onchange="focus_preview_image_by_color('{{ str_replace('#', '', $color) }}')">
                                     <span class="bhpdp-color-swatch" style="background: {{ $color }};"></span>
                                 </label>
@@ -1331,7 +1865,9 @@
                     {{-- Variations --}}
                     @if (!empty($product->choice_options) && count(json_decode($product->choice_options)) > 0)
                         @php
-                            $variations_list = !empty($product->variation) ? json_decode($product->variation, true) : [];
+                            $variations_list = !empty($product->variation)
+                                ? json_decode($product->variation, true)
+                                : [];
                         @endphp
 
                         @foreach (json_decode($product->choice_options) as $choice_key => $choice)
@@ -1365,13 +1901,13 @@
                                 if (!empty($single_pack_options)) {
                                     $groups[] = [
                                         'title' => $has_multipack_distinction ? 'Single Pack' : $choice->title,
-                                        'options' => $single_pack_options
+                                        'options' => $single_pack_options,
                                     ];
                                 }
                                 if (!empty($multipack_options)) {
                                     $groups[] = [
                                         'title' => 'Big Savings on Multipack',
-                                        'options' => $multipack_options
+                                        'options' => $multipack_options,
                                     ];
                                 }
                             @endphp
@@ -1387,16 +1923,22 @@
 
                                             $matched_variant = null;
                                             foreach ($variations_list as $v) {
-                                                if (isset($v['type']) && (
-                                                    $v['type'] == $opt_clean ||
-                                                    (function_exists('str_ends_with') ? str_ends_with($v['type'], '-' . $opt_clean) || str_ends_with($v['type'], $opt_clean) : (substr($v['type'], -strlen($opt_clean)) === $opt_clean))
-                                                )) {
+                                                if (
+                                                    isset($v['type']) &&
+                                                    ($v['type'] == $opt_clean ||
+                                                        (function_exists('str_ends_with')
+                                                            ? str_ends_with($v['type'], '-' . $opt_clean) ||
+                                                                str_ends_with($v['type'], $opt_clean)
+                                                            : substr($v['type'], -strlen($opt_clean)) === $opt_clean))
+                                                ) {
                                                     $matched_variant = $v;
                                                     break;
                                                 }
                                             }
 
-                                            $v_price = $matched_variant ? $matched_variant['price'] : $product->unit_price;
+                                            $v_price = $matched_variant
+                                                ? $matched_variant['price']
+                                                : $product->unit_price;
                                             $v_discount = \App\CPU\Helpers::get_product_discount($product, $v_price);
                                             $v_final_price = $v_price - $v_discount;
                                             $discount_percent = 0;
@@ -1412,16 +1954,21 @@
                                             }
                                         @endphp
 
-                                        <label class="bhpdp-variant-card {{ $opt_idx == 0 ? 'active' : '' }}" onclick="bhSelectVariant(this, '{{ $choice->name }}')">
-                                            <input type="radio" name="{{ $choice->name }}" value="{{ $option }}" {{ $opt_idx == 0 ? 'checked' : '' }} style="display:none;">
+                                        <label class="bhpdp-variant-card {{ $opt_idx == 0 ? 'active' : '' }}"
+                                            onclick="bhSelectVariant(this, '{{ $choice->name }}')">
+                                            <input type="radio" name="{{ $choice->name }}"
+                                                value="{{ $option }}" {{ $opt_idx == 0 ? 'checked' : '' }}
+                                                style="display:none;">
                                             @if ($discount_percent > 0)
                                                 <span class="bhpdp-variant-discount">{{ $discount_percent }}% OFF</span>
                                             @endif
                                             <div class="bhpdp-variant-name">{{ $option }}</div>
                                             <div class="bhpdp-variant-price">
-                                                <span class="bhpdp-variant-sell">{{ \App\CPU\Helpers::currency_converter($v_final_price) }}</span>
+                                                <span
+                                                    class="bhpdp-variant-sell">{{ \App\CPU\Helpers::currency_converter($v_final_price) }}</span>
                                                 @if ($v_discount > 0)
-                                                    <span class="bhpdp-variant-original">{{ \App\CPU\Helpers::currency_converter($v_price) }}</span>
+                                                    <span
+                                                        class="bhpdp-variant-original">{{ \App\CPU\Helpers::currency_converter($v_price) }}</span>
                                                 @endif
                                             </div>
                                             @if ($tag_text)
@@ -1439,9 +1986,15 @@
                         <span class="bhpdp-qty-label">{{ \App\CPU\translate('Quantity') }}</span>
                         <div style="display:flex; align-items:center; gap:14px;">
                             <div class="bhpdp-qty-stepper">
-                                <button class="bhpdp-qty-btn btn-number" type="button" data-type="minus" data-field="quantity" disabled="disabled">-</button>
-                                <input type="text" name="quantity" class="bhpdp-qty-input cart-qty-field" value="{{ $product->minimum_order_qty ?? 1 }}" product-type="{{ $product->product_type }}" min="{{ $product->minimum_order_qty ?? 1 }}" max="100">
-                                <button class="bhpdp-qty-btn btn-number" type="button" product-type="{{ $product->product_type }}" data-type="plus" data-field="quantity">+</button>
+                                <button class="bhpdp-qty-btn btn-number" type="button" data-type="minus"
+                                    data-field="quantity" disabled="disabled">-</button>
+                                <input type="text" name="quantity" class="bhpdp-qty-input cart-qty-field"
+                                    value="{{ $product->minimum_order_qty ?? 1 }}"
+                                    product-type="{{ $product->product_type }}"
+                                    min="{{ $product->minimum_order_qty ?? 1 }}" max="100">
+                                <button class="bhpdp-qty-btn btn-number" type="button"
+                                    product-type="{{ $product->product_type }}" data-type="plus"
+                                    data-field="quantity">+</button>
                             </div>
                             <div id="chosen_price_div" style="display:flex; align-items:center; gap:6px;">
                                 <span style="font-size:13px; color:#999;">Total:</span>
@@ -1452,7 +2005,8 @@
 
                     {{-- Out of Stock --}}
                     <div id="variant-out-of-stock" class="d-none mb-3">
-                        <div style="background:#fee2e2; color:#dc2626; font-weight:700; padding:10px 16px; border-radius:10px; text-align:center;">
+                        <div
+                            style="background:#fee2e2; color:#dc2626; font-weight:700; padding:10px 16px; border-radius:10px; text-align:center;">
                             <i class="fa fa-exclamation-triangle me-1"></i> {{ \App\CPU\translate('out_of_stock') }}
                         </div>
                     </div>
@@ -1460,15 +2014,23 @@
                     {{-- Trust Info --}}
                     <div class="bhpdp-trust-row">
                         <div class="bhpdp-trust-item">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+                            </svg>
                             <span>Country of Origin India</span>
                         </div>
                         <div class="bhpdp-trust-item">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+                            </svg>
                             <span>Secure Payments</span>
                         </div>
                         <div class="bhpdp-trust-item">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg>
                             <span>In stock, Ready to Ship</span>
                         </div>
                     </div>
@@ -1482,28 +2044,34 @@
                                         $product->seller->shop->vacation_status &&
                                         $current_date >= $seller_vacation_start_date &&
                                         $current_date <= $seller_vacation_end_date))) ||
-                            ($product->added_by == 'admin' &&
-                                ($inhouse_temporary_close ||
-                                    ($inhouse_vacation_status &&
-                                        $current_date >= $inhouse_vacation_start_date &&
-                                        $current_date <= $inhouse_vacation_end_date)))
-                        )
-                            <button class="bhpdp-btn-cart btn-add-to-cart" type="button" disabled style="opacity:0.6;">{{ \App\CPU\translate('add_to_cart') }}</button>
-                            <button class="bhpdp-btn-buy btn-buy-now" type="button" disabled style="opacity:0.6;">{{ \App\CPU\translate('buy_now') }}</button>
+                                ($product->added_by == 'admin' &&
+                                    ($inhouse_temporary_close ||
+                                        ($inhouse_vacation_status &&
+                                            $current_date >= $inhouse_vacation_start_date &&
+                                            $current_date <= $inhouse_vacation_end_date))))
+                            <button class="bhpdp-btn-cart btn-add-to-cart" type="button" disabled
+                                style="opacity:0.6;">{{ \App\CPU\translate('add_to_cart') }}</button>
+                            <button class="bhpdp-btn-buy btn-buy-now" type="button" disabled
+                                style="opacity:0.6;">{{ \App\CPU\translate('buy_now') }}</button>
                         @else
                             <button class="bhpdp-btn-cart btn-add-to-cart" onclick="addToCart()" type="button">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+                                </svg>
                                 {{ \App\CPU\translate('add_to_cart') }}
                             </button>
                             <button class="bhpdp-btn-buy btn-buy-now" onclick="buy_now()" type="button">
                                 {{ \App\CPU\translate('buy_now') }}
                             </button>
-                            <button class="bhpdp-btn-oos btn btn-danger btn-oos d-none w-100" type="button" disabled style="flex:1; height:46px; border-radius:10px; font-size:14px; font-weight:600;">
+                            <button class="bhpdp-btn-oos btn btn-danger btn-oos d-none w-100" type="button" disabled
+                                style="flex:1; height:46px; border-radius:10px; font-size:14px; font-weight:600;">
                                 <span>{{ \App\CPU\translate('out_of_stock') }}</span>
                             </button>
                         @endif
 
-                        <button type="button" onclick="addWishlist('{{ $product['id'] }}')" class="bhpdp-btn-wish" title="Add to Wishlist">
+                        <button type="button" onclick="addWishlist('{{ $product['id'] }}')" class="bhpdp-btn-wish"
+                            title="Add to Wishlist">
                             <i class="fa fa-heart-o"></i>
                         </button>
                     </div>
@@ -1515,13 +2083,13 @@
                                     $product->seller->shop->vacation_status &&
                                     $current_date >= $seller_vacation_start_date &&
                                     $current_date <= $seller_vacation_end_date))) ||
-                        ($product->added_by == 'admin' &&
-                            ($inhouse_temporary_close ||
-                                ($inhouse_vacation_status &&
-                                    $current_date >= $inhouse_vacation_start_date &&
-                                    $current_date <= $inhouse_vacation_end_date)))
-                    )
-                        <div style="background:#fef3c7; border:1px solid #fde68a; color:#92400e; padding:10px 16px; border-radius:10px; margin-top:10px;">
+                            ($product->added_by == 'admin' &&
+                                ($inhouse_temporary_close ||
+                                    ($inhouse_vacation_status &&
+                                        $current_date >= $inhouse_vacation_start_date &&
+                                        $current_date <= $inhouse_vacation_end_date))))
+                        <div
+                            style="background:#fef3c7; border:1px solid #fde68a; color:#92400e; padding:10px 16px; border-radius:10px; margin-top:10px;">
                             {{ \App\CPU\translate('this_shop_is_temporary_closed_or_on_vacation._You_cannot_add_product_to_cart_from_this_shop_for_now') }}
                         </div>
                     @endif
@@ -1532,11 +2100,15 @@
         {{-- Sticky Tab Navigation --}}
         <div class="bhpdp-sticky-tabs">
             <div class="bhpdp-tabs-inner" id="bhTabs">
-                <button class="bhpdp-tab-btn active" onclick="bhSwitchTab('overview')" data-tab="overview">Overview</button>
-                @if (count($product->reviews) > 0 || $reviews_of_product = App\Model\Review::where('product_id', $product->id)->count() > 0)
-                    <button class="bhpdp-tab-btn" onclick="bhSwitchTab('reviews')" data-tab="reviews">Reviews ({{ $overallRating[1] }})</button>
+                <button class="bhpdp-tab-btn active" onclick="bhSwitchTab('overview')"
+                    data-tab="overview">Overview</button>
+                @if (count($product->reviews) > 0 ||
+                        ($reviews_of_product = App\Model\Review::where('product_id', $product->id)->count() > 0))
+                    <button class="bhpdp-tab-btn" onclick="bhSwitchTab('reviews')" data-tab="reviews">Reviews
+                        ({{ $overallRating[1] }})</button>
                 @endif
-                <button class="bhpdp-tab-btn" onclick="bhSwitchTab('similar')" data-tab="similar">Similar Products</button>
+                <button class="bhpdp-tab-btn" onclick="bhSwitchTab('similar')" data-tab="similar">Similar
+                    Products</button>
             </div>
         </div>
 
@@ -1559,7 +2131,12 @@
                     @if (!empty($product['details']) && strlen(strip_tags($product['details'])) > 300)
                         <button type="button" class="bhpdp-view-more" onclick="bhToggleDesc()">
                             <span id="bh-desc-text">{{ \App\CPU\translate('View more') }}</span>
-                            <svg id="bh-desc-icon" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                            <svg id="bh-desc-icon" width="14" height="14" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                    clip-rule="evenodd" />
+                            </svg>
                         </button>
                     @endif
                 </div>
@@ -1578,9 +2155,15 @@
                             <div class="bhpdp-reviews-big-stars">
                                 @for ($i = 0; $i < 5; $i++)
                                     @if ($i < floor($overallRating[0]))
-                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="#f59e0b"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="#f59e0b">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
                                     @else
-                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="#e5e7eb"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="#e5e7eb">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
                                     @endif
                                 @endfor
                             </div>
@@ -1599,7 +2182,8 @@
                                 <div class="bhpdp-review-bar-row">
                                     <span class="bhpdp-review-bar-label">{{ $labels[$idx] }}</span>
                                     <div class="bhpdp-review-bar-track">
-                                        <div class="bhpdp-review-bar-fill" style="width:{{ $pct }}%; background:{{ $colors[$idx] }};"></div>
+                                        <div class="bhpdp-review-bar-fill"
+                                            style="width:{{ $pct }}%; background:{{ $colors[$idx] }};"></div>
                                     </div>
                                     <span class="bhpdp-review-bar-count">{{ $rating[$idx] }}</span>
                                 </div>
@@ -1629,44 +2213,86 @@
             {{-- Similar Products Tab --}}
             <div class="bhpdp-tab-pane" id="tab-similar">
                 <div class="bhpdp-section-header">
-                    <h3 class="bhpdp-section-title">Similar Products</h3>
+                    <h3 class="bhpdp-section-title">{{ \App\CPU\translate('Similar Products') }}</h3>
                     @php $category = json_decode($product['category_ids']); @endphp
                     @if ($category)
-                        <a class="bhpdp-section-link" href="{{ route('products', ['id' => $category[0]->id, 'data_from' => 'category', 'page' => 1]) }}">
-                            View All &rarr;
+                        <a class="bhpdp-section-link"
+                            href="{{ route('products', ['id' => $category[0]->id, 'data_from' => 'category', 'page' => 1]) }}">
+                            {{ \App\CPU\translate('view_all') }} &rarr;
                         </a>
                     @endif
                 </div>
 
-                <div class="bhpdp-products-scroll">
-                    @if (count($relatedProducts) > 0)
-                        @foreach ($relatedProducts as $key => $relatedProduct)
-                            @include('web-views.partials._inline-single-product', [
-                                'product' => $relatedProduct,
-                                'decimal_point_settings' => $decimal_point_settings,
-                            ])
+                @if (count($relatedProducts) > 0)
+                    <div class="bhpdp-similar-grid">
+                        @foreach ($relatedProducts as $relatedProduct)
+                            @php
+                                $rd = \App\CPU\Helpers::get_product_discount(
+                                    $relatedProduct,
+                                    $relatedProduct->unit_price,
+                                );
+                            @endphp
+                            <a href="{{ route('product', $relatedProduct->slug) }}" class="bhpdp-similar-card">
+                                <div class="bhpdp-similar-card-img">
+                                    @if ($relatedProduct->discount > 0)
+                                        @php $discPct = $relatedProduct->discount_type == 'percent' ? round($relatedProduct->discount) : round(($relatedProduct->discount / $relatedProduct->unit_price) * 100); @endphp
+                                        <span class="bhpdp-similar-card-badge">{{ $discPct }}% OFF</span>
+                                    @endif
+                                    @if ($relatedProduct->current_stock <= 0)
+                                        <span
+                                            class="bhpdp-similar-card-stock">{{ \App\CPU\translate('Stock Out') }}</span>
+                                    @endif
+                                    <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
+                                        src="{{ asset(config('app.public_storage_path') . '/product/thumbnail/' . $relatedProduct->thumbnail) }}"
+                                        alt="{{ $relatedProduct->name }}">
+                                </div>
+                                <div class="bhpdp-similar-card-body">
+                                    <div class="bhpdp-similar-card-name">{{ $relatedProduct->name }}</div>
+                                    <div>
+                                        <span
+                                            class="bhpdp-similar-card-price">{{ \App\CPU\Helpers::currency_converter($relatedProduct->unit_price - $rd) }}</span>
+                                        @if ($relatedProduct->discount > 0)
+                                            <span
+                                                class="bhpdp-similar-card-old">{{ \App\CPU\Helpers::currency_converter($relatedProduct->unit_price) }}</span>
+                                        @endif
+                                    </div>
+                                    @if ($rd > 0)
+                                        <span class="bhpdp-similar-card-save">
+                                            <i class="fa fa-tag"></i> {{ \App\CPU\translate('save') }}
+                                            {{ \App\CPU\Helpers::currency_converter($rd) }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </a>
                         @endforeach
-                    @else
-                        <div style="text-align:center; padding:40px 0; color:#999; width:100%;">
-                            <small>{{ \App\CPU\translate('similar') }} {{ \App\CPU\translate('product_not_available') }}</small>
-                        </div>
-                    @endif
-                </div>
+                    </div>
+                @else
+                    <div style="text-align:center; padding:40px 0; color:#999;">
+                        <small>{{ \App\CPU\translate('similar') }}
+                            {{ \App\CPU\translate('product_not_available') }}</small>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
+
+
 
     {{-- Sticky Mobile CTA --}}
     <div class="bhpdp-mobile-cta" id="bhpdp-mobile-cta">
         <div class="bhpdp-mobile-cta-inner">
             <button class="bhpdp-btn-cart btn-add-to-cart" onclick="addToCart()" type="button">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+                </svg>
                 {{ \App\CPU\translate('add_to_cart') }}
             </button>
             <button class="bhpdp-btn-buy btn-buy-now" onclick="buy_now()" type="button">
                 {{ \App\CPU\translate('buy_now') }}
             </button>
-            <button class="btn btn-danger btn-oos d-none w-100" type="button" disabled style="flex:1; height:44px; border-radius:10px; font-size:14px; font-weight:600;">
+            <button class="btn btn-danger btn-oos d-none w-100" type="button" disabled
+                style="flex:1; height:44px; border-radius:10px; font-size:14px; font-weight:600;">
                 <span>{{ \App\CPU\translate('out_of_stock') }}</span>
             </button>
         </div>
@@ -1678,7 +2304,8 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content" style="border-radius:20px; border:none; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title font-weight-bold text-dark" id="pincodeModalLabel">{{ \App\CPU\translate('Select Delivery Address') }}</h5>
+                    <h5 class="modal-title font-weight-bold text-dark" id="pincodeModalLabel">
+                        {{ \App\CPU\translate('Select Delivery Address') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -1692,7 +2319,8 @@
                         </div>
                         <div>
                             <button type="button" class="btn btn-primary rounded-pill px-4 font-weight-bold"
-                                id="check_delivery_pincode_btn" style="height:46px;">{{ \App\CPU\translate('Submit') }}</button>
+                                id="check_delivery_pincode_btn"
+                                style="height:46px;">{{ \App\CPU\translate('Submit') }}</button>
                         </div>
                     </div>
                     <div id="pincode_check_result" class="mt-2"></div>
@@ -1707,7 +2335,8 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content" style="border-radius:20px;">
                 <div class="modal-body p-2 text-center position-relative">
-                    <button class="btn btn-sm btn-circle btn-dark position-absolute" style="top:10px; right:10px; z-index:10;" data-dismiss="modal">
+                    <button class="btn btn-sm btn-circle btn-dark position-absolute"
+                        style="top:10px; right:10px; z-index:10;" data-dismiss="modal">
                         <i class="fa fa-times"></i>
                     </button>
                     <img class="img-fluid rounded" id="attachment-view" src="">
@@ -1734,13 +2363,19 @@
             var thumb = document.querySelector('.bhpdp-thumb[data-index="0"]');
             if (thumb) {
                 var allThumbs = document.querySelectorAll('.bhpdp-thumb');
-                allThumbs.forEach(function(t) { t.classList.remove('active'); });
+                allThumbs.forEach(function(t) {
+                    t.classList.remove('active');
+                });
                 if (thumb) thumb.classList.add('active');
             }
             var track = document.getElementById('bhGalleryTrack');
             if (track) {
                 var slides = track.querySelectorAll('.bhpdp-gallery-slide');
-                if (slides[0]) slides[0].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+                if (slides[0]) slides[0].scrollIntoView({
+                    behavior: 'smooth',
+                    inline: 'start',
+                    block: 'nearest'
+                });
             }
         }
 
@@ -1759,10 +2394,16 @@
             }
 
             if (slides[index]) {
-                slides[index].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+                slides[index].scrollIntoView({
+                    behavior: 'smooth',
+                    inline: 'start',
+                    block: 'nearest'
+                });
                 bhCurrentSlide = index;
 
-                thumbs.forEach(function(t) { t.classList.remove('active'); });
+                thumbs.forEach(function(t) {
+                    t.classList.remove('active');
+                });
                 if (thumbs[index]) thumbs[index].classList.add('active');
 
                 var counter = document.getElementById('bhGalleryCounter');
@@ -1792,7 +2433,9 @@
                 if (newIndex !== bhCurrentSlide && newIndex >= 0 && newIndex < bhTotalSlides) {
                     bhCurrentSlide = newIndex;
                     var thumbs = document.querySelectorAll('.bhpdp-thumb');
-                    thumbs.forEach(function(t) { t.classList.remove('active'); });
+                    thumbs.forEach(function(t) {
+                        t.classList.remove('active');
+                    });
                     if (thumbs[newIndex]) thumbs[newIndex].classList.add('active');
 
                     var counter = document.getElementById('bhGalleryCounter');
@@ -1806,8 +2449,12 @@
             var tabs = document.querySelectorAll('.bhpdp-tab-btn');
             var panes = document.querySelectorAll('.bhpdp-tab-pane');
 
-            tabs.forEach(function(t) { t.classList.remove('active'); });
-            panes.forEach(function(p) { p.classList.remove('active'); });
+            tabs.forEach(function(t) {
+                t.classList.remove('active');
+            });
+            panes.forEach(function(p) {
+                p.classList.remove('active');
+            });
 
             var activeTab = document.querySelector('.bhpdp-tab-btn[data-tab="' + tab + '"]');
             var activePane = document.getElementById('tab-' + tab);
@@ -1862,7 +2509,8 @@
                     pincode: pincode
                 },
                 success: function(response) {
-                    $('#check_delivery_pincode_btn').removeAttr('disabled').text('{{ \App\CPU\translate('Submit') }}');
+                    $('#check_delivery_pincode_btn').removeAttr('disabled').text(
+                        '{{ \App\CPU\translate('Submit') }}');
                     if (response.status === 'success' && response.serviceable) {
                         $('#pincode_check_result').html(
                             '<div class="text-success mt-2 font-weight-bold"><i class="fa fa-check-circle me-1"></i> {{ \App\CPU\translate('Delivery available in this area.') }}</div>'
@@ -1877,7 +2525,8 @@
                     }
                 },
                 error: function() {
-                    $('#check_delivery_pincode_btn').removeAttr('disabled').text('{{ \App\CPU\translate('Submit') }}');
+                    $('#check_delivery_pincode_btn').removeAttr('disabled').text(
+                        '{{ \App\CPU\translate('Submit') }}');
                     $('#pincode_check_result').html(
                         '<div class="text-danger mt-2 font-weight-bold"><i class="fa fa-exclamation-circle me-1"></i> {{ \App\CPU\translate('Error checking pin code.') }}</div>'
                     );

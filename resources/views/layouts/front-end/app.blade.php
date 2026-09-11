@@ -1073,12 +1073,7 @@
             }
         });
 
-        // Close mobile search on click outside
-        jQuery(document).on('click', function(e) {
-            if (!jQuery(e.target).closest('#mobileSearchOverlay, #mobileSearchToggle').length) {
-                jQuery('#mobileSearchOverlay').slideUp(200);
-            }
-        });
+    
 
         document.querySelectorAll('img').forEach(function(img) {
             img.addEventListener('error', function(event) {

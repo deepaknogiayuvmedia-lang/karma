@@ -238,7 +238,7 @@ class ProductController extends Controller
             }
         }
 
-        if (is_null($request->name[array_search('en', $request->lang)])) {
+        if (is_null($request->name[array_search('en', (array) $request->lang)])) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
                     'name',
@@ -250,10 +250,10 @@ class ProductController extends Controller
         $product = new Product();
         $product->user_id = auth('seller')->id();
         $product->added_by = "seller";
-        $product->name = $request->name[array_search('en', $request->lang)];
-        $product->technical_name = $request->technical_name;
+        $product->name = $request->name[array_search('en', (array) $request->lang)];
+        $product->technical_name = $request->technical_name[array_search('en', (array) $request->lang)];
         $product->tally_name = $request->prn[0];
-        $product->slug = Str::slug($request->name[array_search('en', $request->lang)], '-') . '-' . Str::random(6);
+        $product->slug = Str::slug($request->name[array_search('en', (array) $request->lang)], '-') . '-' . Str::random(6);
 
         $product_images = [];
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
@@ -318,7 +318,7 @@ class ProductController extends Controller
         $product->product_type          = $request->product_type;
         $product->code                  = $request->code;
         $product->minimum_order_qty     = $request->minimum_order_qty;
-        $product->details               = $request->description[array_search('en', $request->lang)];
+        $product->details               = $request->description[array_search('en', (array) $request->lang)];
 
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $product->colors = $request->product_type == 'physical' ? json_encode($request->colors) : json_encode([]);
@@ -498,6 +498,24 @@ class ProductController extends Controller
                         'value' => $request->description[$index],
                     ));
                 }
+                if (isset($request->technical_name[$index]) && $request->technical_name[$index] && $key != 'en') {
+                    array_push($data, array(
+                        'translationable_type' => 'App\Model\Product',
+                        'translationable_id' => $product->id,
+                        'locale' => $key,
+                        'key' => 'technical_name',
+                        'value' => $request->technical_name[$index],
+                    ));
+                }
+                if (isset($request->prn[$index]) && $request->prn[$index] && $key != 'en') {
+                    array_push($data, array(
+                        'translationable_type' => 'App\Model\Product',
+                        'translationable_id' => $product->id,
+                        'locale' => $key,
+                        'key' => 'tally_name',
+                        'value' => $request->prn[$index],
+                    ));
+                }
             }
             Translation::insert($data);
             Toastr::success('Product added successfully!');
@@ -529,39 +547,51 @@ class ProductController extends Controller
     {
         $query_param = [];
         $search = $request['search'];
-        $sellerproduct = Product::where(['added_by' => 'seller', 'user_id' => \auth('seller')->id()])->where('pid', '!=', null)->pluck('pid')->toArray();
+        $sellerId = \auth('seller')->id();
+        $sellerproduct = Product::where(['added_by' => 'seller', 'user_id' => $sellerId])->where('pid', '!=', null)->pluck('pid')->toArray();
+        $myProductIds = Product::where(['added_by' => 'seller', 'user_id' => $sellerId])->pluck('id')->toArray();
+
         if ($request->has('search')) {
             $key = explode(' ', $request['search']);
-            $products = Product::where(['added_by' => 'admin'])
+            $query_param = ['search' => $request['search']];
+
+            $adminProducts = Product::where(['added_by' => 'admin'])
                 ->whereNotIn('id', $sellerproduct)
                 ->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->Where('name', 'like', "%{$value}%");
                     }
-                });
-            $query_param = ['search' => $request['search']];
+                })->get();
 
-            $productssell = Product::where('added_by', 'seller')->where('user_id',  '!=',   \auth('seller')->id())
+            $sellerProducts = Product::where('added_by', 'seller')
+                ->where('user_id', '!=', $sellerId)
+                ->whereNotIn('id', $myProductIds)
                 ->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->Where('name', 'like', "%{$value}%");
                     }
-                });;
+                })
+                ->whereNotIn('pid', $sellerproduct)
+                ->groupBy('pid')
+                ->selectRaw('*, MIN(id) as id')
+                ->get();
         } else {
-            $products = Product::where(['added_by' => 'admin'])->whereNotIn('id', $sellerproduct);
-            $pidarray = $products->pluck('id')->toArray();
-            $productssell = Product::where('added_by', 'seller')->where('user_id',  '!=',   \auth('seller')->id())->whereNotIn('pid', $pidarray);
-        }
-        $products = $products->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($query_param);
-        $productssell = $productssell->orderBy('id', 'DESC')->paginate(Helpers::pagination_limit())->appends($query_param);
-        // $result = collect($products)->reject(function ($item1) use ($productssell) {
-        //     return collect($productssell)->contains(function ($item2) use ($item1) {
-        //         return $item1['id'] == $item2['pid'] ;
-        //     });
-        // })->values()->all();
+            $adminProducts = Product::where(['added_by' => 'admin'])
+                ->whereNotIn('id', $sellerproduct)->get();
 
-        // print_r($result);
-        return view('seller-views.product.adminproduct', compact('products', 'search', 'productssell'));
+            $sellerProducts = Product::where('added_by', 'seller')
+                ->where('user_id', '!=', $sellerId)
+                ->whereNotIn('id', $myProductIds)
+                ->whereNotIn('pid', $adminProducts->pluck('id')->toArray())
+                ->groupBy('pid')
+                ->selectRaw('*, MIN(id) as id')
+                ->get();
+        }
+
+        $allProducts = $adminProducts->concat($sellerProducts)->sortByDesc('id')->values();
+        $products = $allProducts->paginate(Helpers::pagination_limit())->appends($query_param);
+
+        return view('seller-views.product.adminproduct', compact('products', 'search'));
     }
 
     public function stock_limit_list(Request $request, $type)
@@ -826,6 +856,17 @@ class ProductController extends Controller
         ]);
     }
 
+    public function search_categories(Request $request)
+    {
+        $query = $request->input('q', '');
+        $categories = Category::where('name', 'LIKE', "%{$query}%")
+            ->where('parent_id', '!=', 0)
+            ->limit(10)
+            ->pluck('name')
+            ->toArray();
+        return response()->json($categories);
+    }
+
 
     public function sku_combination(Request $request)
     {
@@ -838,7 +879,7 @@ class ProductController extends Controller
         }
 
         $unit_price = $request->unit_price;
-        $product_name = $request->name[array_search('en', $request->lang)];
+        $product_name = $request->name[array_search('en', (array) $request->lang)];
 
         if ($request->has('choice_no')) {
             foreach ($request->choice_no as $key => $no) {
@@ -923,7 +964,7 @@ class ProductController extends Controller
             }
         }
 
-        if (is_null($request->name[array_search('en', $request->lang)])) {
+        if (is_null($request->name[array_search('en', (array) $request->lang)])) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
                     'name',
@@ -999,8 +1040,8 @@ class ProductController extends Controller
             }
         }
 
-        $product->name = $request->name[array_search('en', $request->lang)];
-        $product->technical_name = $request->technical_name;
+        $product->name = $request->name[array_search('en', (array) $request->lang)];
+        $product->technical_name = $request->technical_name[array_search('en', (array) $request->lang)];
         $product->tally_name = $request->prn[0];
 
         $category = [];
@@ -1039,7 +1080,7 @@ class ProductController extends Controller
         $product->brand_id              = isset($request->brand_id) ? $request->brand_id : null;
         $product->unit                  = $request->product_type == 'physical' ? $request->unit : null;
         $product->digital_product_type  = $request->product_type == 'digital' ? $request->digital_product_type : null;
-        $product->details               = $request->description[array_search('en', $request->lang)];
+        $product->details               = $request->description[array_search('en', (array) $request->lang)];
 
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $product->colors = $request->product_type == 'physical' ? json_encode($request->colors) : json_encode([]);
@@ -1299,6 +1340,12 @@ class ProductController extends Controller
                     }
                     if (!empty($request->description[$index])) {
                         $translations[$locale]['description'] = $request->description[$index];
+                    }
+                    if (!empty($request->technical_name[$index])) {
+                        $translations[$locale]['technical_name'] = $request->technical_name[$index];
+                    }
+                    if (!empty($request->prn[$index])) {
+                        $translations[$locale]['tally_name'] = $request->prn[$index];
                     }
                 }
             }

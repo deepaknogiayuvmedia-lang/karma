@@ -8,6 +8,7 @@ use App\Model\Category;
 use App\Model\Product;
 use App\Model\Seller;
 use Illuminate\Http\Request;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class ProductStockReportController extends Controller
 {

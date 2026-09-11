@@ -33,7 +33,7 @@
                             @php($default_lang = 'en')
 
                             @php($default_lang = json_decode($language)[0])
-                            @if(isset($language_status) && $language_status == 1)
+                            @if (isset($language_status) && $language_status == 1)
                                 <ul class="nav nav-tabs w-fit-content mb-4">
                                     @foreach (json_decode($language) as $lang)
                                         <li class="nav-item">
@@ -47,7 +47,7 @@
                         </div>
 
                         <div class="card-body">
-                            @if(isset($language_status) && $language_status == 1)
+                            @if (isset($language_status) && $language_status == 1)
                                 @foreach (json_decode($language) as $lang)
                                     <div class="{{ $lang != $default_lang ? 'd-none' : '' }} lang_form"
                                         id="{{ $lang }}-form">
@@ -68,9 +68,12 @@
                                             <div class="col-md-4 form-group">
                                                 <label class="title-color"
                                                     for="{{ $lang }}_technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
-                                                <input type="text" name="technical_name[]" id="{{ $lang }}_technical_name"
-                                                    class="form-control" value="{{ old('technical_name')[$loop->index] ?? '' }}"
-                                                    placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                                <div style="position:relative;" class="tech-wrapper">
+                                                    <input type="text" name="technical_name[]"
+                                                        id="{{ $lang }}_technical_name" class="form-control"
+                                                        value="{{ old('technical_name')[$loop->index] ?? '' }}"
+                                                        placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                                </div>
                                             </div>
                                             <div class="col-md-4 form-group">
                                                 <label class="title-color"
@@ -80,7 +83,8 @@
                                                 <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="prn[]"
                                                     id="prn_name" value="{{ $product->tally_name ?? '' }}"
                                                     class="form-control"
-                                                    placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
+                                                    placeholder="{{ \App\CPU\translate('Product Register Name') }}"
+                                                    required>
                                             </div>
                                         </div>
 
@@ -106,31 +110,30 @@
                                     <div class="row">
                                         <div class="col-md-4 form-group">
                                             <div class="form-group">
-                                                <label class="title-color"
-                                                    for="en_name">{{ \App\CPU\translate('name') }}
-                                                    
+                                                <label class="title-color" for="en_name">{{ \App\CPU\translate('name') }}
+
                                                 </label>
-                                                <input type="text" required
-                                                    name="name" id="en_name" class="form-control"
-                                                    placeholder="New Product">
+                                                <input type="text" required name="name[]" id="en_name"
+                                                    class="form-control" placeholder="New Product">
                                             </div>
-                                            <input type="hidden" name="lang" value="en">
+                                            <input type="hidden" name="lang[]" value="en">
                                         </div>
                                         <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="en_technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
-                                            <input type="text" name="technical_name"
-                                                class="form-control" value="{{ old('technical_name') ?? '' }}"
-                                                placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                            <div style="position:relative;" class="tech-wrapper">
+                                                <input type="text" name="technical_name[]" class="form-control"
+                                                    value="{{ old('technical_name') ?? '' }}"
+                                                    placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                            </div>
                                         </div>
                                         <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="en_name">{{ \App\CPU\translate('Product Register Name') }}<span
                                                     class="text-danger">*</span>
-                                                </label>
-                                            <input type="text" name="prn"
-                                                id="prn_name" value="{{ $product->tally_name ?? '' }}"
-                                                class="form-control"
+                                            </label>
+                                            <input type="text" name="prn" id="prn_name"
+                                                value="{{ $product->tally_name ?? '' }}" class="form-control"
                                                 placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
                                         </div>
                                     </div>
@@ -138,9 +141,9 @@
                                     <div class="form-group pt-4">
                                         <label class="title-color"
                                             for="en_description">{{ \App\CPU\translate('description') }}
-                                            </label>
+                                        </label>
                                         <div style="position:relative;">
-                                            <textarea name="description" class="w-100 tiny-editor" rows="10">{{ old('details') }}</textarea>
+                                            <textarea name="description[]" class="w-100 tiny-editor" rows="10">{{ old('details') }}</textarea>
                                             <div id="editor-loading" class="text-center border rounded"
                                                 style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
                                                 <div class="spinner-border text-primary" role="status">
@@ -164,10 +167,12 @@
                                 <div class="row">
                                     <div class="col-md-4">
 
-                                        <label for="name" class="title-color">{{ \App\CPU\translate('product_type') }}
+                                        <label for="name"
+                                            class="title-color">{{ \App\CPU\translate('product_type') }}
                                         </label>
                                         <select name="product_type" id="product_type" class="form-control" required>
-                                            <option value="physical" selected>{{ \App\CPU\translate('physical') }}</option>
+                                            <option value="physical" selected>{{ \App\CPU\translate('physical') }}
+                                            </option>
                                             @if ($digital_product_setting)
                                                 <option value="digital">{{ \App\CPU\translate('digital') }}</option>
                                             @endif
@@ -176,8 +181,8 @@
                                     <div class="col-md-4" id="digital_product_type_show">
                                         <label for="digital_product_type"
                                             class="title-color">{{ \App\CPU\translate('digital_product_type') }}</label>
-                                        <select name="digital_product_type" id="digital_product_type" class="form-control"
-                                            required>
+                                        <select name="digital_product_type" id="digital_product_type"
+                                            class="form-control" required>
                                             <option value="{{ old('category_id') }}" selected disabled>
                                                 ---{{ \App\CPU\translate('Select') }}---</option>
                                             <option value="ready_after_sell">{{ \App\CPU\translate('Ready After Sell') }}
@@ -218,16 +223,7 @@
                                         <label for="name"
                                             class="title-color">{{ \App\CPU\translate('Sub Category') }}</label>
                                         <select class="js-example-basic-multiple form-control" name="sub_category_id"
-                                            id="sub-category-select"
-                                            onchange="getRequest('{{ url('/') }}/admin/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4" id="sub-sub-category-select-div" style="display: none;">
-                                        <label for="name"
-                                            class="title-color">{{ \App\CPU\translate('Sub Sub Category') }}</label>
-                                        <select class="js-example-basic-multiple form-control" name="sub_sub_category_id"
-                                            id="sub-sub-category-select">
-
+                                            id="sub-category-select">
                                         </select>
                                     </div>
                                 </div>
@@ -276,269 +272,264 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="card mt-2 rest-part physical_product_show">
-                                <div class="card-header">
-                                    <h4 class="mb-0">{{ \App\CPU\translate('Variations') }}</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row align-items-end">
-                                        <div class="col-md-6">
-                                            <div class="mb-3 d-flex align-items-center gap-2">
-                                                <label for="colors" class="title-color mb-0">
-                                                    {{ \App\CPU\translate('Colors') }} :
-                                                </label>
-                                                <label class="switcher">
-                                                    <input type="checkbox" class="switcher_input" id="color_switcher"
-                                                        value="{{ old('colors_active') }}" name="colors_active">
-                                                    <span class="switcher_control"></span>
-                                                </label>
-                                            </div>
-                                            <select
-                                                class="js-example-basic-multiple js-states js-example-responsive form-control color-var-select"
-                                                name="colors[]" multiple="multiple" id="colors-selector" disabled>
-                                                @foreach (\App\Model\Color::orderBy('name', 'asc')->get() as $key => $color)
-                                                    <option value="{{ $color->code }}">
-                                                        {{ $color['name'] }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label for="attributes" class="title-color">
-                                                {{ \App\CPU\translate('Attributes') }} :
-                                            </label>
-                                            <select
-                                                class="js-example-basic-multiple js-states js-example-responsive form-control"
-                                                name="choice_attributes[]" id="choice_attributes" multiple="multiple">
-                                                @foreach (\App\Model\Attribute::orderBy('name', 'asc')->get() as $key => $a)
-                                                    <option value="{{ $a['id'] }}">
-                                                        {{ $a['name'] }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-12 mt-2 mb-2">
-                                            <div class="customer_choice_options" id="customer_choice_options"></div>
-                                        </div>
+                        </div>
+                    </div>
+                    <div class="card mt-2 rest-part physical_product_show">
+                        <div class="card-header">
+                            <h4 class="mb-0">{{ \App\CPU\translate('Variations') }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-end">
+                                <div class="col-md-6">
+                                    <div class="mb-3 d-flex align-items-center gap-2">
+                                        <label for="colors" class="title-color mb-0">
+                                            {{ \App\CPU\translate('Colors') }} :
+                                        </label>
+                                        <label class="switcher">
+                                            <input type="checkbox" class="switcher_input" id="color_switcher"
+                                                value="{{ old('colors_active') }}" name="colors_active">
+                                            <span class="switcher_control"></span>
+                                        </label>
                                     </div>
+                                    <select
+                                        class="js-example-basic-multiple js-states js-example-responsive form-control color-var-select"
+                                        name="colors[]" multiple="multiple" id="colors-selector" disabled>
+                                        @foreach (\App\Model\Color::orderBy('name', 'asc')->get() as $key => $color)
+                                            <option value="{{ $color->code }}">
+                                                {{ $color['name'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            </div>
 
-                            <div class="card mt-2 rest-part">
-                                <div class="card-header">
-                                    <h4 class="mb-0">{{ \App\CPU\translate('Product price & stock') }}</h4>
+                                <div class="col-md-6">
+                                    <label for="attributes" class="title-color">
+                                        {{ \App\CPU\translate('Attributes') }} :
+                                    </label>
+                                    <select class="js-example-basic-multiple js-states js-example-responsive form-control"
+                                        name="choice_attributes[]" id="choice_attributes" multiple="multiple">
+                                        @foreach (\App\Model\Attribute::orderBy('name', 'asc')->get() as $key => $a)
+                                            <option value="{{ $a['id'] }}">
+                                                {{ $a['name'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row align-items-end">
-                                        <div class="col-md-6 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Unit price') }}</label>
-                                            <input type="number" min="0" step="0.01"
-                                                placeholder="{{ \App\CPU\translate('Unit price') }}" name="unit_price"
-                                                value="{{ old('unit_price') }}" class="form-control" required>
-                                        </div>
-                                        <div class="col-md-6 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Market price') }}</label>
-                                            <input type="number" min="0" step="0.01"
-                                                placeholder="{{ \App\CPU\translate('Market price') }}"
-                                                value="{{ old('purchase_price') }}" name="purchase_price"
-                                                class="form-control" required>
-                                        </div>
-                                        <div class="col-md-3 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Admin Commission') }}
-                                                ({{ \App\CPU\translate('optional') }})</label>
-                                            <input type="number" min="0" step="0.01"
-                                                placeholder="{{ \App\CPU\translate('Commission') }}"
-                                                value="{{ old('admin_commission') }}" name="admin_commission"
-                                                class="form-control">
-                                        </div>
-                                        <div class="col-md-3 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Commission Type') }}</label>
-                                            <select name="admin_commission_type" class="form-control">
-                                                <option value="percentage">{{ \App\CPU\translate('Percentage') }} (%)
-                                                </option>
-                                                <option value="fixed">{{ \App\CPU\translate('Fixed') }}
-                                                    ({{ \App\CPU\translate('INR') }})</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Tax') }}</label>
-                                            <label class="text-info">{{ \App\CPU\translate('Percent') }} ( % )</label>
-                                            <input type="number" min="0" value="0" step="0.01"
-                                                placeholder="{{ \App\CPU\translate('Tax') }}" name="tax"
-                                                value="{{ old('tax') }}" class="form-control">
-                                            <input name="tax_type" value="percent" class="d-none">
-                                        </div>
 
-                                        <div class="col-md-2 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Tax_Model') }}</label>
-                                            <select name="tax_model" class="form-control" required>
-                                                <option value="include">{{ \App\CPU\translate('include') }}</option>
-                                                <option value="exclude">{{ \App\CPU\translate('exclude') }}</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-4 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Discount') }}</label>
-                                            <input type="number" min="0" value="0" step="0.01"
-                                                placeholder="{{ \App\CPU\translate('Discount') }}" name="discount"
-                                                class="form-control" required>
-                                        </div>
-                                        <div class="col-md-2 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Discount_Type') }}</label>
-                                            <select class="form-control" name="discount_type">
-                                                <option value="flat">{{ \App\CPU\translate('Flat') }}</option>
-                                                <option value="percent">{{ \App\CPU\translate('Percent') }}</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-12 form-group sku_combination" id="sku_combination"></div>
-
-                                        <div class="col-md-3 form-group physical_product_show" id="quantity">
-                                            <label class="title-color">{{ \App\CPU\translate('total') }}
-                                                {{ \App\CPU\translate('Quantity') }}</label>
-                                            <input type="number" min="0" value="0" step="1"
-                                                placeholder="{{ \App\CPU\translate('Quantity') }}" name="current_stock"
-                                                class="form-control" required>
-                                        </div>
-                                        <div class="col-md-3 form-group" id="minimum_order_qty">
-                                            <label class="title-color">
-                                                {{ \App\CPU\translate('minimum_order_quantity') }}</label>
-                                            <input type="number" min="1" value="1" step="1"
-                                                placeholder="{{ \App\CPU\translate('minimum_order_quantity') }}"
-                                                name="minimum_order_qty" class="form-control" required>
-                                        </div>
-                                        <div class="col-md-3 form-group physical_product_show" id="shipping_cost">
-                                            <label class="title-color">{{ \App\CPU\translate('shipping_cost') }} </label>
-                                            <input type="number" min="0" value="0" step="1"
-                                                placeholder="{{ \App\CPU\translate('shipping_cost') }}"
-                                                name="shipping_cost" class="form-control" required>
-                                        </div>
-                                        <div class="col-md-3 form-group physical_product_show" id="shipping_cost_multy">
-                                            <div>
-                                                <label
-                                                    class="title-color">{{ \App\CPU\translate('shipping_cost_multiply_with_quantity') }}
-                                                </label>
-                                            </div>
-                                            <div>
-                                                <label class="switcher">
-                                                    <input type="checkbox" class="switcher_input" name="multiplyQTY">
-                                                    <span class="switcher_control"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="col-md-12 mt-2 mb-2">
+                                    <div class="customer_choice_options" id="customer_choice_options"></div>
                                 </div>
-                            </div>
-
-                            <div class="card mt-2 mb-2 rest-part">
-                                <div class="card-header">
-                                    <h5 class="card-title">
-                                        <span>{{ \App\CPU\translate('tags') }}</span>
-                                    </h5>
-                                </div>
-                                <div class="card-body pb-0">
-                                    <div class="row g-2">
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label
-                                                    class="title-color">{{ \App\CPU\translate('search_tags') }}</label>
-                                                <input type="text" class="form-control" name="tags"
-                                                    data-role="tagsinput">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card mt-2 mb-2 rest-part">
-                                <div class="card-header">
-                                    <h4 class="mb-0">{{ \App\CPU\translate('seo_section') }}</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-12 form-group">
-                                            <label class="title-color">{{ \App\CPU\translate('Meta Title') }}</label>
-                                            <input type="text" name="meta_title" placeholder="" class="form-control">
-                                        </div>
-
-                                        <div class="col-md-8 form-group">
-                                            <label
-                                                class="title-color">{{ \App\CPU\translate('Meta Description') }}</label>
-                                            <textarea rows="10" type="text" name="meta_description" class="form-control "></textarea>
-                                        </div>
-
-                                        <div class="col-md-4 form-group">
-                                            <div class="">
-                                                <label class="title-color">{{ \App\CPU\translate('Meta Image') }}</label>
-                                            </div>
-                                            <div class="border border-dashed">
-                                                <div class="row" id="meta_img"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card mt-2 rest-part">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-12 mb-4">
-                                            <div class="mb-2">
-                                                <label
-                                                    class="title-color">{{ \App\CPU\translate('Youtube video link hello') }}
-                                                </label>
-                                                <span class="text-info"> (
-                                                    {{ \App\CPU\translate('optional, please provide embed link not direct link') }}.
-                                                    )</span>
-                                            </div>
-                                            <input type="text" name="video_link"
-                                                placeholder="{{ \App\CPU\translate('EX') }} : https://www.youtube.com/embed/5R06LRdUCSE"
-                                                class="form-control" required>
-                                        </div>
-
-                                        <div class="col-md-8 form-group">
-                                            <div class="mb-2">
-                                                <label
-                                                    class="title-color">{{ \App\CPU\translate('Upload product images') }}</label>
-                                                <span class="text-info">* ( {{ \App\CPU\translate('ratio') }} 1:1)</span>
-                                            </div>
-                                            <div id="color_wise_image" class="row g-2 mb-4">
-                                            </div>
-
-                                            <div class="p-2 border border-dashed coba-area">
-                                                <div class="row" id="coba"></div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4 form-group">
-                                            <div class="mb-2">
-                                                <label for="name"
-                                                    class="title-color text-capitalize">{{ \App\CPU\translate('Upload thumbnail') }}</label>
-                                                <span class="text-info">* ( {{ \App\CPU\translate('ratio') }} 1:1
-                                                    )</span>
-                                            </div>
-                                            <div>
-                                                <div class="row" id="thumbnail"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row justify-content-end gap-3 mt-3">
-                                <button type="reset"
-                                    class="btn btn-secondary">{{ \App\CPU\translate('reset') }}</button>
-                                <button type="button" onclick="check()"
-                                    class="btn btn--primary">{{ \App\CPU\translate('Submit') }}</button>
                             </div>
                         </div>
                     </div>
-                </form>
+
+                    <div class="card mt-2 rest-part">
+                        <div class="card-header">
+                            <h4 class="mb-0">{{ \App\CPU\translate('Product price & stock') }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-end">
+                                <div class="col-md-6 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Unit price') }}</label>
+                                    <input type="number" min="0" step="0.01"
+                                        placeholder="{{ \App\CPU\translate('Unit price') }}" name="unit_price"
+                                        value="{{ old('unit_price') }}" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Market price') }}</label>
+                                    <input type="number" min="0" step="0.01"
+                                        placeholder="{{ \App\CPU\translate('Market price') }}"
+                                        value="{{ old('purchase_price') }}" name="purchase_price" class="form-control"
+                                        required>
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Admin Commission') }}
+                                        ({{ \App\CPU\translate('optional') }})</label>
+                                    <input type="number" min="0" step="0.01"
+                                        placeholder="{{ \App\CPU\translate('Commission') }}"
+                                        value="{{ old('admin_commission') }}" name="admin_commission"
+                                        class="form-control">
+                                </div>
+                                <div class="col-md-3 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Commission Type') }}</label>
+                                    <select name="admin_commission_type" class="form-control">
+                                        <option value="percentage">{{ \App\CPU\translate('Percentage') }} (%)
+                                        </option>
+                                        <option value="fixed">{{ \App\CPU\translate('Fixed') }}
+                                            ({{ \App\CPU\translate('INR') }})</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Tax') }}</label>
+                                    <label class="text-info">{{ \App\CPU\translate('Percent') }} ( % )</label>
+                                    <input type="number" min="0" value="0" step="0.01"
+                                        placeholder="{{ \App\CPU\translate('Tax') }}" name="tax"
+                                        value="{{ old('tax') }}" class="form-control">
+                                    <input name="tax_type" value="percent" class="d-none">
+                                </div>
+
+                                <div class="col-md-2 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Tax_Model') }}</label>
+                                    <select name="tax_model" class="form-control" required>
+                                        <option value="include">{{ \App\CPU\translate('include') }}</option>
+                                        <option value="exclude">{{ \App\CPU\translate('exclude') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Discount') }}</label>
+                                    <input type="number" min="0" value="0" step="0.01"
+                                        placeholder="{{ \App\CPU\translate('Discount') }}" name="discount"
+                                        class="form-control" required>
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Discount_Type') }}</label>
+                                    <select class="form-control" name="discount_type">
+                                        <option value="flat">{{ \App\CPU\translate('Flat') }}</option>
+                                        <option value="percent">{{ \App\CPU\translate('Percent') }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12 form-group sku_combination" id="sku_combination"></div>
+
+                                <div class="col-md-3 form-group physical_product_show" id="quantity">
+                                    <label class="title-color">{{ \App\CPU\translate('total') }}
+                                        {{ \App\CPU\translate('Quantity') }}</label>
+                                    <input type="number" min="0" value="0" step="1"
+                                        placeholder="{{ \App\CPU\translate('Quantity') }}" name="current_stock"
+                                        class="form-control" required>
+                                </div>
+                                <div class="col-md-3 form-group" id="minimum_order_qty">
+                                    <label class="title-color">
+                                        {{ \App\CPU\translate('minimum_order_quantity') }}</label>
+                                    <input type="number" min="1" value="1" step="1"
+                                        placeholder="{{ \App\CPU\translate('minimum_order_quantity') }}"
+                                        name="minimum_order_qty" class="form-control" required>
+                                </div>
+                                <div class="col-md-3 form-group physical_product_show" id="shipping_cost">
+                                    <label class="title-color">{{ \App\CPU\translate('shipping_cost') }} </label>
+                                    <input type="number" min="0" value="0" step="1"
+                                        placeholder="{{ \App\CPU\translate('shipping_cost') }}" name="shipping_cost"
+                                        class="form-control" required>
+                                </div>
+                                <div class="col-md-3 form-group physical_product_show" id="shipping_cost_multy">
+                                    <div>
+                                        <label
+                                            class="title-color">{{ \App\CPU\translate('shipping_cost_multiply_with_quantity') }}
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label class="switcher">
+                                            <input type="checkbox" class="switcher_input" name="multiplyQTY">
+                                            <span class="switcher_control"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-2 mb-2 rest-part">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <span>{{ \App\CPU\translate('tags') }}</span>
+                            </h5>
+                        </div>
+                        <div class="card-body pb-0">
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label class="title-color">{{ \App\CPU\translate('search_tags') }}</label>
+                                        <input type="text" class="form-control" name="tags" data-role="tagsinput">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-2 mb-2 rest-part">
+                        <div class="card-header">
+                            <h4 class="mb-0">{{ \App\CPU\translate('seo_section') }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Meta Title') }}</label>
+                                    <input type="text" name="meta_title" placeholder="" class="form-control">
+                                </div>
+
+                                <div class="col-md-8 form-group">
+                                    <label class="title-color">{{ \App\CPU\translate('Meta Description') }}</label>
+                                    <textarea rows="10" type="text" name="meta_description" class="form-control "></textarea>
+                                </div>
+
+                                <div class="col-md-4 form-group">
+                                    <div class="">
+                                        <label class="title-color">{{ \App\CPU\translate('Meta Image') }}</label>
+                                    </div>
+                                    <div class="border border-dashed">
+                                        <div class="row" id="meta_img"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-2 rest-part">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12 mb-4">
+                                    <div class="mb-2">
+                                        <label class="title-color">{{ \App\CPU\translate('Youtube video link hello') }}
+                                        </label>
+                                        <span class="text-info"> (
+                                            {{ \App\CPU\translate('optional, please provide embed link not direct link') }}.
+                                            )</span>
+                                    </div>
+                                    <input type="text" name="video_link"
+                                        placeholder="{{ \App\CPU\translate('EX') }} : https://www.youtube.com/embed/5R06LRdUCSE"
+                                        class="form-control" required>
+                                </div>
+
+                                <div class="col-md-8 form-group">
+                                    <div class="mb-2">
+                                        <label
+                                            class="title-color">{{ \App\CPU\translate('Upload product images') }}</label>
+                                        <span class="text-info">* ( {{ \App\CPU\translate('ratio') }} 1:1)</span>
+                                    </div>
+                                    <div id="color_wise_image" class="row g-2 mb-4">
+                                    </div>
+
+                                    <div class="p-2 border border-dashed coba-area">
+                                        <div class="row" id="coba"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 form-group">
+                                    <div class="mb-2">
+                                        <label for="name"
+                                            class="title-color text-capitalize">{{ \App\CPU\translate('Upload thumbnail') }}</label>
+                                        <span class="text-info">* ( {{ \App\CPU\translate('ratio') }} 1:1
+                                            )</span>
+                                    </div>
+                                    <div>
+                                        <div class="row" id="thumbnail"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-end gap-3 mt-3">
+                        <button type="reset" class="btn btn-secondary">{{ \App\CPU\translate('reset') }}</button>
+                        <button type="button" onclick="check()"
+                            class="btn btn--primary">{{ \App\CPU\translate('Submit') }}</button>
+                    </div>
             </div>
         </div>
+        </form>
+    </div>
+    </div>
     </div>
 @endsection
 
@@ -729,10 +720,6 @@
                         } else {
                             $('#' + id).empty();
                             $('#' + divId).hide();
-                            if (id === 'sub-category-select') {
-                                $('#sub-sub-category-select').empty();
-                                $('#sub-sub-category-select-div').hide();
-                            }
                         }
                     }
                 },
@@ -1008,5 +995,51 @@
                 $("#digital_file_ready").val('');
             }
         }
+
+        // Technical name oninput → category suggestions
+        $(document).on('input', 'input[name="technical_name[]"]', function() {
+            let input = $(this);
+            let val = input.val();
+            let $wrapper = input.closest('.tech-wrapper');
+            let $list = $wrapper.find('.tech-suggestions');
+            if (!$list.length) {
+                $list = $(
+                    '<div class="tech-suggestions list-group" style="position:absolute;z-index:9999;width:100%;background:#fff;border:1px solid #ddd;display:none;max-height:200px;overflow-y:auto;"></div>'
+                    );
+                $wrapper.append($list);
+            }
+            if (val.length < 2) {
+                $list.hide();
+                return;
+            }
+            $.get('{{ url('/') }}/admin/product/search-categories', {
+                q: val
+            }, function(data) {
+                $list.empty();
+                if (data.length > 0) {
+                    data.forEach(function(item) {
+                        $list.append(
+                            '<button type="button" class="list-group-item list-group-item-action tech-suggestion-item" style="cursor:pointer;font-size:13px;">' +
+                            item + '</button>');
+                    });
+                    $list.show();
+                } else {
+                    $list.hide();
+                }
+            });
+        });
+
+        $(document).on('click', '.tech-suggestion-item', function(e) {
+            e.preventDefault();
+            let val = $(this).text();
+            $(this).closest('.tech-wrapper').find('input[name="technical_name[]"]').val(val);
+            $(this).closest('.tech-suggestions').hide();
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.tech-wrapper').length) {
+                $('.tech-suggestions').hide();
+            }
+        });
     </script>
 @endpush

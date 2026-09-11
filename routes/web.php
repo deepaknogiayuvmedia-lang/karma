@@ -86,6 +86,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
     Route::get('products', 'WebController@products')->name('products');
     Route::get('orderDetails', 'WebController@orderdetails')->name('orderdetails');
     Route::get('discounted-products', 'WebController@discounted_products')->name('discounted-products');
+    Route::get('technical-names', 'WebController@technical_names')->name('technical-names');
 
     Route::post('review-list-product', 'WebController@review_list_product')->name('review-list-product');
     Route::post('check-pincode', 'WebController@check_pincode')->name('check-pincode');

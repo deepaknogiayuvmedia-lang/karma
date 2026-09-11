@@ -206,9 +206,6 @@
                                 </form>
                             </div>
                             <div class="col-sm-4 col-md-6 col-lg-8 d-flex justify-content-sm-end">
-                                <button type="button" class="btn btn-outline--primary mr-2" onclick="submitform()">
-                                    {{\App\CPU\translate('Express-Bee')}}
-                                </button>
                                 <button type="button" class="btn btn-outline--primary" data-toggle="dropdown">
                                     <i class="tio-download-to"></i>
                                     {{\App\CPU\translate('export')}}
@@ -409,40 +406,6 @@
             });
         };
     </script>
-    <script>
-        function submitform(){
-           var fields = $("input[name='asign[]']").serializeArray();
-                    if (fields.length === 0)
-                    {
-                        toastr.warning('{{ \App\CPU\translate('select_minimum_one_selection_box') }}', {
-                                    CloseButton: true,
-                                    ProgressBar: true
-                                });
-                        return false;
-                    }
-                    console.log(fields);
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                        }
-                    });
-                    $.ajax({
-                        url: "{{route('admin.asign-expressbee')}}",
-                        method: 'POST',
-                        data: {
-                            orderId: JSON.stringify(fields)
-                        },
-                        success: function (data) {
-                            if(data.success == true) {
-                                toastr.success('{{\App\CPU\translate('Status updated successfully')}}');
-                                setTimeout(function(){
-           window.location.reload(1);
-        }, 2000);
-                           }
-}
-                    });
-        }
-            </script>
     <script>
         $('#from_date,#to_date').change(function () {
             let fr = $('#from_date').val();

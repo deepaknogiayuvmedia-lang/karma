@@ -70,6 +70,7 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
             Route::get('view-change-request/{id}', 'ProductController@view_change_request')->name('view-change-request');
             Route::post('sku-combination', 'ProductController@sku_combination')->name('sku-combination');
             Route::get('get-categories', 'ProductController@get_categories')->name('get-categories');
+            Route::get('search-categories', 'ProductController@search_categories')->name('search-categories');
             Route::get('barcode', 'ProductController@get_categories')->name('get-categories');
             Route::get('barcode/{id}', 'ProductController@barcode')->name('barcode');
             Route::delete('delete/{id}', 'ProductController@delete')->name('delete');

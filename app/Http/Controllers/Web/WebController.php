@@ -944,6 +944,49 @@ class WebController extends Controller
                     ->values();
             }
 
+            // Best Selling Products
+            $bestSellIds = OrderDetail::select('product_id', DB::raw('COUNT(product_id) as quantity'))
+                ->groupBy('product_id')
+                ->orderByDesc('quantity')
+                ->limit(12)
+                ->pluck('product_id');
+            $bestSellProducts = Product::with(['reviews'])
+                ->active()
+                ->lowestPricePerPid()
+                ->whereIn('id', $bestSellIds)
+                ->orderByRaw('FIELD(id, ' . implode(',', $bestSellIds->toArray()) . ')')
+                ->get();
+
+            // New Arrivals
+            $newArrivals = Product::with(['reviews'])
+                ->active()
+                ->lowestPricePerPid()
+                ->orderBy('id', 'desc')
+                ->limit(12)
+                ->get();
+
+            // Featured Products
+            $featuredProducts = Product::with(['reviews'])
+                ->active()
+                ->lowestPricePerPid()
+                ->where('featured', 1)
+                ->orderBy('indexing', 'asc')
+                ->orderBy('priority', 'desc')
+                ->limit(12)
+                ->get();
+
+            // Banners
+            $banners = \App\Model\Banner::where('banner_type', 'Main Section Banner')
+                ->where('published', 1)
+                ->limit(5)
+                ->get();
+
+            // Brands
+            $brands = \App\Model\Brand::where('status', 1)
+                ->orderBy('name')
+                ->limit(15)
+                ->get();
+
             return view(
                 'web-views.products.details',
                 compact(
@@ -961,7 +1004,12 @@ class WebController extends Controller
                     'inhouse_vacation_start_date',
                     'inhouse_vacation_end_date',
                     'inhouse_vacation_status',
-                    'inhouse_temporary_close'
+                    'inhouse_temporary_close',
+                    'bestSellProducts',
+                    'newArrivals',
+                    'featuredProducts',
+                    'banners',
+                    'brands'
                 )
             );
         }
@@ -1065,6 +1113,8 @@ class WebController extends Controller
             }
         } elseif ($request['data_from'] == 'discounted') {
             $query = Product::active()->with(['reviews'])->where('discount', '!=', 0);
+        } elseif ($request['data_from'] == 'technical_name') {
+            $query = $porduct_data->where('technical_name', $request['technical_name']);
         }
 
         // -----------------------------
@@ -1108,6 +1158,7 @@ class WebController extends Controller
             'page_no' => $request['page'],
             'min_price' => $request['min_price'],
             'max_price' => $request['max_price'],
+            'technical_name' => $request['technical_name'],
         ];
 
         $products = $fetched->paginate(20)->appends($data);
@@ -1634,5 +1685,20 @@ class WebController extends Controller
         }
 
         return response()->json(['success' => false], 401);
+    }
+
+    public function technical_names()
+    {
+        $technicalNames = Product::active()
+            ->whereNotNull('technical_name')
+            ->where('technical_name', '!=', '')
+            ->pluck('technical_name')
+            ->map(fn($name) => trim($name))
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
+        return view('web-views.products.technical-names', compact('technicalNames'));
     }
 }

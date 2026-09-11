@@ -370,6 +370,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('remove-image', 'ProductController@remove_image')->name('remove-image');
             Route::post('status-update', 'ProductController@status_update')->name('status-update');
             Route::get('list/{type}', 'ProductController@list')->name('list');
+            Route::get('all-products', 'ProductController@all_products')->name('all-products');
             Route::get('export-excel/{type}', 'ProductController@export_excel')->name('export-excel');
             Route::get('stock-limit-list/{type}', 'ProductController@stock_limit_list')->name('stock-limit-list');
             Route::get('get-variations', 'ProductController@get_variations')->name('get-variations');
@@ -382,6 +383,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('deny', 'ProductController@deny')->name('deny');
             Route::post('sku-combination', 'ProductController@sku_combination')->name('sku-combination');
             Route::get('get-categories', 'ProductController@get_categories')->name('get-categories');
+            Route::get('search-categories', 'ProductController@search_categories')->name('search-categories');
             Route::delete('delete/{id}', 'ProductController@delete')->name('delete');
             Route::get('updated-product-list','ProductController@updated_product_list')->name('updated-product-list');
             Route::post('updated-shipping','ProductController@updated_shipping')->name('updated-shipping');

@@ -81,6 +81,12 @@
                                             if ($t->locale == $lang && $t->key == 'description') {
                                                 $translate[$lang]['description'] = $t->value;
                                             }
+                                            if ($t->locale == $lang && $t->key == 'technical_name') {
+                                                $translate[$lang]['technical_name'] = $t->value;
+                                            }
+                                            if ($t->locale == $lang && $t->key == 'tally_name') {
+                                                $translate[$lang]['tally_name'] = $t->value;
+                                            }
                                         }
                                     }
                                     ?>
@@ -99,9 +105,11 @@
                                              <div class="col-md-4 form-group">
                                                  <label class="title-color"
                                                      for="technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
-                                                 <input type="text" name="technical_name" id="technical_name"
-                                                     class="form-control" value="{{ old('technical_name', $product->technical_name ?? '') }}"
-                                                     placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                                 <div style="position:relative;" class="tech-wrapper">
+                                                     <input type="text" name="technical_name[]" id="technical_name"
+                                                         class="form-control" value="{{ $translate[$lang]['technical_name'] ?? $product->technical_name ?? '' }}"
+                                                         placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                                 </div>
                                              </div>
                                              <div class="col-md-4 form-group">
                                                  <label class="title-color"
@@ -109,7 +117,7 @@
                                                          class="text-danger">*</span>
                                                      ({{ strtoupper($lang) }})</label>
                                                  <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="prn[]"
-                                                     id="prn_name" value="{{ $product->tally_name ?? '' }}"
+                                                     id="prn_name" value="{{ $translate[$lang]['tally_name'] ?? $product->tally_name ?? '' }}"
                                                      class="form-control"
                                                      placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
                                              </div>
@@ -142,6 +150,12 @@
                                         if ($t->locale == 'en' && $t->key == 'description') {
                                             $translate['en']['description'] = $t->value;
                                         }
+                                        if ($t->locale == 'en' && $t->key == 'technical_name') {
+                                            $translate['en']['technical_name'] = $t->value;
+                                        }
+                                        if ($t->locale == 'en' && $t->key == 'tally_name') {
+                                            $translate['en']['tally_name'] = $t->value;
+                                        }
                                     }
                                 }
                                 ?>
@@ -160,9 +174,11 @@
                                          <div class="col-md-4 form-group">
                                              <label class="title-color"
                                                  for="technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
-                                             <input type="text" name="technical_name" id="technical_name"
-                                                 class="form-control" value="{{ old('technical_name', $product->technical_name ?? '') }}"
-                                                 placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                             <div style="position:relative;" class="tech-wrapper">
+                                                 <input type="text" name="technical_name[]" id="technical_name"
+                                                     class="form-control" value="{{ $translate['en']['technical_name'] ?? $product->technical_name ?? '' }}"
+                                                     placeholder="{{ \App\CPU\translate('Technical Name') }}">
+                                             </div>
                                          </div>
                                          <div class="col-md-4 form-group">
                                              <label class="title-color"
@@ -170,7 +186,7 @@
                                                      class="text-danger">*</span>
                                                  </label>
                                              <input type="text" name="prn[]"
-                                                 id="prn_name" value="{{ $product->tally_name ?? '' }}"
+                                                 id="prn_name" value="{{ $translate['en']['tally_name'] ?? $product->tally_name ?? '' }}"
                                                  class="form-control"
                                                  placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
                                          </div>
@@ -271,19 +287,7 @@
                                         <select
                                             class="js-example-basic-multiple js-states js-example-responsive form-control"
                                             name="sub_category_id" id="sub-category-select"
-                                            data-id="{{ (count($product_category) >= 2 && isset($product_category[1]['id'])) ? $product_category[1]['id'] : '' }}"
-                                            onchange="getRequest('{{ url('/') }}/seller/product/get-categories?parent_id='+this.value,'sub-sub-category-select','select')">
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4 mb-3" id="sub-sub-category-select-div" style="{{ count($product_category) >= 3 ? '' : 'display: none;' }}">
-                                        <label for="name"
-                                            class="title-color">{{ \App\CPU\translate('Sub Sub Category') }}</label>
-
-                                        <select
-                                            class="js-example-basic-multiple js-states js-example-responsive form-control"
-                                            data-id="{{ (count($product_category) >= 3 && isset($product_category[2]['id'])) ? $product_category[2]['id'] : '' }}"
-                                            name="sub_sub_category_id" id="sub-sub-category-select">
-
+                                            data-id="{{ (count($product_category) >= 2 && isset($product_category[1]['id'])) ? $product_category[1]['id'] : '' }}">
                                         </select>
                                     </div>
                                     <div class="col-md-4 mb-3">
@@ -831,10 +835,6 @@
                         } else {
                             $('#' + id).empty();
                             $('#' + divId).hide();
-                            if (id === 'sub-category-select') {
-                                $('#sub-sub-category-select').empty();
-                                $('#sub-sub-category-select-div').hide();
-                            }
                         }
                     }
                 },
@@ -998,11 +998,8 @@
         $(document).ready(function() {
             let category = $("#category_id").val();
             let sub_category = $("#sub-category-select").attr("data-id");
-            let sub_sub_category = $("#sub-sub-category-select").attr("data-id");
             getRequest('{{ url('/') }}/seller/product/get-categories?parent_id=' + category +
                 '&sub_category=' + sub_category, 'sub-category-select', 'select');
-            getRequest('{{ url('/') }}/seller/product/get-categories?parent_id=' + sub_category +
-                '&sub_category=' + sub_sub_category, 'sub-sub-category-select', 'select');
             // color select select2
             $('.color-var-select').select2({
                 templateResult: colorCodeSelect,
@@ -1176,6 +1173,46 @@
                 $("#digital_file_ready").val('');
             }
         }
+
+        // Technical name oninput → category suggestions
+        $(document).on('input', 'input[name="technical_name[]"]', function() {
+            let input = $(this);
+            let val = input.val();
+            let $wrapper = input.closest('.tech-wrapper');
+            let $list = $wrapper.find('.tech-suggestions');
+            if (!$list.length) {
+                $list = $('<div class="tech-suggestions list-group" style="position:absolute;z-index:9999;width:100%;background:#fff;border:1px solid #ddd;display:none;max-height:200px;overflow-y:auto;"></div>');
+                $wrapper.append($list);
+            }
+            if (val.length < 2) {
+                $list.hide();
+                return;
+            }
+            $.get('{{ url("/") }}/seller/product/search-categories', {q: val}, function(data) {
+                $list.empty();
+                if (data.length > 0) {
+                    data.forEach(function(item) {
+                        $list.append('<button type="button" class="list-group-item list-group-item-action tech-suggestion-item" style="cursor:pointer;font-size:13px;">' + item + '</button>');
+                    });
+                    $list.show();
+                } else {
+                    $list.hide();
+                }
+            });
+        });
+
+        $(document).on('click', '.tech-suggestion-item', function(e) {
+            e.preventDefault();
+            let val = $(this).text();
+            $(this).closest('.tech-wrapper').find('input[name="technical_name[]"]').val(val);
+            $(this).closest('.tech-suggestions').hide();
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.tech-wrapper').length) {
+                $('.tech-suggestions').hide();
+            }
+        });
     </script>
 @endpush
 
