@@ -1629,12 +1629,30 @@ class ProductController extends BaseController
         $translation = Translation::where('translationable_type', 'App\Model\Product')
             ->where('translationable_id', $id);
         $translation->delete();
-        if (Product::where(['pid' => $id])->get()) {
-            Cart::where('product_id', $product->id)->delete();
-            Wishlist::where('product_id', $product->id)->delete();
-            foreach (json_decode($product['images'], true) as $image) {
+
+        $sellerCopies = Product::where('pid', $id)->get();
+        foreach ($sellerCopies as $copy) {
+            foreach (json_decode($copy['images'], true) as $image) {
+                if (!ImageManager::isImageUsedElsewhere($image, $copy->id)) {
+                    ImageManager::delete('/product/' . $image);
+                }
+            }
+            if (!ImageManager::isImageUsedElsewhere($copy->thumbnail, $copy->id)) {
+                ImageManager::delete('/product/thumbnail/' . $copy['thumbnail']);
+            }
+            Cart::where('product_id', $copy->id)->delete();
+            Wishlist::where('product_id', $copy->id)->delete();
+            FlashDealProduct::where(['product_id' => $copy->id])->delete();
+            DealOfTheDay::where(['product_id' => $copy->id])->delete();
+            $copy->delete();
+        }
+
+        foreach (json_decode($product['images'], true) as $image) {
+            if (!ImageManager::isImageUsedElsewhere($image, $product->id)) {
                 ImageManager::delete('/product/' . $image);
             }
+        }
+        if (!ImageManager::isImageUsedElsewhere($product->thumbnail, $product->id)) {
             ImageManager::delete('/product/thumbnail/' . $product['thumbnail']);
         }
         $product->delete();

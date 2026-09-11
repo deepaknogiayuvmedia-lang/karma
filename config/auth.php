@@ -64,6 +64,11 @@ return [
             'driver' => 'session',
             'provider' => 'sale_managers',
         ],
+
+        'delivery_man' => [
+            'driver' => 'session',
+            'provider' => 'delivery_men',
+        ],
     ],
 
     /*
@@ -101,6 +106,11 @@ return [
         'sale_managers' => [
             'driver' => 'eloquent',
             'model' => App\Model\SaleManager::class,
+        ],
+
+        'delivery_men' => [
+            'driver' => 'eloquent',
+            'model' => App\Model\DeliveryMan::class,
         ],
 
         // 'users' => [

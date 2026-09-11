@@ -291,20 +291,19 @@ class OrderController extends Controller
             }
         }
        
-        if (isset($order->customer) && $order->customer->phone) {
-            try {
-                $result = \App\CPU\Helpers::send_whatsapp_notification($order->customer->phone, $request->order_status, $order->id);
-                \Illuminate\Support\Facades\Log::info('WhatsApp Order Status', [
-                    'order_id' => $order->id,
-                    'status'   => $request->order_status,
-                    'result'   => $result,
-                ]);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('WhatsApp Order Error', [
-                    'order_id' => $order->id,
-                    'message'  => $e->getMessage(),
-                ]);
-            }
+        try {
+            $customerPhone = $order->customer->phone ?? null;
+            $result = \App\CPU\Helpers::send_whatsapp_notification($customerPhone, $request->order_status, $order->id);
+            \Illuminate\Support\Facades\Log::info('WhatsApp Order Status', [
+                'order_id' => $order->id,
+                'status'   => $request->order_status,
+                'result'   => $result,
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('WhatsApp Order Error', [
+                'order_id' => $order->id,
+                'message'  => $e->getMessage(),
+            ]);
         }
 
         // try {

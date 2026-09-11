@@ -41,6 +41,12 @@ trait CommonTrait
             $delivery_history->cause = $cause;
 
             $delivery_history->save();
+
+            try {
+                Helpers::send_whatsapp_notification(null, $status, $order_id);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('WhatsApp error in add_order_status_history: ' . $e->getMessage());
+            }
         }
     }
 

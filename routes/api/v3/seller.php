@@ -153,6 +153,6 @@ Route::group(['namespace' => 'api\v3\seller', 'prefix' => 'v3/seller', 'middlewa
                 });
             });
         });
-    Route::post('ls-lib-update', 'LsLibController@lib_update');
+    Route::post('ls-lib-update', '\App\Http\Controllers\api\v3\LsLibController@lib_update');
 });
 

@@ -16,7 +16,8 @@ class Order extends Model
         'order_amount',
         'shipping_address',
         'discount_amount',
-        'deliveryman_charge'
+        'deliveryman_charge',
+        'delivery_otp'
     ];
     protected $casts = [
         'order_amount' => 'float',
@@ -70,6 +71,11 @@ class Order extends Model
     public function delivery_man()
     {
         return $this->belongsTo(DeliveryMan::class,'delivery_man_id');
+    }
+
+    public function deliveryMan()
+    {
+        return $this->belongsTo(DeliveryMan::class, 'delivery_man_id');
     }
 
     public function delivery_man_review()

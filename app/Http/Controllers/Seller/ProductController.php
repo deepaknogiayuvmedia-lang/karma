@@ -1227,25 +1227,29 @@ class ProductController extends Controller
             $product->color_image = json_encode($color_image_array);
 
             if ($request->file('image')) {
-                $product->thumbnail = ImageManager::update('product/thumbnail/', $product->thumbnail, 'png', $request->file('image'));
+                $product->thumbnail = ImageManager::update('product/thumbnail/', $product->thumbnail, 'png', $request->file('image'), $product->id);
             }
 
             if ($request->product_type == 'digital') {
                 if ($request->digital_product_type == 'ready_product' && $request->hasFile('digital_file_ready')) {
-                    $product->digital_file_ready = ImageManager::update('product/digital-product/', $product->digital_file_ready, $request->digital_file_ready->getClientOriginalExtension(), $request->file('digital_file_ready'));
+                    $product->digital_file_ready = ImageManager::update('product/digital-product/', $product->digital_file_ready, $request->digital_file_ready->getClientOriginalExtension(), $request->file('digital_file_ready'), $product->id);
                 } elseif (($request->digital_product_type == 'ready_after_sell') && $product->digital_file_ready) {
-                    ImageManager::delete('product/digital-product/' . $product->digital_file_ready);
+                    if (!ImageManager::isImageUsedElsewhere($product->digital_file_ready, $product->id)) {
+                        ImageManager::delete('product/digital-product/' . $product->digital_file_ready);
+                    }
                     $product->digital_file_ready = null;
                 }
             } elseif ($request->product_type == 'physical' && $product->digital_file_ready) {
-                ImageManager::delete('product/digital-product/' . $product->digital_file_ready);
+                if (!ImageManager::isImageUsedElsewhere($product->digital_file_ready, $product->id)) {
+                    ImageManager::delete('product/digital-product/' . $product->digital_file_ready);
+                }
                 $product->digital_file_ready = null;
             }
 
             $product->meta_title = $request->meta_title;
             $product->meta_description = $request->meta_description;
             if ($request->file('meta_image')) {
-                $product->meta_image = ImageManager::update('product/meta/', $product->meta_image, 'png', $request->file('meta_image'));
+                $product->meta_image = ImageManager::update('product/meta/', $product->meta_image, 'png', $request->file('meta_image'), $product->id);
             }
 
             // Capture old product data for change request
@@ -1565,7 +1569,9 @@ class ProductController extends Controller
 
     public function remove_image(Request $request)
     {
-        ImageManager::delete('/product/' . $request['image']);
+        if (!ImageManager::isImageUsedElsewhere($request['image'], $request['id'])) {
+            ImageManager::delete('/product/' . $request['image']);
+        }
         $product = Product::find($request['id']);
         $array = [];
         if (count(json_decode($product['images'])) < 2) {
@@ -1656,9 +1662,13 @@ class ProductController extends Controller
         Cart::where('product_id', $product->id)->delete();
         Wishlist::where('product_id', $product->id)->delete();
         foreach (json_decode($product['images'], true) as $image) {
-            ImageManager::delete('/product/' . $image);
+            if (!ImageManager::isImageUsedElsewhere($image, $product->id)) {
+                ImageManager::delete('/product/' . $image);
+            }
         }
-        ImageManager::delete('/product/thumbnail/' . $product['thumbnail']);
+        if (!ImageManager::isImageUsedElsewhere($product->thumbnail, $product->id)) {
+            ImageManager::delete('/product/thumbnail/' . $product['thumbnail']);
+        }
         $product->delete();
         FlashDealProduct::where(['product_id' => $id])->delete();
         DealOfTheDay::where(['product_id' => $id])->delete();

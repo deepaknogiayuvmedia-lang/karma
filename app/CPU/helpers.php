@@ -529,8 +529,18 @@ class Helpers
         return $result;
     }
 
+    public static $sent_whatsapp_log = [];
+
     public static function send_whatsapp_notification($phone, $status, $order_id = null)
     {
+        $key = ($order_id ?? 0) . '_' . $status;
+        if ($order_id && isset(self::$sent_whatsapp_log[$key])) {
+            return [
+                'status'  => 1,
+                'message' => 'WhatsApp notification already sent in this request cycle'
+            ];
+        }
+
         $config = self::get_whatsapp_config();
         
         if (!$config || !$config->access_token || !$config->phone_number_id) {
@@ -569,8 +579,33 @@ class Helpers
             ];
         }
 
+        // Build named parameters & fallback phone lookup from order data
+        $order = null;
+        if ($order_id) {
+            $order = \App\Model\Order::with(['customer', 'details.product', 'shippingAddress', 'billingAddress'])->find($order_id);
+        }
+
+        // Fallback phone lookup if phone parameter is empty
+        if (empty($phone) && $order) {
+            $phone = $order->customer->phone ?? null;
+            if (empty($phone) && $order->shippingAddress) {
+                $phone = $order->shippingAddress->phone ?? null;
+            }
+            if (empty($phone) && $order->billingAddress) {
+                $phone = $order->billingAddress->phone ?? null;
+            }
+            if (empty($phone) && !empty($order->shipping_address_data)) {
+                $shipData = is_string($order->shipping_address_data) ? json_decode($order->shipping_address_data, true) : (array)$order->shipping_address_data;
+                $phone = $shipData['phone'] ?? null;
+            }
+            if (empty($phone) && !empty($order->billing_address_data)) {
+                $billData = is_string($order->billing_address_data) ? json_decode($order->billing_address_data, true) : (array)$order->billing_address_data;
+                $phone = $billData['phone'] ?? null;
+            }
+        }
+
         // Clean phone number - keep digits only
-        $phone = preg_replace('/[^0-9]/', '', $phone);
+        $phone = preg_replace('/[^0-9]/', '', (string)$phone);
         if (strlen($phone) === 10) {
             $phone = '91' . $phone;
         }
@@ -583,6 +618,11 @@ class Helpers
                 'status'  => 0,
                 'message' => 'Phone number is empty or invalid'
             ];
+        }
+
+        // Mark as sent in this request cycle to avoid duplicate WhatsApp API calls
+        if ($order_id) {
+            self::$sent_whatsapp_log[$key] = true;
         }
 
         $url = "https://graph.facebook.com/v26.0/{$config->phone_number_id}/messages";
@@ -599,14 +639,16 @@ class Helpers
             ]
         ];
 
-        // Build named parameters from order data based on each template's variables
-        $order = null;
-        if ($order_id) {
-            $order = \App\Model\Order::with(['customer', 'details.product', 'shippingAddress'])->find($order_id);
-        }
-
         if ($order) {
-            $customer_name = trim(($order->customer->f_name ?? '') . ' ' . ($order->customer->l_name ?? '')) ?: 'Customer';
+            $customer_name = trim(($order->customer->f_name ?? '') . ' ' . ($order->customer->l_name ?? ''));
+            if (empty($customer_name) && !empty($order->shipping_address_data)) {
+                $shipData = is_string($order->shipping_address_data) ? json_decode($order->shipping_address_data, true) : (array)$order->shipping_address_data;
+                $customer_name = trim(($shipData['contact_person_name'] ?? '') ?: ($shipData['name'] ?? ''));
+            }
+            if (empty($customer_name)) {
+                $customer_name = 'Customer';
+            }
+
             $first_detail  = $order->details->first();
             $product_name  = $first_detail?->product?->name ?? 'Product';
             $qty           = $order->details->sum('qty');
@@ -615,7 +657,13 @@ class Helpers
             $delivery_date = $order->expected_delivery_date
                 ? date('d M Y', strtotime($order->expected_delivery_date))
                 : 'Soon';
-            $address      = $order->shippingAddress?->address ?? 'N/A';
+
+            $address = $order->shippingAddress?->address ?? 'N/A';
+            if ($address === 'N/A' && !empty($order->shipping_address_data)) {
+                $shipData = is_string($order->shipping_address_data) ? json_decode($order->shipping_address_data, true) : (array)$order->shipping_address_data;
+                $address = $shipData['address'] ?? 'N/A';
+            }
+
             $order_id_str = (string)$order->id;
 
             // All possible variable values from order data

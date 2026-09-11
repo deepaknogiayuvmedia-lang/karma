@@ -52,6 +52,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapWebRoutes();
         $this->mapSharedRoutes();
         $this->mapSaleManagorAuthRoutes();
+        $this->mapDeliveryManRoutes();
 
         //$this->mapInstallRoutes();
         //$this->mapUpdateRoutes();
@@ -124,6 +125,13 @@ class RouteServiceProvider extends ServiceProvider
         Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/sale_manager.php'));
+    }
+
+    protected function mapDeliveryManRoutes()
+    {
+        Route::middleware('web')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/delivery-man.php'));
     }
 
     /**
