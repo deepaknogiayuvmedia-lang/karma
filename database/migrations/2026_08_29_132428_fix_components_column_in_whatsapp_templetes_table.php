@@ -14,7 +14,9 @@ class FixComponentsColumnInWhatsappTempletesTable extends Migration
     public function up()
     {
         Schema::table('whatsapp_templetes', function (Blueprint $table) {
-            $table->longText('components')->change();
+            if (Schema::hasColumn('whatsapp_templetes', 'components')) {
+                $table->longText('components')->change();
+            }
         });
     }
 

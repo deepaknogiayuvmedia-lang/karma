@@ -14,22 +14,21 @@ class AddProductImprovementsToProductsTable extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            // Product Priority (Phase 7)
-            $table->tinyInteger('priority')->default(0)->after('indexing');
-
-            // Per-Product Commission (Phase 6)
-            $table->decimal('admin_commission', 10, 2)->default(0)->after('priority');
-            $table->string('admin_commission_type', 20)->default('percentage')->after('admin_commission');
-
-            // Product Approval Workflow (Phase 8)
-            $table->string('approval_status', 20)->default('draft')->after('admin_commission_type');
-            $table->string('edit_status', 20)->default('none')->after('approval_status');
-
-            // Add indexes for performance
-            $table->index('priority');
-            $table->index('approval_status');
-            $table->index(['approval_status', 'status']);
-            $table->index(['seller_id', 'approval_status']);
+            if (!Schema::hasColumn('products', 'priority')) {
+                $table->tinyInteger('priority')->default(0)->after('indexing');
+            }
+            if (!Schema::hasColumn('products', 'admin_commission')) {
+                $table->decimal('admin_commission', 10, 2)->default(0)->after('priority');
+            }
+            if (!Schema::hasColumn('products', 'admin_commission_type')) {
+                $table->string('admin_commission_type', 20)->default('percentage')->after('admin_commission');
+            }
+            if (!Schema::hasColumn('products', 'approval_status')) {
+                $table->string('approval_status', 20)->default('draft')->after('admin_commission_type');
+            }
+            if (!Schema::hasColumn('products', 'edit_status')) {
+                $table->string('edit_status', 20)->default('none')->after('approval_status');
+            }
         });
     }
 

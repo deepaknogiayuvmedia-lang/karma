@@ -58,6 +58,7 @@
                                     <th class="text-right">{{ \App\CPU\translate('purchase_price') }}</th>
                                     <th class="text-right">{{ \App\CPU\translate('selling_price') }}</th>
                                     <th class="text-center">{{ \App\CPU\translate('Active') }} {{ \App\CPU\translate('status') }}</th>
+                                    <th class="text-center">{{ \App\CPU\translate('Verify Status') }}</th>
                                     <th class="text-center">{{ \App\CPU\translate('Added By') }}</th>
                                     <th class="text-center">{{ \App\CPU\translate('Action') }}</th>
                                 </tr>
@@ -89,6 +90,15 @@
                                                     id="{{ $p['id'] }}" {{ $p->status == 1 ? 'checked' : '' }}>
                                                 <span class="switcher_control"></span>
                                             </label>
+                                        </td>
+                                        <td class="text-center">
+                                            <select class="form-control form-control-sm approval-status" data-id="{{ $p['id'] }}" style="width: auto; display: inline-block;">
+                                                <option value="draft" {{ ($p->approval_status ?? 'draft') == 'draft' ? 'selected' : '' }}>{{ \App\CPU\translate('Draft') }}</option>
+                                                <option value="pending" {{ ($p->approval_status ?? 'draft') == 'pending' ? 'selected' : '' }}>{{ \App\CPU\translate('Pending') }}</option>
+                                                <option value="approved" {{ ($p->approval_status ?? 'draft') == 'approved' ? 'selected' : '' }}>{{ \App\CPU\translate('Approved') }}</option>
+                                                <option value="rejected" {{ ($p->approval_status ?? 'draft') == 'rejected' ? 'selected' : '' }}>{{ \App\CPU\translate('Rejected') }}</option>
+                                                <option value="pending_edit" {{ ($p->approval_status ?? 'draft') == 'pending_edit' ? 'selected' : '' }}>{{ \App\CPU\translate('Pending Edit') }}</option>
+                                            </select>
                                         </td>
                                         <td class="text-center">
                                             @if ($p['added_by'] == 'seller' && $p->seller)
@@ -140,18 +150,37 @@
         </div>
     </div>
 
+@endsection
+
+@push('script_2')
     <script>
-        $(".status").on("change", function () {
-            var id = $(this).attr("id");
-            $.ajax({
-                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                type: 'POST',
-                url: '{{ route('admin.product.status-update') }}',
-                data: { id: id },
-                success: function (data) {
-                    toastr.success('{{ \App\CPU\translate('Status updated successfully') }}');
-                }
+        $(document).ready(function() {
+            $(".status").on("change", function () {
+                var id = $(this).attr("id");
+                $.ajax({
+                        headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') },
+                        type: 'POST',
+                        url: '{{ route('admin.product.status-update') }}',
+                        data: { id: id },
+                        success: function (data) {
+                            toastr.success('{{ \App\CPU\translate('Status updated successfully') }}');
+                        }
+                    });
+                });
+
+                $(".approval-status").on("change", function () {
+                    var id = $(this).data("id");
+                    var approval_status = $(this).val();
+                    $.ajax({
+                        headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') },
+                    type: 'POST',
+                    url: '{{ route('admin.product.approval-status-update') }}',
+                    data: { id: id, approval_status: approval_status },
+                    success: function (data) {
+                        toastr.success('{{ \App\CPU\translate('Verify status updated successfully') }}');
+                    }
+                });
             });
         });
     </script>
-@endsection
+@endpush

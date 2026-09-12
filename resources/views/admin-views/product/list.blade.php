@@ -204,7 +204,7 @@
                                         <td class="text-center">
                                             <label class="mx-auto switcher">
                                                 <input class="switcher_input" type="checkbox"
-                                                    onclick="featured_status('{{ $p['id'] }}')"
+                                                    onclick="featured_status('{{ $p['id'] }}', this)"
                                                     {{ $p->featured == 1 ? 'checked' : '' }}>
                                                 <span class="switcher_control"></span>
                                             </label>
@@ -527,7 +527,8 @@
             });
         });
 
-        function featured_status(id) {
+        function featured_status(id, element) {
+            var originalChecked = element.checked;
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
@@ -539,11 +540,30 @@
                 data: {
                     id: id
                 },
-                success: function() {
-                    toastr.success(
-                        '{{ \App\CPU\translate('
-                                                                                                                    Featured status updated successfully ') }}'
-                    );
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success('{{ \App\CPU\translate("Featured status updated successfully") }}');
+                    } else {
+                        element.checked = originalChecked;
+                        Swal.fire({
+                            icon: 'error',
+                            title: '{{ \App\CPU\translate("Cannot Feature Product") }}',
+                            text: response.message,
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                },
+                error: function(response) {
+                    element.checked = originalChecked;
+                    var data = response.responseJSON;
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ \App\CPU\translate("Cannot Feature Product") }}',
+                        text: data ? data.message : '{{ \App\CPU\translate("Something went wrong") }}',
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                    });
                 }
             });
         }

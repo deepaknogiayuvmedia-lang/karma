@@ -48,6 +48,32 @@ class ProductController extends BaseController
     public function featured_status(Request $request)
     {
         $product = Product::find($request->id);
+
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found.',
+            ]);
+        }
+
+        if ($product->status == 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product is inactive. Please activate the product first before featuring it.',
+            ]);
+        }
+
+        $hasApprovalColumn = \Illuminate\Support\Facades\Schema::hasColumn('products', 'approval_status');
+        if ($hasApprovalColumn) {
+            $approvalStatus = $product->approval_status ?? 'draft';
+            if ($approvalStatus !== 'approved') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product is not approved yet. Approval status: ' . ucfirst($approvalStatus) . '. Please approve the product first before featuring it.',
+                ]);
+            }
+        }
+
         $product->featured = ($product['featured'] == 0 || $product['featured'] == null) ? 1 : 0;
         $product->save();
 
@@ -134,6 +160,24 @@ class ProductController extends BaseController
             'seller_product_id' => 'required|exists:products,id',
         ]);
         $product = Product::find($request->seller_product_id);
+
+        if ($product->status == 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product is inactive. Please activate the product first before featuring it.',
+            ]);
+        }
+
+        $hasApprovalColumn = \Illuminate\Support\Facades\Schema::hasColumn('products', 'approval_status');
+        if ($hasApprovalColumn) {
+            $approvalStatus = $product->approval_status ?? 'draft';
+            if ($approvalStatus !== 'approved') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product is not approved yet. Approval status: ' . ucfirst($approvalStatus) . '. Please approve the product first before featuring it.',
+                ]);
+            }
+        }
 
         // Toggle: if currently featured → unfeature; if not featured → feature
         $newFeatured = ($product->featured == 1) ? 0 : 1;
@@ -961,6 +1005,18 @@ class ProductController extends BaseController
         return response()->json([
             'success' => $success,
         ], 200);
+    }
+
+    public function approval_status_update(Request $request)
+    {
+        $product = Product::findOrFail($request->id);
+        $product->approval_status = $request->approval_status;
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Approval status updated successfully',
+        ]);
     }
 
     public function updated_shipping(Request $request)

@@ -369,6 +369,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('store', 'ProductController@store')->name('store');
             Route::get('remove-image', 'ProductController@remove_image')->name('remove-image');
             Route::post('status-update', 'ProductController@status_update')->name('status-update');
+            Route::post('approval-status-update', 'ProductController@approval_status_update')->name('approval-status-update');
             Route::get('list/{type}', 'ProductController@list')->name('list');
             Route::get('all-products', 'ProductController@all_products')->name('all-products');
             Route::get('export-excel/{type}', 'ProductController@export_excel')->name('export-excel');
