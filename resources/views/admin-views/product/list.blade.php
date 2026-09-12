@@ -589,7 +589,7 @@
         function viewSellers(productId, productName) {
             $('#viewSellerModalLabel').text('Sellers who copied: ' + productName);
             $('#sellerTableBody').html(
-                '<tr><td colspan="7" class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>');
+                '<tr><td colspan="8" class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>');
             $('#viewSellerModal').modal('show');
 
             $.ajax({
@@ -600,12 +600,19 @@
                     tbody.empty();
                     if (data.sellers.length === 0) {
                         tbody.html(
-                            '<tr><td colspan="7" class="text-center text-muted">No sellers have copied this product yet</td></tr>'
+                            '<tr><td colspan="8" class="text-center text-muted">No sellers have copied this product yet</td></tr>'
                             );
                         return;
                     }
                     $.each(data.sellers, function(index, seller) {
                         var featuredBtn = buildFeaturedBtn(seller.id, seller.featured);
+                        var verifyStatus = seller.approval_status || 'draft';
+                        var verifyOptions = ['draft', 'pending', 'approved', 'rejected', 'pending_edit'];
+                        var verifySelect = '<select class="form-control form-control-sm seller-approval-status" data-id="' + seller.id + '" style="width:auto;display:inline-block;">';
+                        $.each(verifyOptions, function(i, opt) {
+                            verifySelect += '<option value="' + opt + '"' + (verifyStatus === opt ? ' selected' : '') + '>' + opt.charAt(0).toUpperCase() + opt.slice(1).replace('_', ' ') + '</option>';
+                        });
+                        verifySelect += '</select>';
                         tbody.append('<tr>' +
                             '<td>' + (index + 1) + '</td>' +
                             '<td>' + seller.name + '</td>' +
@@ -613,6 +620,7 @@
                             '<td>' + formatPrice(seller.price) + '</td>' +
                             '<td>' + seller.stock + '</td>' +
                             '<td><span class="badge badge-' + (seller.status == 1 ? 'success' : 'danger') + '">' + (seller.status == 1 ? 'Active' : 'Inactive') + '</span></td>' +
+                            '<td>' + verifySelect + '</td>' +
                             '<td>' + featuredBtn + '</td>' +
                             '</tr>');
                     });
@@ -651,7 +659,6 @@
                     if (data.success) {
                         toastr.success(data.message);
                         if (data.featured == 1) {
-                            // Reset all other switches in modal to unchecked
                             $('#sellerTableBody .toggle-seller-featured-chk').each(function() {
                                 if ($(this).data('id') != sellerId) {
                                     $(this).prop('checked', false);
@@ -660,13 +667,50 @@
                         }
                         chk.prop('checked', data.featured == 1);
                     } else {
-                        toastr.error(data.message || 'Failed to update featured status');
                         chk.prop('checked', !isChecked);
+                        Swal.fire({
+                            icon: 'error',
+                            title: '{{ \App\CPU\translate("Cannot Feature Product") }}',
+                            text: data.message,
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                },
+                error: function(response) {
+                    chk.prop('checked', !isChecked);
+                    var data = response.responseJSON;
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ \App\CPU\translate("Cannot Feature Product") }}',
+                        text: data ? data.message : '{{ \App\CPU\translate("Something went wrong") }}',
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+
+        // Handle verify status change inside sellers modal
+        $(document).on('change', '.seller-approval-status', function() {
+            var select = $(this);
+            var sellerId = select.data('id');
+            var approval_status = select.val();
+
+            $.ajaxSetup({
+                headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
+            });
+            $.ajax({
+                url: '{{ route('admin.product.approval-status-update') }}',
+                method: 'POST',
+                data: { id: sellerId, approval_status: approval_status },
+                success: function(data) {
+                    if (data.success) {
+                        toastr.success('{{ \App\CPU\translate("Verify status updated successfully") }}');
                     }
                 },
                 error: function() {
-                    toastr.error('Something went wrong');
-                    chk.prop('checked', !isChecked);
+                    toastr.error('{{ \App\CPU\translate("Something went wrong") }}');
                 }
             });
         });
@@ -1064,6 +1108,7 @@
                                 <th>Copy Rate</th>
                                 <th>Stock</th>
                                 <th>Status</th>
+                                <th>Verify Status</th>
                                 <th>Featured</th>
                             </tr>
                         </thead>

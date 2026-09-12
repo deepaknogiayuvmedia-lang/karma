@@ -130,7 +130,7 @@ class ProductController extends BaseController
     {
         $sellers = Product::where('pid', $id)
             ->where('added_by', 'seller')
-            ->select('id', 'user_id', 'unit_price', 'current_stock', 'status', 'featured')
+            ->select('id', 'user_id', 'unit_price', 'current_stock', 'status', 'featured', 'approval_status')
             ->get();
 
         $sellerData = [];
@@ -146,6 +146,7 @@ class ProductController extends BaseController
                     'stock' => $s->current_stock,
                     'status' => $s->status,
                     'featured' => $s->featured,
+                    'approval_status' => $s->approval_status ?? 'draft',
                 ];
             }
         }
