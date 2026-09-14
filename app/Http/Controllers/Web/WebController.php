@@ -17,7 +17,6 @@ use App\Model\CartShipping;
 use App\Model\Category;
 use App\Model\Contact;
 use App\Model\DealOfTheDay;
-use Illuminate\Support\Facades\Cache;
 use App\Model\DeliveryCountryCode;
 use App\Model\DeliveryZipCode;
 use App\Model\FlashDeal;
@@ -45,6 +44,7 @@ use Google\Client;
 use Gregwar\Captcha\CaptchaBuilder;
 use Gregwar\Captcha\PhraseBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -140,33 +140,35 @@ class WebController extends Controller
             ->take(15)
             ->get();
 
-        $bestSellProduct = $bestSellOrderDetails->map(function ($bs) {
-            if (!$bs->product) return null;
-            $grpId = !empty($bs->product->pid) ? $bs->product->pid : $bs->product->id;
-            $featuredProd = Product::active()
-                ->where(function ($q) use ($grpId) {
-                    $q->where('id', $grpId)->orWhere('pid', $grpId);
-                })
-                ->where('indexing', 1)
-                ->first();
-            if (!$featuredProd) {
+        $bestSellProduct = $bestSellOrderDetails
+            ->map(function ($bs) {
+                if (!$bs->product)
+                    return null;
+                $grpId = !empty($bs->product->pid) ? $bs->product->pid : $bs->product->id;
                 $featuredProd = Product::active()
                     ->where(function ($q) use ($grpId) {
                         $q->where('id', $grpId)->orWhere('pid', $grpId);
                     })
-                    ->orderBy('indexing', 'asc')
+                    ->where('indexing', 1)
                     ->first();
-            }
-            if ($featuredProd) {
-                $bs->product = $featuredProd;
-                $bs->product_id = $featuredProd->id;
-            }
-            return $bs;
-        })
-        ->filter()
-        ->unique('product_id')
-        ->take(4)
-        ->values();
+                if (!$featuredProd) {
+                    $featuredProd = Product::active()
+                        ->where(function ($q) use ($grpId) {
+                            $q->where('id', $grpId)->orWhere('pid', $grpId);
+                        })
+                        ->orderBy('indexing', 'asc')
+                        ->first();
+                }
+                if ($featuredProd) {
+                    $bs->product = $featuredProd;
+                    $bs->product_id = $featuredProd->id;
+                }
+                return $bs;
+            })
+            ->filter()
+            ->unique('product_id')
+            ->take(4)
+            ->values();
 
         if ($bestSellProduct->count() == 0) {
             $fallbackProducts = Product::active()
@@ -203,7 +205,8 @@ class WebController extends Controller
                 ->take(15)
                 ->get()
                 ->map(function ($rv) {
-                    if (!$rv->product) return null;
+                    if (!$rv->product)
+                        return null;
                     $grpId = !empty($rv->product->pid) ? $rv->product->pid : $rv->product->id;
                     $featuredProd = Product::active()
                         ->where(function ($q) use ($grpId) {
@@ -924,7 +927,8 @@ class WebController extends Controller
                     ->take(15)
                     ->get()
                     ->map(function ($rv) {
-                        if (!$rv->product) return null;
+                        if (!$rv->product)
+                            return null;
                         $grpId = !empty($rv->product->pid) ? $rv->product->pid : $rv->product->id;
                         $featuredProd = Product::active()
                             ->where(function ($q) use ($grpId) {
@@ -1044,7 +1048,7 @@ class WebController extends Controller
         // -----------------------------
 
         if ($request['data_from'] == 'category') {
-            $query = $porduct_data->whereJsonContains('category_ids', [['id' => (string)$request['id']]]);
+            $query = $porduct_data->whereJsonContains('category_ids', [['id' => (string) $request['id']]]);
         } elseif ($request['data_from'] == 'brand') {
             $query = $porduct_data->where('brand_id', $request['id']);
         } elseif ($request['data_from'] == 'latest') {
@@ -1201,7 +1205,7 @@ class WebController extends Controller
         $porduct_data = Product::active()->with(['reviews'])->lowestPricePerPid();
 
         if ($request['data_from'] == 'category') {
-            $query = $porduct_data->whereJsonContains('category_ids', [['id' => (string)$request['id']]]);
+            $query = $porduct_data->whereJsonContains('category_ids', [['id' => (string) $request['id']]]);
         }
 
         if ($request['data_from'] == 'brand') {

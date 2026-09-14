@@ -372,32 +372,14 @@
                                                 {{ \App\CPU\translate('choose_delivery_type') }}
                                             </option>
 
-                                            <option value="self_delivery"
-                                                {{ $order->delivery_type == 'self_delivery' ? 'selected' : '' }}>
-                                                {{ \App\CPU\translate('by_self_delivery_man') }}
-                                            </option>
+                                           
                                             <option value="third_party_delivery"
                                                 {{ $order->delivery_type == 'third_party_delivery' ? 'selected' : '' }}>
                                                 {{ \App\CPU\translate('by_third_party_delivery_service') }}
                                             </option>
                                         </select>
                                     </li>
-                                    <li id="choose_delivery_man" class="mt-3 choose_delivery_man">
-                                        <label for="" class="font-weight-bold title-color fz-14">
-                                            {{ \App\CPU\translate('choose_delivery_man') }}
-                                            ({{ session('currency_symbol') }})
-                                        </label>
-                                        <select class="form-control text-capitalize js-select2-custom"
-                                            name="delivery_man_id" onchange="addDeliveryMan(this.value)">
-                                            <option value="0">{{ \App\CPU\translate('select') }}</option>
-                                            @foreach ($delivery_men as $deliveryMan)
-                                                <option value="{{ $deliveryMan['id'] }}"
-                                                    {{ $order['delivery_man_id'] == $deliveryMan['id'] ? 'selected' : '' }}>
-                                                    {{ $deliveryMan['f_name'] . ' ' . $deliveryMan['l_name'] . ' (' . $deliveryMan['phone'] . ' )' }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </li>
+                                    
                                     <li class="choose_delivery_man mt-3">
                                         <label class="font-weight-bold title-color fz-14">
                                             {{ \App\CPU\translate('deliveryman_will_get') }}

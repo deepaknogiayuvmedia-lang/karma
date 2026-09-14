@@ -47,19 +47,19 @@
 
     <style>
         :root {
-            --pd-primary: {{ $web_config['primary_color'] ?? '#4eaa6f' }};
-            --pd-secondary: {{ $web_config['secondary_color'] ?? '#3b82f6' }};
-            --pd-dark: #0f172a;
+            --pd-primary: var(--bh-primary, #168A3A);
+            --pd-secondary: var(--bh-dark-green, #0B5D2A);
+            --pd-dark: #1B1F1D;
             --pd-gray-50: #f8fafc;
             --pd-gray-100: #f1f5f9;
             --pd-gray-200: #e2e8f0;
             --pd-gray-400: #94a3b8;
-            --pd-gray-600: #475569;
-            --pd-green-light: #e8f5e9;
-            --pd-green-border: #2e7d32;
+            --pd-gray-600: #66706A;
+            --pd-green-light: #EAF7EE;
+            --pd-green-border: #168A3A;
             --pd-orange: #ff9100;
             --pd-purple: #8b5cf6;
-            --pd-red: #ef4444;
+            --pd-red: #D93025;
         }
 
         /* BigHaat-style PDP Layout */

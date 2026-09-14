@@ -106,6 +106,7 @@
 
 
     <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/style.css">
+    <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/bighaat-theme.css">
     {{-- dont touch this --}}
     <meta name="_token" content="{{ csrf_token() }}">
     <!-- Phase 21: UI Improvements -->
@@ -477,7 +478,30 @@
     <!-- Footer-->
     <!-- Footer-->
     @include('layouts.front-end.partials._footer')
-    <!-- Toolbar for handheld devices-->
+
+    <!-- Mobile Bottom Navigation Toolbar (BigHaat Specification) -->
+    <div class="bh-mobile-nav">
+        <a href="{{ route('home') }}" class="bh-mobile-nav-item {{ request()->is('/') ? 'active' : '' }}">
+            <i class="fa fa-home"></i>
+            <span>{{ \App\CPU\translate('Home') }}</span>
+        </a>
+        <a href="{{ route('categories') }}" class="bh-mobile-nav-item {{ request()->is('categories*') ? 'active' : '' }}">
+            <i class="fa fa-th-large"></i>
+            <span>{{ \App\CPU\translate('Categories') }}</span>
+        </a>
+        <a href="{{ route('products', ['data_from' => 'search', 'page' => 1]) }}" class="bh-mobile-nav-item">
+            <i class="fa fa-search"></i>
+            <span>{{ \App\CPU\translate('Search') }}</span>
+        </a>
+        <a href="{{ route('account-oder') }}" class="bh-mobile-nav-item {{ request()->is('account-oder*') ? 'active' : '' }}">
+            <i class="fa fa-shopping-bag"></i>
+            <span>{{ \App\CPU\translate('Orders') }}</span>
+        </a>
+        <a href="{{ route('user-account') }}" class="bh-mobile-nav-item {{ request()->is('user-account*') ? 'active' : '' }}">
+            <i class="fa fa-user"></i>
+            <span>{{ \App\CPU\translate('Account') }}</span>
+        </a>
+    </div>
 
     <div class="__floating-btn">
         @php($whatsapp = \App\CPU\Helpers::get_business_settings('whatsapp'))

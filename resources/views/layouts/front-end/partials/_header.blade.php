@@ -345,9 +345,9 @@
                 <div class="input-group-overlay d-none d-md-block mx-4"
                     style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}}">
                     <form action="{{route('products')}}" type="submit" class="search_form">
-                        <input class="form-control appended-form-control search-bar-input" type="text"
+                        <input class="form-control appended-form-control search-bar-input bh-search-input" type="text"
                             autocomplete="off"
-                            placeholder="{{\App\CPU\translate('Search here ...')}}"
+                            placeholder="{{\App\CPU\translate('Search for seeds, fertilizers, pesticides...')}}"
                             name="name">
                         <button class="input-group-append-overlay search_button" type="submit"
                             style="border-radius: {{Session::get('direction') === "rtl" ? '7px 0px 0px 7px; right: unset; left: 0' : '0px 7px 7px 0px; left: unset; right: 0'}};top:0;  border: none; color: #fff; font-size: 16px; font-weight: 600; padding: 0 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">

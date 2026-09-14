@@ -499,52 +499,7 @@
                             </a>
                         </li>
 
-                        @php( $shipping_method = \App\CPU\Helpers::get_business_settings('shipping_method'))
-                        @if($shipping_method=='sellerwise_shipping')
-                            <li class="nav-item {{Request::is('seller/delivery-man*')?'scroll-here':''}}">
-                                <small class="nav-subtitle">{{\App\CPU\translate('delivery_man_management')}}</small>
-                                <small class="tio-more-horizontal nav-subtitle-replacer"></small>
-                            </li>
-                            <li class="navbar-vertical-aside-has-menu {{Request::is('seller/delivery-man*')?'active':''}}">
-                                <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle"
-                                   href="javascript:">
-                                    <i class="tio-user nav-icon"></i>
-                                    <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
-                                    {{\App\CPU\translate('Delivery-Man')}}
-                                </span>
-                                </a>
-                                <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
-                                    style="display: {{Request::is('seller/delivery-man*')?'block':'none'}}">
-                                    <li class="nav-item {{Request::is('seller/delivery-man/add')?'active':''}}">
-                                        <a class="nav-link " href="{{route('seller.delivery-man.add')}}">
-                                            <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{\App\CPU\translate('Add_New')}}</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item {{Request::is('seller/delivery-man/list') || Request::is('seller/delivery-man/earning-statement*') || Request::is('seller/delivery-man/earning-active-log*') || Request::is('seller/delivery-man/order-wise-earning*')?'active':''}}">
-                                        <a class="nav-link" href="{{route('seller.delivery-man.list')}}">
-                                            <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{\App\CPU\translate('List')}}</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item {{Request::is('seller/delivery-man/withdraw-list') || Request::is('seller/delivery-man/withdraw-view*')?'active':''}}">
-                                        <a class="nav-link " href="{{route('seller.delivery-man.withdraw-list')}}"
-                                           title="{{\App\CPU\translate('withdraws')}}">
-                                            <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{\App\CPU\translate('withdraws')}}</span>
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item {{Request::is('seller/delivery-man/emergency-contact/') ? 'active' : ''}}">
-                                        <a class="nav-link " href="{{route('seller.delivery-man.emergency-contact.index')}}"
-                                           title="{{\App\CPU\translate('withdraws')}}">
-                                            <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{\App\CPU\translate('Emergency_Contact')}}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        @endif
+                       
                     </ul>
                 </div>
                 <!-- End Content -->

@@ -329,29 +329,13 @@
                                         {{\App\CPU\translate('choose_delivery_type')}}
                                     </option>
 
-                                    <option value="self_delivery" {{$order->delivery_type=='self_delivery'?'selected':''}}>
-                                        {{\App\CPU\translate('by_self_delivery_man')}}
-                                    </option>
+                                    
                                     <option value="third_party_delivery" {{$order->delivery_type=='third_party_delivery'?'selected':''}} >
                                         {{\App\CPU\translate('by_third_party_delivery_service')}}
                                     </option>
                                 </select>
                             </li>
-                            <li id="choose_delivery_man">
-                                <label for="">
-                                    {{\App\CPU\translate('choose_delivery_man')}}
-                                </label>
-                                <select class="form-control text-capitalize js-select2-custom" name="delivery_man_id" onchange="addDeliveryMan(this.value)">
-                                    <option
-                                        value="0">{{\App\CPU\translate('select')}}</option>
-                                    @foreach($delivery_men as $deliveryMan)
-                                        <option
-                                            value="{{$deliveryMan['id']}}" {{$order['delivery_man_id']==$deliveryMan['id']?'selected':''}}>
-                                            {{$deliveryMan['f_name'].' '.$deliveryMan['l_name'].' ('.$deliveryMan['phone'].' )'}}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </li>
+                           
                             <li class=" mt-2" id="by_third_party_delivery_service_info">
                                 <span>
                                     {{\App\CPU\translate('delivery_service_name')}} : {{$order->delivery_service_name}}

@@ -61,19 +61,7 @@
                         </li>
                         <!-- End Dashboards -->
 
-                        <!-- POS -->
-
-                        @if (\App\CPU\Helpers::module_permission_check('pos_management'))
-                            <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/pos*') ? 'active' : '' }}">
-                                <a class="js-navbar-vertical-aside-menu-link nav-link"
-                                    title="{{ \App\CPU\translate('POS') }}" href="{{ route('admin.pos.index') }}">
-                                    <i class="tio-shopping nav-icon"></i>
-                                    <span
-                                        class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">{{ \App\CPU\translate('POS') }}</span>
-                                </a>
-                            </li>
-                        @endif
-                        <!-- End POS -->
+                      
 
                         <!-- Order Management -->
                         @if (\App\CPU\Helpers::module_permission_check('order_management'))
@@ -965,60 +953,8 @@
                                 </a>
                             </li>
 
-                            <li
-                                class="navbar-vertical-aside-has-menu {{ Request::is('admin/delivery-man*') ? 'active' : '' }}">
-                                <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle"
-                                    href="javascript:" title="{{ \App\CPU\translate('delivery-man') }}">
-                                    <i class="tio-user nav-icon"></i>
-                                    <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
-                                        {{ \App\CPU\translate('delivery-man') }}
-                                    </span>
-                                </a>
-                                <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
-                                    style="display: {{ Request::is('admin/delivery-man*') ? 'block' : 'none' }}">
-                                    <li class="nav-item {{ Request::is('admin/delivery-man/add') ? 'active' : '' }}">
-                                        <a class="nav-link " href="{{ route('admin.delivery-man.add') }}"
-                                            title="{{ \App\CPU\translate('add_new') }}">
-                                            <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{ \App\CPU\translate('add_new') }}</span>
-                                        </a>
-                                    </li>
-                                    <li
-                                        class="nav-item {{ Request::is('admin/delivery-man/list') || Request::is('admin/delivery-man/earning-statement*') || Request::is('admin/delivery-man/order-history-log*') || Request::is('admin/delivery-man/order-wise-earning*') ? 'active' : '' }}">
-                                        <a class="nav-link" href="{{ route('admin.delivery-man.list') }}"
-                                            title="{{ \App\CPU\translate('List') }}">
-                                            <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{ \App\CPU\translate('List') }}</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item {{ Request::is('admin/delivery-man/chat') ? 'active' : '' }}">
-                                        <a class="nav-link" href="{{ route('admin.delivery-man.chat') }}"
-                                            title="{{ \App\CPU\translate('Chat') }}">
-                                            <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{ \App\CPU\translate('chat') }}</span>
-                                        </a>
-                                    </li>
-                                    <li
-                                        class="nav-item {{ Request::is('admin/delivery-man/withdraw-list') || Request::is('admin/delivery-man/withdraw-view*') ? 'active' : '' }}">
-                                        <a class="nav-link " href="{{ route('admin.delivery-man.withdraw-list') }}"
-                                            title="{{ \App\CPU\translate('withdraws') }}">
-                                            <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{ \App\CPU\translate('withdraws') }}</span>
-                                        </a>
-                                    </li>
-
-                                    <li
-                                        class="nav-item {{ Request::is('admin/delivery-man/emergency-contact') ? 'active' : '' }}">
-                                        <a class="nav-link "
-                                            href="{{ route('admin.delivery-man.emergency-contact.index') }}"
-                                            title="{{ \App\CPU\translate('emergency_contact') }}">
-                                            <span class="tio-circle nav-indicator-icon"></span>
-                                            <span
-                                                class="text-truncate">{{ \App\CPU\translate('Emergency_Contact') }}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
+                         
+                            
                             <li
                                 class="navbar-vertical-aside-has-menu {{ Request::is('admin/sale/list') || Request::is('admin/sale/add-new') || Request::is('admin/sale/update*') ? 'active' : '' }}">
                                 <a class="nav-link " href="{{ route('admin.sale.employee.emp-list') }}"

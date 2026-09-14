@@ -1,51 +1,50 @@
 @if(isset($product))
-@php($overallRating = \App\CPU\ProductManager::get_overall_rating($product->reviews))
-<div class="flash_deal_product rtl" onclick="location.href='{{route('product',$product->slug)}}'">
+@php
+    $overallRating = \App\CPU\ProductManager::get_overall_rating($product->reviews);
+    $discountAmount = \App\CPU\Helpers::get_product_discount($product, $product->unit_price);
+    $sellingPrice = $product->unit_price - $discountAmount;
+@endphp
+
+<div class="bh-product-card p-2 cursor-pointer" onclick="location.href='{{route('product',$product->slug)}}'">
     @if($product->discount > 0)
-    <span class="for-discoutn-value p-1 pl-2 pr-2">
-        @if ($product->discount_type == 'percent')
-        {{round($product->discount,(!empty($decimal_point_settings) ? $decimal_point_settings: 0))}}%
-        @elseif($product->discount_type =='flat')
-        {{\App\CPU\Helpers::currency_converter($product->discount)}}
-        @endif {{\App\CPU\translate('off')}}
-    </span>
+        <span class="bh-card-badge">
+            @if ($product->discount_type == 'percent')
+                -{{ round($product->discount, !empty($decimal_point_settings) ? $decimal_point_settings : 0) }}%
+            @elseif($product->discount_type == 'flat')
+                OFF {{ \App\CPU\Helpers::currency_converter($product->discount) }}
+            @endif
+        </span>
     @endif
-    <div class=" d-flex">
-        <div class="d-flex align-items-center justify-content-center"
-            style="padding-{{Session::get('direction') === "rtl" ?'right:12px':'left:12px'}};padding-top:12px;">
-            <div class="flash-deals-background-image">
-                <img class="__img-125px"
-                    src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$product['thumbnail']}}"
-                    onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'" />
-            </div>
+
+    <div class="d-flex align-items-center">
+        <div style="width: 90px; height: 90px; flex-shrink: 0;" class="p-1">
+            <img class="w-100 h-100" style="object-fit: contain;"
+                src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $product['thumbnail'] }}"
+                onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
+                alt="{{ $product['name'] }}" />
         </div>
-        <div class="flash_deal_product_details pl-3 pr-3 pr-1 d-flex align-items-center">
-            <div>
-                <div>
-                    <span class="flash-product-title __text-12px" style="font-weight: 600;">
-                        {{$product['name']}}
-                    </span>
-                </div>
-                <div class="flash-product-price __text-12px" style="font-size: 15px">
-                {{\App\CPU\Helpers::currency_converter($product->unit_price-\App\CPU\Helpers::get_product_discount($product,$product->unit_price))}}
-                  
-                     @if($product->discount > 0)
-                    <strike
-                        style="font-size: 12px!important;color: #E96A6A!important;">
-                        {{\App\CPU\Helpers::currency_converter($product->unit_price)}}
-                    </strike>
-                    @endif
-                </div>
+        <div class="pl-3 pr-2 flex-grow-1">
+            @if(!empty($product->brand->name))
+                <div class="bh-product-brand" style="font-size: 0.68rem;">{{ $product->brand->name }}</div>
+            @endif
+            <div class="bh-product-title" style="height: auto; max-height: 2.4em; font-size: 0.82rem; margin-bottom: 4px;">
+                {{ $product['name'] }}
+            </div>
+            <div class="d-flex align-items-baseline gap-2">
+                <span class="bh-price-selling" style="font-size: 1rem;">
+                    {{ \App\CPU\Helpers::currency_converter($sellingPrice) }}
+                </span>
                 @if($product->discount > 0)
-                <div class="__text-14px" style="color: #4eaa6f;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14.665 3.04a4 4 0 0 0-5.33 0l-.242.216a2 2 0 0 1-1.22.506l-.324.018a4 4 0 0 0-3.77 3.77l-.017.323a2 2 0 0 1-.506 1.22l-.216.242a4 4 0 0 0 0 5.33l.216.242a2 2 0 0 1 .506 1.22l.018.324a4 4 0 0 0 3.769 3.769l.324.018a2 2 0 0 1 1.22.506l.242.216a4 4 0 0 0 5.33 0l.242-.216a2 2 0 0 1 1.22-.506l.324-.018a4 4 0 0 0 3.769-3.77l.018-.323a2 2 0 0 1 .505-1.22l.216-.242a4 4 0 0 0 0-5.33l-.216-.242a2 2 0 0 1-.505-1.22l-.018-.324a4 4 0 0 0-3.77-3.769l-.323-.018a2 2 0 0 1-1.22-.506l-.242-.216Zm1.042 5.253a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414-1.414l6-6a1 1 0 0 1 1.414 0ZM16 14.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM9.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="#4eaa6f"></path>
-                    </svg>
-                    save  {{\App\CPU\Helpers::currency_converter(\App\CPU\Helpers::get_product_discount($product,$product->unit_price))}}
-                  
-                </div>
+                    <span class="bh-price-mrp" style="font-size: 0.78rem;">
+                        {{ \App\CPU\Helpers::currency_converter($product->unit_price) }}
+                    </span>
                 @endif
             </div>
+            @if($product->discount > 0)
+                <div class="bh-price-savings" style="font-size: 0.7rem;">
+                    Save {{ \App\CPU\Helpers::currency_converter($discountAmount) }}
+                </div>
+            @endif
         </div>
     </div>
 </div>

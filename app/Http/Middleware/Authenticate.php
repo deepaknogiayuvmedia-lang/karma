@@ -16,6 +16,16 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
+            // Check which guard is being used and redirect to appropriate login
+            if ($request->is('delivery-man/*') || $request->is('delivery-man')) {
+                return route('delivery-man.auth.login');
+            }
+            if ($request->is('seller/*') || $request->is('seller')) {
+                return route('seller.auth.login');
+            }
+            if ($request->is('admin/*') || $request->is('admin')) {
+                return route('admin.auth.login');
+            }
             return route('authentication-failed');
         }
     }

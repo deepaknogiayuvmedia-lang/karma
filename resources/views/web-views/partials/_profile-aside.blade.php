@@ -1,102 +1,53 @@
-<div class="sidebarR col-lg-3 col-md-3 pr-lg-3 pr-xl-4">
-    <!--Price Sidebar-->
-    <div class="__customer-sidebar" id="shop-sidebar">
-        <div>
-            <!-- Filter by price-->
-            <div class="widget-title">
-                <a class="{{Request::is('account-oder*') || Request::is('account-order-details*') ? 'active-menu' :''}}" href="{{route('account-oder') }} ">{{\App\CPU\translate('my_order')}}</a>
+<div class="col-lg-3 col-md-4 mb-4 mb-md-0">
+    <div class="card border shadow-sm rounded-lg p-3" style="background-color: var(--bh-surface, #ffffff);">
+        <div class="text-center pb-3 mb-3 border-bottom">
+            <div class="mb-2">
+                <img src="{{ asset(config('app.public_storage_path').'/profile/'.auth('customer')->user()->image) }}"
+                    onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
+                    class="rounded-circle border" width="70" height="70" style="object-fit: cover;">
             </div>
-        </div>
-        @php
-            $wallet_status = App\CPU\Helpers::get_business_settings('wallet_status');
-            $loyalty_point_status = App\CPU\Helpers::get_business_settings('loyalty_point_status');
-        @endphp
-        @if ($wallet_status == 1)
-            <div>
-                <!-- Filter by price-->
-                <div class="widget-title">
-                    <a class="{{Request::is('wallet')?'active-menu':''}}" href="{{route('wallet') }} ">{{\App\CPU\translate('my_wallet')}} </a>
-                </div>
-            </div>
-        @endif
-        @if ($loyalty_point_status == 1)
-            <div>
-                <!-- Filter by price-->
-                <div class="widget-title">
-                    <a class="{{Request::is('loyalty')?'active-menu':''}}" href="{{route('loyalty') }} ">{{\App\CPU\translate('my_loyalty_point')}}</a>
-                </div>
-            </div>
-        @endif
-        <div>
-            <!-- Filter by price-->
-            <div class="widget-title">
-                <a class="{{Request::is('track-order*')?'active-menu':''}}" href="{{route('track-order.index') }} ">{{\App\CPU\translate('track_your_order')}}</a>
-            </div>
-        </div>
-        <div>
-            <!-- Filter by price-->
-            <div class="widget-title">
-                <a class="{{Request::is('wishlists*')?'active-menu':''}}" href="{{route('wishlists')}}"> {{\App\CPU\translate('wish_list')}}  </a>
-            </div>
+            <h6 class="font-weight-bold mb-0" style="color: var(--bh-text-primary, #1B1F1D);">
+                {{ auth('customer')->user()->f_name }} {{ auth('customer')->user()->l_name }}
+            </h6>
+            <small class="text-muted">{{ auth('customer')->user()->phone ?? auth('customer')->user()->email }}</small>
         </div>
 
-        {{--to do--}}
-        @php($business_mode=\App\CPU\Helpers::get_business_settings('business_mode'))
-        @if ($business_mode == 'multi')
-            <div>
-                <!-- Filter by price-->
-                <div class="widget-title">
-                    <a class="{{Request::is('chat/seller')?'active-menu':''}}" href="{{route('chat', ['type' => 'seller'])}}">{{\App\CPU\translate('chat_with_seller')}}</a>
-                </div>
-            </div>
-            <div>
-                <div class="widget-title">
-                    <a class="{{Request::is('chat/delivery-man')?'active-menu':''}}" href="{{route('chat', ['type' => 'delivery-man'])}}">{{\App\CPU\translate('chat_with_delivery-man')}}</a>
-                </div>
-            </div>
-        @endif
+        <div class="nav flex-column nav-pills" style="gap: 4px; font-size: 0.88rem;">
+            <a class="nav-link d-flex align-items-center gap-2 py-2 px-3 {{ Request::is('account-oder*') || Request::is('account-order-details*') ? 'active bg-success text-white' : 'text-dark' }}"
+               href="{{ route('account-oder') }}" style="border-radius: var(--bh-radius-sm);">
+                <i class="fa fa-shopping-bag w-20"></i> {{\App\CPU\translate('My Orders')}}
+            </a>
+            
+            <a class="nav-link d-flex align-items-center gap-2 py-2 px-3 {{ Request::is('wishlists*') ? 'active bg-success text-white' : 'text-dark' }}"
+               href="{{ route('wishlists') }}" style="border-radius: var(--bh-radius-sm);">
+                <i class="fa fa-heart w-20"></i> {{\App\CPU\translate('Wishlist')}}
+            </a>
 
-        <div>
-            <!-- Filter by price-->
-            <div class="widget-title">
-                <a class="{{Request::is('user-account*')?'active-menu':''}}" href="{{route('user-account')}}">
-                    {{\App\CPU\translate('profile_info')}}
-                </a>
-            </div>
-        </div>
-        <div>
-            <!-- Filter by price-->
-            <div class="widget-title">
-                <a class="{{Request::is('account-address*')?'active-menu':''}}"
-                    href="{{ route('account-address') }}">{{\App\CPU\translate('address')}} </a>
-            </div>
-        </div>
-        <div>
-            <!-- Filter by price-->
-            <div class="widget-title">
-                <a class="{{(Request::is('account-ticket*') || Request::is('support-ticket*'))?'active-menu':''}}"
-                    href="{{ route('account-tickets') }}">{{\App\CPU\translate('support_ticket')}}</a>
-            </div>
-        </div>
+            <a class="nav-link d-flex align-items-center gap-2 py-2 px-3 {{ Request::is('track-order*') ? 'active bg-success text-white' : 'text-dark' }}"
+               href="{{ route('track-order.index') }}" style="border-radius: var(--bh-radius-sm);">
+                <i class="fa fa-map-marker w-20"></i> {{\App\CPU\translate('Track Order')}}
+            </a>
 
+            <a class="nav-link d-flex align-items-center gap-2 py-2 px-3 {{ Request::is('user-account*') ? 'active bg-success text-white' : 'text-dark' }}"
+               href="{{ route('user-account') }}" style="border-radius: var(--bh-radius-sm);">
+                <i class="fa fa-user w-20"></i> {{\App\CPU\translate('Profile Info')}}
+            </a>
+
+            <a class="nav-link d-flex align-items-center gap-2 py-2 px-3 {{ Request::is('account-address*') ? 'active bg-success text-white' : 'text-dark' }}"
+               href="{{ route('account-address') }}" style="border-radius: var(--bh-radius-sm);">
+                <i class="fa fa-address-book w-20"></i> {{\App\CPU\translate('Saved Addresses')}}
+            </a>
+
+            <a class="nav-link d-flex align-items-center gap-2 py-2 px-3 {{ (Request::is('account-ticket*') || Request::is('support-ticket*')) ? 'active bg-success text-white' : 'text-dark' }}"
+               href="{{ route('account-tickets') }}" style="border-radius: var(--bh-radius-sm);">
+                <i class="fa fa-headset w-20"></i> {{\App\CPU\translate('Support Tickets')}}
+            </a>
+
+            <hr class="my-2">
+
+            <a class="nav-link d-flex align-items-center gap-2 py-2 px-3 text-danger" href="{{ route('customer.auth.logout') }}">
+                <i class="fa fa-sign-out w-20"></i> {{\App\CPU\translate('Logout')}}
+            </a>
+        </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

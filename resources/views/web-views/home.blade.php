@@ -442,6 +442,11 @@
                 </div>
             </div>
         </section>
+
+
+
+        <!-- Section 04: Shop by Crop (Crop-First Discovery) -->
+     
         @php($business_mode = \App\CPU\Helpers::get_business_settings('business_mode'))
         {{-- categries --}}
 
@@ -1087,32 +1092,34 @@
 
     {{-- New Arrivals --}}
     @if ($latest_products->count() > 0)
-    <div class="container rtl py-3">
-        <div class="card card __shadow h-100">
-            <div class="card-body p-xl-35">
-                <div class="d-flex justify-content-between mb-3">
-                    <div>
-                        <img class="size-30" src="{{ asset('assets/front-end/png/new-arrivals.png') }}" alt="">
-                        <span class="font-bold pl-1">{{ \App\CPU\translate('new_arrivals') }}</span>
-                    </div>
-                    <a class="text-capitalize view-all-text" href="{{ route('newProduct') }}">
-                        {{ \App\CPU\translate('view_all') }}
-                        <i class="czi-arrow-{{ Session::get('direction') === 'rtl' ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1' }}"></i>
-                    </a>
-                </div>
-                <div class="owl-carousel owl-theme" id="new-arrivals-slider">
-                    @foreach ($latest_products as $product)
-                        <div class="item">
-                            @include('web-views.partials._single-product', [
-                                'product' => $product,
-                                'decimal_point_settings' => $decimal_point_settings ?? 2,
-                            ])
+        <div class="container rtl py-3">
+            <div class="card card __shadow h-100">
+                <div class="card-body p-xl-35">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <img class="size-30" src="{{ asset('assets/front-end/png/new-arrivals.png') }}"
+                                alt="">
+                            <span class="font-bold pl-1">{{ \App\CPU\translate('new_arrivals') }}</span>
                         </div>
-                    @endforeach
+                        <a class="text-capitalize view-all-text" href="{{ route('newProduct') }}">
+                            {{ \App\CPU\translate('view_all') }}
+                            <i
+                                class="czi-arrow-{{ Session::get('direction') === 'rtl' ? 'left mr-1 ml-n1 mt-1 float-left' : 'right ml-1 mr-n1' }}"></i>
+                        </a>
+                    </div>
+                    <div class="owl-carousel owl-theme" id="new-arrivals-slider">
+                        @foreach ($latest_products as $product)
+                            <div class="item">
+                                @include('web-views.partials._single-product', [
+                                    'product' => $product,
+                                    'decimal_point_settings' => $decimal_point_settings ?? 2,
+                                ])
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     @endif
 
     <div class="container rtl py-4">
@@ -1263,6 +1270,7 @@
     </div>
 
 
+   
     </div>
 @endsection
 
@@ -1327,7 +1335,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                                                direction ') }}': true,
+                                                                                                            direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1376,7 +1384,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                                                direction ') }}': true,
+                                                                                                            direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
@@ -1490,13 +1498,30 @@
             autoplayHoverPause: true,
             '{{ session('direction') }}': true,
             responsive: {
-                0: { items: 1, margin: 10 },
-                360: { items: 2, margin: 10 },
-                576: { items: 2, margin: 10 },
-                768: { items: 3 },
-                992: { items: 4 },
-                1200: { items: 5 },
-                1400: { items: 6 }
+                0: {
+                    items: 1,
+                    margin: 10
+                },
+                360: {
+                    items: 2,
+                    margin: 10
+                },
+                576: {
+                    items: 2,
+                    margin: 10
+                },
+                768: {
+                    items: 3
+                },
+                992: {
+                    items: 4
+                },
+                1200: {
+                    items: 5
+                },
+                1400: {
+                    items: 6
+                }
             }
         });
 
@@ -1583,7 +1608,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                                                direction ') }}': false,
+                                                                                                            direction ') }}': false,
             // center: true,
             responsive: {
                 //X-Small
@@ -1631,7 +1656,7 @@
             dots: false,
             autoplayHoverPause: true,
             '{{ session('
-                                                                                                direction ') }}': false,
+                                                                                                            direction ') }}': false,
             // center: true,
             responsive: {
                 //X-Small
@@ -1676,7 +1701,7 @@
             margin: 20,
             nav: false,
             '{{ session('
-                                                                                                direction ') }}': true,
+                                                                                                            direction ') }}': true,
             dots: true,
             autoplayHoverPause: true,
             // center: true,
@@ -1726,7 +1751,7 @@
             dots: true,
             autoplayHoverPause: true,
             '{{ session('
-                                                                                                direction ') }}': true,
+                                                                                                            direction ') }}': true,
             // center: true,
             responsive: {
                 //X-Small
