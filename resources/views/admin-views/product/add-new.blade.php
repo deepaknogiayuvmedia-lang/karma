@@ -334,6 +334,7 @@
                                     <input type="number" min="0" step="0.01"
                                         placeholder="{{ \App\CPU\translate('Unit price') }}" name="unit_price"
                                         value="{{ old('unit_price') }}" class="form-control" required>
+                                    <small id="tax-price-note" class="text-muted font-italic"><i class="fa fa-info-circle"></i> {{ \App\CPU\translate('Price should be tax inclusive') }}</small>
                                 </div>
                                 <div class="col-md-6 form-group">
                                     <label class="title-color">{{ \App\CPU\translate('Market price') }}</label>
@@ -370,7 +371,7 @@
 
                                 <div class="col-md-2 form-group">
                                     <label class="title-color">{{ \App\CPU\translate('Tax_Model') }}</label>
-                                    <select name="tax_model" class="form-control" required>
+                                    <select name="tax_model" id="tax_model" class="form-control" required>
                                         <option value="include">{{ \App\CPU\translate('include') }}</option>
                                         <option value="exclude">{{ \App\CPU\translate('exclude') }}</option>
                                     </select>
@@ -1040,6 +1041,14 @@
             if (!$(e.target).closest('.tech-wrapper').length) {
                 $('.tech-suggestions').hide();
             }
+        });
+
+        $('#tax_model').on('change', function() {
+            var val = $(this).val();
+            var note = val === 'include'
+                ? '{!! \App\CPU\translate("Price should be tax inclusive") !!}'
+                : '{!! \App\CPU\translate("Price should be tax exclusive") !!}';
+            $('#tax-price-note').html('<i class="fa fa-info-circle"></i> ' + note);
         });
     </script>
 @endpush

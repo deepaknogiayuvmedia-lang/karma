@@ -17,7 +17,9 @@ class Order extends Model
         'shipping_address',
         'discount_amount',
         'deliveryman_charge',
-        'delivery_otp'
+        'delivery_otp',
+        // added expected delivery date field
+        'expected_delivery_date'
     ];
     protected $casts = [
         'order_amount' => 'float',
@@ -31,7 +33,9 @@ class Order extends Model
         'extra_discount'=>'float',
         'delivery_man_id'=>'integer',
         'shipping_method_id'=>'integer',
-        'seller_id'=>'integer'
+        'seller_id'=>'integer',
+        // expected delivery date as date string
+        'expected_delivery_date' => 'date'
     ];
 
     public function details()

@@ -1143,11 +1143,12 @@ class WebController extends Controller
         // Price Filter
         // -----------------------------
 
-        if ($request['min_price'] !== null || $request['max_price'] !== null) {
-            $fetched->whereBetween('unit_price', [
-                Helpers::convert_currency_to_usd($request['min_price']),
-                Helpers::convert_currency_to_usd($request['max_price'])
-            ]);
+        if (($request['min_price'] !== null && $request['min_price'] !== '') || ($request['max_price'] !== null && $request['max_price'] !== '')) {
+            $min = Helpers::convert_currency_to_usd($request['min_price']);
+            $max = Helpers::convert_currency_to_usd($request['max_price']);
+            if ($min !== null && $max !== null) {
+                $fetched->whereBetween('unit_price', [$min, $max]);
+            }
         }
 
         // -----------------------------

@@ -407,6 +407,7 @@
                                         placeholder="{{ \App\CPU\translate('Unit price') }}" name="unit_price"
                                         class="form-control" value={{ \App\CPU\Convert::default($product->unit_price) }}
                                         required>
+                                    <small id="tax-price-note" class="text-muted font-italic"><i class="fa fa-info-circle"></i> {{ \App\CPU\translate('Price should be tax inclusive') }}</small>
                                 </div>
                                 <div class="col-md-6 form-group">
                                     <label class="title-color">{{ \App\CPU\translate('Purchese price') }}</label>
@@ -440,7 +441,7 @@
 
                                 <div class="col-md-2 form-group">
                                     <label class="title-color">{{ \App\CPU\translate('Tax_Model') }}</label>
-                                    <select name="tax_model" class="form-control" required>
+                                    <select name="tax_model" id="tax_model" class="form-control" required>
                                         <option value="include" {{ $product->tax_model == 'include' ? 'selected' : '' }}>
                                             {{ \App\CPU\translate('include') }}</option>
                                         <option value="exclude" {{ $product->tax_model == 'exclude' ? 'selected' : '' }}>
@@ -1237,6 +1238,19 @@
                 $('.tech-suggestions').hide();
             }
         });
+
+        $('#tax_model').on('change', function() {
+            var val = $(this).val();
+            var note = val === 'include'
+                ? '{!! \App\CPU\translate("Price should be tax inclusive") !!}'
+                : '{!! \App\CPU\translate("Price should be tax exclusive") !!}';
+            $('#tax-price-note').html('<i class="fa fa-info-circle"></i> ' + note);
+        });
+
+        // Set initial note based on selected tax_model
+        if ($('#tax_model').val() === 'exclude') {
+            $('#tax-price-note').html('<i class="fa fa-info-circle"></i> {!! \App\CPU\translate("Price should be tax exclusive") !!}');
+        }
     </script>
 
 

@@ -194,9 +194,35 @@ class OrderController extends Controller
         })->get();
 
         $shipping_address = ShippingAddress::find($order->shipping_address);
+
+        $pickup_warehouse = null;
+        if ($order->seller_is == 'seller') {
+            $shop = \App\Model\Shop::where('seller_id', $order->seller_id)->first();
+            if ($shop && $shop->wherehouse) {
+                $wh = is_array($shop->wherehouse) ? $shop->wherehouse : json_decode($shop->wherehouse, true);
+                $pickup_warehouse = [
+                    'name' => $shop->name,
+                    'address' => $wh['address_line1'] ?? $shop->address ?? '',
+                    'city' => $wh['city'] ?? $shop->city ?? '',
+                    'pincode' => $wh['pincode'] ?? $shop->pincode ?? '',
+                ];
+            }
+        } else {
+            $admin = \App\Model\Admin::where('id', $order->seller_id)->first() ?? \App\Model\Admin::whereNotNull('wherehouse')->first();
+            if ($admin && $admin->wherehouse) {
+                $wh = is_array($admin->wherehouse) ? $admin->wherehouse : json_decode($admin->wherehouse, true);
+                $pickup_warehouse = [
+                    'name' => $admin->name,
+                    'address' => $wh['address_line1'] ?? '',
+                    'city' => $wh['city'] ?? '',
+                    'pincode' => $wh['pincode'] ?? '',
+                ];
+            }
+        }
+
         if($order->order_type == 'default_type')
         {
-            return view('admin-views.order.order-details', compact('shipping_address','order', 'linked_orders', 'delivery_men', 'total_delivered', 'company_name', 'company_web_logo', 'physical_product'));
+            return view('admin-views.order.order-details', compact('shipping_address','order', 'linked_orders', 'delivery_men', 'total_delivered', 'company_name', 'company_web_logo', 'physical_product', 'pickup_warehouse'));
         }else{
             return view('admin-views.pos.order.order-details', compact('order', 'company_name', 'company_web_logo'));
         }
@@ -328,13 +354,16 @@ class OrderController extends Controller
 
         if ($request->order_status == 'out_for_delivery' && $order->third_party_delivery_tracking_id == null) {
             $result = \App\CPU\shepping::CreateShipment($order->id);
-            if ($result['status'] == 'success') {
-                // dd($result);
-            
+            if ($result['status'] == 'success' || $result['status'] == 'partial') {
                 $order->delivery_type = 'third_party_delivery';
                 $order->delivery_service_name = 'Delhivery';
                 $order->third_party_delivery_tracking_id = $result['waybill'];
-                Toastr::success('Shipment created successfully on Delhivery!');
+                $order->save();
+                if ($result['status'] == 'partial') {
+                    Toastr::warning('Package partially saved! Waybill: ' . $result['waybill'] . '. Please recharge Delhivery account.');
+                } else {
+                    Toastr::success('Shipment created successfully on Delhivery!');
+                }
             } else {
                 Toastr::error('Delhivery Shipment Error: ' . ($result['message'] ?? 'Unknown error'));
             }
@@ -838,13 +867,19 @@ class OrderController extends Controller
         $order = Order::find($order_id);
         
         if (!$order) {
-            Toastr::error('Order not found!');
-            return back();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Order not found!'
+            ]);
         }
 
-        $result = \App\CPU\Delhivery::create_shipment($order_id);
+        $result = \App\CPU\shepping::CreateShipment($order_id);
 
-        if ($result['status'] == 'success') {
+        error_log("===== DELHIVERY API RESPONSE (Order #$order_id) =====");
+        error_log(json_encode($result, JSON_PRETTY_PRINT));
+        error_log("===== END DELHIVERY API RESPONSE =====");
+
+        if ($result['status'] == 'success' || $result['status'] == 'partial') {
             $order->delivery_type = 'third_party_delivery';
             $order->delivery_service_name = 'Delhivery';
             $order->third_party_delivery_tracking_id = $result['waybill'];
@@ -853,11 +888,19 @@ class OrderController extends Controller
             $order->expected_delivery_date = null;
             $order->save();
 
-            Toastr::success('Order assigned to Delhivery successfully! Tracking ID: ' . $result['waybill']);
-        } else {
-            Toastr::error('Delhivery Error: ' . $result['message']);
-        }
+            $msg = $result['status'] == 'partial'
+                ? 'Package partially saved! Tracking ID: ' . $result['waybill'] . '. ' . ($result['message'] ?? 'Manifest charge failed. Please recharge Delhivery account.')
+                : 'Order assigned to Delhivery successfully! Tracking ID: ' . $result['waybill'];
 
-        return back();
+            return response()->json([
+                'status' => $result['status'] == 'partial' ? 'warning' : 'success',
+                'message' => $msg
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Delhivery Error: ' . $result['message']
+            ]);
+        }
     }
 }

@@ -175,8 +175,20 @@ class OrderController extends Controller
 
         $shipping_address = ShippingAddress::find($order->shipping_address);
 
+        $pickup_warehouse = null;
+        $shop = \App\Model\Shop::where('seller_id', $sellerId)->first();
+        if ($shop && $shop->wherehouse) {
+            $wh = is_array($shop->wherehouse) ? $shop->wherehouse : json_decode($shop->wherehouse, true);
+            $pickup_warehouse = [
+                'name' => $shop->name,
+                'address' => $wh['address_line1'] ?? $shop->address ?? '',
+                'city' => $wh['city'] ?? $shop->city ?? '',
+                'pincode' => $wh['pincode'] ?? $shop->pincode ?? '',
+            ];
+        }
+
         if($order->order_type == 'default_type') {
-            return view('seller-views.order.order-details', compact('shipping_address', 'order', 'delivery_men', 'shipping_method', 'total_delivered', 'physical_product'));
+            return view('seller-views.order.order-details', compact('shipping_address', 'order', 'delivery_men', 'shipping_method', 'total_delivered', 'physical_product', 'pickup_warehouse'));
         }else{
             return view('seller-views.pos.order.order-details', compact('order', 'physical_product'));
         }
@@ -353,10 +365,11 @@ class OrderController extends Controller
 
         if ($request->order_status == 'out_for_delivery' && $order->third_party_delivery_tracking_id == null) {
             $result = \App\CPU\shepping::CreateShipment($order->id);
-            if ($result['status'] == 'success') {
+            if ($result['status'] == 'success' || $result['status'] == 'partial') {
                 $order->delivery_type = 'third_party_delivery';
                 $order->delivery_service_name = 'Delhivery';
                 $order->third_party_delivery_tracking_id = $result['waybill'];
+                $order->save();
             }
         }
 
@@ -472,6 +485,12 @@ class OrderController extends Controller
     public function update_deliver_info(Request $request)
     {
         $order = Order::find($request->order_id);
+        
+        if (!$order || $order->seller_id != auth('seller')->id()) {
+            Toastr::error('Unauthorized access!');
+            return back();
+        }
+
         $order->delivery_type = 'third_party_delivery';
         $order->delivery_service_name = $request->delivery_service_name;
         $order->third_party_delivery_tracking_id = $request->third_party_delivery_tracking_id;
@@ -482,6 +501,49 @@ class OrderController extends Controller
 
         Toastr::success(\App\CPU\translate('updated_successfully!'));
         return back();
+    }
+
+    public function assign_delhivery(Request $request)
+    {
+        $order_id = $request->order_id;
+        $order = Order::find($order_id);
+
+        if (!$order || $order->seller_id != auth('seller')->id()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized access!'
+            ]);
+        }
+
+        $result = \App\CPU\shepping::CreateShipment($order_id);
+
+        error_log("===== DELHIVERY API RESPONSE (Seller Order #$order_id) =====");
+        error_log(json_encode($result, JSON_PRETTY_PRINT));
+        error_log("===== END DELHIVERY API RESPONSE =====");
+
+        if ($result['status'] == 'success' || $result['status'] == 'partial') {
+            $order->delivery_type = 'third_party_delivery';
+            $order->delivery_service_name = 'Delhivery';
+            $order->third_party_delivery_tracking_id = $result['waybill'];
+            $order->delivery_man_id = null;
+            $order->deliveryman_charge = 0;
+            $order->expected_delivery_date = null;
+            $order->save();
+
+            $msg = $result['status'] == 'partial'
+                ? 'Package partially saved! Tracking ID: ' . $result['waybill'] . '. ' . ($result['message'] ?? 'Manifest charge failed. Please recharge Delhivery account.')
+                : 'Order assigned to Delhivery successfully! Tracking ID: ' . $result['waybill'];
+
+            return response()->json([
+                'status' => $result['status'] == 'partial' ? 'warning' : 'success',
+                'message' => $msg
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Delhivery Error: ' . ($result['message'] ?? 'Unknown error')
+            ]);
+        }
     }
 
     public function bulk_export_data(Request $request, $status)

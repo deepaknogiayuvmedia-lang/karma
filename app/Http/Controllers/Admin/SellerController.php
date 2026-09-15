@@ -213,7 +213,20 @@ class SellerController extends Controller
         })->when($order->seller_is == 'seller' && $shipping_method == 'inhouse_shipping', function ($query) use ($order) {
             $query->where(['seller_id' => 0]);
         })->get();
-        return view('admin-views.seller.order-details', compact('order', 'seller_id','delivery_men'));
+
+        $pickup_warehouse = null;
+        $shop = \App\Model\Shop::where('seller_id', $seller_id)->first();
+        if ($shop && $shop->wherehouse) {
+            $wh = is_array($shop->wherehouse) ? $shop->wherehouse : json_decode($shop->wherehouse, true);
+            $pickup_warehouse = [
+                'name' => $shop->name,
+                'address' => $wh['address_line1'] ?? $shop->address ?? '',
+                'city' => $wh['city'] ?? $shop->city ?? '',
+                'pincode' => $wh['pincode'] ?? $shop->pincode ?? '',
+            ];
+        }
+
+        return view('admin-views.seller.order-details', compact('order', 'seller_id','delivery_men', 'pickup_warehouse'));
     }
 
     public function withdraw()
@@ -383,7 +396,7 @@ class SellerController extends Controller
             'return_state' => $wherehouse->state ?? '',
             'return_country' => 'India',
         ];
-
+       
         if ($shop->status == 'update') {
             $result = shepping::UpdateWhereHouse($data);
             $success_msg = 'Delhivery Warehouse Updated Successfully!';
@@ -391,7 +404,7 @@ class SellerController extends Controller
             $result = shepping::CreateWhereHouse($data);
             $success_msg = 'Delhivery Warehouse Created Successfully!';
         }
-
+        // dd($result);
         if ($result['status'] == 'success') {
             $shop->status = 'approved';
             $shop->save();

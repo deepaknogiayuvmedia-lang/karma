@@ -142,4 +142,49 @@ class ShippingMethodController extends Controller
         Toastr::success('Shipping Method Updated Successfully!');
         return back();
     }
+
+    public function warehouse_store(Request $request) {
+        $admin = \App\Model\Admin::where('id', auth('admin')->id())->first();
+        if (!$admin) {
+            Toastr::error('Admin not found!');
+            return back();
+        }
+
+        $warehouseAddress = [
+            'address_line1' => $request->address_line1 ?? '',
+            'city' => $request->city ?? '',
+            'state' => $request->state ?? '',
+            'pincode' => $request->pincode ?? '',
+            'country' => $request->country ?? 'India',
+        ];
+
+        $admin->wherehouse = $warehouseAddress;
+        $admin->save();
+
+        // Sync with Delhivery API
+        $delhivery_data = [
+            'name' => trim($admin->name),
+            'add' => $warehouseAddress['address_line1'],
+            'city' => $warehouseAddress['city'],
+            'state' => $warehouseAddress['state'],
+            'pin' => $warehouseAddress['pincode'],
+            'country' => $warehouseAddress['country'],
+            'phone' => $admin->phone ?? '',
+            'email' => $admin->email ?? '',
+            'GSTIN' => '',
+            'TIN' => '',
+            'PAN' => '',
+            'is_default_location' => 'true',
+        ];
+
+        $existing_config = \App\CPU\Helpers::get_shipping_config();
+        if ($existing_config && $existing_config->status) {
+            $result = \App\CPU\shepping::CreateWhereHouse($delhivery_data);
+            error_log("===== DELHIVERY WAREHOUSE STORE RESPONSE =====");
+            error_log(json_encode($result, JSON_PRETTY_PRINT));
+        }
+
+        Toastr::success('Warehouse Updated Successfully!');
+        return back();
+    }
 }

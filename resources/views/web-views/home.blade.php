@@ -1012,7 +1012,7 @@
         </section>
     @endif
 
-    <div class="container rtl" style="padding:0">
+    <div class="container rtl pt-4">
         <div class="row m-0">
 
             <!-- Best Selling -->

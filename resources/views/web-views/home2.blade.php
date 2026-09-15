@@ -1000,7 +1000,7 @@
             </div>
         </div>
 
-        <div class="container rtl">
+        <div class="container rtl mt-3">
             <div class="row g-3">
                 <div class="col-md-6">
                     <div class="card card __shadow h-100">

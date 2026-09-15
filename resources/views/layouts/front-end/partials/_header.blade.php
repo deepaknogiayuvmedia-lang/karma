@@ -260,7 +260,19 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJ6N83BN"
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-
+<style>
+    @media(width < 576px){
+        header.box-shadow-sm.rtl.__inline-10{
+                position: sticky !important;
+                top: 0;
+                z-index: 99;
+        }
+        header.box-shadow-sm.rtl.__inline-10 .navbar-stuck{
+            position: static;
+            animation: none;
+        }
+    }
+</style>
 <header class="box-shadow-sm rtl __inline-10" style="position:relative;">
          @if(isset($language_status) && $language_status == 1)
     <!-- Topbar-->
@@ -846,7 +858,7 @@
         // Desktop search input
         $(document).on('input', '.search-bar-input', debounce(function() {
             var q = $(this).val().trim();
-            var $card = $(this).closest('.input-group-overlay1').find('.search-card');
+            var $card = $(this).closest('.input-group-overlay').find('.search-card');
             var $box = $card.find('.search-result-box');
             if (!q || q.length < 2) { $card.hide(); return; }
             $card.css('display', 'block');

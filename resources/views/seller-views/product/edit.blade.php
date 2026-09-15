@@ -403,6 +403,7 @@
                                             class="form-control"
                                             value={{ \App\CPU\BackEndHelper::usd_to_currency($product->unit_price) }}
                                             required>
+                                        <small id="tax-price-note" class="text-muted font-italic"><i class="fa fa-info-circle"></i> {{ \App\CPU\translate('Price should be tax inclusive') }}</small>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="title-color">{{ \App\CPU\translate('Market price') }}</label>
@@ -423,7 +424,7 @@
                                     </div>
                                     <div class="col-md-2 form-group mb-3">
                                         <label class="title-color">{{ \App\CPU\translate('Tax_Model') }}</label>
-                                        <select name="tax_model" class="form-control" required>
+                                        <select name="tax_model" id="tax_model" class="form-control" required>
                                             <option value="include"
                                                 {{ $product->tax_model == 'include' ? 'selected' : '' }}>
                                                 {{ \App\CPU\translate('include') }}</option>
@@ -1213,6 +1214,18 @@
                 $('.tech-suggestions').hide();
             }
         });
+
+        $('#tax_model').on('change', function() {
+            var val = $(this).val();
+            var note = val === 'include'
+                ? '{!! \App\CPU\translate("Price should be tax inclusive") !!}'
+                : '{!! \App\CPU\translate("Price should be tax exclusive") !!}';
+            $('#tax-price-note').html('<i class="fa fa-info-circle"></i> ' + note);
+        });
+
+        if ($('#tax_model').val() === 'exclude') {
+            $('#tax-price-note').html('<i class="fa fa-info-circle"></i> {!! \App\CPU\translate("Price should be tax exclusive") !!}');
+        }
     </script>
 @endpush
 

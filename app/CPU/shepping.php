@@ -2,32 +2,44 @@
 
 namespace App\CPU;
 
-use Illuminate\Support\Facades\Http;
 use App\Model\Order;
 use App\Model\ShippingAddress;
 use App\Model\Shop;
-
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class shepping
 {
     public static function CreateWhereHouse($data)
     {
-        $config = Helpers::get_shipping_config();
         
+        $config = Helpers::get_shipping_config();
+
         if (!$config || !$config->status) {
             return ['status' => 'error', 'message' => 'Delhivery is not active'];
         }
 
         $api_token = $config->api_secret;
         
-        // Delhivery Client Warehouse Creation API endpoint
-        $url = "https://staging-express.delhivery.com/api/backend/clientwarehouse/create/";
+        if (empty($api_token)) {
+            return ['status' => 'error', 'message' => 'Delhivery API token is not configured. Please set the API Secret in shipping settings.'];
+        }
+
+        $url = (env('APP_MODE') == 'live'
+            ? 'https://track.delhivery.com'
+            : 'https://staging-express.delhivery.com') . '/api/backend/clientwarehouse/create/';
         
-        try {
-            $response = Http::withHeaders([
+        try {   
+            $response = Http::withoutVerifying()->withHeaders([
                 'Authorization' => 'Token ' . $api_token,
                 'Content-Type' => 'application/json'
             ])->post($url, $data);
+           
+            error_log("===== DELHIVERY CREATE WAREHOUSE REQUEST =====");
+            error_log("URL: " . $url);
+            error_log("Data: " . json_encode($data));
+            error_log("Response Status: " . $response->status());
+            error_log("Response Body: " . $response->body());
 
             if ($response->successful()) {
                 return [
@@ -35,12 +47,22 @@ class shepping
                     'data' => $response->json()
                 ];
             }
+
+            $errorMsg = 'Delhivery API error: ' . $response->status();
+            $body = $response->json();
+            if (isset($body['error'])) {
+                $errorMsg .= ' - ' . $body['error'];
+            } elseif (isset($body['message'])) {
+                $errorMsg .= ' - ' . $body['message'];
+            }
+
             return [
-                'status' => 'error', 
-                'message' => 'Delhivery API connection failed: ' . $response->status(),
-                'data' => $response->json()
+                'status' => 'error',
+                'message' => $errorMsg,
+                'data' => $body
             ];
         } catch (\Exception $e) {
+            error_log("DELHIVERY CREATE WAREHOUSE EXCEPTION: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Exception: ' . $e->getMessage()];
         }
     }
@@ -48,18 +70,20 @@ class shepping
     public static function UpdateWhereHouse($data)
     {
         $config = Helpers::get_shipping_config();
-        
+
         if (!$config || !$config->status) {
             return ['status' => 'error', 'message' => 'Delhivery is not active'];
         }
 
         $api_token = $config->api_secret;
-        
+
         // Delhivery Client Warehouse Edit API endpoint
-        $url = "https://staging-express.delhivery.com/api/backend/clientwarehouse/edit/";
-        
+        $url = (env('APP_MODE') == 'live'
+            ? 'https://track.delhivery.com'
+            : 'https://staging-express.delhivery.com') . '/api/backend/clientwarehouse/edit/';
+
         try {
-            $response = Http::withHeaders([
+            $response = Http::withoutVerifying()->withHeaders([
                 'Authorization' => 'Token ' . $api_token,
                 'Content-Type' => 'application/json'
             ])->post($url, $data);
@@ -71,7 +95,7 @@ class shepping
                 ];
             }
             return [
-                'status' => 'error', 
+                'status' => 'error',
                 'message' => 'Delhivery API connection failed: ' . $response->status(),
                 'data' => $response->json()
             ];
@@ -81,6 +105,7 @@ class shepping
     }
 
     // shipment create
+
     public static function CreateShipment($order_id)
     {
         $config = Helpers::get_shipping_config();
@@ -164,42 +189,59 @@ class shepping
             "pickup_location" => $pickup_location
         ];
 
-        // Delhivery Shipment Creation API endpoint
-        $url = "https://staging-express.delhivery.com/api/cmu/create.json";
-        
+        $base_url = (env('APP_MODE') == 'live'
+            ? "https://track.delhivery.com"
+            : "https://staging-express.delhivery.com");
+        $url = $base_url . "/api/cmu/create.json";
+
         try {
-            $response = Http::asForm()->withHeaders([
+            $response = Http::withoutVerifying()->asForm()->withHeaders([
                 'Authorization' => 'Token ' . $api_token,
             ])->post($url, [
                 'format' => 'json',
                 'data' => json_encode($payload)
             ]);
-            // dd($response->json());
-            if ($response->successful()) {
-                $result = $response->json();
-                if (isset($result['success']) && $result['success']) {
-                    return [
-                        'status' => 'success',
-                        'waybill' => $result['packages'][0]['waybill'],
-                        'data' => $result
-                    ];
-                } else {
-                    $error_message = $result['rmk'] ?? 'Unknown error from Delhivery';
-                    if (isset($result['packages'][0]['remarks'][0])) {
-                        $error_message = $result['packages'][0]['remarks'][0];
-                    }
-                    return [
-                        'status' => 'error',
-                        'message' => $error_message
-                    ];
-                }
+
+            error_log("===== DELHIVERY CREATE SHIPMENT RESPONSE =====");
+            error_log("Status: " . $response->status());
+            error_log("Body: " . $response->body());
+
+            $result = $response->json();
+
+            if ($response->successful() && isset($result['success']) && $result['success']) {
+                return [
+                    'status' => 'success',
+                    'waybill' => $result['packages'][0]['waybill'],
+                    'data' => $result
+                ];
             }
+
+            // Even if success=false, check if waybill was generated (partial save)
+            if (isset($result['packages'][0]['waybill']) && !empty($result['packages'][0]['waybill'])) {
+                $waybill = $result['packages'][0]['waybill'];
+                $remarks = $result['packages'][0]['remarks'][0] ?? ($result['rmk'] ?? '');
+
+                return [
+                    'status' => 'partial',
+                    'waybill' => $waybill,
+                    'message' => $remarks ?: 'Package partially saved. Waybill generated but manifest charge failed. Please recharge Delhivery account.',
+                    'data' => $result
+                ];
+            }
+
+            // No waybill - full failure
+            $error_message = $result['rmk'] ?? 'Unknown error from Delhivery';
+            if (isset($result['packages'][0]['remarks'][0])) {
+                $error_message = $result['packages'][0]['remarks'][0];
+            }
+
             return [
-                'status' => 'error', 
-                'message' => 'Delhivery API connection failed: ' . $response->status(),
-                'data' => $response->json()
+                'status' => 'error',
+                'message' => $error_message,
+                'data' => $result
             ];
         } catch (\Exception $e) {
+            error_log("DELHIVERY CREATE SHIPMENT EXCEPTION: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Exception: ' . $e->getMessage()];
         }
     }
@@ -218,7 +260,7 @@ class shepping
         $url = (env('APP_MODE') == 'live' ? "https://track.delhivery.com" : "https://staging-express.delhivery.com") . "/api/v1/packages/json/?waybill=" . $waybill;
         
         try {
-            $response = Http::withHeaders([
+            $response = Http::withoutVerifying()->withHeaders([
                 'Authorization' => 'Token ' . $api_token,
             ])->get($url);
 
@@ -287,7 +329,7 @@ class shepping
         ];
 
         try {
-            $response = Http::asForm()->withHeaders([
+            $response = Http::withoutVerifying()->asForm()->withHeaders([
                 'Authorization' => 'Token ' . $api_token,
             ])->post($url, $update_data);
 
@@ -322,7 +364,7 @@ class shepping
         $url = (env('APP_MODE') == 'live' ? "https://track.delhivery.com" : "https://staging-express.delhivery.com") . "/api/p/edit";
         
         try {
-            $response = Http::asForm()->withHeaders([
+            $response = Http::withoutVerifying()->asForm()->withHeaders([
                 'Authorization' => 'Token ' . $api_token,
             ])->post($url, [
                 'waybill' => $waybill,
@@ -359,10 +401,12 @@ class shepping
         $api_token = $config->api_secret;
         
         // Delhivery Pincode Serviceability API endpoint
-        $url = "https://staging-express.delhivery.com/c/api/pin-codes/json/?filter_codes=" . $pin;
+        $url = (env('APP_MODE') == 'live'
+            ? "https://track.delhivery.com"
+            : "https://staging-express.delhivery.com") . "/c/api/pin-codes/json/?filter_codes=" . $pin;
         
         try {
-            $response = Http::withHeaders([
+            $response = Http::withoutVerifying()->withHeaders([
                 'Authorization' => 'Token ' . $api_token,
                 'Content-Type' => 'application/json'
             ])->get($url);
@@ -400,4 +444,3 @@ class shepping
         }
     }
 }
-

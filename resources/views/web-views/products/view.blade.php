@@ -103,9 +103,7 @@
                         <div class="bh-filter-group-title">{{\App\CPU\translate('Collection')}}</div>
                         <select class="form-control form-control-sm" id="searchByFilterValue" style="border-radius: var(--bh-radius-sm);">
                             <option selected disabled>{{\App\CPU\translate('Choose Collection')}}</option>
-                            <option value="{{route('products',['id'=> $data['id'],'data_from'=>'best-selling','page'=>1])}}" {{isset($data['data_from'])!=null?$data['data_from']=='best-selling'?'selected':'':''}}>{{\App\CPU\translate('best_selling_product')}}</option>
-                            <option value="{{route('products',['id'=> $data['id'],'data_from'=>'top-rated','page'=>1])}}" {{isset($data['data_from'])!=null?$data['data_from']=='top-rated'?'selected':'':''}}>{{\App\CPU\translate('top_rated')}}</option>
-                            <option value="{{route('products',['id'=> $data['id'],'data_from'=>'most-favorite','page'=>1])}}" {{isset($data['data_from'])!=null?$data['data_from']=='most-favorite'?'selected':'':''}}>{{\App\CPU\translate('most_favorite')}}</option>
+                            <option value="{{route('products',['id'=> $data['id'],'data_from'=>'best-selling','page'=>1])}}" {{isset($data['data_from'])!=null?$data['data_from']=='best-selling'?'selected':'':''}}>{{\App\CPU\translate('best_selling_product')}}</option> 
                             <option value="{{route('products',['id'=> $data['id'],'data_from'=>'featured_deal','page'=>1])}}" {{isset($data['data_from'])!=null?$data['data_from']=='featured_deal'?'selected':'':''}}>{{\App\CPU\translate('featured_deal')}}</option>
                         </select>
                     </div>
@@ -115,7 +113,7 @@
                         <div class="bh-filter-group-title">{{\App\CPU\translate('Price Range')}}</div>
                         <div class="d-flex align-items-center gap-2">
                             <input class="form-control form-control-sm" type="number" value="0" min="0" max="1000000" id="min_price" placeholder="Min" style="border-radius: var(--bh-radius-sm);">
-                            <span class="text-muted font-weight-bold">-</span>
+                            <span class="text-muted font-weight-bold"> - </span>
                             <input value="10000" min="10" max="1000000" class="form-control form-control-sm" type="number" id="max_price" placeholder="Max" style="border-radius: var(--bh-radius-sm);">
                             <button class="btn btn-bh-primary btn-sm ml-1" type="button" onclick="searchByPrice()" style="padding: 4px 10px !important;">
                                 <i class="fa fa-arrow-right"></i>
@@ -189,7 +187,7 @@
 
                 <!-- Product Grid -->
                 @if (count($products) > 0)
-                    <div class="row g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-3 row-cols-md-2 row-cols-2" id="ajax-products">
+                    <div >
                         @include('web-views.products._ajax-products',['products'=>$products,'decimal_point_settings'=>$decimal_point_settings])
                     </div>
                 @else
@@ -216,22 +214,26 @@
         }
 
         function filter(value) {
-            $.get({
+            var data = {
+                data_from: '{{$data['data_from']}}',
+                sort_by: value
+            };
+            if ('{{$data['name']}}') data.name = '{{$data['name']}}';
+            if ('{{$data['id']}}') data.id = '{{$data['id']}}';
+            if ($('#min_price').val()) data.min_price = $('#min_price').val();
+            if ($('#max_price').val() && $('#max_price').val() != '10000') data.max_price = $('#max_price').val();
+
+            $.ajax({
                 url: '{{url('/')}}/products',
-                data: {
-                    id: '{{$data['id']}}',
-                    name: '{{$data['name']}}',
-                    data_from: '{{$data['data_from']}}',
-                    min_price: '{{$data['min_price']}}',
-                    max_price: '{{$data['max_price']}}',
-                    sort_by: value
-                },
+                method: 'GET',
+                data: data,
                 dataType: 'json',
                 beforeSend: function () {
                     $('#loading').show();
                 },
                 success: function (response) {
                     $('#ajax-products').html(response.view);
+                    $('#price-filter-count').text(response.total_product + ' {{\App\CPU\translate('items found')}}');
                 },
                 complete: function () {
                     $('#loading').hide();
@@ -242,25 +244,26 @@
         function searchByPrice() {
             let min = $('#min_price').val();
             let max = $('#max_price').val();
-            $.get({
+            var data = {
+                data_from: '{{$data['data_from']}}',
+                sort_by: '{{$data['sort_by']}}',
+                min_price: min,
+                max_price: max,
+            };
+            if ('{{$data['name']}}') data.name = '{{$data['name']}}';
+            if ('{{$data['id']}}') data.id = '{{$data['id']}}';
+
+            $.ajax({
                 url: '{{url('/')}}/products',
-                data: {
-                    id: '{{$data['id']}}',
-                    name: '{{$data['name']}}',
-                    data_from: '{{$data['data_from']}}',
-                    sort_by: '{{$data['sort_by']}}',
-                    min_price: min,
-                    max_price: max,
-                },
+                method: 'GET',
+                data: data,
                 dataType: 'json',
                 beforeSend: function () {
                     $('#loading').show();
                 },
                 success: function (response) {
                     $('#ajax-products').html(response.view);
-                    $('#paginator-ajax').html(response.paginator);
-                    console.log(response.total_product);
-                    $('#price-filter-count').text(response.total_product + ' {{\App\CPU\translate('items found')}}')
+                    $('#price-filter-count').text(response.total_product + ' {{\App\CPU\translate('items found')}}');
                 },
                 complete: function () {
                     $('#loading').hide();

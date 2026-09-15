@@ -371,8 +371,6 @@
                                             <option value="0">
                                                 {{ \App\CPU\translate('choose_delivery_type') }}
                                             </option>
-
-                                           
                                             <option value="third_party_delivery"
                                                 {{ $order->delivery_type == 'third_party_delivery' ? 'selected' : '' }}>
                                                 {{ \App\CPU\translate('by_third_party_delivery_service') }}
@@ -414,6 +412,33 @@
                                         {{ \App\CPU\translate('tracking_id') }} :
                                         {{ $order->third_party_delivery_tracking_id }}
                                     </span>
+                                    @if (!$order->third_party_delivery_tracking_id)
+                                        <div class="mt-2">
+                                            <button class="btn btn--primary btn-sm btn-block"
+                                                onclick="push_to_delhivery()">
+                                                <i class="tio-send mr-1"></i>
+                                                {{ \App\CPU\translate('push_to_delhivery') }}
+                                            </button>
+                                        </div>
+                                    @endif
+                                </li>
+                                <li class="mt-2" id="warehouse_info_section" style="display:none;">
+                                    <label class="font-weight-bold title-color fz-14">
+                                        {{ \App\CPU\translate('pickup_warehouse') }} ({{ \App\CPU\translate('delhivery') }})
+                                    </label>
+                                    @if($pickup_warehouse)
+                                        <div class="card card-body p-2 mb-0" style="background:#f8f9fa;">
+                                            <small>
+                                                <strong>{{ $pickup_warehouse['name'] }}</strong><br>
+                                                {{ $pickup_warehouse['address'] }}<br>
+                                                {{ $pickup_warehouse['city'] }}, {{ $pickup_warehouse['pincode'] }}
+                                            </small>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-warning p-2 mb-0">
+                                            <small>{{ \App\CPU\translate('no_warehouse_found') }}</small>
+                                        </div>
+                                    @endif
                                 </li>
                             </ul>
                         @endif
@@ -635,47 +660,6 @@
         </div>
     </div>
     <!-- End Modal -->
-    <!--Show delivery info Modal -->
-    <div class="modal" id="shipping_chose" role="dialog" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ \App\CPU\translate('update_third_party_delivery_info') }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-12">
-                            <form action="{{ route('seller.orders.update-deliver-info') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="order_id" value="{{ $order['id'] }}">
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        <label for="">{{ \App\CPU\translate('delivery_service_name') }}</label>
-                                        <input class="form-control" type="text" name="delivery_service_name"
-                                            id="" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="">{{ \App\CPU\translate('tracking_id') }}
-                                            ({{ \App\CPU\translate('optional') }})</label>
-                                        <input class="form-control" type="text"
-                                            name="third_party_delivery_tracking_id" id="">
-                                    </div>
-                                    <button class="btn btn--primary"
-                                        type="submit">{{ \App\CPU\translate('submit') }}</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Modal -->
 @endsection
 @push('script')
     <script>
@@ -793,12 +777,15 @@
             if (delivery_type === 'self_delivery') {
                 $('.choose_delivery_man').show();
                 $('#by_third_party_delivery_service_info').hide();
+                $('#warehouse_info_section').hide();
             } else if (delivery_type === 'third_party_delivery') {
                 $('.choose_delivery_man').hide();
                 $('#by_third_party_delivery_service_info').show();
+                $('#warehouse_info_section').show();
             } else {
                 $('.choose_delivery_man').hide();
                 $('#by_third_party_delivery_service_info').hide();
+                $('#warehouse_info_section').hide();
             }
         });
     </script>
@@ -808,15 +795,66 @@
             if (val === 'self_delivery') {
                 $('.choose_delivery_man').show();
                 $('#by_third_party_delivery_service_info').hide();
+                $('#warehouse_info_section').hide();
             } else if (val === 'third_party_delivery') {
                 $('.choose_delivery_man').hide();
                 $('#by_third_party_delivery_service_info').show();
-                $('#shipping_chose').modal("show");
+                $('#warehouse_info_section').show();
             } else {
                 $('.choose_delivery_man').hide();
                 $('#by_third_party_delivery_service_info').hide();
+                $('#warehouse_info_section').hide();
             }
 
+        }
+    </script>
+    <script>
+        function push_to_delhivery() {
+            Swal.fire({
+                title: '{{ \App\CPU\translate('Are you sure') }}?',
+                text: "{{ \App\CPU\translate('This will create a shipment in Delhivery') }}!",
+                showCancelButton: true,
+                confirmButtonColor: '#377dff',
+                cancelButtonColor: 'secondary',
+                confirmButtonText: '{{ \App\CPU\translate('Yes, Push it') }}!'
+            }).then((result) => {
+                if (result.value) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                        }
+                    });
+                    $.post({
+                        url: '{{ route('seller.orders.assign-delhivery') }}',
+                        data: {
+                            order_id: '{{ $order['id'] }}'
+                        },
+                        beforeSend: function() {
+                            $('#loading').show();
+                        },
+                        success: function(data) {
+                            console.log('===== DELHIVERY API RESPONSE (Seller Browser Console) =====');
+                            console.log(data);
+                            console.log('===== END DELHIVERY API RESPONSE =====');
+                            if (data.status == 'success') {
+                                toastr.success(data.message);
+                                location.reload();
+                            } else {
+                                toastr.error(data.message);
+                            }
+                        },
+                        complete: function() {
+                            $('#loading').hide();
+                        },
+                        error: function(xhr) {
+                            console.log('===== DELHIVERY API ERROR (Seller Browser Console) =====');
+                            console.log(xhr);
+                            console.log('===== END DELHIVERY API ERROR =====');
+                            toastr.error('{{ \App\CPU\translate('Something went wrong') }}!');
+                        }
+                    });
+                }
+            })
         }
     </script>
     <script>

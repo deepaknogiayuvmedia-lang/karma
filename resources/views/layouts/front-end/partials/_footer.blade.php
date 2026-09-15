@@ -11,11 +11,7 @@
                             alt="{{ $web_config['name']->value }}" style="max-height: 48px; width: auto;" />
                     </a>
                 </div>
-                <div class="col-md-5 col-12 text-center my-2 my-md-0">
-                    <span class="font-weight-bold mr-2 text-white" style="font-size: 0.9rem;">
-                        <i class="fa fa-shield mr-1"></i> 100% Genuine Agri Products & Trusted Brand
-                    </span>
-                </div>
+             
                 <div class="col-md-4 col-12 text-center text-md-right">
                     @php($social_media = \App\Model\SocialMedia::where('active_status', 1)->get())
                     @if (isset($social_media))

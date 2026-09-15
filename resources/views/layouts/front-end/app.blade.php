@@ -139,7 +139,7 @@
         .form-control {
             border-radius: 8px;
             border: 1px solid #dee2e6;
-            padding: 10px 14px;
+            
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         .form-control:focus {

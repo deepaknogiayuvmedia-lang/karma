@@ -1,4 +1,5 @@
 @php($decimal_point_settings = \App\CPU\Helpers::get_business_settings('decimal_point_settings'))
+<div class="row g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-3 row-cols-md-2 row-cols-2" id="ajax-products">
 @foreach($products as $product)
     @if(!empty($product['product_id']))
         @php($product=$product->product)
@@ -9,9 +10,9 @@
         @endif
     </div>
 @endforeach
-
+</div>
 <div class="col-12">
-    <nav class="d-flex justify-content-between pt-2" aria-label="Page navigation"
+    <nav class="d-flex justify-content-center pt-2" aria-label="Page navigation"
          id="paginator-ajax">
         {!! $products->links() !!}
     </nav>

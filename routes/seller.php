@@ -139,6 +139,7 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
             Route::post('digital-file-upload-after-sell', 'OrderController@digital_file_upload_after_sell')->name('digital-file-upload-after-sell');
 
             Route::post('update-deliver-info','OrderController@update_deliver_info')->name('update-deliver-info');
+            Route::post('assign-delhivery','OrderController@assign_delhivery')->name('assign-delhivery');
             Route::get('add-delivery-man/{order_id}/{d_man_id}', 'OrderController@add_delivery_man')->name('add-delivery-man');
             Route::get('export-order-data/{status}', 'OrderController@bulk_export_data')->name('order-bulk-export');
         });

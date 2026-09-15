@@ -448,9 +448,12 @@ a:hover {
     text-decoration: line-through;
 }
 .bh-price-savings {
+    flex-shrink: 0;
     font-size: 0.72rem;
     font-weight: 700;
     color: var(--bh-offer-red);
+    white-space: nowrap;
+    
 }
 
 .bh-add-cart-btn {

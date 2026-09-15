@@ -990,7 +990,14 @@ class Helpers
 
     public static function get_shipping_config()
     {
-        $config = \App\Model\ThirdPartyShippingMethod::where('user_id', auth('admin')->id())->first();
+        $userId = null;
+        if (auth('admin')->check()) {
+            $userId = auth('admin')->id();
+        } elseif (auth('seller')->check()) {
+            $userId = auth('seller')->id();
+        }
+
+        $config = \App\Model\ThirdPartyShippingMethod::where('user_id', $userId)->first();
         if (!$config) {
             $config = \App\Model\ThirdPartyShippingMethod::first();
         }
