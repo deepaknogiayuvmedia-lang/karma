@@ -1086,30 +1086,8 @@ class WebController extends Controller
 
             $query = Product::active()->with(['reviews'])->whereIn('id', $product_ids);
         } elseif ($request['data_from'] == 'search') {
-            $key = explode(' ', $request['name']);
+            $product_ids = ProductManager::get_search_product_ids($request['name']);
 
-            $product_ids = Product::where(function ($q) use ($key) {
-                foreach ($key as $value) {
-                    $q
-                        ->orWhere('name', 'like', "%{$value}%")
-                        ->orWhereHas('tags', function ($t) use ($value) {
-                            $t->where('tag', 'like', "%{$value}%");
-                        });
-                }
-            })->pluck('id');
-
-            if ($product_ids->isEmpty()) {
-                $product_ids = Translation::where('translationable_type', 'App\Model\Product')
-                    ->where('key', 'name')
-                    ->where(function ($q) use ($key) {
-                        foreach ($key as $value) {
-                            $q->orWhere('value', 'like', "%{$value}%");
-                        }
-                    })
-                    ->pluck('translationable_id');
-            }
-
-            // agar fir bhi kuch na mile
             if ($product_ids->isEmpty()) {
                 $query = Product::whereRaw('0 = 1');  // empty result
             } else {
@@ -1260,12 +1238,12 @@ class WebController extends Controller
         }
 
         if ($request['data_from'] == 'search') {
-            $key = explode(' ', $request['name']);
-            $query = $porduct_data->where(function ($q) use ($key) {
-                foreach ($key as $value) {
-                    $q->orWhere('name', 'like', "%{$value}%");
-                }
-            });
+            $product_ids = ProductManager::get_search_product_ids($request['name']);
+            if ($product_ids->isEmpty()) {
+                $query = Product::whereRaw('0 = 1');
+            } else {
+                $query = $porduct_data->whereIn('id', $product_ids);
+            }
         }
 
         if ($request['data_from'] == 'discounted_products') {

@@ -95,11 +95,8 @@
                     @if($discountPrice)
                         @foreach($deal->products as $dp)
                             @if (isset($dp->product))
-                                <div class="col-xl-2 col-sm-3 col-6 __mb-10px">
-
+                                <div class="col-lg-2-4 col-md-4 col-sm-4 col-6 mb-3 px-2">
                                     @include('web-views.partials._single-product',['product'=>$dp->product,'decimal_point_settings'=>$decimal_point_settings])
-
-
                                 </div>
                             @endif
                         @endforeach

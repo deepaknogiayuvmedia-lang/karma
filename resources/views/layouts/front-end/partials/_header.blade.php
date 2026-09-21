@@ -354,20 +354,24 @@
                         alt="{{$web_config['name']->value}}" />
                 </a>
                 <!-- Search - Desktop-->
-                <div class="input-group-overlay d-none d-md-block mx-4"
-                    style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}}">
-                    <form action="{{route('products')}}" type="submit" class="search_form">
-                        <input class="form-control appended-form-control search-bar-input bh-search-input" type="text"
-                            autocomplete="off"
-                            placeholder="{{\App\CPU\translate('Search for seeds, fertilizers, pesticides...')}}"
-                            name="name">
-                        <button class="input-group-append-overlay search_button" type="submit"
-                            style="border-radius: {{Session::get('direction') === "rtl" ? '7px 0px 0px 7px; right: unset; left: 0' : '0px 7px 7px 0px; left: unset; right: 0'}};top:0;  border: none; color: #fff; font-size: 16px; font-weight: 600; padding: 0 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                            <i class="fa fa-search"></i>
-                        </button>
+                <div class="input-group-overlay d-none d-md-block mx-4 flex-grow-1" style="max-width: 650px; text-align: {{Session::get('direction') === 'rtl' ? 'right' : 'left'}};">
+                    <form action="{{route('products')}}" method="GET" class="search_form position-relative w-100">
+                        <input name="data_from" value="search" hidden>
                         <input name="page" value="1" hidden>
-                        <div class="card search-card __inline-13" id="desktopSearchOverlay" style="display:none;">
-                            <div class="card-body search-result-box __h-400px overflow-x-hidden overflow-y-auto"></div>
+                        <div class="d-flex align-items-center w-100 position-relative">
+                            <input class="form-control search-bar-input bh-search-input" type="text"
+                                autocomplete="off"
+                                placeholder="{{\App\CPU\translate('Search for seeds, fertilizers, pesticides...')}}"
+                                name="name"
+                                value="{{ request('name') }}"
+                                style="border: 2px solid #168A3A !important; border-radius: 50px 0 0 50px !important; height: 46px !important; padding-left: 20px !important; padding-right: 15px !important; font-size: 0.95rem; background: #ffffff; color: #1c252e; box-shadow: none !important;">
+                            <button class="search_button" type="submit"
+                                style="border-radius: 0 50px 50px 0 !important; background-color: #168A3A !important; border: 2px solid #168A3A !important; height: 46px !important; padding: 0 24px !important; color: #ffffff !important; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease; outline: none !important;">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="card search-card shadow-lg position-absolute w-100" id="desktopSearchOverlay" style="display:none; top: 100%; left: 0; z-index: 9999; border-radius: 12px; margin-top: 6px; overflow: hidden; border: 1px solid #e2e8f0; background: #fff;">
+                            <div class="card-body search-result-box p-0" style="max-height: 380px; overflow-y: auto;"></div>
                         </div>
                     </form>
                 </div>

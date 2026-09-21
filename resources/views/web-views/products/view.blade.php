@@ -77,6 +77,8 @@
             <h4 class="font-weight-bold mb-1" style="color: var(--bh-dark-green);">
                 @if($data['data_from'] == 'technical_name')
                     {{ \App\CPU\translate('Technical Name') }}: {{ $data['technical_name'] ?? '' }}
+                @elseif(($data['data_from'] == 'search' || $data['data_from'] == 'search_name') && !empty($data['name']))
+                    {{ \App\CPU\translate('Search Products') }} ({{ $data['name'] }})
                 @else
                     {{\App\CPU\translate(str_replace('_',' ',$data['data_from']))}} {{\App\CPU\translate('products')}} {{ isset($brand_name) ? '('.$brand_name.')' : ''}}
                 @endif
@@ -84,6 +86,9 @@
             <div style="font-size: 0.82rem; color: var(--bh-text-secondary);">
                 <a href="{{ route('home') }}" style="color: var(--bh-primary);">{{ \App\CPU\translate('Home') }}</a> / 
                 <span>{{ \App\CPU\translate(str_replace('_',' ',$data['data_from'])) }}</span>
+                @if(($data['data_from'] == 'search' || $data['data_from'] == 'search_name') && !empty($data['name']))
+                    / <span class="font-weight-bold" style="color: var(--bh-dark-green);">"{{ $data['name'] }}</span>
+                @endif
             </div>
         </div>
     </div>
