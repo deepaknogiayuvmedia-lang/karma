@@ -65,6 +65,74 @@
             }
         }
 
+        /* Mobile Filter Collapse - Only on mobile */
+        @media (max-width: 767.98px) {
+            .mobile-filter-toggle-btn {
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+                background-color: #168a3a !important;
+                color: #ffffff !important;
+                border: none !important;
+                padding: 10px 16px !important;
+                border-radius: 8px !important;
+                font-size: 0.95rem;
+                font-weight: 700;
+                width: 100%;
+                margin-bottom: 1rem;
+                cursor: pointer;
+                box-shadow: 0 2px 6px rgba(22, 138, 58, 0.25);
+                transition: background-color 0.2s ease, transform 0.15s ease;
+            }
+            .mobile-filter-toggle-btn:hover, .mobile-filter-toggle-btn:active {
+                background-color: #127230 !important;
+                color: #ffffff !important;
+            }
+            .mobile-filter-toggle-btn .fa-chevron-down {
+                transition: transform 0.3s ease;
+            }
+            .mobile-filter-toggle-btn.active .fa-chevron-down {
+                transform: rotate(180deg);
+            }
+
+            .bh-filter-sidebar {
+                max-height: 0;
+                opacity: 0;
+                visibility: hidden;
+                overflow: hidden;
+                padding: 0 !important;
+                border: 0 !important;
+                margin-bottom: 0 !important;
+                box-shadow: none !important;
+                transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.35s ease, margin 0.35s ease;
+            }
+            .bh-filter-sidebar.show {
+                max-height: 3000px;
+                opacity: 1;
+                visibility: visible;
+                padding: 1.25rem !important;
+                border: 1px solid var(--bh-border, #e2e8f0) !important;
+                margin-bottom: 1rem !important;
+                box-shadow: var(--bh-shadow-subtle, 0 2px 6px rgba(0,0,0,0.04)) !important;
+            }
+        }
+        @media (min-width: 768px) {
+            .mobile-filter-toggle-btn {
+                display: none !important;
+            }
+            .bh-filter-sidebar {
+                max-height: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                overflow: visible !important;
+                display: block !important;
+                padding: 1.25rem !important;
+                border: 1px solid var(--bh-border, #e2e8f0) !important;
+                margin-bottom: 1.25rem !important;
+                box-shadow: var(--bh-shadow-subtle, 0 2px 6px rgba(0,0,0,0.04)) !important;
+            }
+        }
+
     </style>
 @endpush
 
@@ -98,6 +166,11 @@
         <div class="row">
             <!-- Sidebar Filters -->
             <aside class="col-lg-3 col-md-4 SearchParameters" id="SearchParameters">
+                <!-- Mobile Filter Toggle Button (Mobile Only) -->
+                <button class="mobile-filter-toggle-btn btn btn-block font-weight-bold" type="button" onclick="document.getElementById('shop-sidebar').classList.toggle('show'); this.classList.toggle('active');" style="display:none;">
+                    <span><i class="fa fa-sliders mr-2"></i> {{\App\CPU\translate('Filters')}}</span>
+                    <i class="fa fa-chevron-down" style="font-size: 0.8rem;"></i>
+                </button>
                 <div class="bh-filter-sidebar" id="shop-sidebar">
                     <div class="bh-filter-title d-flex justify-content-between align-items-center">
                         <span><i class="fa fa-filter text-success mr-1"></i> {{\App\CPU\translate('FILTERS')}}</span>

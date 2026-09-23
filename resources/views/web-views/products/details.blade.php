@@ -79,6 +79,9 @@
             color: #666;
             margin-bottom: 16px;
             flex-wrap: wrap;
+            @media (width < 576px) {
+               margin-top : 16px;
+            }
         }
 
         .bhpdp-breadcrumb a {
@@ -120,7 +123,8 @@
         .bhpdp-hero-right {
             flex: 1;
             padding: 0 8px;
-            width: 100%
+            width: 100%;
+            min-width: 0;
         }
 
         /* Image Gallery */
@@ -434,18 +438,32 @@
 
         .bhpdp-variant-scroll {
             display: flex;
+            flex-wrap: nowrap;
             gap: 10px;
             overflow-x: auto;
+            overflow-y: hidden;
             padding-bottom: 8px;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            max-width: 100%;
+            width: 100%;
         }
 
         .bhpdp-variant-scroll::-webkit-scrollbar {
-            display: none;
+            height: 6px;
+        }
+
+        .bhpdp-variant-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .bhpdp-variant-scroll::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .bhpdp-variant-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
         }
 
         .bhpdp-variant-card {
@@ -486,7 +504,7 @@
         }
 
         .bhpdp-variant-name {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--pd-dark);
             margin-top: 6px;
@@ -946,9 +964,9 @@
         .bhpdp-sticky-tabs {
             position: sticky;
             top: 0;
-            background: #fff;
+           
             z-index: 50;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            
             margin-top: 24px;
         }
 
@@ -1222,46 +1240,56 @@
             color: #333;
             text-decoration: none;
             padding: 6px 14px;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            transition: all 0.2s;
         }
-
         .bhpdp-section-link:hover {
             background: var(--pd-primary);
             color: #fff;
             border-color: var(--pd-primary);
         }
 
-        /* Desktop: Grid */
-        .bhpdp-similar-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 14px;
+        /* Similar Products - Single Row Slider & Grid */
+        .bhpdp-similar-slider {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            gap: 14px !important;
+            padding: 4px 2px 14px 2px !important;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
         }
 
-        /* Mobile: Horizontal Slider */
-        @media (max-width: 767px) {
-            .bhpdp-similar-grid {
-                display: flex;
-                overflow-x: auto;
-                gap: 10px;
-                scroll-snap-type: x mandatory;
-                -webkit-overflow-scrolling: touch;
-                padding-bottom: 8px;
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-            }
-
-            .bhpdp-similar-grid::-webkit-scrollbar {
-                display: none;
-            }
-
-            .bhpdp-similar-card {
-                flex: 0 0 150px;
-                scroll-snap-align: start;
-            }
+        .bhpdp-similar-slider::-webkit-scrollbar {
+            height: 6px;
         }
+
+        .bhpdp-similar-slider::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .bhpdp-similar-slider::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .bhpdp-similar-slider::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .bhpdp-similar-item {
+            flex: 0 0 calc(16.666% - 12px) !important;
+            min-width: 170px !important;
+            scroll-snap-align: start;
+        }
+
+        @media (max-width: 768px) {
+            .bhpdp-similar-item {
+                flex: 0 0 160px !important;
+                min-width: 160px !important;
+            }
+        }"
 
         .bhpdp-similar-card {
             background: #fff;
@@ -1313,6 +1341,7 @@
             font-weight: 700;
             padding: 3px 8px;
             border-radius: 6px;
+            z-index: 999;
         }
 
         .bhpdp-similar-card-stock {
@@ -1487,7 +1516,7 @@
         .bhpdp-mobile-cta {
             display: none;
             position: fixed;
-            bottom: 0;
+            bottom: 50px;
             left: 0;
             right: 0;
             background: #fff;
@@ -1577,8 +1606,8 @@
 
             .bhpdp-variant-scroll {
                 overflow-x: auto;
+                overflow-y: hidden;
                 scroll-behavior: smooth;
-                -webkit-overflow-scrolling: touch;
                 padding-bottom: 10px;
                 margin: 0 -15px;
                 padding-left: 15px;
@@ -1631,7 +1660,7 @@
     $decimal_point_settings = \App\CPU\Helpers::get_business_settings('decimal_point_settings');
     ?>
 
-    <div class="bhpdp-container">
+    <div class="container">
         {{-- Breadcrumb --}}
         <nav class="bhpdp-breadcrumb">
             <a href="{{ route('home') }}">Home</a>
@@ -1659,10 +1688,10 @@
         </nav>
 
         {{-- Hero Section: Two Columns --}}
-        <div class="bhpdp-hero">
+        <div class="bhpdp-hero row">
 
             {{-- Left Column: Image Gallery --}}
-            <div class="bhpdp-hero-left">
+            <div class="bhpdp-hero-left col-lg-6">
                 <div class="bhpdp-gallery" id="bhpdpGallery">
                     <button class="bhpdp-gallery-nav prev" onclick="bhGalleryPrev()" aria-label="Previous image">
                         <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
@@ -1760,7 +1789,7 @@
             </div>
 
             {{-- Right Column: Product Info --}}
-            <div class="bhpdp-hero-right">
+            <div class="bhpdp-hero-right col-lg-6">
 
                 {{-- Social Proof --}}
                 @php
@@ -1831,7 +1860,17 @@
                             @endif
                         @endif
                     </div>
-                    <div class="bhpdp-price-mrp">MRP: {{ \App\CPU\Helpers::currency_converter($product->unit_price) }}
+                    <div class="bhpdp-price-mrp" id="bhpdp-selected-variant-label">
+                        @if (!empty($product->choice_options) && count(json_decode($product->choice_options)) > 0)
+                            @php
+                                $firstChoice = json_decode($product->choice_options)[0];
+                                $firstOption = trim($firstChoice->options[0] ?? '');
+                            @endphp
+                            <span style="color:#666; font-size:13px;">{{ $firstChoice->title }}:</span>
+                            <strong id="bhpdp-selected-variant-text" style="color:#222;">{{ $firstOption }}</strong>
+                        @else
+                            MRP: {{ \App\CPU\Helpers::currency_converter($product->unit_price) }}
+                        @endif
                     </div>
                     <div class="bhpdp-price-tax">(tax incl.)</div>
                     <div class="bhpdp-free-delivery">
@@ -1868,14 +1907,16 @@
                             $variations_list = !empty($product->variation)
                                 ? json_decode($product->variation, true)
                                 : [];
+                           
                         @endphp
 
                         @foreach (json_decode($product->choice_options) as $choice_key => $choice)
                             @php
+                           
                                 $single_pack_options = [];
                                 $multipack_options = [];
                                 $has_multipack_distinction = false;
-
+                            
                                 foreach ($choice->options as $opt) {
                                     if (preg_match('/pack\s*of|multipack|\bpack\b/i', $opt)) {
                                         $has_multipack_distinction = true;
@@ -1919,20 +1960,27 @@
                                         @php
                                             $option = $item['option'];
                                             $opt_idx = $item['original_index'];
-                                            $opt_clean = str_replace(' ', '', $option);
-
+                                            // Trim whitespace & remove spaces for matching
+                                            $opt_clean = str_replace(' ', '', trim($option));
+                                            
                                             $matched_variant = null;
                                             foreach ($variations_list as $v) {
-                                                if (
-                                                    isset($v['type']) &&
-                                                    ($v['type'] == $opt_clean ||
+                                               
+                                                if (isset($v['type'])) {
+                                                   
+                                                    // Also clean the variation type for reliable compare
+                                                    $v_type_clean = str_replace(' ', '', trim($v['type']));
+                                                      
+                                                    if (
+                                                        $v_type_clean === $opt_clean ||
                                                         (function_exists('str_ends_with')
-                                                            ? str_ends_with($v['type'], '-' . $opt_clean) ||
-                                                                str_ends_with($v['type'], $opt_clean)
-                                                            : substr($v['type'], -strlen($opt_clean)) === $opt_clean))
-                                                ) {
-                                                    $matched_variant = $v;
-                                                    break;
+                                                            ? str_ends_with($v_type_clean, '-' . $opt_clean) ||
+                                                                str_ends_with($v_type_clean, $opt_clean)
+                                                            : substr($v_type_clean, -strlen($opt_clean)) === $opt_clean)
+                                                    ) {
+                                                        $matched_variant = $v;
+                                                        
+                                                    }
                                                 }
                                             }
 
@@ -1955,14 +2003,19 @@
                                         @endphp
 
                                         <label class="bhpdp-variant-card {{ $opt_idx == 0 ? 'active' : '' }}"
-                                            onclick="bhSelectVariant(this, '{{ $choice->name }}')">
+                                            onclick="bhSelectVariant(this, '{{ $choice->name }}')"
+                                            data-final-price="{{ $v_final_price }}"
+                                            data-orig-price="{{ $v_price }}"
+                                            data-discount-pct="{{ $discount_percent }}"
+                                            data-display-final="{{ \App\CPU\Helpers::currency_converter($v_final_price) }}"
+                                            data-display-orig="{{ $v_discount > 0 ? \App\CPU\Helpers::currency_converter($v_price) : '' }}">
                                             <input type="radio" name="{{ $choice->name }}"
-                                                value="{{ $option }}" {{ $opt_idx == 0 ? 'checked' : '' }}
+                                                value="{{ trim($option) }}" {{ $opt_idx == 0 ? 'checked' : '' }}
                                                 style="display:none;">
                                             @if ($discount_percent > 0)
                                                 <span class="bhpdp-variant-discount">{{ $discount_percent }}% OFF</span>
                                             @endif
-                                            <div class="bhpdp-variant-name">{{ $option }}</div>
+                                            <div class="bhpdp-variant-name">{{ trim($option) }}</div>
                                             <div class="bhpdp-variant-price">
                                                 <span
                                                     class="bhpdp-variant-sell">{{ \App\CPU\Helpers::currency_converter($v_final_price) }}</span>
@@ -2098,7 +2151,7 @@
         </div>
 
         {{-- Sticky Tab Navigation --}}
-        <div class="bhpdp-sticky-tabs">
+        <div class="bhpdp-sticky-tabs bg-transparent px-3">
             <div class="bhpdp-tabs-inner" id="bhTabs">
                 <button class="bhpdp-tab-btn active" onclick="bhSwitchTab('overview')"
                     data-tab="overview">Overview</button>
@@ -2224,49 +2277,17 @@
                 </div>
 
                 @if (count($relatedProducts) > 0)
-                    <div class="bhpdp-similar-grid">
-                        @foreach ($relatedProducts as $relatedProduct)
-                            @php
-                                $rd = \App\CPU\Helpers::get_product_discount(
-                                    $relatedProduct,
-                                    $relatedProduct->unit_price,
-                                );
-                            @endphp
-                            <a href="{{ route('product', $relatedProduct->slug) }}" class="bhpdp-similar-card">
-                                <div class="bhpdp-similar-card-img">
-                                    @if ($relatedProduct->discount > 0)
-                                        @php $discPct = $relatedProduct->discount_type == 'percent' ? round($relatedProduct->discount) : round(($relatedProduct->discount / $relatedProduct->unit_price) * 100); @endphp
-                                        <span class="bhpdp-similar-card-badge">{{ $discPct }}% OFF</span>
-                                    @endif
-                                    @if ($relatedProduct->current_stock <= 0)
-                                        <span
-                                            class="bhpdp-similar-card-stock">{{ \App\CPU\translate('Stock Out') }}</span>
-                                    @endif
-                                    <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                        src="{{ asset(config('app.public_storage_path') . '/product/thumbnail/' . $relatedProduct->thumbnail) }}"
-                                        alt="{{ $relatedProduct->name }}">
-                                </div>
-                                <div class="bhpdp-similar-card-body">
-                                    <div class="bhpdp-similar-card-name">{{ $relatedProduct->name }}</div>
-                                    <div>
-                                        <span
-                                            class="bhpdp-similar-card-price">{{ \App\CPU\Helpers::currency_converter($relatedProduct->unit_price - $rd) }}</span>
-                                        @if ($relatedProduct->discount > 0)
-                                            <span
-                                                class="bhpdp-similar-card-old">{{ \App\CPU\Helpers::currency_converter($relatedProduct->unit_price) }}</span>
-                                        @endif
-                                    </div>
-                                    @if ($rd > 0)
-                                        <span class="bhpdp-similar-card-save">
-                                            <i class="fa fa-tag"></i> {{ \App\CPU\translate('save') }}
-                                            {{ \App\CPU\Helpers::currency_converter($rd) }}
-                                        </span>
-                                    @endif
-                                </div>
-                            </a>
+                    <div class="bhpdp-similar-slider">
+                        @foreach ($relatedProducts->take(6) as $relatedProduct)
+                            <div class="bhpdp-similar-item">
+                                @include('web-views.partials._single-product', [
+                                    'product' => $relatedProduct,
+                                    'decimal_point_settings' => $decimal_point_settings ?? 2,
+                                ])
+                            </div>
                         @endforeach
                     </div>
-                @else
+                @else"
                     <div style="text-align:center; padding:40px 0; color:#999;">
                         <small>{{ \App\CPU\translate('similar') }}
                             {{ \App\CPU\translate('product_not_available') }}</small>
@@ -2465,6 +2486,7 @@
 
         // Variant Selection
         function bhSelectVariant(label, name) {
+            // Update active card
             var parent = label.closest('.bhpdp-variant-scroll');
             if (parent) {
                 parent.querySelectorAll('.bhpdp-variant-card').forEach(function(c) {
@@ -2472,6 +2494,48 @@
                 });
             }
             label.classList.add('active');
+
+            // Update main price display
+            var finalPrice = label.getAttribute('data-display-final');
+            var origPrice  = label.getAttribute('data-display-orig');
+            var discPct    = label.getAttribute('data-discount-pct');
+
+            if (finalPrice) {
+                // Sell / current price
+                var sellEl = document.querySelector('.bhpdp-price-current');
+                if (sellEl) sellEl.textContent = finalPrice;
+
+                // Original / MRP price (strikethrough)
+                var origEl = document.querySelector('.bhpdp-price-old');
+                if (origEl) {
+                    if (origPrice) {
+                        origEl.textContent = origPrice;
+                        origEl.style.display = '';
+                    } else {
+                        origEl.style.display = 'none';
+                    }
+                }
+
+                // Selected variant type label
+                var variantTextEl = document.getElementById('bhpdp-selected-variant-text');
+                if (variantTextEl) {
+                    var variantNameEl = label.querySelector('.bhpdp-variant-name');
+                    if (variantNameEl) {
+                        variantTextEl.textContent = variantNameEl.textContent.trim();
+                    }
+                }
+
+                // Discount badge
+                var discEl = document.querySelector('.bhpdp-price-discount');
+                if (discEl) {
+                    if (discPct && parseInt(discPct) > 0) {
+                        discEl.textContent = discPct + '% OFF';
+                        discEl.style.display = '';
+                    } else {
+                        discEl.style.display = 'none';
+                    }
+                }
+            }
         }
 
         // Description Toggle

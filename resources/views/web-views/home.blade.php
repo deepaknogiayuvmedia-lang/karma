@@ -258,65 +258,15 @@
             .block-policy2 ul li .item-inner {
                 display: flex;
                 justify-content: center;
+                align-items: center;
             }
 
-            .block-policy2 ul li .item-inner .icon {
-                background: url(../../assets/front-end/img/promotion.png) no-repeat center center;
+            .block-policy2 ul li .item-inner .policy-icon {
                 width: 60px;
                 height: 52px;
+                object-fit: contain;
                 float: left;
                 margin-right: 10px;
-
-                @media (width<534px) {
-                    width: 60px;
-                    height: 52px;
-                }
-            }
-
-            .block-policy2 ul li .item-inner .icon.icon1 {
-                background-position: -22px -23px;
-            }
-
-            .block-policy2 ul li .item-inner .icon.icon2 {
-                background-position: -115px -23px;
-            }
-
-            .block-policy2 ul li .item-inner .icon.icon3 {
-                background-position: -200px -23px;
-            }
-
-            .block-policy2 ul li .item-inner .icon.icon4 {
-                background-position: -296px -23px;
-            }
-
-            .block-policy2 ul li .item-inner .icon.icon5 {
-                background-position: -394px -23px;
-            }
-
-            @media (width< 576px) {
-                .block-policy2 ul li .item-inner .icon.icon1 {
-                    background-position: -29px -23px;
-                }
-
-                .block-policy2 ul li .item-inner .icon.icon2 {
-                    background-position: -115px -23px;
-                }
-
-                .block-policy2 ul li .item-inner .icon.icon3 {
-                    background-position: -200px -23px;
-                }
-
-                .block-policy2 ul li .item-inner .icon.icon4 {
-                    background-position: -296px -23px;
-                }
-
-                .block-policy2 ul li .item-inner .icon.icon5 {
-                    background-position: -394px -23px;
-                }
-
-                .block-policy2 ul li {
-                    font-size: 14px;
-                }
             }
 
             .block-policy2 ul li .item-inner .content {
@@ -344,22 +294,142 @@
             }
 
             @media (min-width: 420px) and (max-width: 767.99px) {
-                .block-policy2 ul li {
-                    width: 50%;
+                .block-policy2 {
+                    border: none;
+                    background: linear-gradient(135deg, #f0faf2 0%, #e8f5e9 100%);
+                    border-radius: 12px;
+                    padding: 12px 8px;
+                    margin: 16px 0;
+                }
+
+                .block-policy2 ul {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 10px;
+                    padding: 0;
+                    margin: 0;
                 }
 
                 .block-policy2 ul li {
-                    text-align: left;
+                    float: none;
+                    width: auto;
+                    padding: 10px 6px;
+                    margin: 0;
+                    text-align: center;
+                    background: #fff;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+                    position: relative;
+                }
+
+                .block-policy2 ul li:before {
+                    display: none;
+                }
+
+                .block-policy2 ul li .item-inner {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 6px;
+                }
+
+                .block-policy2 ul li .item-inner .policy-icon {
+                    float: none;
+                    margin-right: 0;
+                    width: 44px;
+                    height: 38px;
+                }
+
+                .block-policy2 ul li .item-inner .content {
+                    float: none;
+                    text-align: center;
+                    margin-top: 0;
+                }
+
+                .block-policy2 ul li .item-inner .content a {
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 0.3px;
+                    line-height: 1.3;
+                    display: block;
+                    color: #1a5c2a;
+                }
+
+                .block-policy2 ul li .item-inner .content p {
+                    font-size: 10px;
+                    color: #666;
+                    margin-top: 2px;
+                    line-height: 1.2;
                 }
             }
 
-            @media (max-width: 420px) {
-                .block-policy2 ul li {
-                    width: 100%;
+            @media (max-width: 419px) {
+                .block-policy2 {
+                    border: none;
+                    background: linear-gradient(135deg, #f0faf2 0%, #e8f5e9 100%);
+                    border-radius: 12px;
+                    padding: 12px 8px;
+                    margin: 16px 0;
+                }
+
+                .block-policy2 ul {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 10px;
+                    padding: 0;
+                    margin: 0;
                 }
 
                 .block-policy2 ul li {
-                    text-align: left;
+                    float: none;
+                    width: auto;
+                    padding: 12px 6px;
+                    margin: 0;
+                    text-align: center;
+                    background: #fff;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+                    position: relative;
+                }
+
+                .block-policy2 ul li:before {
+                    display: none;
+                }
+
+                .block-policy2 ul li .item-inner {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 5px;
+                }
+
+                .block-policy2 ul li .item-inner .policy-icon {
+                    float: none;
+                    margin-right: 0;
+                    width: 50px;
+                    height: 44px;
+                }
+
+                .block-policy2 ul li .item-inner .content {
+                    float: none;
+                    text-align: center;
+                    margin-top: 0;
+                }
+
+                .block-policy2 ul li .item-inner .content a {
+                    font-size: 10px;
+                    font-weight: 700;
+                    letter-spacing: 0.2px;
+                    line-height: 1.2;
+                    display: block;
+                    color: #1a5c2a;
+                }
+
+                .block-policy2 ul li .item-inner .content p {
+                    font-size: 9px;
+                    color: #666;
+                    margin-top: 2px;
+                    line-height: 1.2;
                 }
             }
         </style>
@@ -372,7 +442,7 @@
                 position: -webkit-sticky;
                 position: sticky;
                 top: 0;
-                z-index: 1020;
+                z-index: 9;
                 background: #fff;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
                 padding: 8px 0;
@@ -435,7 +505,7 @@
         <!-- Hero (Banners + Slider)-->
         @php($main_banner = \App\Model\Banner::where('banner_type','Main Banner')->where('published',1)->orderBy('id','desc')->get())
         @if(isset($main_banner) && count($main_banner) > 0)
-        <section class="bh-home-section bg-transparent pt-0 pb-2">
+        <section class="bh-home-section bh-home-section-t bg-transparent">
             <div class="container-fluid px-0">
                 <div class="row m-0">
                     <div class="col-12 p-0">
@@ -455,7 +525,7 @@
 
         @if (isset($categories) && count($categories) > 0)
             @if ($business_mode == 'multi')
-                <div class="mobile-sticky-category owl-carousel py-3" id="mobile-category-slider">
+                <div class="mobile-sticky-category owl-carousel py-2" id="mobile-category-slider">
                     @foreach ($categories as $category)
                         <a class="cate-item"
                             href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
@@ -469,7 +539,7 @@
                 <div class="bh-home-section container d-lg-block d-none">
                     <div class="row">
                         <div class="col-md-12 mb-0">
-                            <div class=" border-0 bg-transparent h-100">
+                            <div class="border-0 bg-transparent h-100">
                                 <div class="card-body p-0">
                                     <div class="bh-section-header">
                                         <div class="bh-section-title-wrap">
@@ -492,7 +562,7 @@
                                                                     src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
                                                                     alt="{{ $category->name }}">
                                                             </div>
-                                                            <p class="text-center  mt-2">{{ Str::limit($category->name, 12) }}
+                                                            <p class="text-center  mt-2">{{ $category->name }}
                                                             </p>
                                                         </a>
                                                     </div>
@@ -598,7 +668,7 @@
                                 @foreach ($bestSellProduct as $key => $bestSell)
                                     @if ($bestSell && $bestSell->product)
                                         @php($product = $bestSell->product)
-                                        <div class="col-lg-2-4 col-md-4 col-sm-4 col-6 mb-3 px-2">
+                                        <div class="col-xxl-2 col-xl-2-4 col-lg-2-4 col-md-4 col-sm-4 col-6 mb-3 px-2">
                                             @include('web-views.partials._single-product', [
                                                 'product' => $product,
                                                 'decimal_point_settings' => $decimal_point_settings,
@@ -875,9 +945,9 @@
                         </a>
                     </div>
 
-                    <div class="row mt-0 g-3 d-none d-sm-flex">
-                        @foreach ($latest_products as $product)
-                            <div class="col-lg-2-4 col-md-4 col-sm-4 col-6 mb-3 px-2">
+                    <div class="row mt-0 g-3 d-none d-sm-flex" style="overflow:hidden;">
+                        @foreach ($latest_products->take(12) as $product)
+                            <div class="col-xxl-2 col-xl-2-4 col-lg-2-4 col-md-4 col-sm-4 col-6 mb-3 px-2">
                                 @include('web-views.partials._single-product', [
                                     'product' => $product,
                                     'decimal_point_settings' => $decimal_point_settings,
@@ -886,7 +956,7 @@
                         @endforeach
                     </div>
 
-                        <div class="d-block d-sm-none mt-2 px-3">
+                        <div class="d-block d-sm-none mt-2">
                             <div class="owl-carousel owl-theme" id="latest-products-slider">
                                 @foreach ($latest_products as $product)
                                     <div class="p-1">
@@ -919,7 +989,7 @@
                     <ul>
                         <li class="item-2">
                             <div class="item-inner">
-                                <div class="icon icon5"></div>
+                                <img class="policy-icon" src="{{ asset('assets/front-end/img/policy/price.png') }}" alt="Best Price">
                                 <div class="content">
                                     <a href="#">{{ \App\CPU\translate('Best Price Assured') }}</a>
                                     <p>{{ \App\CPU\translate('Guaranteed Lowest') }}</p>
@@ -928,7 +998,7 @@
                         </li>
                         <li class="item-3">
                             <div class="item-inner">
-                                <div class="icon icon2"></div>
+                                <img class="policy-icon" src="{{ asset('assets/front-end/img/policy/advice.png') }}" alt="Expert Advice">
                                 <div class="content">
                                     <a href="#">{{ \App\CPU\translate('Expert Advice') }}</a>
                                     <p>{{ \App\CPU\translate('Support 24/7') }}</p>
@@ -937,7 +1007,7 @@
                         </li>
                         <li class="item-4">
                             <div class="item-inner">
-                                <div class="icon icon4"></div>
+                                <img class="policy-icon" src="{{ asset('assets/front-end/img/policy/safe_secure.png') }}" alt="Safe & Secure">
                                 <div class="content">
                                     <a href="#">{{ \App\CPU\translate('Safe & Secure Payment') }}</a>
                                     <p>{{ \App\CPU\translate('100% Protected') }}</p>
@@ -946,7 +1016,7 @@
                         </li>
                         <li class="item-5">
                             <div class="item-inner">
-                                <div class="icon icon3"></div>
+                                <img class="policy-icon" src="{{ asset('assets/front-end/img/policy/original.png') }}" alt="Original Products">
                                 <div class="content">
                                     <a href="#">{{ \App\CPU\translate('Original Products') }}</a>
                                     <p>{{ \App\CPU\translate('100% Genuine') }}</p>
@@ -954,7 +1024,6 @@
                             </div>
                         </li>
                     </ul>
-
                 </div>
 
             </div>
@@ -965,7 +1034,7 @@
     @php($footer_banners = \App\Model\Banner::where('banner_type', 'Footer Banner')->where('published', 1)->orderBy('id', 'desc')->get())
     @if(isset($footer_banners) && count($footer_banners) > 0)
     <div class="bh-home-section container-fluid px-0">
-        <div class="row __inline-62">
+        <div class="row m-0 __inline-62">
 
             <div class="col-md-12 p-0">
                 <div class="feature-product">
@@ -1167,7 +1236,7 @@
             touchDrag: true,
             responsive: {
                 0: {
-                    items: 4
+                    items: 3
                 },
                 480: {
                     items: 5

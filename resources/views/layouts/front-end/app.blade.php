@@ -202,9 +202,7 @@
                 padding: 10px 16px;
                 font-size: 0.9rem;
             }
-            .form-control {
-                padding: 12px 14px;
-            }
+            
             .table {
                 font-size: 0.85rem;
             }
@@ -381,6 +379,86 @@
 
         .dropdown-menu {
             margin-{{ Session::get('direction') === 'rtl' ? 'right' : 'left' }} -8px !important;
+        }
+
+        /* Footer */
+        .bh-footer-topbar {
+            background-color: var(--bh-dark-green, #0B5D2A);
+            color: #ffffff;
+            padding: 12px 0;
+        }
+        .bh-footer-social-icon {
+            background: rgba(255,255,255,0.15);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bh-footer-body {
+            padding: 40px 0;
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--bh-border, #E1E6E2);
+        }
+        .bh-footer-heading {
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--bh-text-primary, #1B1F1D);
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+        }
+        .bh-footer-links {
+            font-size: 0.85rem;
+            line-height: 2;
+        }
+        .bh-footer-links li a {
+            color: var(--bh-text-secondary, #66706A);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .bh-footer-links li a:hover {
+            color: var(--bh-dark-green, #0B5D2A);
+        }
+        .bh-footer-contact {
+            font-size: 0.85rem;
+            color: var(--bh-text-secondary, #66706A);
+        }
+        .bh-footer-contact-link {
+            color: var(--bh-text-primary, #1B1F1D);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .bh-footer-contact-link:hover {
+            color: var(--bh-dark-green, #0B5D2A);
+        }
+        .bh-footer-text {
+            font-size: 0.82rem;
+            color: var(--bh-text-secondary, #66706A);
+            line-height: 1.5;
+        }
+        .bh-footer-input {
+            border-radius: 8px 0 0 8px;
+            border: 1px solid var(--bh-border, #E1E6E2);
+            font-size: 0.85rem;
+        }
+        .bh-footer-subscribe-btn {
+            border-radius: 0 8px 8px 0 !important;
+            font-size: 0.85rem;
+        }
+        .bh-footer-bottombar {
+            padding: 12px 0;
+            background-color: var(--bh-bg, #F7F8F6);
+        }
+        .bh-footer-copyright {
+            font-size: 0.82rem;
+            color: var(--bh-text-secondary, #66706A);
+        }
+        .bh-footer-secure {
+            font-size: 0.8rem;
+            color: var(--bh-text-secondary, #66706A);
         }
     </style>
 

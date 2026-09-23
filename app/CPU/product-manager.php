@@ -257,6 +257,28 @@ class ProductManager
         return [$overallRating, $totalRating];
     }
 
+    public static function get_search_product_ids($name)
+    {
+        $key = explode(' ', $name);
+
+        $product_ids = Product::active()->where(function ($q) use ($key) {
+            foreach ($key as $value) {
+                $q->orWhere('name', 'like', "%{$value}%");
+            }
+        })->pluck('id');
+
+        $translated_ids = Translation::where('translationable_type', 'App\Model\Product')
+            ->where('key', 'name')
+            ->where(function ($q) use ($key) {
+                foreach ($key as $value) {
+                    $q->orWhere('value', 'like', "%{$value}%");
+                }
+            })
+            ->pluck('translationable_id');
+
+        return $product_ids->merge($translated_ids)->unique();
+    }
+
     public static function get_shipping_methods($product)
     {
         if ($product['added_by'] == 'seller') {

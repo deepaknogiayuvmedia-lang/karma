@@ -794,6 +794,32 @@ class ProductController extends Controller
 
             $product->variation = json_encode($variations);
             $product->current_stock = $stock_count;
+
+            $choice_options = json_decode($product->choice_options, true) ?? [];
+            if (!empty($choice_options)) {
+                $num_choices = count($choice_options);
+                if ($num_choices === 1) {
+                    $choice_options[0]['options'] = array_column($variations, 'type');
+                } else {
+                    $new_options = array_fill(0, $num_choices, []);
+                    foreach ($variations as $var) {
+                        $type = $var['type'] ?? '';
+                        if ($type === '' || $type === 'default') continue;
+                        $parts = explode('-', $type);
+                        if (count($parts) >= $num_choices) {
+                            for ($i = 0; $i < $num_choices; $i++) {
+                                if (!in_array($parts[$i], $new_options[$i])) {
+                                    $new_options[$i][] = $parts[$i];
+                                }
+                            }
+                        }
+                    }
+                    for ($i = 0; $i < $num_choices; $i++) {
+                        $choice_options[$i]['options'] = $new_options[$i];
+                    }
+                }
+                $product->choice_options = json_encode($choice_options);
+            }
         }
 
         $product->save();

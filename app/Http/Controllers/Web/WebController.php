@@ -119,7 +119,7 @@ class WebController extends Controller
             ->orderBy('priority', 'desc')
             ->orderBy('indexing', 'asc')
             ->orderBy('id', 'desc')
-            ->take(10)
+            ->take(12)
             ->get()
             ->unique('name')
             ->values();
