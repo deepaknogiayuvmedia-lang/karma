@@ -13,6 +13,7 @@ use App\Model\Admin;
 use App\Model\Brand;
 use App\Model\BusinessSetting;
 use App\Model\Cart;
+use Carbon\Carbon;
 use App\Model\CartShipping;
 use App\Model\Category;
 use App\Model\Contact;
@@ -857,7 +858,7 @@ class WebController extends Controller
 
     public function product($slug)
     {
-        $product = Product::active()->with(['reviews', 'seller.shop'])->where('slug', $slug)->first();
+        $product = Product::active()->with(['reviews', 'seller.shop', 'tags'])->where('slug', $slug)->first();
         if ($product != null) {
             $countOrder = OrderDetail::where('product_id', $product->id)->count();
             $countWishlist = Wishlist::where('product_id', $product->id)->count();
@@ -1025,11 +1026,158 @@ class WebController extends Controller
     public function check_pincode(Request $request)
     {
         $request->validate([
-            'pincode' => 'required|numeric'
+            'pincode' => 'required|numeric|digits:6',
+            'product_id' => 'required|integer'
         ]);
 
-        $response = \App\CPU\shepping::check_pincode($request->pincode);
-        return response()->json($response);
+        $pincode = $request->pincode;
+        $product = \App\Model\Product::find($request->product_id);
+
+        if (!$product) {
+            return response()->json([
+                'status' => 'error',
+                'serviceable' => false,
+                'message' => 'Product not found.'
+            ]);
+        }
+
+        // Check pincode serviceability via Delhivery API
+        $response = \App\CPU\shepping::check_pincode($pincode);
+
+        \Illuminate\Support\Facades\Log::info('Pincode check result', [
+            'pincode' => $pincode,
+            'product_id' => $request->product_id,
+            'response' => $response
+        ]);
+
+        if ($response['status'] === 'success' && $response['serviceable']) {
+            // Calculate delivery cost
+            $shipping_cost = $product->shipping_cost ?? 0;
+
+            // Calculate estimated delivery date (5-7 business days default)
+            $business_days = 5;
+            $delivery_date = Carbon::now();
+            $added_days = 0;
+            while ($added_days < $business_days) {
+                $delivery_date->addDay();
+                if (!$delivery_date->isWeekend()) {
+                    $added_days++;
+                }
+            }
+            $delivery_end_date = $delivery_date->copy()->addDays(2);
+
+            return response()->json([
+                'status' => 'success',
+                'serviceable' => true,
+                'message' => 'Delivery available',
+                'delivery_cost' => $shipping_cost,
+                'delivery_cost_text' => $shipping_cost > 0
+                    ? \App\CPU\Helpers::currency_converter($shipping_cost)
+                    : 'Free',
+                'estimated_delivery' => $delivery_date->format('d M') . ' - ' . $delivery_end_date->format('d M, Y'),
+                'cod_available' => $response['cod_available'] ?? false
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'serviceable' => false,
+            'message' => 'Delivery not available for this pincode.'
+        ]);
+    }
+
+    public function calculate_shipping(Request $request)
+    {
+        $request->validate([
+            'pincode' => 'required|numeric|digits:6',
+        ]);
+
+        $pincode = $request->pincode;
+
+        // Check pincode serviceability via Delhivery API
+        $response = \App\CPU\shepping::check_pincode($pincode);
+
+        Log::info('Calculate shipping', [
+            'pincode' => $pincode,
+            'response' => $response
+        ]);
+
+        if ($response['status'] !== 'success' || !$response['serviceable']) {
+            return response()->json([
+                'status' => 'error',
+                'serviceable' => false,
+                'message' => 'Delivery not available for this pincode.'
+            ]);
+        }
+
+        // Get all physical products in cart
+        $cart_items = \App\Model\Cart::where('customer_id', auth('customer')->id())
+            ->where('product_type', 'physical')
+            ->get();
+
+        if ($cart_items->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cart is empty.'
+            ]);
+        }
+
+        // Calculate total shipping cost for all cart items
+        $total_shipping_cost = 0;
+        $total_cod_amount = 0;
+        $total_weight_grams = 0;
+        foreach ($cart_items as $item) {
+            $product = \App\Model\Product::find($item->product_id);
+            if ($product) {
+                $total_shipping_cost += \App\CPU\CartManager::get_shipping_cost_for_product_category_wise($product, $item->quantity);
+                $total_cod_amount += ($product->unit_price ?? 0) * $item->quantity;
+                $total_weight_grams += 500 * $item->quantity;
+            }
+        }
+
+        // Get actual shipping charges from Delhivery API
+        $charges = \App\CPU\shepping::get_shipping_charges(
+            $pincode,
+            'COD',
+            $total_cod_amount,
+            max($total_weight_grams, 500)
+        );
+
+        
+
+        // Use API charges if available, else fallback to product shipping_cost
+        $final_shipping_cost = $total_shipping_cost;
+        if ($charges['status'] === 'success' && isset($charges['total_amount']) && $charges['total_amount'] > 0) {
+            $final_shipping_cost = $charges['total_amount'];
+        }
+
+        // Calculate estimated delivery date (5-7 business days)
+        $business_days = 5;
+        $delivery_date = Carbon::now();
+        $added_days = 0;
+        while ($added_days < $business_days) {
+            $delivery_date->addDay();
+            if (!$delivery_date->isWeekend()) {
+                $added_days++;
+            }
+        }
+        $delivery_end_date = $delivery_date->copy()->addDays(2);
+
+        return response()->json([
+            'status' => 'success',
+            'serviceable' => true,
+            'message' => 'Delivery available',
+            'delivery_cost' => $final_shipping_cost,
+            'delivery_cost_text' => $final_shipping_cost > 0
+                ? \App\CPU\Helpers::currency_converter($final_shipping_cost)
+                : 'Free',
+            'estimated_delivery' => $delivery_date->format('d M') . ' - ' . $delivery_end_date->format('d M, Y'),
+            'cod_available' => $response['cod_available'] ?? false,
+            'cod_charge' => $charges['cod_charge'] ?? 0,
+            'tax' => $charges['tax'] ?? 0,
+            'district' => $response['district'] ?? '',
+            'state' => $response['state_code'] ?? ''
+        ]);
     }
 
     public function products(Request $request)

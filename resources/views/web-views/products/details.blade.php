@@ -77,10 +77,10 @@
             gap: 6px;
             font-size: 13px;
             color: #666;
-            margin-bottom: 16px;
+            margin-block: 16px;
             flex-wrap: wrap;
             @media (width < 576px) {
-               margin-top : 16px;
+               margin-block : 16px;
             }
         }
 
@@ -413,19 +413,6 @@
             margin-top: 4px;
         }
 
-        .bhpdp-free-delivery {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            color: #0369a1;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 6px;
-            margin-top: 8px;
-        }
 
         /* Variant Selector */
         .bhpdp-variant-label {
@@ -1580,7 +1567,7 @@
             }
 
             .bhpdp-gallery-slide img {
-                max-height: 320px;
+                max-height: 250px;
             }
 
             .bhpdp-title {
@@ -1792,24 +1779,35 @@
             <div class="bhpdp-hero-right col-lg-6">
 
                 {{-- Social Proof --}}
-                @php
-                    $orderCount = $countOrder ?? 0;
-                @endphp
-                @if ($orderCount > 0)
-                    <div class="bhpdp-social-proof">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                        </svg>
-                        <span>{{ number_format($orderCount) }}+ customers ordered recently</span>
+              
+                {{-- Title --}}
+                <h1 class="bhpdp-title">{{ $product->name }}</h1>
+                @if ($product->tags->count() > 0)
+                    @php
+                        $tag_colors = [
+                            ['bg' => '#f0fdf4', 'border' => '#bbf7d0', 'color' => '#168A3A'],
+                            ['bg' => '#eff6ff', 'border' => '#bfdbfe', 'color' => '#1d4ed8'],
+                            ['bg' => '#fef3c7', 'border' => '#fde68a', 'color' => '#92400e'],
+                            ['bg' => '#fce7f3', 'border' => '#fbcfe8', 'color' => '#9d174d'],
+                            ['bg' => '#f5f3ff', 'border' => '#ddd6fe', 'color' => '#6d28d9'],
+                            ['bg' => '#ecfdf5', 'border' => '#a7f3d0', 'color' => '#047857'],
+                            ['bg' => '#fff7ed', 'border' => '#fed7aa', 'color' => '#c2410c'],
+                            ['bg' => '#f0f9ff', 'border' => '#bae6fd', 'color' => '#0369a1'],
+                        ];
+                    @endphp
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">
+                        @foreach ($product->tags as $idx => $tag)
+                            @php $clr = $tag_colors[$idx % count($tag_colors)]; @endphp
+                            <span style="display:inline-flex; align-items:center; gap:4px; background:{{ $clr['bg'] }}; border:1px solid {{ $clr['border'] }}; color:{{ $clr['color'] }}; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px;">
+                                <i class="fa fa-tag" style="font-size:9px;"></i>
+                                {{ $tag->tag }}
+                            </span>
+                        @endforeach
                     </div>
                 @endif
 
-                {{-- Title --}}
-                <h1 class="bhpdp-title">{{ $product->name }}</h1>
-
                 {{-- Feature Badges --}}
-                <div class="bhpdp-badges">
+                <div class="bhpdp-badges" style="display:none;">
                     <span class="bhpdp-badge bhpdp-badge-green">100% Authentic</span>
                     <span class="bhpdp-badge bhpdp-badge-blue">Fast Delivery</span>
                     @if ($product->discount > 0)
@@ -1873,13 +1871,6 @@
                         @endif
                     </div>
                     <div class="bhpdp-price-tax">(tax incl.)</div>
-                    <div class="bhpdp-free-delivery">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
-                        </svg>
-                        Free Delivery
-                    </div>
                 </div>
 
                 <form id="add-to-cart-form">
@@ -2055,6 +2046,18 @@
                             </div>
                         </div>
                     </div>
+                @php
+                    $orderCount = $countOrder ?? 0;
+                @endphp
+                @if ($orderCount > 0)
+                    <div class="bhpdp-social-proof">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                        </svg>
+                        <span>{{ number_format($orderCount) }}+ customers ordered recently</span>
+                    </div>
+                @endif
 
                     {{-- Out of Stock --}}
                     <div id="variant-out-of-stock" class="d-none mb-3">
@@ -2085,6 +2088,29 @@
                                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                             </svg>
                             <span>In stock, Ready to Ship</span>
+                        </div>
+                    </div>
+
+                    {{-- Pincode Checker --}}
+                    <div class="bhpdp-pincode-checker" style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:12px; padding:14px 16px; margin:14px 0;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#168A3A"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                            <span style="font-size:13px; font-weight:700; color:#1c252e;">{{ \App\CPU\translate('Delivery') }}</span>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <input type="text" id="pdp_pincode_input" maxlength="6"
+                                placeholder="{{ \App\CPU\translate('Enter delivery pincode') }}"
+                                style="flex:1; border:1.5px solid #e5e7eb; border-radius:8px; padding:8px 12px; font-size:13px; outline:none; transition:border-color 0.2s;"
+                                onfocus="this.style.borderColor='#168A3A'" onblur="this.style.borderColor='#e5e7eb'"
+                                oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                            <button type="button" id="pdp_check_pincode_btn"
+                                style="background:#168A3A; color:#fff; border:none; border-radius:8px; padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer; transition:background 0.2s; white-space:nowrap;"
+                                onmouseover="this.style.background='#0B5D2A'" onmouseout="this.style.background='#168A3A'">
+                                {{ \App\CPU\translate('Check') }}
+                            </button>
+                        </div>
+                        <div id="pdp_pincode_result" style="margin-top:10px; display:none;">
+                            <div id="pdp_pincode_result_content"></div>
                         </div>
                     </div>
 
@@ -2319,36 +2345,6 @@
         </div>
     </div>
 
-    {{-- Pincode Check Modal --}}
-    <div class="modal fade rtl" id="pincodeModal" tabindex="-1" role="dialog" aria-labelledby="pincodeModalLabel"
-        aria-hidden="true" style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" style="border-radius:20px; border:none; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title font-weight-bold text-dark" id="pincodeModalLabel">
-                        {{ \App\CPU\translate('Select Delivery Address') }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body pb-4 pt-3">
-                    <p class="text-muted mb-3">{{ \App\CPU\translate('Use pin code to check delivery info') }}</p>
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="w-100 me-2">
-                            <input type="text" id="delivery_pincode_input" class="form-control rounded-pill px-3"
-                                placeholder="{{ \App\CPU\translate('Enter pin code') }}" style="height:46px;">
-                        </div>
-                        <div>
-                            <button type="button" class="btn btn-primary rounded-pill px-4 font-weight-bold"
-                                id="check_delivery_pincode_btn"
-                                style="height:46px;">{{ \App\CPU\translate('Submit') }}</button>
-                        </div>
-                    </div>
-                    <div id="pincode_check_result" class="mt-2"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     {{-- Attachment View Modal --}}
     <div class="modal fade rtl" id="show-modal-view" tabindex="-1" role="dialog" aria-labelledby="show-modal-image"
@@ -2555,47 +2551,78 @@
             }
         }
 
-        // Pincode Check
-        $('#check_delivery_pincode_btn').on('click', function() {
-            let pincode = $('#delivery_pincode_input').val();
-            if (pincode === '') {
-                toastr.warning('{{ \App\CPU\translate('Please enter a pin code') }}');
+        // Pincode Check - Inline
+        $('#pdp_check_pincode_btn').on('click', function() {
+            let pincode = $('#pdp_pincode_input').val().trim();
+            if (pincode === '' || pincode.length !== 6) {
+                toastr.warning('{{ \App\CPU\translate('Please enter a valid 6-digit pincode') }}');
                 return;
             }
-            $('#check_delivery_pincode_btn').attr('disabled', true).text('{{ \App\CPU\translate('Wait...') }}');
-            $('#pincode_check_result').html('');
+            let $btn = $(this);
+            $btn.attr('disabled', true).text('{{ \App\CPU\translate('Checking...') }}');
+            $('#pdp_pincode_result').hide();
 
             $.ajax({
-                type: "post",
-                url: '{{ route('check-pincode') }}',
+                type: "POST",
+                url: '{{ route("check-pincode") }}',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    pincode: pincode
+                    pincode: pincode,
+                    product_id: '{{ $product->id }}'
                 },
                 success: function(response) {
-                    $('#check_delivery_pincode_btn').removeAttr('disabled').text(
-                        '{{ \App\CPU\translate('Submit') }}');
+                    $btn.removeAttr('disabled').text('{{ \App\CPU\translate('Check') }}');
                     if (response.status === 'success' && response.serviceable) {
-                        $('#pincode_check_result').html(
-                            '<div class="text-success mt-2 font-weight-bold"><i class="fa fa-check-circle me-1"></i> {{ \App\CPU\translate('Delivery available in this area.') }}</div>'
-                        );
-                        setTimeout(function() {
-                            $('#pincodeModal').modal('hide');
-                        }, 2500);
+                        let codBadge = response.cod_available
+                            ? '<div style="display:flex; align-items:center; justify-content:space-between;">'
+                            + '<span style="font-size:12px; color:#66706A;">{{ \App\CPU\translate("Cash on Delivery") }}</span>'
+                            + '<span style="font-size:12px; font-weight:600; color:#168A3A;"><i class="fa fa-check-circle" style="margin-right:3px;"></i>{{ \App\CPU\translate("Available") }}</span>'
+                            + '</div>'
+                            : '<div style="display:flex; align-items:center; justify-content:space-between;">'
+                            + '<span style="font-size:12px; color:#66706A;">{{ \App\CPU\translate("Cash on Delivery") }}</span>'
+                            + '<span style="font-size:12px; font-weight:600; color:#dc2626;"><i class="fa fa-times-circle" style="margin-right:3px;"></i>{{ \App\CPU\translate("Not Available") }}</span>'
+                            + '</div>';
+
+                        let html = '<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px;">'
+                            + '<div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">'
+                            + '<i class="fa fa-check-circle" style="color:#16a34a; font-size:14px;"></i>'
+                            + '<span style="font-size:12px; font-weight:600; color:#16a34a;">{{ \App\CPU\translate("Delivery Available") }}</span>'
+                            + '</div>'
+                            + '<div style="display:flex; flex-direction:column; gap:6px;">'
+                            + '<div style="display:flex; align-items:center; justify-content:space-between;">'
+                            + '<span style="font-size:12px; color:#66706A;">{{ \App\CPU\translate("Estimated Delivery") }}</span>'
+                            + '<span style="font-size:12px; font-weight:600; color:#1c252e;">' + response.estimated_delivery + '</span>'
+                            + '</div>'
+                            + '<div style="display:flex; align-items:center; justify-content:space-between;">'
+                            + '<span style="font-size:12px; color:#66706A;">{{ \App\CPU\translate("Delivery Charge") }}</span>'
+                            + '<span style="font-size:12px; font-weight:600; color:#168A3A;">' + response.delivery_cost_text + '</span>'
+                            + '</div>'
+                            + codBadge
+                            + '</div>'
+                            + '</div>';
+                        $('#pdp_pincode_result_content').html(html);
                     } else {
-                        $('#pincode_check_result').html(
-                            '<div class="text-danger mt-2 font-weight-bold"><i class="fa fa-times-circle me-1"></i> {{ \App\CPU\translate('Delivery not available in this area.') }}</div>'
-                        );
+                        let html = '<div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px; display:flex; align-items:center; gap:8px;">'
+                            + '<i class="fa fa-times-circle" style="color:#dc2626; font-size:14px;"></i>'
+                            + '<span style="font-size:12px; font-weight:600; color:#dc2626;">{{ \App\CPU\translate("Delivery not available for this pincode") }}</span>'
+                            + '</div>';
+                        $('#pdp_pincode_result_content').html(html);
                     }
+                    $('#pdp_pincode_result').show();
                 },
                 error: function() {
-                    $('#check_delivery_pincode_btn').removeAttr('disabled').text(
-                        '{{ \App\CPU\translate('Submit') }}');
-                    $('#pincode_check_result').html(
-                        '<div class="text-danger mt-2 font-weight-bold"><i class="fa fa-exclamation-circle me-1"></i> {{ \App\CPU\translate('Error checking pin code.') }}</div>'
-                    );
+                    $btn.removeAttr('disabled').text('{{ \App\CPU\translate('Check') }}');
+                    toastr.error('{{ \App\CPU\translate('Error checking pincode. Please try again.') }}');
                 }
             });
+        });
+
+        // Allow Enter key to check pincode
+        $('#pdp_pincode_input').on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $('#pdp_check_pincode_btn').click();
+            }
         });
 
         // Load Reviews

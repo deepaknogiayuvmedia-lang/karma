@@ -390,57 +390,150 @@ class shepping
         }
     }
 
-       public static function check_pincode($pin)
+    public static function check_pincode($pin)
     {
+       
         $config = Helpers::get_shipping_config();
         
+        if (!$config || !$config->status) {
+            Log::warning('Delhivery shipping config not found or inactive');
+            return ['status' => 'error', 'serviceable' => false, 'message' => 'Delhivery is not active'];
+        }
+
+        $api_token = $config->api_secret;
+        
+        $url = (env('APP_MODE') == 'live'
+            ? "https://track.delhivery.com"
+            : "https://staging-express.delhivery.com") . "/c/api/pin-codes/json/?filter_codes=" . $pin;
+        
+        Log::info('Delhivery pincode check', ['pin' => $pin, 'url' => $url, 'mode' => env('APP_MODE')]);
+
+        try {
+            $response = Http::withoutVerifying()->withHeaders([
+                'Authorization' => 'Token ' . $api_token,
+                'Content-Type' => 'application/json'
+            ])->timeout(10)->get($url);
+
+            $body = $response->json();
+
+            Log::info('Delhivery API response', [
+                'pin' => $pin,
+                'status_code' => $response->status(),
+                'body' => $body
+            ]);
+
+            if ($response->successful() && isset($body['delivery_codes']) && count($body['delivery_codes']) > 0) {
+                $code = $body['delivery_codes'][0];
+                $postal = $code['postal_code'] ?? [];
+
+                $cod = ($postal['cod'] ?? '') === 'Y';
+                $pre_paid = ($postal['pre_paid'] ?? '') === 'Y';
+                $pickup = ($postal['pickup'] ?? '') === 'Y';
+                $repl = ($postal['repl'] ?? '') === 'Y';
+
+                return [
+                    'status' => 'success',
+                    'serviceable' => true,
+                    'message' => 'Pincode is serviceable.',
+                    'cod_available' => $cod,
+                    'pre_paid' => $pre_paid,
+                    'pickup' => $pickup,
+                    'repl' => $repl,
+                    'district' => $postal['district'] ?? '',
+                    'state_code' => $postal['state_code'] ?? '',
+                    'data' => $postal
+                ];
+            }
+
+            return [
+                'status' => 'error',
+                'serviceable' => false,
+                'cod_available' => false,
+                'message' => 'Delivery not available for this pincode.',
+                'data' => $body ?? []
+            ];
+        } catch (\Exception $e) {
+            Log::error('Delhivery pincode check exception', ['pin' => $pin, 'error' => $e->getMessage()]);
+            return ['status' => 'error', 'serviceable' => false, 'message' => 'API error: ' . $e->getMessage()];
+        }
+    }
+
+    public static function get_shipping_charges($destination_pin, $payment_type = 'COD', $cod_amount = 0, $weight_grams = 500)
+    {
+        $config = Helpers::get_shipping_config();
+
         if (!$config || !$config->status) {
             return ['status' => 'error', 'message' => 'Delhivery is not active'];
         }
 
         $api_token = $config->api_secret;
-        
-        // Delhivery Pincode Serviceability API endpoint
+
+        // Get origin pincode from admin warehouse
+        $o_pin = '305001';
+        $admin = \App\Model\Admin::whereNotNull('wherehouse')->first();
+        if ($admin && $admin->wherehouse) {
+            $wherehouse = is_array($admin->wherehouse) ? $admin->wherehouse : json_decode($admin->wherehouse, true);
+            if (!empty($wherehouse['pincode'])) {
+                $o_pin = $wherehouse['pincode'];
+            }
+        }
+
         $url = (env('APP_MODE') == 'live'
             ? "https://track.delhivery.com"
-            : "https://staging-express.delhivery.com") . "/c/api/pin-codes/json/?filter_codes=" . $pin;
-        
+            : "https://staging-express.delhivery.com") . "/api/kinko/v1/invoice/charges/.json";
+
+        $params = [
+            'md' => 'E',
+            'ss' => 'Delivered',
+            'd_pin' => $destination_pin,
+            'o_pin' => $o_pin,
+            'cgm' => $weight_grams,
+            'pt' => $payment_type,
+            'cod' => $cod_amount
+        ];
+
+        Log::info('Delhivery shipping charges API', ['params' => $params]);
+
         try {
             $response = Http::withoutVerifying()->withHeaders([
                 'Authorization' => 'Token ' . $api_token,
                 'Content-Type' => 'application/json'
-            ])->get($url);
-                // dd($response->json());
-            if ($response->successful()) {
-                $result = $response->json();
-             
-                // If delivery_codes array exists and has length > 0, the pincode is serviceable
-                if (isset($result['delivery_codes']) && count($result['delivery_codes']) > 0) {
-                    $details = $result['delivery_codes'][0]['postal_code'] ?? null;
+            ])->timeout(10)->get($url, $params);
 
-                    return [
-                        'status' => 'success',
-                        'serviceable' => true,
-                        'message' => 'Pincode is serviceable.',
-                        'data' => $details
-                    ];
-                } else {
-                    return [
-                        'status' => 'error',
-                        'serviceable' => false,
-                        'message' => 'Service is not available for this pincode.',
-                        'data' => []
-                    ];
-                }
+            $body = $response->json();
+
+            Log::info('Delhivery shipping charges response', [
+                'status_code' => $response->status(),
+                'body' => $body
+            ]);
+
+            if ($response->successful() && isset($body[0])) {
+                $charges = $body[0];
+                $total_amount = $charges['total_amount'] ?? $charges['amount'] ?? 0;
+                $freight = $charges['freight'] ?? 0;
+                $cod_charge = $charges['cod_charges'] ?? 0;
+                $tax = $charges['tax'] ?? 0;
+                $other_charges = $charges['other_charges'] ?? 0;
+
+                return [
+                    'status' => 'success',
+                    'total_amount' => (float) $total_amount,
+                    'freight' => (float) $freight,
+                    'cod_charge' => (float) $cod_charge,
+                    'tax' => (float) $tax,
+                    'other_charges' => (float) $other_charges,
+                    'amount_text' => \App\CPU\Helpers::currency_converter($total_amount)
+                ];
             }
+
             return [
-                'status' => 'error', 
-                'serviceable' => false,
-                'message' => 'Delhivery API connection failed: ' . $response->status(),
-                'data' => $response->json()
+                'status' => 'error',
+                'message' => 'Unable to calculate shipping charges.',
+                'data' => $body ?? []
             ];
         } catch (\Exception $e) {
-            return ['status' => 'error', 'serviceable' => false, 'message' => 'Exception: ' . $e->getMessage()];
+            Log::error('Delhivery shipping charges exception', ['error' => $e->getMessage()]);
+            return ['status' => 'error', 'message' => 'API error: ' . $e->getMessage()];
         }
     }
 }

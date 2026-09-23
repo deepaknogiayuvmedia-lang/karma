@@ -1,4 +1,15 @@
 <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
+    <style>
+        .nav-link.d-flex.align-items-center {
+            color: #4b566b !important;
+        }
+        .nav-link.d-flex.align-items-center i{
+            margin-right: 10px;
+        }
+        .nav-link.d-flex.align-items-center.text-danger{
+           color: #f34770 !important;
+        }
+    </style>
     <div class="card border shadow-sm rounded-lg p-3" style="background-color: var(--bh-surface, #ffffff);">
         <div class="text-center pb-3 mb-3 border-bottom">
             <div class="mb-2">

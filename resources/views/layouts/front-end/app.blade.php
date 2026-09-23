@@ -191,7 +191,7 @@
         .dropdown-item {
             padding: 8px 16px;
             border-radius: 6px;
-            margin: 0 8px;
+            /* margin: 0 8px; */
         }
         .dropdown-item:hover {
             background-color: #f8f9fa;
@@ -948,11 +948,11 @@
                 }
             });
 
-            $('.input-number').focusin(function() {
+            $('.input-number, .cart-qty-field').focusin(function() {
                 $(this).data('oldValue', $(this).val());
             });
 
-            $('.input-number').change(function() {
+            $('.input-number, .cart-qty-field').change(function() {
                 productType = $(this).attr('product-type');
                 minValue = parseInt($(this).attr('min'));
                 maxValue = parseInt($(this).attr('max'));
@@ -982,7 +982,7 @@
 
 
             });
-            $(".input-number").keydown(function(e) {
+            $(".input-number, .cart-qty-field").keydown(function(e) {
                 // Allow: backspace, delete, tab, escape, enter and .
                 if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 190]) !== -1 ||
                     // Allow: Ctrl+A

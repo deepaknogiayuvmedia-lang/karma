@@ -156,8 +156,8 @@
     footer{
       background:var(--secondary-color);
       color:#d8d8d8;
-      text-align:center;
-      padding:25px 15px;
+      /* text-align:center; */
+      /* padding:25px 15px; */
     }
 
     footer p{

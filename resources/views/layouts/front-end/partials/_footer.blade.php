@@ -62,7 +62,7 @@
                 </div>
 
                 <!-- Column 2: Shop Categories -->
-                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                     <h6 class="bh-footer-heading">{{ \App\CPU\translate('SHOP') }}</h6>
                     <ul class="list-unstyled mb-0 bh-footer-links">
                         <li><a href="{{ route('products', ['data_from' => 'latest', 'page' => 1]) }}">{{ \App\CPU\translate('All Products') }}</a></li>
@@ -74,7 +74,7 @@
                 </div>
 
                 <!-- Column 3: Help & Support -->
-                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                     <h6 class="bh-footer-heading">{{ \App\CPU\translate('HELP') }}</h6>
                     <ul class="list-unstyled mb-0 bh-footer-links">
                         <li><a href="{{ route('track-order.index') }}">{{ \App\CPU\translate('Track Order') }}</a></li>
@@ -86,7 +86,7 @@
                 </div>
 
                 <!-- Column 4: Resources -->
-                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                     <h6 class="bh-footer-heading">{{ \App\CPU\translate('RESOURCES') }}</h6>
                     <ul class="list-unstyled mb-0 bh-footer-links">
                         <li><a href="{{ route('technical-names') }}">{{ \App\CPU\translate('Technical Names') }}</a></li>
@@ -94,26 +94,6 @@
                         <li><a href="{{ route('categories') }}">{{ \App\CPU\translate('Crop Guides') }}</a></li>
                         <li><a href="{{ route('home') }}">{{ \App\CPU\translate('Kisan Vedika') }}</a></li>
                     </ul>
-                </div>
-
-                <!-- Column 5: Newsletter Subscription -->
-                <div class="col-lg-3 col-md-12">
-                    <h6 class="bh-footer-heading">{{ \App\CPU\translate('NEWSLETTER') }}</h6>
-                    <p class="bh-footer-text mb-3">
-                        {{ \App\CPU\translate('Subscribe to receive farming tips, new product arrivals & exclusive discounts.') }}
-                    </p>
-                    <form action="{{ route('subscription') }}" method="post" class="mb-3">
-                        @csrf
-                        <div class="input-group">
-                            <input type="email" name="subscription_email" class="form-control bh-footer-input"
-                                placeholder="{{ \App\CPU\translate('Your email address...') }}" required>
-                            <div class="input-group-append">
-                                <button class="btn btn-bh-primary bh-footer-subscribe-btn" type="submit">
-                                    {{ \App\CPU\translate('Subscribe') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>

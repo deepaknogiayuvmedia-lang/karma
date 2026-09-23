@@ -1,3 +1,52 @@
+<style>
+    .cart-qty-stepper {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .cart-qty-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        padding: 0;
+    }
+    .cart-qty-btn:hover:not(:disabled) {
+        background: #f3f4f6;
+        color: #168a3a;
+    }
+    .cart-qty-btn:disabled {
+        color: #d1d5db;
+        cursor: not-allowed;
+        background: #f9fafb;
+    }
+    .cart-qty-field {
+        width: 40px;
+        height: 32px;
+        border: none;
+        border-left: 1px solid #e5e7eb;
+        border-right: 1px solid #e5e7eb;
+        text-align: center;
+        font-weight: 700;
+        font-size: 14px;
+        color: #111;
+        background: #fff;
+        outline: none;
+        padding: 0;
+    }
+</style>
+
 <div class="feature_header mb-3">
     <h3 class="font-weight-bold text-capitalize m-0" style="font-size: 1.25rem;">
         <i class="czi-cart mr-2 text-primary"></i>{{ \App\CPU\translate('shopping_cart')}}
@@ -106,8 +155,19 @@
                                         <td class="text-center">
                                             <div class="d-inline-block">
                                                 @php($minimum_order=\App\Model\Product::select('minimum_order_qty')->find($cartItem['product_id']))
-                                                <input class="__cart-input form-control text-center px-1" type="number" name="quantity[{{ $cartItem['id'] }}]" id="cartQuantity{{$cartItem['id']}}"
-                                                onchange="updateCartQuantity('{{ $minimum_order->minimum_order_qty ?? 1 }}', '{{$cartItem['id']}}')" min="{{ $minimum_order->minimum_order_qty ?? 1 }}" value="{{$cartItem['quantity']}}" style="width: 65px; height: 36px; border-radius: 6px; margin: 0 auto;">
+                                                <div class="cart-qty-stepper">
+                                                    <button class="cart-qty-btn btn-number" type="button" data-type="minus"
+                                                        data-field="quantity[{{ $cartItem['id'] }}]" {{ $cartItem['quantity'] <= ($minimum_order->minimum_order_qty ?? 1) ? 'disabled' : '' }}>-</button>
+                                                    <input class="cart-qty-field" type="text" name="quantity[{{ $cartItem['id'] }}]"
+                                                        id="cartQuantity{{$cartItem['id']}}"
+                                                        value="{{$cartItem['quantity']}}"
+                                                        min="{{ $minimum_order->minimum_order_qty ?? 1 }}" max="100"
+                                                        product-type="physical"
+                                                        onchange="updateCartQuantity('{{ $minimum_order->minimum_order_qty ?? 1 }}', '{{$cartItem['id']}}')">
+                                                    <button class="cart-qty-btn btn-number" type="button" data-type="plus"
+                                                        data-field="quantity[{{ $cartItem['id'] }}]"
+                                                        product-type="physical">+</button>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="text-center">

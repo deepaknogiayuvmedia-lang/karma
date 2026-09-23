@@ -118,7 +118,7 @@ a:hover {
 /* Search Bar */
 .bh-search-box {
     position: relative;
-    max-width: 650px;
+    /* max-width: 650px; */
     width: 100%;
 }
 .bh-search-input {

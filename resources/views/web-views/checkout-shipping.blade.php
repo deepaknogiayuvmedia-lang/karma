@@ -155,7 +155,7 @@
                                                                name="city" {{$shipping_addresses->count()==0?'required':''}}>
                                                     </div>
 
-                                                    <div class="form-group">
+                                                     <div class="form-group">
                                                         <label
                                                             for="exampleInputEmail1">{{ \App\CPU\translate('zip_code')}}
                                                             <span
@@ -169,9 +169,22 @@
                                                                 @endforelse
                                                             </select>
                                                         @else
-                                                        <input type="text" class="form-control"
-                                                               name="zip" {{$shipping_addresses->count()==0?'required':''}}>
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control"
+                                                                   name="zip" id="checkout_pincode_input"
+                                                                   maxlength="6"
+                                                                   placeholder="{{ \App\CPU\translate('Enter pincode') }}"
+                                                                   oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                                                                   {{$shipping_addresses->count()==0?'required':''}}>
+                                                            <div class="input-group-append">
+                                                                <button type="button" class="btn btn-success" id="checkout_calc_shipping_btn"
+                                                                        style="background:#168A3A; border-color:#168A3A; color:#fff; font-weight:600;">
+                                                                    <i class="fa fa-truck mr-1"></i> {{ \App\CPU\translate('Check') }}
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                         @endif
+                                                        <div id="checkout_shipping_result" class="mt-2" style="display:none;"></div>
                                                     </div>
                                                     <div class="form-group">
                                                         <label
@@ -746,6 +759,81 @@
 
 
         }
+    </script>
+
+    <script>
+        // Calculate Shipping on Checkout
+        $('#checkout_calc_shipping_btn').on('click', function() {
+            let pincode = $('#checkout_pincode_input').val().trim();
+            if (pincode === '' || pincode.length !== 6) {
+                toastr.warning('{{ \App\CPU\translate("Please enter a valid 6-digit pincode") }}');
+                return;
+            }
+            let $btn = $(this);
+            $btn.attr('disabled', true).html('<i class="fa fa-spinner fa-spin mr-1"></i> {{ \App\CPU\translate("Checking...") }}');
+            $('#checkout_shipping_result').hide();
+
+            $.ajax({
+                type: "POST",
+                url: '{{ route("calculate-shipping") }}',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    pincode: pincode
+                },
+                success: function(response) {
+                    $btn.removeAttr('disabled').html('<i class="fa fa-truck mr-1"></i> {{ \App\CPU\translate("Check") }}');
+                    if (response.status === 'success' && response.serviceable) {
+                        let codBadge = response.cod_available
+                            ? '<div style="display:flex; align-items:center; justify-content:space-between;">'
+                            + '<span style="font-size:12px; color:#66706A;">{{ \App\CPU\translate("Cash on Delivery") }}</span>'
+                            + '<span style="font-size:12px; font-weight:600; color:#168A3A;"><i class="fa fa-check-circle mr-1"></i>{{ \App\CPU\translate("Available") }}</span>'
+                            + '</div>'
+                            : '<div style="display:flex; align-items:center; justify-content:space-between;">'
+                            + '<span style="font-size:12px; color:#66706A;">{{ \App\CPU\translate("Cash on Delivery") }}</span>'
+                            + '<span style="font-size:12px; font-weight:600; color:#dc2626;"><i class="fa fa-times-circle mr-1"></i>{{ \App\CPU\translate("Not Available") }}</span>'
+                            + '</div>';
+
+                        let html = '<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px;">'
+                            + '<div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">'
+                            + '<i class="fa fa-check-circle" style="color:#16a34a; font-size:14px;"></i>'
+                            + '<span style="font-size:12px; font-weight:600; color:#16a34a;">{{ \App\CPU\translate("Delivery Available") }}</span>'
+                            + '</div>'
+                            + '<div style="display:flex; flex-direction:column; gap:6px;">'
+                            + '<div style="display:flex; align-items:center; justify-content:space-between;">'
+                            + '<span style="font-size:12px; color:#66706A;">{{ \App\CPU\translate("Estimated Delivery") }}</span>'
+                            + '<span style="font-size:12px; font-weight:600; color:#1c252e;">' + response.estimated_delivery + '</span>'
+                            + '</div>'
+                            + '<div style="display:flex; align-items:center; justify-content:space-between;">'
+                            + '<span style="font-size:12px; color:#66706A;">{{ \App\CPU\translate("Shipping Cost") }}</span>'
+                            + '<span style="font-size:12px; font-weight:600; color:#168A3A;">' + response.delivery_cost_text + '</span>'
+                            + '</div>'
+                            + codBadge
+                            + '</div>'
+                            + '</div>';
+                        $('#checkout_shipping_result').html(html);
+                    } else {
+                        let html = '<div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px; display:flex; align-items:center; gap:8px;">'
+                            + '<i class="fa fa-times-circle" style="color:#dc2626; font-size:14px;"></i>'
+                            + '<span style="font-size:12px; font-weight:600; color:#dc2626;">{{ \App\CPU\translate("Delivery not available for this pincode") }}</span>'
+                            + '</div>';
+                        $('#checkout_shipping_result').html(html);
+                    }
+                    $('#checkout_shipping_result').show();
+                },
+                error: function() {
+                    $btn.removeAttr('disabled').html('<i class="fa fa-truck mr-1"></i> {{ \App\CPU\translate("Check") }}');
+                    toastr.error('{{ \App\CPU\translate("Error checking shipping. Please try again.") }}');
+                }
+            });
+        });
+
+        // Allow Enter key
+        $('#checkout_pincode_input').on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $('#checkout_calc_shipping_btn').click();
+            }
+        });
     </script>
 @endpush
 

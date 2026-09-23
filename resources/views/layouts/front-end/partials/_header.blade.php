@@ -858,6 +858,76 @@
             text-align: center;
         }
     }
+
+    /* ---- Desktop Seller Zone - Match Categories Style ---- */
+    @media (min-width: 768px) {
+        .seller-zone-nav .nav-link {
+            display: inline-flex !important;
+            align-items: center;
+            padding: 13px 16px !important;
+            font-size: 15px;
+            font-weight: 600;
+            color: #168A3A !important;
+            background: #fff;
+            border-radius: 6px;
+            margin-top: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            height: 40px;
+        }
+
+        .seller-zone-nav .nav-link:hover {
+            /* background: #0B5D2A !important; */
+            opacity: 1 !important;
+            transform: translateY(-1px);
+            /* box-shadow: 0 4px 12px rgba(11, 93, 42, 0.3); */
+        }
+
+        .seller-zone-nav .nav-link i {
+            font-size: 14px;
+            margin-right: 6px;
+        }
+
+        .seller-zone-nav .nav-link span {
+            margin-left: 5px;
+            margin-right: 25px;
+        }
+
+        .seller-zone-nav .nav-link.dropdown-toggle::after {
+            margin-left: auto;
+            border-top: 5px solid rgba(255,255,255,0.8);
+            border-right: 4px solid transparent;
+            border-left: 4px solid transparent;
+        }
+
+        .seller-zone-nav .dropdown-menu {
+            min-width: 180px;
+            border: 1px solid #e8eee9;
+            border-radius: 8px !important;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            padding: 6px 0 !important;
+            /* margin-top: 4px !important; */
+        }
+
+        .seller-zone-nav .dropdown-menu .dropdown-item {
+            padding: 10px 18px !important;
+            font-size: 14px;
+            font-weight: 500;
+            color: #17201a;
+            transition: all 0.15s ease;
+        }
+
+        .seller-zone-nav .dropdown-menu .dropdown-item:hover {
+            background: #f0f7f1;
+            color: #168A3A !important;
+        }
+
+        .seller-zone-nav .dropdown-menu .dropdown-divider {
+            margin: 4px 0;
+            border-color: #e8eee9;
+        }
+       
+    }
 </style>
 @php($announcement = \App\CPU\Helpers::get_business_settings('announcement'))
 @if (isset($announcement) && $announcement['status'] == 1)
@@ -977,7 +1047,7 @@
                 </a>
                 <!-- Search - Desktop-->
                 <div class="input-group-overlay d-none d-md-block mx-4 flex-grow-1"
-                    style="max-width: 650px; text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
+                    style=" text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
                     <form action="{{ route('products') }}" method="GET" class="search_form position-relative w-100">
                         <input name="data_from" value="search" hidden>
                         <input name="page" value="1" hidden>
@@ -1230,15 +1300,7 @@
                                         @endif
                                     </li>
                                 @endforeach
-                                <li class="dropdown">
-                                    <a class="dropdown-item d-block text-center" href="{{ route('categories') }}"
-                                        style="color: var(--primary_color) !important;">
-                                        {{ \App\CPU\translate('view_more') }}
-
-                                        <i class="czi-arrow-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }} __text-8px"
-                                            style="background:none !important;color:var(--primary_color) !important;"></i>
-                                    </a>
-                                </li>
+                                
                             </ul>
                         </li>
                     </ul>
@@ -1303,11 +1365,11 @@
                     <ul class="navbar-nav"
                         style="{{ Session::get('direction') === 'rtl' ? 'padding-right: 0px' : '' }}">
                         <li class="nav-item dropdown {{ request()->is('/') ? 'active' : '' }}">
-                            <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ route('home') }}">{{ \App\CPU\translate('Home') }}</a>
+                            <a class="nav-link" href="{{ route('home') }}">{{ \App\CPU\translate('Home') }}</a>
                         </li>
 
                         @if (\App\Model\BusinessSetting::where(['type' => 'product_brand'])->first()->value)
-                            <li class="nav-item dropdown">
+                            <li class="nav-item dropdown {{ request('data_from') == 'brand' || request()->is('brands') ? 'active' : '' }}">
                                 <a class="nav-link dropdown-toggle" href="#"
                                     data-toggle="dropdown">{{ \App\CPU\translate('brand') }}</a>
                                 <ul class="dropdown-menu __dropdown-menu-sizing dropdown-menu-{{ Session::get('direction') === 'rtl' ? 'right' : 'left' }} scroll-bar"
@@ -1340,33 +1402,53 @@
                             </li>
                         @endif
                         @php(
-    $discount_product = App\Model\Product::with(['reviews'])->active()->where('discount', '!=', 0)->count()
-)
+                                $discount_product = App\Model\Product::with(['reviews'])->active()->where('discount', '!=', 0)->count()
+                        )
                         @if ($discount_product > 0)
-                            <li class="nav-item dropdown {{ request()->is('/') ? 'active' : '' }}">
+                            <li class="nav-item dropdown {{ request('data_from') == 'discounted' ? 'active' : '' }}">
                                 <a class="nav-link text-capitalize"
                                     href="{{ route('products', ['data_from' => 'discounted', 'page' => 1]) }}">{{ \App\CPU\translate('discounted_products') }}</a>
                             </li>
                         @endif
 
-                        @php($business_mode = \App\CPU\Helpers::get_business_settings('business_mode'))
+                       
+                    </ul>
+                    <ul class="navbar-nav ml-auto" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}}" >
+                         @php($business_mode = \App\CPU\Helpers::get_business_settings('business_mode'))
                         @if ($business_mode == 'multi')
-                            <!-- <li class="nav-item dropdown {{ request()->is('/') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('sellers') }}">{{ \App\CPU\translate('Sellers') }}</a>
-                            </li> -->
-
+                          
                             @php($seller_registration = \App\Model\BusinessSetting::where(['type' => 'seller_registration'])->first()->value)
                             @if ($seller_registration)
-                                <li class="nav-item">
+                                <li class="nav-item {{ request()->routeIs('shop.apply') || request()->routeIs('seller.auth.login') ? 'active' : '' }} seller-zone-nav d-none d-xl-block">
+                                    <div class="dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                            <i class="czi-store align-middle mt-n1 mr-2"></i>
+                                            <span style="margin-left: 5px; margin-right: 30px;">{{ \App\CPU\translate('Seller') }} {{ \App\CPU\translate('zone') }}</span>
+                                        </a>
+                                        <div class="dropdown-menu __dropdown-menu-3 __min-w-165px"
+                                            aria-labelledby="dropdownMenuButton"
+                                            style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
+                                            <a class="dropdown-item" href="{{ route('shop.apply') }}">
+                                                {{ \App\CPU\translate('Become a') }}
+                                                {{ \App\CPU\translate('Seller') }}
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="{{ route('seller.auth.login') }}">
+                                                {{ \App\CPU\translate('Seller') }} {{ \App\CPU\translate('login') }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="nav-item {{ request()->routeIs('shop.apply') || request()->routeIs('seller.auth.login') ? 'active' : '' }} d-block d-xl-none">
                                     <div class="dropdown">
                                         <button class="btn dropdown-toggle text-white" type="button"
-                                            id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                            id="dropdownMenuButtonMobile" data-toggle="dropdown" aria-haspopup="true"
                                             aria-expanded="false"
                                             style="padding-{{ Session::get('direction') === 'rtl' ? 'right' : 'left' }}: 0">
                                             {{ \App\CPU\translate('Seller') }} {{ \App\CPU\translate('zone') }}
                                         </button>
                                         <div class="dropdown-menu __dropdown-menu-3 __min-w-165px"
-                                            aria-labelledby="dropdownMenuButton"
+                                            aria-labelledby="dropdownMenuButtonMobile"
                                             style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
                                             <a class="dropdown-item" href="{{ route('shop.apply') }}">
                                                 {{ \App\CPU\translate('Become a') }}
@@ -1382,17 +1464,16 @@
                             @endif
                         @endif
                     </ul>
-
                     <!-- Mobile Menu Footer -->
                     <div class="mobile-menu-footer d-xl-none">
                         <div class="mobile-menu-footer-title">{{ \App\CPU\translate('Need Help?') }}</div>
                         <a href="tel:{{ $web_config['phone']->value ?? '' }}" class="mobile-menu-footer-link">
                             <i class="fa fa-headset"></i>
-                            <span>{{ \App\CPU\translate('Customer Support') }}</span>
+                            <span>{{ \App\CPU\translate('Customer Support') }}: {{ $web_config['phone']->value ?? '' }}</span>
                         </a>
                         <a href="https://wa.me/{{ $web_config['whatsapp_number']->value ?? '' }}"
                             class="mobile-menu-footer-link" target="_blank">
-                            <i class="fab fa-whatsapp"></i>
+                            <svg style="width:14px;height:14px;fill:#68736b;" viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
                             <span>{{ \App\CPU\translate('WhatsApp Support') }}</span>
                         </a>
                         <div class="mobile-menu-footer-version">v2.0.1</div>

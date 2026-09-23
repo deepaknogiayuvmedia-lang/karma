@@ -58,6 +58,11 @@
     overflow: hidden;
     max-height: 2.4em; /* (Number of lines you want visible) * (line-height) */
     line-height: 1.2em;
+    @media(width <= 576px) {
+        font-size: 13px !important;
+        line-height: 1em;
+        max-height: 2em;
+    }
 }
 
 .cart_product .text-muted {

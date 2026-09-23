@@ -335,7 +335,7 @@ font-weight: 400;
         box-shadow: none;
     }
 
-    /* Stepper Control [ 🗑 | Qty | + ] */
+    /* Stepper Control [ - | Qty | + ] */
     .qv-stepper-box {
         display: inline-flex;
         align-items: center;
@@ -346,24 +346,32 @@ font-weight: 400;
         height: 32px;
     }
 
-    .qv-stepper-btn-trash {
+    .qv-stepper-btn-minus {
         width: 28px;
         height: 32px;
         border: none;
         background: #ffffff;
-        color: #ff9800;
-        font-size: 12px;
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         border-right: 1px solid #e2e8f0;
         padding: 0;
+        transition: all 0.15s ease;
     }
 
-    .qv-stepper-btn-trash:hover {
-        background: #fff7ed;
+    .qv-stepper-btn-minus:hover:not(:disabled) {
+        background: #fef2f2;
         color: #ef4444;
+    }
+
+    .qv-stepper-btn-minus:disabled {
+        color: #d1d5db;
+        cursor: not-allowed;
+        background: #f9fafb;
     }
 
     .qv-stepper-count {
@@ -464,13 +472,14 @@ font-weight: 400;
             <!-- Right Action / Stepper -->
             <div class="qv-var-right">
                 @if (!empty($varItem['in_cart_item']))
-                    <!-- Stepper Control: [ 🗑 | Qty | + ] -->
+                    <!-- Stepper Control: [ - | Qty | + ] -->
                     <div class="qv-stepper-box">
-                        <button type="button" class="qv-stepper-btn-trash" title="Remove"
-                                onclick="quickRemoveFromCart('{{ $varItem['in_cart_item']['id'] }}', '{{ $product->id }}')">
-                            <i class="fa fa-trash-o"></i>
+                        <button type="button" class="qv-stepper-btn-minus"
+                                onclick="quickUpdateCartQty('{{ $varItem['in_cart_item']['id'] }}', {{ max(1, $varItem['in_cart_item']['quantity'] - 1) }}, '{{ $product->id }}')"
+                                {{ $varItem['in_cart_item']['quantity'] <= 1 ? 'disabled' : '' }}>
+                            -
                         </button>
-                        
+
                         <div class="qv-stepper-count">
                             {{ $varItem['in_cart_item']['quantity'] }}
                         </div>

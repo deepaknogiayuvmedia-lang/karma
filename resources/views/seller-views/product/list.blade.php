@@ -104,7 +104,7 @@
                                 </div>
                                 <a href="{{ route('seller.product.adminlist') }}" class="btn btn-info">
                                     <i class="tio-add-circle"></i>
-                                    <span class="text">{{ \App\CPU\translate('Admin Product') }}</span>
+                                    <span class="text">{{ \App\CPU\translate('Copy Product') }}</span>
                                 </a>
                                 <a href="{{ route('seller.product.stock-limit-list', ['in_house', '']) }}"
                                     class="btn btn-info">
