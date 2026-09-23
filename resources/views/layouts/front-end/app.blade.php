@@ -77,36 +77,14 @@
     <link rel="icon" type="image/png" sizes="32x32"
         href="{{ asset(config('app.public_storage_path') . '/company') }}/{{ $web_config['fav_icon']->value }}">
 
-    <link rel="stylesheet" media="screen"
-        href="{{ asset('assets/front-end') }}/vendor/simplebar/dist/simplebar.min.css" />
-    <link rel="stylesheet" media="screen"
-        href="{{ asset('assets/front-end') }}/vendor/tiny-slider/dist/tiny-slider.css" />
-    <link rel="stylesheet" media="screen"
-        href="{{ asset('assets/front-end') }}/vendor/drift-zoom/dist/drift-basic.min.css" />
-    <link rel="stylesheet" media="screen"
-        href="{{ asset('assets/front-end') }}/vendor/lightgallery.js/dist/css/lightgallery.min.css" />
-    <link rel="stylesheet" href="{{ asset('assets/back-end') }}/css/toastr.css" />
-    <!-- Main Theme Styles + Bootstrap-->
-    <link rel="stylesheet" media="screen" href="{{ asset('assets/front-end') }}/css/theme.min.css">
-    <link rel="stylesheet" media="screen" href="{{ asset('assets/front-end') }}/css/slick.css">
-    <link rel="stylesheet" media="screen" href="{{ asset('assets/front-end') }}/css/font-awesome.min.css">
-    <!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">-->
-    <link rel="stylesheet" href="{{ asset('assets/back-end') }}/css/toastr.css" />
-    <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/master.css" />
+    <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/style.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Titillium+Web:wght@400;600;700&display=swap"
         rel="stylesheet">
     {{-- light box --}}
     <link rel="stylesheet" href="{{ asset('css/lightbox.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/back-end') }}/vendor/icon-set/style.css">
     @stack('css_or_js')
 
-    <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/home.css" />
-    <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/responsive1.css" />
-
-
-    <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/style.css">
-    <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/bighaat-theme.css">
     {{-- dont touch this --}}
     <meta name="_token" content="{{ csrf_token() }}">
     <!-- Phase 21: UI Improvements -->
@@ -459,6 +437,31 @@
         .bh-footer-secure {
             font-size: 0.8rem;
             color: var(--bh-text-secondary, #66706A);
+        }
+    </style>
+
+    <!-- Phase 24: Mobile Text Reset -->
+    <style>
+        @media (max-width: 767px) {
+            html, body { font-size: 14px !important; font-weight: 400 !important; text-transform: none !important; color: #262d34 !important; line-height: 1.6 !important; }
+            h1, h2, h3, h4, h5, h6 { text-transform: none !important; letter-spacing: normal !important; }
+            h1 { font-size: 28px !important; font-weight: 700 !important; }
+            h2 { font-size: 24px !important; font-weight: 700 !important; }
+            h3 { font-size: 20px !important; font-weight: 600 !important; }
+            h4 { font-size: 18px !important; font-weight: 600 !important; }
+            h5 { font-size: 16px !important; font-weight: 600 !important; }
+            h6 { font-size: 14px !important; font-weight: 600 !important; }
+            p, span, small, a, li, td, th { font-size: 14px !important; font-weight: 400 !important; text-transform: none !important; color: #262d34 !important; }
+            strong, b { font-weight: 700 !important; text-transform: none !important; }
+            .nav-link, .navbar-brand, .dropdown-item { font-size: 14px !important; text-transform: none !important; }
+            .product-name, .product-price, .section-title, .page-title { text-transform: none !important; }
+            .badge, .status-badge, .tag { text-transform: uppercase !important; }
+        }
+        @media (max-width: 575.98px) {
+            body { font-size: 13px !important; }
+            h1 { font-size: 22px !important; }
+            h2 { font-size: 20px !important; }
+            h3 { font-size: 18px !important; }
         }
     </style>
 

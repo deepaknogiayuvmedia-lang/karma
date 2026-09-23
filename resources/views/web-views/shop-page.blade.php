@@ -28,7 +28,6 @@
     <meta property="twitter:description" content="{!! substr($web_config['about']->value,0,100) !!}">
 
 
-    <link href="{{asset('assets/front-end')}}/css/home.css" rel="stylesheet">
     <style>
 
         .page-item.active .page-link {

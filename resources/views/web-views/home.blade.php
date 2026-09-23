@@ -16,7 +16,6 @@
         <meta property="twitter:url" content="{{ env('APP_URL') }}">
         <meta property="twitter:description" content="{!! substr($web_config['about']->value, 0, 100) !!}">
 
-        <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/home.css" />
         <style>
             .cz-countdown-days {
                 border: .5px solid var(--primary_color);
@@ -69,109 +68,57 @@
 
             @media (max-width: 800px) {
                 .categories-view-all {
-                        {
-                            {
-                            session('direction')==="rtl" ? 'margin-left: 10px;': 'margin-right: 6px;'
-                        }
-                    }
+                    {{ session('direction') === 'rtl' ? 'margin-left: 10px;' : 'margin-right: 6px;' }}
                 }
 
                 .categories-title {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'margin-right: 0px;': 'margin-left: 6px;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'margin-right: 0px;' : 'margin-left: 6px;' }}
                 }
 
                 .seller-list-title {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'margin-right: 0px;': 'margin-left: 10px;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'margin-right: 0px;' : 'margin-left: 10px;' }}
                 }
 
                 .seller-list-view-all {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'margin-left: 20px;': 'margin-right: 10px;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'margin-left: 20px;' : 'margin-right: 10px;' }}
                 }
 
                 .category-product-view-title {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'margin-right: 16px;': 'margin-left: -8px;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'margin-right: 16px;' : 'margin-left: -8px;' }}
                 }
 
                 .category-product-view-all {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'margin-left: -7px;': 'margin-right: 5px;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'margin-left: -7px;' : 'margin-right: 5px;' }}
                 }
             }
 
             @media (min-width: 801px) {
                 .categories-view-all {
-                        {
-                            {
-                            session('direction')==="rtl" ? 'margin-left: 30px;': 'margin-right: 27px;'
-                        }
-                    }
+                    {{ session('direction') === 'rtl' ? 'margin-left: 30px;' : 'margin-right: 27px;' }}
                 }
 
                 .categories-title {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'margin-right: 25px;': 'margin-left: 25px;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'margin-right: 25px;' : 'margin-left: 25px;' }}
                 }
 
                 .seller-list-title {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'margin-right: 6px;': 'margin-left: 10px;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'margin-right: 6px;' : 'margin-left: 10px;' }}
                 }
 
                 .seller-list-view-all {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'margin-left: 12px;': 'margin-right: 10px;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'margin-left: 12px;' : 'margin-right: 10px;' }}
                 }
 
                 .seller-card {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'padding-left:0px !important;': 'padding-right:0px !important;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'padding-left: 0px !important;' : 'padding-right: 0px !important;' }}
                 }
 
                 .category-product-view-title {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'margin-right: 10px;': 'margin-left: -12px;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'margin-right: 10px;' : 'margin-left: -12px;' }}
                 }
 
                 .category-product-view-all {
-                        {
-                            {
-                            Session: :get('direction')==="rtl" ? 'margin-left: -20px;': 'margin-right: 0px;'
-                        }
-                    }
+                    {{ Session::get('direction') === 'rtl' ? 'margin-left: -20px;' : 'margin-right: 0px;' }}
                 }
             }
 
@@ -188,7 +135,7 @@
                 background: #00695c;
             }
 
-            }
+          
 
             .czi-arrow-left {
                 color: var(--primary_color);
@@ -538,46 +485,46 @@
                             </a>
                         @endforeach
                     </div>
-                    <div class="bh-home-section container d-lg-block d-none">
-                        <div class="row">
-                            <div class="col-md-12 mb-0">
-                                <div class="border-0 bg-transparent h-100">
-                                    <div class="card-body p-0">
-                                        <div class="bh-section-header">
-                                            <div class="bh-section-title-wrap">
-                                                <h3 class="bh-section-title">{{ \App\CPU\translate('categories') }}</h3>
-                                            </div>
-
-                                        </div>
-                                        <div class="carousel-wrap ">
-                                            <div class=" mt-3 owl-carousel owl-theme" id="categorylist_slider">
-                                                @foreach ($categories as $key => $category)
-                                                    @if ($key < 12)
-                                                        <div class="text-center  __cate-item ">
-                                                            <a
-                                                                href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
-                                                                <div class="__img overflow-hidden rounded-circle"
-                                                                    style="margin: 0 auto;">
-                                                                    <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                                        src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
-                                                                        alt="{{ $category->name }}">
-                                                                </div>
-                                                                <p class="text-center  mt-2">{{ $category->name }}
-                                                                </p>
-                                                            </a>
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
+                </div>
+                <div class="bh-home-section container d-lg-block d-none">
+                    <div class="row">
+                        <div class="col-md-12 mb-0">
+                            <div class="border-0 bg-transparent h-100">
+                                <div class="card-body p-0">
+                                    <div class="bh-section-header">
+                                        <div class="bh-section-title-wrap">
+                                            <h3 class="bh-section-title">{{ \App\CPU\translate('categories') }}</h3>
                                         </div>
 
                                     </div>
+                                    <div class="carousel-wrap ">
+                                        <div class=" mt-3 owl-carousel owl-theme" id="categorylist_slider">
+                                            @foreach ($categories as $key => $category)
+                                                @if ($key < 12)
+                                                    <div class="text-center  __cate-item ">
+                                                        <a
+                                                            href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
+                                                            <div class="__img overflow-hidden rounded-circle"
+                                                                style="margin: 0 auto;">
+                                                                <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
+                                                                    src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
+                                                                    alt="{{ $category->name }}">
+                                                            </div>
+                                                            <p class="text-center  mt-2">{{ $category->name }}
+                                                            </p>
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
-                    </div>
-                @else
+                </div>
+            @else
                     <div class="bh-home-section container d-none d-md-block">
                         <div class=" border-0 h-100 pb-0">
                             <div class="card-body p-0">

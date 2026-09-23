@@ -212,7 +212,7 @@
                                         onclick="location.href='{{route('products',['id'=> $brand['id'],'data_from'=>'brand','page'=>1])}}'">
                                         <span style="color: var(--bh-text-primary);">{{ $brand['name'] }}</span>
                                         @if($brand['brand_products_count'] > 0 )
-                                            <span class="badge badge-light border text-muted">{{ $brand['brand_products_count'] }}</span>
+                                            <span class="badge badge-light border">{{ $brand['brand_products_count'] }}</span>
                                         @endif
                                     </li>
                                 @endforeach

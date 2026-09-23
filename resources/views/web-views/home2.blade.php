@@ -16,7 +16,6 @@
         <meta property="twitter:url" content="{{ env('APP_URL') }}">
         <meta property="twitter:description" content="{!! substr($web_config['about']->value, 0, 100) !!}">
 
-        <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/home.css" />
         <style>
             .cz-countdown-days {
                 border: .5px solid{{ $web_config['primary_color'] }};

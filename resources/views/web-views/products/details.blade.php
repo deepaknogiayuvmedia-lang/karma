@@ -1567,7 +1567,8 @@
             }
 
             .bhpdp-gallery-slide img {
-                max-height: 250px;
+                max-height: 250px
+                ;
             }
 
             .bhpdp-title {
