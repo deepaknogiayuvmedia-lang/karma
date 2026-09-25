@@ -13,8 +13,12 @@
         <span class="bh-pc-badge">{{ $discountPercent }}% OFF</span>
     @endif
 
-    <button type="button" class="bh-pc-wishlist" onclick="addWishlist('{{ $product->id }}')" title="{{ \App\CPU\translate('Add to Wishlist') }}">
-        <i class="fa fa-heart-o"></i>
+    @php($inWishlist = auth('customer')->check() && in_array((int) $product->id, array_map('intval', (array) session('wish_list', []))))
+    <button type="button" class="bh-pc-wishlist {{ $inWishlist ? 'active' : '' }}"
+        data-wishlist-product="{{ $product->id }}"
+        onclick="toggleWishlist('{{ $product->id }}')"
+        title="{{ $inWishlist ? \App\CPU\translate('Remove from Wishlist') : \App\CPU\translate('Add to Wishlist') }}">
+        <i class="fa {{ $inWishlist ? 'fa-heart' : 'fa-heart-o' }}"></i>
     </button>
 
     <a href="{{ route('product', $product->slug) }}" class="bh-pc-img-wrap d-block">

@@ -6,8 +6,9 @@
         <!-- Page Title -->
         <div class="mb-3">
             <h2 class="h1 mb-0 text-capitalize">
-                <img width="20" src="{{asset('/public/assets/back-end/img/product-review.png')}}" class="mb-1 mr-1" alt="">
-                {{\App\CPU\translate('Product_reviews')}}
+                <img width="20" src="{{ asset('/assets/back-end/img/product-review.png') }}" class="mb-1 mr-1"
+                    alt="">
+                {{ \App\CPU\translate('Product_reviews') }}
             </h2>
         </div>
         <!-- End Page Title -->
@@ -116,14 +117,15 @@
                         <div class="form-group">
                             <button type="button" class="btn btn-outline--primary mt-5" data-toggle="dropdown">
                                 <i class="tio-download-to"></i>
-                                {{\App\CPU\translate('export')}}
+                                {{ \App\CPU\translate('export') }}
                                 <i class="tio-chevron-down"></i>
                             </button>
 
                             <ul class="dropdown-menu dropdown-menu-right">
                                 <li>
-                                    <a type="submit" class="dropdown-item" href="{{ route('seller.reviews.export', ['product_id' => $product_id, 'customer_id' => $customer_id, 'status' => $status, 'from' => $from, 'to' => $to]) }}">
-                                        {{\App\CPU\translate('Excel')}}
+                                    <a type="submit" class="dropdown-item"
+                                        href="{{ route('seller.reviews.export', ['product_id' => $product_id, 'customer_id' => $customer_id, 'status' => $status, 'from' => $from, 'to' => $to]) }}">
+                                        {{ \App\CPU\translate('Excel') }}
                                     </a>
                                 </li>
                             </ul>
@@ -153,10 +155,11 @@
                             @if ($review->product)
                                 <tr>
                                     <td>
-                                        {{ $reviews->firstItem()+$key }}
+                                        {{ $reviews->firstItem() + $key }}
                                     </td>
                                     <td>
-                                        <a class="title-color hover-c1" href="{{ route('seller.product.view', [$review['product_id']]) }}">
+                                        <a class="title-color hover-c1"
+                                            href="{{ route('seller.product.view', [$review['product_id']]) }}">
                                             {{ Str::limit($review->product['name'], 25) }}
                                         </a>
                                     </td>
@@ -164,12 +167,14 @@
                                         @if ($review->customer)
                                             {{ $review->customer->f_name . ' ' . $review->customer->l_name }}
                                         @else
-                                            <label class="badge badge-soft-danger">{{ \App\CPU\translate('customer_removed') }}</label>
+                                            <label
+                                                class="badge badge-soft-danger">{{ \App\CPU\translate('customer_removed') }}</label>
                                         @endif
                                     </td>
                                     <td>
                                         <label class="badge badge-soft-info mb-0">
-                                            <span class="fz-12 d-flex align-items-center gap-1">{{ $review->rating }} <i class="tio-star"></i>
+                                            <span class="fz-12 d-flex align-items-center gap-1">{{ $review->rating }} <i
+                                                    class="tio-star"></i>
                                             </span>
                                         </label>
                                     </td>
@@ -178,18 +183,18 @@
                                             {{ $review->comment ? Str::limit($review->comment, 35) : 'No Comment Found' }}
                                         </div>
                                         <div class="gap-1">
-                                        @if($review->attachment)
-                                            @foreach (json_decode($review->attachment) as $img)
-                                                <a class=""
-                                                    href="{{ asset(config('app.public_storage_path').'/review') }}/{{ $img }}"
-                                                    data-lightbox="mygallery">
-                                                    <img clsss="p-2" width="60" height="60"
-                                                        onerror="this.src='{{asset('assets/back-end/img/160x160/img2.jpg')}}'"
-                                                        src="{{ asset(config('app.public_storage_path').'/review') }}/{{ $img }}"
-                                                        alt="Image">
-                                                </a>
-                                            @endforeach
-                                        @endif
+                                            @if ($review->attachment)
+                                                @foreach (json_decode($review->attachment) as $img)
+                                                    <a class=""
+                                                        href="{{ asset(config('app.public_storage_path') . '/review') }}/{{ $img }}"
+                                                        data-lightbox="mygallery">
+                                                        <img clsss="p-2" width="60" height="60"
+                                                            onerror="this.src='{{ asset('assets/back-end/img/160x160/img2.jpg') }}'"
+                                                            src="{{ asset(config('app.public_storage_path') . '/review') }}/{{ $img }}"
+                                                            alt="Image">
+                                                    </a>
+                                                @endforeach
+                                            @endif
                                         </div>
                                     </td>
                                     <td>{{ date('d M Y', strtotime($review->created_at)) }}</td>
@@ -247,4 +252,3 @@
         })
     </script>
 @endpush
-

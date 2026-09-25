@@ -72,7 +72,9 @@
                                         action="{{ route('admin.product.deny', ['id'=>$product['id']]) }}"
                                         method="post">
                                     <div class="modal-body">
-                                        <textarea class="form-control" name="denied_note" rows="3"></textarea>
+                                        <label>{{\App\CPU\translate('Rejection Reason')}} <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" name="denied_note" rows="3" required
+                                            placeholder="{{\App\CPU\translate('Enter rejection reason')}}"></textarea>
                                         <input type="hidden" name="_token" id="csrf-token"
                                                 value="{{ csrf_token() }}"/>
                                     </div>
@@ -89,9 +91,111 @@
             @elseif($product['request_status'] == 2)
             <div class="card mb-3 mb-lg-5 mt-2 mt-lg-3 bg-warning">
                 <div class="card-body text-center">
-                    <span class="text-dark">{{ $product['denied_note'] }}</span>
+                    <span class="text-dark fw-bold">{{ \App\CPU\translate('Denied') }}:</span>
+                    <span class="text-dark">{{ $product['denied_note'] ?: \App\CPU\translate('No reason provided') }}</span>
                 </div>
             </div>
+            @endif
+
+            @if ($changeRequest && $changeRequest->old_data && $changeRequest->new_data)
+                <div class="card mb-3 mb-lg-5 border-warning">
+                    <div class="card-header bg-warning-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-dark">
+                            <i class="tio-edit-square mr-1"></i>
+                            {{ \App\CPU\translate('Seller Resubmitted Changes') }}
+                        </h5>
+                        <small class="text-muted">
+                            <span class="badge badge-soft-danger mr-1">{{ \App\CPU\translate('Changed') }}</span>
+                            <span class="badge badge-soft-secondary">{{ \App\CPU\translate('Unchanged') }}</span>
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        @if ($changeRequest->seller_note)
+                            <p class="text-muted mb-3">
+                                <strong>{{ \App\CPU\translate('Seller Note') }}:</strong>
+                                {{ $changeRequest->seller_note }}
+                            </p>
+                        @endif
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>{{ \App\CPU\translate('Field') }}</th>
+                                        <th class="text-danger">{{ \App\CPU\translate('Old Value') }}</th>
+                                        <th class="text-success">{{ \App\CPU\translate('New Value') }}</th>
+                                        <th>{{ \App\CPU\translate('Status') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $allKeys = array_unique(array_merge(
+                                            array_keys($changeRequest->old_data ?? []),
+                                            array_keys($changeRequest->new_data ?? []),
+                                        ));
+                                        $skipKeys = [
+                                            'discount_type', 'choice_options', 'translations', 'priority',
+                                            'admin_commission', 'admin_commission_type', 'color_image',
+                                            'digital_file_ready', 'digital_product_type', 'stocks', 'sku',
+                                            'colors', 'choice_attributes', 'attributes', 'video_provider',
+                                        ];
+                                        $maps = [
+                                            'brandMap' => $brandMap ?? [],
+                                            'categoryMap' => $categoryMap ?? [],
+                                            'attributeMap' => $attributeMap ?? [],
+                                            'choiceAttrMap' => $choiceAttrMap ?? [],
+                                            'colorMap' => $colorMap ?? [],
+                                        ];
+                                    @endphp
+                                    @foreach ($allKeys as $key)
+                                        @if (!in_array($key, $skipKeys))
+                                            @php
+                                                $oldVal = $changeRequest->old_data[$key] ?? '';
+                                                $newVal = $changeRequest->new_data[$key] ?? '';
+                                                $oldDisplay = \App\Helpers\ChangeRequestFormatter::format($key, $oldVal, $maps);
+                                                $newDisplay = \App\Helpers\ChangeRequestFormatter::format($key, $newVal, $maps);
+                                                $isChanged = $oldDisplay != $newDisplay;
+                                            @endphp
+                                            @if ($isChanged)
+                                                <tr class="table-warning">
+                                                    <td><strong>{{ ucfirst(str_replace('_', ' ', $key)) }}</strong></td>
+                                                    <td class="text-danger">
+                                                        @php
+                                                            $oldDisplayStr = is_array($oldDisplay)
+                                                                ? json_encode($oldDisplay, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+                                                                : (string) $oldDisplay;
+                                                            $isHtml = $oldDisplayStr !== strip_tags($oldDisplayStr) || str_contains($oldDisplayStr, '<img');
+                                                        @endphp
+                                                        @if ($isHtml)
+                                                            <div class="html-preview">{!! $oldDisplayStr !!}</div>
+                                                        @else
+                                                            {{ \Illuminate\Support\Str::limit($oldDisplayStr, 120) }}
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-success">
+                                                        @php
+                                                            $newDisplayStr = is_array($newDisplay)
+                                                                ? json_encode($newDisplay, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+                                                                : (string) $newDisplay;
+                                                            $isHtml = $newDisplayStr !== strip_tags($newDisplayStr) || str_contains($newDisplayStr, '<img');
+                                                        @endphp
+                                                        @if ($isHtml)
+                                                            <div class="html-preview">{!! $newDisplayStr !!}</div>
+                                                        @else
+                                                            {{ \Illuminate\Support\Str::limit($newDisplayStr, 120) }}
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-soft-danger">{{ \App\CPU\translate('Changed') }}</span>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             @endif
         </div>
 
@@ -119,10 +223,7 @@
                                         <p class="mb-0">{{ $name_hi->value }}</p>
                                     </div>
                                 @endif
-                                <div class="mb-3">
-                                    <span class="text-muted">{{\App\CPU\translate('Product Type')}}:</span>
-                                    <p class="mb-0"><span class="badge badge-soft-primary">{{ ucfirst($product->product_type) }}</span></p>
-                                </div>
+                            
                                 <div class="mb-3">
                                     <span class="text-muted">{{\App\CPU\translate('Product Code')}}:</span>
                                     <p class="mb-0">{{ $product->code }}</p>
@@ -253,7 +354,7 @@
                                 @php
                                     $catIds = json_decode($product->category_ids, true) ?? [];
                                 @endphp
-                                @if(count($catIds) > 0)
+                                @if(count($catIds ?? []) > 0)
                                     @foreach($catIds as $catEntry)
                                         @php
                                             $catId = is_array($catEntry) ? ($catEntry['id'] ?? $catEntry) : $catEntry;
@@ -291,7 +392,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <span class="text-muted d-block mb-1">{{\App\CPU\translate('Available_Color')}}</span>
-                                @php $colors = json_decode($product->colors); @endphp
+                                @php $colors = json_decode($product->colors) ?? []; @endphp
                                 @if(count($colors) > 0)
                                     <ul class="list-inline checkbox-color mb-0">
                                         @foreach ($colors as $key => $color)
@@ -307,7 +408,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <span class="text-muted d-block mb-1">{{\App\CPU\translate('Attributes')}}</span>
-                                @php $attributes = json_decode($product->attributes); @endphp
+                                @php $attributes = json_decode($product->attributes) ?? []; @endphp
                                 @if(count($attributes) > 0)
                                     @foreach($attributes as $attr)
                                         <span class="badge badge-soft-secondary mr-1 mb-1">{{ $attr }}</span>
@@ -469,7 +570,7 @@
                         @php
                             $allImages = [];
                             $allImages[] = \App\CPU\ProductManager::product_image_path('thumbnail') . '/' . $product['thumbnail'];
-                            foreach(json_decode($product->images) as $photo) {
+                            foreach(json_decode($product->images) ?? [] as $photo) {
                                 $allImages[] = asset(config('app.public_storage_path') . '/product/' . $photo);
                             }
                         @endphp
@@ -519,12 +620,12 @@
                     </div>
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
-                            <h3 class="mb-0 mr-2">{{count($product->rating)>0?number_format($product->rating[0]->average, 2, '.', ' '):0}}</h3>
+                            <h3 class="mb-0 mr-2">{{count($product->rating ?? [])>0?number_format($product->rating[0]->average, 2, '.', ' '):0}}</h3>
                             <div>
-                                <small class="text-muted">of {{ $product->reviews->count() }} {{\App\CPU\translate('reviews')}}</small>
+                                <small class="text-muted">of {{ ($product->reviews ?? collect())->count() }} {{\App\CPU\translate('reviews')}}</small>
                             </div>
                         </div>
-                        @php $total=$product->reviews->count(); @endphp
+                        @php $total=($product->reviews ?? collect())->count(); @endphp
                         @foreach([5,4,3,2,1] as $star)
                             @php $count=\App\CPU\Helpers::rating_count($product['id'], $star); @endphp
                             <div class="d-flex align-items-center mb-1">
@@ -605,7 +706,7 @@
                     </tbody>
                 </table>
             </div>
-            @if(count($reviews)==0)
+                            @if(count($reviews ?? [])==0)
                 <div class="text-center p-4">
                     <img class="mb-3 w-160" src="{{asset('assets/back-end')}}/svg/illustrations/sorry.svg" alt="Image Description">
                     <p class="mb-0">{{\App\CPU\translate('No data to show')}}</p>

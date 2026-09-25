@@ -3,7 +3,6 @@
 @section('title', \App\CPU\translate('Privacy policy'))
 
 @push('css_or_js')
-
 @endpush
 
 @section('content')
@@ -11,8 +10,8 @@
         <!-- Page Title -->
         <div class="mb-3">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{asset('/public/assets/back-end/img/Pages.png')}}" width="20" alt="">
-                {{\App\CPU\translate('pages')}}
+                <img src="{{ asset('/assets/back-end/img/Pages.png') }}" width="20" alt="">
+                {{ \App\CPU\translate('pages') }}
             </h2>
         </div>
         <!-- End Page Title -->
@@ -25,14 +24,14 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">{{\App\CPU\translate('privacy_policy')}}</h5>
+                        <h5 class="mb-0">{{ \App\CPU\translate('privacy_policy') }}</h5>
                     </div>
 
-                    <form action="{{route('admin.business-settings.privacy-policy')}}" method="post">
+                    <form action="{{ route('admin.business-settings.privacy-policy') }}" method="post">
                         @csrf
                         <div class="card-body">
                             <div class="form-group">
-                                <textarea class="form-control" rows="10" name="value">{{$privacy_policy->value}}</textarea>
+                                <textarea class="form-control" rows="10" name="value">{{ $privacy_policy->value }}</textarea>
                             </div>
                             <div class="form-group">
                                 <input class="form-control btn--primary" type="submit" name="btn">
@@ -47,5 +46,3 @@
 
 @push('script')
 @endpush
-
-

@@ -143,24 +143,8 @@
 </div>
 
 {{-- Footer --}}
-<div style="padding:5px; width:650px; margin:auto; margin-top:5px; margin-bottom:50px;">
-    <table style="margin:auto; width:90%; color:#777777;">
-        <tbody>
-            <tr>
-                <th style="text-align:left;">
-                    <h1>{{ $company_name }}</h1>
-                </th>
-            </tr>
-            <tr>
-                <th style="text-align:left;">
-                    <div>Phone: {{ $company_phone }}</div>
-                    <div>Website: {{ url('/') }}</div>
-                    <div>Email: {{ $company_email }}</div>
-                </th>
-            </tr>
-        </tbody>
-    </table>
-</div>
+
+
 
 </body>
 </html>

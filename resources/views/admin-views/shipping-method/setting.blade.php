@@ -7,7 +7,7 @@
     <!-- Page Title -->
     <div class="mb-4 pb-2">
         <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-            <img src="{{asset('/public/assets/back-end/img/business-setup.png')}}" alt="">
+            <img src="{{asset('/assets/back-end/img/business-setup.png')}}" alt="">
             {{\App\CPU\translate('Business_Setup')}}
         </h2>
     </div>
@@ -22,8 +22,8 @@
             <div class="card h-100">
                 <div class="card-header">
                     <h5 class="text-capitalize mb-0">
-                        <!-- <i class="tio-settings-outlined"></i> -->
-                         {{\App\CPU\translate('shipping_responsibility')}}
+                        <i class="tio-settings-outlined"></i>
+                        {{\App\CPU\translate('shipping_responsibility')}}
                     </h5>
                 </div>
                 @php($shippingMethod=\App\CPU\Helpers::get_business_settings('shipping_method'))

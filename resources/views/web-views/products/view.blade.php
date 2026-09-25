@@ -155,7 +155,7 @@
                 <a href="{{ route('home') }}" style="color: var(--bh-primary);">{{ \App\CPU\translate('Home') }}</a> / 
                 <span>{{ \App\CPU\translate(str_replace('_',' ',$data['data_from'])) }}</span>
                 @if(($data['data_from'] == 'search' || $data['data_from'] == 'search_name') && !empty($data['name']))
-                    / <span class="font-weight-bold" style="color: var(--bh-dark-green);">"{{ $data['name'] }}</span>
+                    / <span class="font-weight-bold" style="color: var(--bh-dark-green);">{{ $data['name'] }}</span>
                 @endif
             </div>
         </div>
@@ -253,20 +253,29 @@
                         <label class="mr-2 mb-0 text-nowrap font-weight-bold" style="font-size: 0.85rem; color: var(--bh-text-secondary);" for="sorting">
                             {{\App\CPU\translate('Sort By')}}:
                         </label>
-                        <select class="form-control form-control-sm" style="width: auto; border-radius: var(--bh-radius-sm);" onchange="filter(this.value)">
-                            <option value="latest">{{\App\CPU\translate('Latest')}}</option>
-                            <option value="low-high">{{\App\CPU\translate('Price: Low to High')}}</option>
-                            <option value="high-low">{{\App\CPU\translate('Price: High to Low')}}</option>
-                            <option value="a-z">{{\App\CPU\translate('Name: A to Z')}}</option>
-                            <option value="z-a">{{\App\CPU\translate('Name: Z to A')}}</option>
+                        <select id="sorting" class="form-control form-control-sm" style="width: auto; border-radius: var(--bh-radius-sm);" onchange="filter(this.value)">
+                            <option value="latest" {{ ($data['sort_by'] ?? 'latest') == 'latest' ? 'selected' : '' }}>{{\App\CPU\translate('Latest')}}</option>
+                            <option value="low-high" {{ ($data['sort_by'] ?? '') == 'low-high' ? 'selected' : '' }}>{{\App\CPU\translate('Price: Low to High')}}</option>
+                            <option value="high-low" {{ ($data['sort_by'] ?? '') == 'high-low' ? 'selected' : '' }}>{{\App\CPU\translate('Price: High to Low')}}</option>
+                            <option value="a-z" {{ ($data['sort_by'] ?? '') == 'a-z' ? 'selected' : '' }}>{{\App\CPU\translate('Name: A to Z')}}</option>
+                            <option value="z-a" {{ ($data['sort_by'] ?? '') == 'z-a' ? 'selected' : '' }}>{{\App\CPU\translate('Name: Z to A')}}</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Product Grid -->
                 @if (count($products) > 0)
-                    <div >
-                        @include('web-views.products._ajax-products',['products'=>$products,'decimal_point_settings'=>$decimal_point_settings])
+                    <div>
+                        @include('web-views.products._ajax-products', [
+                            'products' => $products,
+                            'decimal_point_settings' => $decimal_point_settings,
+                            'show_pagination' => false,
+                        ])
+                    </div>
+                    <div id="infinite-scroll-loader" class="text-center py-4" style="display: none;">
+                        <div class="spinner-border" style="color: {{ $web_config['primary_color'] }};" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
                 @else
                     <div class="text-center py-5 bg-white rounded border">
@@ -282,6 +291,11 @@
 
 @push('script')
     <script>
+        var currentPage = {{ (int) $products->currentPage() }};
+        var lastPage = {{ (int) $products->lastPage() }};
+        var isLoadingMore = false;
+        var productUrl = '{{ request()->url() }}';
+
         function openNav() {
             document.getElementById("mySidepanel").style.width = "70%";
             document.getElementById("mySidepanel").style.height = "100vh";
@@ -291,63 +305,137 @@
             document.getElementById("mySidepanel").style.width = "0";
         }
 
-        function filter(value) {
-            var data = {
-                data_from: '{{$data['data_from']}}',
-                sort_by: value
-            };
-            if ('{{$data['name']}}') data.name = '{{$data['name']}}';
-            if ('{{$data['id']}}') data.id = '{{$data['id']}}';
-            if ($('#min_price').val()) data.min_price = $('#min_price').val();
-            if ($('#max_price').val() && $('#max_price').val() != '10000') data.max_price = $('#max_price').val();
+        function getSortValue() {
+            return $('#sorting').val() || @json($data['sort_by'] ?? 'latest');
+        }
 
+        function getFilterData() {
+            var data = {
+                data_from: @json($data['data_from'] ?? ''),
+                sort_by: getSortValue(),
+                is_ajax: 1
+            };
+            if (@json($data['name'] ?? '')) data.name = @json($data['name']);
+            if (@json($data['id'] ?? '')) data.id = @json($data['id']);
+            if (@json($data['technical_name'] ?? '')) data.technical_name = @json($data['technical_name']);
+            var minPrice = parseFloat($('#min_price').val());
+            var maxPrice = parseFloat($('#max_price').val());
+            if (!isNaN(minPrice) && minPrice > 0) data.min_price = minPrice;
+            if (!isNaN(maxPrice) && maxPrice > 0 && maxPrice != 10000) data.max_price = maxPrice;
+            return data;
+        }
+
+        function persistSortUrl(sortBy) {
+            try {
+                var url = new URL(window.location.href);
+                url.searchParams.set('sort_by', sortBy);
+                url.searchParams.delete('page');
+                window.history.replaceState({}, '', url.toString());
+            } catch (e) {}
+        }
+
+        function extractGridContent(html) {
+            var $tmp = $('<div>').html(html);
+            var $grid = $tmp.find('#ajax-products').first();
+            return $grid.length ? $grid.html() : $tmp.html();
+        }
+
+        function setPagerState(response) {
+            if (typeof response.current_page !== 'undefined') currentPage = response.current_page;
+            if (typeof response.last_page !== 'undefined') lastPage = response.last_page;
+        }
+
+        function renderProducts(response) {
+            setPagerState(response);
+            $('#ajax-products').html(extractGridContent(response.view));
+            if (typeof response.total_product !== 'undefined') {
+                $('#price-filter-count').text(response.total_product + ' {{\App\CPU\translate('items found')}}');
+            }
+            maybeLoadMore();
+        }
+
+        function requestProducts(extraData) {
+            var data = $.extend({}, getFilterData(), extraData || {});
             $.ajax({
-                url: '{{url('/')}}/products',
+                url: productUrl,
                 method: 'GET',
                 data: data,
                 dataType: 'json',
+                cache: false,
                 beforeSend: function () {
                     $('#loading').show();
                 },
                 success: function (response) {
-                    $('#ajax-products').html(response.view);
-                    $('#price-filter-count').text(response.total_product + ' {{\App\CPU\translate('items found')}}');
+                    if (response && response.view) {
+                        renderProducts(response);
+                        if (data.sort_by) persistSortUrl(data.sort_by);
+                    } else {
+                        console.error('Sort AJAX: invalid response', response);
+                    }
+                },
+                error: function (xhr, status, err) {
+                    console.error('Sort AJAX error:', status, err, xhr && xhr.responseText ? xhr.responseText.substring(0, 300) : '');
                 },
                 complete: function () {
                     $('#loading').hide();
                 },
             });
+        }
+
+        function filter(value) {
+            requestProducts({ sort_by: value, page: 1 });
         }
 
         function searchByPrice() {
-            let min = $('#min_price').val();
-            let max = $('#max_price').val();
-            var data = {
-                data_from: '{{$data['data_from']}}',
-                sort_by: '{{$data['sort_by']}}',
-                min_price: min,
-                max_price: max,
-            };
-            if ('{{$data['name']}}') data.name = '{{$data['name']}}';
-            if ('{{$data['id']}}') data.id = '{{$data['id']}}';
+            requestProducts({ page: 1 });
+        }
+
+        function loadMoreProducts() {
+            if (isLoadingMore || currentPage >= lastPage) return;
+            isLoadingMore = true;
+            $('#infinite-scroll-loader').show();
+
+            var data = $.extend({}, getFilterData(), { page: currentPage + 1 });
 
             $.ajax({
-                url: '{{url('/')}}/products',
+                url: productUrl,
                 method: 'GET',
                 data: data,
                 dataType: 'json',
-                beforeSend: function () {
-                    $('#loading').show();
-                },
+                cache: false,
                 success: function (response) {
-                    $('#ajax-products').html(response.view);
-                    $('#price-filter-count').text(response.total_product + ' {{\App\CPU\translate('items found')}}');
+                    if (response && response.view) {
+                        setPagerState(response);
+                        $('#ajax-products').append(extractGridContent(response.view));
+                    }
+                },
+                error: function (xhr, status, err) {
+                    console.error('Load more AJAX error:', status, err);
                 },
                 complete: function () {
-                    $('#loading').hide();
+                    isLoadingMore = false;
+                    $('#infinite-scroll-loader').hide();
+                    maybeLoadMore();
                 },
             });
         }
+
+        function maybeLoadMore() {
+            if (isLoadingMore || currentPage >= lastPage) return;
+            if ($(window).scrollTop() + $(window).height() >= $(document).height() - 300) {
+                loadMoreProducts();
+            }
+        }
+
+        var infiniteScrollTimer;
+        $(window).on('scroll', function () {
+            clearTimeout(infiniteScrollTimer);
+            infiniteScrollTimer = setTimeout(maybeLoadMore, 120);
+        });
+
+        $(function () {
+            maybeLoadMore();
+        });
 
         $('#searchByFilterValue, #searchByFilterValue-m').change(function () {
             var url = $(this).val();
@@ -364,7 +452,5 @@
             }).hide();
         });
     </script>
-
-
 @endpush
 

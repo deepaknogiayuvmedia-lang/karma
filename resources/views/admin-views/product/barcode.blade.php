@@ -9,8 +9,8 @@
             <!-- Page Title -->
             <div class="mb-3">
                 <h2 class="h1 mb-0 text-capitalize d-flex gap-2">
-                    <img src="{{asset('/public/assets/back-end/img/inhouse-product-list.png')}}" alt="">
-                    {{\App\CPU\translate('generate_barcode')}}
+                    <img src="{{ asset('/assets/back-end/img/inhouse-product-list.png') }}" alt="">
+                    {{ \App\CPU\translate('generate_barcode') }}
                 </h2>
             </div>
             <!-- End Page Title -->
@@ -18,7 +18,7 @@
             <div class="card">
                 <div class="py-4">
                     <div class="table-responsive">
-                        <table style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};"
+                        <table style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};"
                             class="table table-hover table-borderless table-thead-bordered table-nowrap table-align-middle card-table w-100">
                             <thead class="thead-light thead-50 text-capitalize">
                                 <tr>
@@ -35,21 +35,19 @@
                                         <th>
                                             @if ($product->code)
                                                 <span>
-                                                    {{$product->code}}
+                                                    {{ $product->code }}
                                                 </span>
-
                                             @else
-
-                                                <a class="title-color hover-c1" href="{{route('admin.product.edit',[$product['id']])}}">
+                                                <a class="title-color hover-c1"
+                                                    href="{{ route('admin.product.edit', [$product['id']]) }}">
                                                     {{ \App\CPU\translate('update_your_product_code') }}
                                                 </a>
-
                                             @endif
-                                            </th>
+                                        </th>
                                         <th>{{ Str::limit($product->name, 20) }}</th>
                                         <th>
-                                            <input id="limit" class="form-control" type="number" name="limit" min="1"
-                                                value="{{ $limit }}">
+                                            <input id="limit" class="form-control" type="number" name="limit"
+                                                min="1" value="{{ $limit }}">
                                             <span
                                                 class="text-danger mt-1 d-block">{{ \App\CPU\translate('maximum_quantity_270') }}</span>
                                         </th>
@@ -123,4 +121,3 @@
         }
     </script>
 @endpush
-

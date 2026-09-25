@@ -39,6 +39,13 @@
                 <i class="fa fa-map-marker w-20"></i> {{\App\CPU\translate('Track Order')}}
             </a>
 
+            @if (\App\CPU\Helpers::get_business_settings('loyalty_point_status') == 1)
+                <a class="nav-link d-flex align-items-center gap-2 py-2 px-3 {{ Request::is('wallet') ? 'active bg-success text-white' : 'text-dark' }}"
+                   href="{{ route('wallet') }}" style="border-radius: var(--bh-radius-sm);">
+                    <i class="czi-wallet w-20"></i> {{\App\CPU\translate('my_wallet')}}
+                </a>
+            @endif
+
             <a class="nav-link d-flex align-items-center gap-2 py-2 px-3 {{ Request::is('user-account*') ? 'active bg-success text-white' : 'text-dark' }}"
                href="{{ route('user-account') }}" style="border-radius: var(--bh-radius-sm);">
                 <i class="fa fa-user w-20"></i> {{\App\CPU\translate('Profile Info')}}
@@ -51,7 +58,7 @@
 
             <a class="nav-link d-flex align-items-center gap-2 py-2 px-3 {{ (Request::is('account-ticket*') || Request::is('support-ticket*')) ? 'active bg-success text-white' : 'text-dark' }}"
                href="{{ route('account-tickets') }}" style="border-radius: var(--bh-radius-sm);">
-                <i class="fa fa-headset w-20"></i> {{\App\CPU\translate('Support Tickets')}}
+                <i class="czi-support w-20"></i> {{\App\CPU\translate('Support Tickets')}}
             </a>
 
             <hr class="my-2">

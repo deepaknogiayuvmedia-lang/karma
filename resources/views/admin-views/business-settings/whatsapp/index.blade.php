@@ -3,12 +3,24 @@
 @section('title', \App\CPU\translate('Payment Method'))
 
 @push('css_or_js')
-<style>
-    .test-msg-card { border: 2px dashed #00d26a; }
-    .test-msg-card .card-header { background: #00d26a; color: #fff; }
-    #testResult { display: none; }
-    #testResult.show { display: block; }
-</style>
+    <style>
+        .test-msg-card {
+            border: 2px dashed #00d26a;
+        }
+
+        .test-msg-card .card-header {
+            background: #00d26a;
+            color: #fff;
+        }
+
+        #testResult {
+            display: none;
+        }
+
+        #testResult.show {
+            display: block;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -16,7 +28,7 @@
         <!-- Page Title -->
         <div class="mb-4 pb-2">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{ asset('/public/assets/back-end/img/3rd-party.png') }}" alt="">
+                <img src="{{ asset('/assets/back-end/img/3rd-party.png') }}" alt="">
                 {{ \App\CPU\translate('3rd_party') }}
             </h2>
         </div>
@@ -115,7 +127,8 @@
                                 </select>
                             </div>
                             <div class="form-group col-lg-4 d-flex align-items-end">
-                                <button type="button" class="btn btn-success px-4" id="sendTestBtn" onclick="sendTestMessage()">
+                                <button type="button" class="btn btn-success px-4" id="sendTestBtn"
+                                    onclick="sendTestMessage()">
                                     <i class="tio-send"></i> Send Test Message
                                 </button>
                             </div>
@@ -133,51 +146,50 @@
 @endsection
 
 @push('script')
-<script>
-    function sendTestMessage() {
-        var phone = $('#testPhone').val().trim();
-        var templateName = $('#testTemplate').val();
+    <script>
+        function sendTestMessage() {
+            var phone = $('#testPhone').val().trim();
+            var templateName = $('#testTemplate').val();
 
-        if (!phone) {
-            alert('Please enter a phone number');
-            return;
-        }
-        if (!templateName) {
-            alert('Please select a template');
-            return;
-        }
-
-        var btn = $('#sendTestBtn');
-        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sending...');
-
-        $.ajax({
-            url: '{{ route("admin.business-settings.whatsapp.send-test") }}',
-            type: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                phone: phone,
-                template_name: templateName
-            },
-            success: function(response) {
-                $('#testResult').addClass('show');
-                if (response.status == 1) {
-                    $('#testResultMsg').removeClass('alert-danger').addClass('alert-success')
-                        .html('<strong>Success!</strong> ' + response.message);
-                } else {
-                    $('#testResultMsg').removeClass('alert-success').addClass('alert-danger')
-                        .html('<strong>Error!</strong> ' + response.message);
-                }
-                btn.prop('disabled', false).html('<i class="tio-send"></i> Send Test Message');
-            },
-            error: function(xhr) {
-                $('#testResult').addClass('show');
-                var msg = xhr.responseJSON ? xhr.responseJSON.message : 'Something went wrong';
-                $('#testResultMsg').removeClass('alert-success').addClass('alert-danger')
-                    .html('<strong>Error!</strong> ' + msg);
-                btn.prop('disabled', false).html('<i class="tio-send"></i> Send Test Message');
+            if (!phone) {
+                alert('Please enter a phone number');
+                return;
             }
-        });
-    }
-</script>
-@endpush
+            if (!templateName) {
+                alert('Please select a template');
+                return;
+            }
 
+            var btn = $('#sendTestBtn');
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sending...');
+
+            $.ajax({
+                url: '{{ route('admin.business-settings.whatsapp.send-test') }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    phone: phone,
+                    template_name: templateName
+                },
+                success: function(response) {
+                    $('#testResult').addClass('show');
+                    if (response.status == 1) {
+                        $('#testResultMsg').removeClass('alert-danger').addClass('alert-success')
+                            .html('<strong>Success!</strong> ' + response.message);
+                    } else {
+                        $('#testResultMsg').removeClass('alert-success').addClass('alert-danger')
+                            .html('<strong>Error!</strong> ' + response.message);
+                    }
+                    btn.prop('disabled', false).html('<i class="tio-send"></i> Send Test Message');
+                },
+                error: function(xhr) {
+                    $('#testResult').addClass('show');
+                    var msg = xhr.responseJSON ? xhr.responseJSON.message : 'Something went wrong';
+                    $('#testResultMsg').removeClass('alert-success').addClass('alert-danger')
+                        .html('<strong>Error!</strong> ' + msg);
+                    btn.prop('disabled', false).html('<i class="tio-send"></i> Send Test Message');
+                }
+            });
+        }
+    </script>
+@endpush

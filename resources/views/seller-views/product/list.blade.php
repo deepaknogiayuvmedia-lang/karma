@@ -102,7 +102,7 @@
                                         <div class="dropdown-divider"></div>
                                     </ul>
                                 </div>
-                                <a href="{{ route('seller.product.adminlist') }}" class="btn btn-info">
+                                <a href="{{ route('seller.product.copy_product_list') }}" class="btn btn-info">
                                     <i class="tio-add-circle"></i>
                                     <span class="text">{{ \App\CPU\translate('Copy Product') }}</span>
                                 </a>
@@ -127,7 +127,6 @@
                                 <tr>
                                     <th>{{ \App\CPU\translate('SL') }}</th>
                                     <th>{{ \App\CPU\translate('Product Name') }}</th>
-                                    <th>{{ \App\CPU\translate('Product Type') }}</th>
                                     <th>{{ \App\CPU\translate('purchase_price') }}</th>
                                     <th>{{ \App\CPU\translate('selling_price') }}</th>
                                     <th>{{ \App\CPU\translate('Commission') }}</th>
@@ -140,6 +139,16 @@
                             </thead>
                             <tbody>
                                 @foreach ($products as $k => $p)
+                                    @php
+                                        $isDenied =
+                                            ($p->request_status ?? 0) == 2 || ($p->approval_status ?? '') == 'rejected';
+                                        $editReq = \App\Model\ProductEditRequest::where('product_id', $p['id'])
+                                            ->where('seller_id', auth('seller')->id())
+                                            ->latest()
+                                            ->first();
+                                        $hasApprovedEdit = $editReq && $editReq->status == 'approved';
+                                        $hasPendingEdit = $editReq && $editReq->status == 'pending';
+                                    @endphp
                                     {{-- @dd($p['lowest_market_price']) --}}
                                     <tr>
                                         <th scope="row">{{ $products->firstitem() + $k }}</th>
@@ -147,14 +156,13 @@
                                             <a href="{{ route('seller.product.view', [$p['id']]) }}"
                                                 class="media align-items-center gap-2 w-max-content">
                                                 <img src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $p['thumbnail'] }}"
-                                                    onerror="this.src='{{ asset('/public/assets/back-end/img/brand-logo.png') }}'"class="avatar border"
+                                                    onerror="this.src='{{ asset('/assets/back-end/img/brand-logo.png') }}'"class="avatar border"
                                                     alt="">
                                                 <span class="media-body title-color hover-c1">
                                                     {{ \Illuminate\Support\Str::limit($p['name'], 30) }}
                                                 </span>
                                             </a>
                                         </td>
-                                        <td>{{ ucfirst($p['product_type']) }}</td>
                                         <td>
                                             {{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($p['purchase_price'])) }}
                                         </td>
@@ -184,22 +192,26 @@
 
                                         </td>
                                         <td>
-                                            @if ($p->request_status == 0)
-                                                <label
-                                                    class="badge badge-soft-warning">{{ \App\CPU\translate('New Request') }}</label>
-                                            @elseif($p->request_status == 1)
-                                                <label
-                                                    class="badge badge-soft-success">{{ \App\CPU\translate('Approved') }}</label>
-                                            @elseif($p->request_status == 2)
-                                                <label
-                                                    class="badge badge-soft-danger">{{ \App\CPU\translate('Denied') }}</label>
+                                            @php($vs = trim((string) ($p->approval_status ?? '')))
+                                            @if ($vs === '')
+                                                <span class="badge badge-soft-secondary">-</span>
+                                            @elseif ($vs === 'approved')
+                                                <span class="badge badge-soft-success">{{ $vs }}</span>
+                                            @elseif ($vs === 'pending' || $vs === 'pending_edit')
+                                                <span class="badge badge-soft-warning">{{ $vs }}</span>
+                                            @elseif ($vs === 'rejected')
+                                                <span class="badge badge-soft-danger">{{ $vs }}</span>
+                                            @else
+                                                <span class="badge badge-soft-secondary">{{ $vs }}</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if (isset($p->featured) && $p->featured == 1)
-                                                <span class="badge badge-soft-success"><i class="tio-star"></i> {{ \App\CPU\translate('Featured') }}</span>
+                                                <span class="badge badge-soft-success"><i class="tio-star"></i>
+                                                    {{ \App\CPU\translate('Featured') }}</span>
                                             @else
-                                                <span class="badge badge-soft-secondary">{{ \App\CPU\translate('Not Featured') }}</span>
+                                                <span
+                                                    class="badge badge-soft-secondary">{{ \App\CPU\translate('Not Featured') }}</span>
                                             @endif
                                         </td>
                                         <td>
@@ -223,10 +235,10 @@
                                                     <i class="tio-invisible"></i>
                                                 </a>
 
-                                                <button type="button" class="btn btn-outline-primary btn-sm square-btn edit-price-btn"
+                                                <button type="button"
+                                                    class="btn btn-outline-primary btn-sm square-btn edit-price-btn"
                                                     title="{{ \App\CPU\translate('Edit Price & Variants') }}"
-                                                    data-id="{{ $p['id'] }}"
-                                                    data-unit="{{ $p['unit'] ?? 'pc' }}"
+                                                    data-id="{{ $p['id'] }}" data-unit="{{ $p['unit'] ?? 'pc' }}"
                                                     data-unit-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['unit_price']) }}"
                                                     data-purchase-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['purchase_price']) }}"
                                                     data-discount="{{ $p['discount'] ?? 0 }}"
@@ -240,53 +252,64 @@
                                                     <i class="tio-money"></i>
                                                 </button>
 
-                                                @php
-                                                    $editReq = \App\Model\ProductEditRequest::where('product_id', $p['id'])
-                                                        ->where('seller_id', auth('seller')->id())
-                                                        ->latest()
-                                                        ->first();
-                                                    $hasApprovedEdit = $editReq && $editReq->status == 'approved';
-                                                    $hasPendingEdit = $editReq && $editReq->status == 'pending';
-                                                @endphp
-
-                                                @if($hasApprovedEdit)
-                                                    <a class="btn btn-outline-primary btn-sm square-btn"  style="display: none;"
-                                                        title="{{ \App\CPU\translate('Edit') }}"
+                                                @if (!empty($isDenied))
+                                                    <a class="btn btn-outline-primary btn-sm square-btn"
+                                                        title="{{ \App\CPU\translate('Edit & Resubmit') }}"
                                                         href="{{ route('seller.product.edit', [$p['id']]) }}">
                                                         <i class="tio-edit"></i>
                                                     </a>
-                                                @elseif($hasPendingEdit)
-                                                    <span class="btn btn-outline-warning btn-sm square-btn" style="display: none;" title="{{ \App\CPU\translate('Edit request pending') }}">
+                                                @elseif(!empty($hasApprovedEdit))
+                                                    <a class="btn btn-outline-primary btn-sm square-btn"
+                                                        style="display: none;" title="{{ \App\CPU\translate('Edit') }}"
+                                                        href="{{ route('seller.product.edit', [$p['id']]) }}">
+                                                        <i class="tio-edit"></i>
+                                                    </a>
+                                                @elseif(!empty($hasPendingEdit))
+                                                    <span class="btn btn-outline-warning btn-sm square-btn"
+                                                        style="display: none;"
+                                                        title="{{ \App\CPU\translate('Edit request pending') }}">
                                                         <i class="tio-time"></i>
                                                     </span>
                                                 @else
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm square-btn" style="display: none;"
+                                                    <button type="button"
+                                                        class="btn btn-outline-secondary btn-sm square-btn"
+                                                        style="display: none;"
                                                         title="{{ \App\CPU\translate('Request Edit Access') }}"
-                                                        data-toggle="modal" data-target="#editRequestModal{{ $p['id'] }}">
+                                                        data-toggle="modal"
+                                                        data-target="#editRequestModal{{ $p['id'] }}">
                                                         <i class="tio-lock"></i>
                                                     </button>
 
                                                     <!-- Edit Request Modal -->
-                                                    <div class="modal fade" id="editRequestModal{{ $p['id'] }}" tabindex="-1" role="dialog">
+                                                    <div class="modal fade" id="editRequestModal{{ $p['id'] }}"
+                                                        tabindex="-1" role="dialog">
                                                         <div class="modal-dialog" role="document">
-                                                            <form action="{{ route('seller.product.request-edit') }}" method="POST">
+                                                            <form action="{{ route('seller.product.request-edit') }}"
+                                                                method="POST">
                                                                 @csrf
-                                                                <input type="hidden" name="product_id" value="{{ $p['id'] }}">
+                                                                <input type="hidden" name="product_id"
+                                                                    value="{{ $p['id'] }}">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h5 class="modal-title">{{ \App\CPU\translate('Request Edit Access') }}</h5>
-                                                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                                                        <h5 class="modal-title">
+                                                                            {{ \App\CPU\translate('Request Edit Access') }}
+                                                                        </h5>
+                                                                        <button type="button" class="close"
+                                                                            data-dismiss="modal"><span>&times;</span></button>
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         <div class="form-group">
-                                                                            <label>{{ \App\CPU\translate('Reason for editing') }} <span class="text-danger">*</span></label>
+                                                                            <label>{{ \App\CPU\translate('Reason for editing') }}
+                                                                                <span class="text-danger">*</span></label>
                                                                             <textarea name="note" class="form-control" rows="4" required
                                                                                 placeholder="{{ \App\CPU\translate('Enter reason for editing this product') }}"></textarea>
                                                                         </div>
                                                                     </div>
                                                                     <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ \App\CPU\translate('Cancel') }}</button>
-                                                                        <button type="submit" class="btn btn--primary">{{ \App\CPU\translate('Send Request') }}</button>
+                                                                        <button type="button" class="btn btn-secondary"
+                                                                            data-dismiss="modal">{{ \App\CPU\translate('Cancel') }}</button>
+                                                                        <button type="submit"
+                                                                            class="btn btn--primary">{{ \App\CPU\translate('Send Request') }}</button>
                                                                     </div>
                                                                 </div>
                                                             </form>
@@ -300,8 +323,8 @@
                                                     <i class="tio-delete"></i>
                                                 </a>
                                             </div>
-                                            <form action="{{ route('seller.product.delete', [$p['id']]) }}" method="post"
-                                                id="product-{{ $p['id'] }}">
+                                            <form action="{{ route('seller.product.delete', [$p['id']]) }}"
+                                                method="post" id="product-{{ $p['id'] }}">
                                                 @csrf @method('delete')
                                             </form>
                                         </td>
@@ -334,7 +357,8 @@
     <div class="modal fade" id="editPriceVariantsModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
-                <div class="modal-header" style="border-bottom: 1px solid #dee2e6; padding: 12px 20px; background: #f8f9fa;">
+                <div class="modal-header"
+                    style="border-bottom: 1px solid #dee2e6; padding: 12px 20px; background: #f8f9fa;">
                     <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
                         <i class="tio-money mr-1"></i> {{ \App\CPU\translate('Edit Price & Variants') }}
                         <span class="text-primary ml-1" id="modalProductName" style="font-size: 14px;"></span>
@@ -357,7 +381,9 @@
                         <div class="card-body p-3">
                             <div class="row">
                                 <div class="col-md-3 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Unit') }} <span class="text-danger">*</span></label>
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Unit') }} <span
+                                            class="text-danger">*</span></label>
                                     <select class="form-control form-control-sm" id="editUnit">
                                         @foreach (\App\CPU\Helpers::units() as $x)
                                             <option value="{{ $x }}">{{ $x }}</option>
@@ -365,96 +391,132 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Unit_price') }} <span class="text-danger">*</span></label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editUnitPrice">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Unit_price') }} <span
+                                            class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control form-control-sm" id="editUnitPrice">
                                 </div>
                                 <div class="col-md-3 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Market price') }} <span class="text-danger">*</span></label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editPurchasePrice">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Market price') }} <span
+                                            class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control form-control-sm" id="editPurchasePrice">
                                 </div>
                                 <div class="col-md-3 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Tax') }}</label>
-                                    <label class="badge badge-soft-info mb-1" style="font-size: 10px;">{{ \App\CPU\translate('Percent') }} ( % )</label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editTax">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Tax') }}</label>
+                                    <label class="badge badge-soft-info mb-1"
+                                        style="font-size: 10px;">{{ \App\CPU\translate('Percent') }} ( % )</label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control form-control-sm" id="editTax">
                                     <input type="hidden" name="tax_type" value="percent">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Tax_Model') }}</label>
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Tax_Model') }}</label>
                                     <select class="form-control form-control-sm" id="editTaxModel">
                                         <option value="include">{{ \App\CPU\translate('include') }}</option>
                                         <option value="exclude">{{ \App\CPU\translate('exclude') }}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('discount_type') }}</label>
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('discount_type') }}</label>
                                     <select class="form-control form-control-sm" id="editDiscountType">
                                         <option value="flat">{{ \App\CPU\translate('Flat') }}</option>
                                         <option value="percent">{{ \App\CPU\translate('Percent') }}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Discount') }}</label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editDiscount">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Discount') }}</label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control form-control-sm" id="editDiscount">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('total') }} {{ \App\CPU\translate('Quantity') }}</label>
-                                    <input type="number" min="0" step="1" class="form-control form-control-sm" id="editCurrentStock">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('total') }}
+                                        {{ \App\CPU\translate('Quantity') }}</label>
+                                    <input type="number" min="0" step="1"
+                                        class="form-control form-control-sm" id="editCurrentStock">
                                 </div>
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('minimum_order_quantity') }}</label>
-                                    <input type="number" min="1" step="1" class="form-control form-control-sm" id="editMinOrder">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('minimum_order_quantity') }}</label>
+                                    <input type="number" min="1" step="1"
+                                        class="form-control form-control-sm" id="editMinOrder">
                                 </div>
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('shipping_cost') }}</label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editShippingCost">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('shipping_cost') }}</label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control form-control-sm" id="editShippingCost">
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="card" style="border: 1px solid #e9ecef;">
-                        <div class="card-header py-2 d-flex justify-content-between align-items-center" style="background: #f1f3f5;">
+                        <div class="card-header py-2 d-flex justify-content-between align-items-center"
+                            style="background: #f1f3f5;">
                             <h6 class="mb-0 font-weight-bold" style="font-size: 13px;">
                                 <i class="tio-list mr-1"></i> {{ \App\CPU\translate('Variants') }}
                             </h6>
-                            <button type="button" class="btn btn--primary btn-sm" id="addVariantBtn" style="font-size: 12px; padding: 3px 10px;">
+                            <button type="button" class="btn btn--primary btn-sm" id="addVariantBtn"
+                                style="font-size: 12px; padding: 3px 10px;">
                                 <i class="tio-add mr-1"></i> {{ \App\CPU\translate('Add Variant') }}
                             </button>
                         </div>
                         <div class="card-body p-3">
                             <div id="editVariantsContainer">
                                 <p class="text-muted text-center mb-0">
-                                    <i class="fa fa-spinner fa-spin mr-1"></i> {{ \App\CPU\translate('Loading variants...') }}
+                                    <i class="fa fa-spinner fa-spin mr-1"></i>
+                                    {{ \App\CPU\translate('Loading variants...') }}
                                 </p>
                             </div>
 
-                            <div id="addVariantForm" class="mt-3 d-none" style="border: 1px dashed #4e73df; border-radius: 6px; padding: 12px; background: #f0f4ff;">
+                            <div id="addVariantForm" class="mt-3 d-none"
+                                style="border: 1px dashed #4e73df; border-radius: 6px; padding: 12px; background: #f0f4ff;">
                                 <div class="row align-items-end">
                                     <div class="col-md-3">
-                                        <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Variant Name') }} <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control form-control-sm" id="newVariantType" placeholder="e.g. Red-XL">
+                                        <label class="title-color mb-1"
+                                            style="font-size: 12px;">{{ \App\CPU\translate('Variant Name') }} <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="newVariantType"
+                                            placeholder="e.g. Red-XL">
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Price') }} <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="newVariantPrice" placeholder="0.00">
+                                        <label class="title-color mb-1"
+                                            style="font-size: 12px;">{{ \App\CPU\translate('Price') }} <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" step="0.01" min="0"
+                                            class="form-control form-control-sm" id="newVariantPrice" placeholder="0.00">
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Quantity') }} <span class="text-danger">*</span></label>
-                                        <input type="number" min="0" class="form-control form-control-sm" id="newVariantQty" placeholder="0">
+                                        <label class="title-color mb-1"
+                                            style="font-size: 12px;">{{ \App\CPU\translate('Quantity') }} <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" min="0" class="form-control form-control-sm"
+                                            id="newVariantQty" placeholder="0">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="title-color mb-1" style="font-size: 12px;">SKU</label>
-                                        <input type="text" class="form-control form-control-sm" id="newVariantSku" placeholder="SKU">
+                                        <input type="text" class="form-control form-control-sm" id="newVariantSku"
+                                            placeholder="SKU">
                                     </div>
                                     <div class="col-md-3 d-flex gap-1">
-                                        <button type="button" class="btn btn--primary btn-sm" id="confirmAddVariantBtn" style="font-size: 12px; padding: 5px 12px;">
+                                        <button type="button" class="btn btn--primary btn-sm" id="confirmAddVariantBtn"
+                                            style="font-size: 12px; padding: 5px 12px;">
                                             <i class="tio-check mr-1"></i> {{ \App\CPU\translate('Add') }}
                                         </button>
-                                        <button type="button" class="btn btn-secondary btn-sm" id="cancelAddVariantBtn" style="font-size: 12px; padding: 5px 12px;">
+                                        <button type="button" class="btn btn-secondary btn-sm" id="cancelAddVariantBtn"
+                                            style="font-size: 12px; padding: 5px 12px;">
                                             <i class="tio-clear mr-1"></i> {{ \App\CPU\translate('Cancel') }}
                                         </button>
                                     </div>
@@ -516,7 +578,7 @@
                         t.removeAttr('checked');
                         toastr.error(
                             '{{ \App\CPU\translate('Status updated failed. Product must be approved') }}'
-                            );
+                        );
                     }
                 }
             });
@@ -558,12 +620,16 @@
 
             // Load variations via AJAX
             $.ajaxSetup({
-                headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
             });
             $.ajax({
                 url: "{{ route('seller.product.get-variations') }}",
                 method: 'POST',
-                data: { id: productId },
+                data: {
+                    id: productId
+                },
                 success: function(data) {
                     var container = $('#editVariantsContainer');
                     container.empty();
@@ -647,14 +713,17 @@
                 });
             });
 
-            var deletedVariants = $('#deletedVariants').val() ? $('#deletedVariants').val().split(',').filter(Boolean) : [];
+            var deletedVariants = $('#deletedVariants').val() ? $('#deletedVariants').val().split(',').filter(
+                Boolean) : [];
 
             $('#saveBtnText').addClass('d-none');
             $('#saveBtnLoader').removeClass('d-none');
             $('#savePriceVariantsBtn').prop('disabled', true);
 
             $.ajaxSetup({
-                headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
             });
             $.ajax({
                 url: "{{ route('seller.product.update-price-variants') }}",
@@ -683,7 +752,7 @@
                     }
                 },
                 error: function() {
-                    toastr.error('{{ \App\CPU\translate("Something went wrong") }}');
+                    toastr.error('{{ \App\CPU\translate('Something went wrong') }}');
                 },
                 complete: function() {
                     $('#saveBtnText').removeClass('d-none');
@@ -715,17 +784,17 @@
             var variantSku = $('#newVariantSku').val();
 
             if (!variantType) {
-                toastr.error('{{ \App\CPU\translate("Variant name is required") }}');
+                toastr.error('{{ \App\CPU\translate('Variant name is required') }}');
                 $('#newVariantType').focus();
                 return;
             }
             if (!variantPrice || parseFloat(variantPrice) < 0) {
-                toastr.error('{{ \App\CPU\translate("Valid price is required") }}');
+                toastr.error('{{ \App\CPU\translate('Valid price is required') }}');
                 $('#newVariantPrice').focus();
                 return;
             }
             if (!variantQty || parseInt(variantQty) < 0) {
-                toastr.error('{{ \App\CPU\translate("Valid quantity is required") }}');
+                toastr.error('{{ \App\CPU\translate('Valid quantity is required') }}');
                 $('#newVariantQty').focus();
                 return;
             }
@@ -737,7 +806,7 @@
                 }
             });
             if (exists) {
-                toastr.error('{{ \App\CPU\translate("Variant with this name already exists") }}');
+                toastr.error('{{ \App\CPU\translate('Variant with this name already exists') }}');
                 return;
             }
 
@@ -770,7 +839,7 @@
             `);
 
             $('#addVariantForm').addClass('d-none');
-            toastr.success('{{ \App\CPU\translate("Variant added") }}');
+            toastr.success('{{ \App\CPU\translate('Variant added') }}');
         });
 
         // Delete Variant

@@ -197,7 +197,7 @@
                                         <tr>
                                             <th scope="col" colspan="2">Products</th>
                                             <th scope="col" class="text-end">Quantity</th>
-                                            <th scope="col" class="text-end">Unit Price</th>
+                                            <th scope="col" class="text-end">Selling Price</th>
                                             <th scope="col" class="text-end">Price</th>
                                             <th scope="col" class="text-end">Action</th>
                                         </tr>

@@ -1100,6 +1100,39 @@ class BusinessSettingsController extends Controller
         return redirect()->back();
     }
 
+    public function loyalty_point()
+    {
+        $data['loyalty_point_status'] = Helpers::get_business_settings('loyalty_point_status');
+        $data['loyalty_point_exchange_rate'] = Helpers::get_business_settings('loyalty_point_exchange_rate');
+        $data['loyalty_point_item_purchase_point'] = Helpers::get_business_settings('loyalty_point_item_purchase_point');
+        $data['loyalty_point_minimum_point'] = Helpers::get_business_settings('loyalty_point_minimum_point');
+
+        return view('admin-views.business-settings.loyalty-point', compact('data'));
+    }
+
+    public function loyalty_point_update(Request $request)
+    {
+        BusinessSetting::updateOrInsert(['type' => 'loyalty_point_status'], [
+            'value' => $request->loyalty_point_status ?? 0,
+            'updated_at' => now(),
+        ]);
+        BusinessSetting::updateOrInsert(['type' => 'loyalty_point_exchange_rate'], [
+            'value' => $request->loyalty_point_exchange_rate ?? 0,
+            'updated_at' => now(),
+        ]);
+        BusinessSetting::updateOrInsert(['type' => 'loyalty_point_item_purchase_point'], [
+            'value' => $request->item_purchase_point ?? 0,
+            'updated_at' => now(),
+        ]);
+        BusinessSetting::updateOrInsert(['type' => 'loyalty_point_minimum_point'], [
+            'value' => $request->minimun_transfer_point ?? 0,
+            'updated_at' => now(),
+        ]);
+
+        Toastr::success(\App\CPU\translate('updated_successfully'));
+        return redirect()->back();
+    }
+
 
     public function tallyCompanies()
     {

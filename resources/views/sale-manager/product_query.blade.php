@@ -13,7 +13,7 @@
             <!-- Page Title -->
             <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
                 <h2 class="h1 mb-0">
-                    <img src="{{ asset('/public/assets/back-end/img/all-orders.png') }}" class="mb-1 mr-1" alt="">
+                    <img src="{{ asset('/assets/back-end/img/all-orders.png') }}" class="mb-1 mr-1" alt="">
                     <span class="page-header-title">
                     </span>
                     {{ \App\CPU\translate('Product Query') }}
@@ -82,7 +82,7 @@
 
                         <!--    <div class="order-stats order-stats_pending">-->
                         <!--        <div class="order-stats__content">-->
-                        <!--            <img width="20" src="{{ asset('/public/assets/back-end/img/pending.png') }}" class="svg" alt="">-->
+                        <!--            <img width="20" src="{{ asset('/assets/back-end/img/pending.png') }}" class="svg" alt="">-->
                         <!--            <h6 class="order-stats__subtitle">{{ \App\CPU\translate('pending') }}</h6>-->
                         <!--        </div>-->
                         <!--        <span class="order-stats__title">-->
@@ -98,7 +98,7 @@
                             <div class="order-stats order-stats_confirmed">
                                 <div class="order-stats__content"
                                     style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
-                                    <img width="20" src="{{ asset('/public/assets/back-end/img/confirmed.png') }}"
+                                    <img width="20" src="{{ asset('/assets/back-end/img/confirmed.png') }}"
                                         alt="">
                                     <h6 class="order-stats__subtitle">{{ \App\CPU\translate('confirmed') }} </h6>
                                 </div>
@@ -115,7 +115,7 @@
                             <div class="order-stats order-stats_packaging">
                                 <div class="order-stats__content"
                                     style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
-                                    <img width="20" src="{{ asset('/public/assets/back-end/img/packaging.png') }}"
+                                    <img width="20" src="{{ asset('/assets/back-end/img/packaging.png') }}"
                                         alt="">
                                     <h6 class="order-stats__subtitle">{{ \App\CPU\translate('Approval') }}
                                         {{ \App\CPU\translate('pending') }}</h6>
@@ -133,7 +133,7 @@
                             <div class="order-stats order-stats_canceled ">
                                 <div class="order-stats__content"
                                     style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
-                                    <img width="20" src="{{ asset('/public/assets/back-end/img/canceled.png') }}"
+                                    <img width="20" src="{{ asset('/assets/back-end/img/canceled.png') }}"
                                         alt="">
                                     <h6 class="order-stats__subtitle">{{ \App\CPU\translate('canceled') }}</h6>
                                 </div>
@@ -147,7 +147,7 @@
                             <div class="order-stats order-stats_returned">
                                 <div class="order-stats__content"
                                     style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
-                                    <img width="20" src="{{ asset('/public/assets/back-end/img/returned.png') }}"
+                                    <img width="20" src="{{ asset('/assets/back-end/img/returned.png') }}"
                                         alt="">
                                     <h6 class="order-stats__subtitle">{{ \App\CPU\translate('Hold') }}</h6>
                                 </div>
@@ -240,7 +240,7 @@
                                         } elseif ($order['discount_type'] == 'percent') {
                                             $disprice = ($price * $order['discount']) / 100;
                                         }
-
+                                        
                                         if ($order['tax_model'] == 'exclude') {
                                             if ($order['tax_type'] == 'percent') {
                                                 if ($order['tax'] == 0) {
@@ -254,7 +254,7 @@
                                         } else {
                                             $taxprice = $disprice;
                                         }
-
+                                        
                                         ?>
 
                                         <td>{{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency(round($taxprice, 2))) }}
@@ -310,9 +310,12 @@
                                                 <a class="btn btn-outline--primary square-btn btn-sm mr-1"
                                                     title="{{ \App\CPU\translate('vieworder_details') }}"
                                                     href="{{ route('sale.pro.vieworder_details', ['id' => $order['id']]) }}">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" viewBox="0 0 14 12" fill="none" class="svg replaced-svg">
-                                                        <path d="M6.79584 3.75937C6.86389 3.75234 6.93195 3.75 7 3.75C8.2882 3.75 9.33333 4.73672 9.33333 6C9.33333 7.24219 8.2882 8.25 7 8.25C5.68993 8.25 4.66667 7.24219 4.66667 6C4.66667 5.93437 4.6691 5.86875 4.67639 5.80313C4.90243 5.90859 5.16493 6 5.44445 6C6.30243 6 7 5.32734 7 4.5C7 4.23047 6.90521 3.97734 6.79584 3.75937ZM11.6813 2.63906C12.8188 3.65625 13.5795 4.85391 13.9392 5.71172C14.0194 5.89687 14.0194 6.10312 13.9392 6.28828C13.5795 7.125 12.8188 8.32266 11.6813 9.36094C10.5365 10.3875 8.96389 11.25 7 11.25C5.03611 11.25 3.46354 10.3875 2.31924 9.36094C1.18174 8.32266 0.42146 7.125 0.059818 6.28828C0.0203307 6.19694 0 6.09896 0 6C0 5.90104 0.0203307 5.80306 0.059818 5.71172C0.42146 4.85391 1.18174 3.65625 2.31924 2.63906C3.46354 1.61344 5.03611 0.75 7 0.75C8.96389 0.75 10.5365 1.61344 11.6813 2.63906ZM7 2.625C5.06771 2.625 3.5 4.13672 3.5 6C3.5 7.86328 5.06771 9.375 7 9.375C8.93229 9.375 10.5 7.86328 10.5 6C10.5 4.13672 8.93229 2.625 7 2.625Z" fill="#0177CD"></path>
-                                                        </svg>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12"
+                                                        viewBox="0 0 14 12" fill="none" class="svg replaced-svg">
+                                                        <path
+                                                            d="M6.79584 3.75937C6.86389 3.75234 6.93195 3.75 7 3.75C8.2882 3.75 9.33333 4.73672 9.33333 6C9.33333 7.24219 8.2882 8.25 7 8.25C5.68993 8.25 4.66667 7.24219 4.66667 6C4.66667 5.93437 4.6691 5.86875 4.67639 5.80313C4.90243 5.90859 5.16493 6 5.44445 6C6.30243 6 7 5.32734 7 4.5C7 4.23047 6.90521 3.97734 6.79584 3.75937ZM11.6813 2.63906C12.8188 3.65625 13.5795 4.85391 13.9392 5.71172C14.0194 5.89687 14.0194 6.10312 13.9392 6.28828C13.5795 7.125 12.8188 8.32266 11.6813 9.36094C10.5365 10.3875 8.96389 11.25 7 11.25C5.03611 11.25 3.46354 10.3875 2.31924 9.36094C1.18174 8.32266 0.42146 7.125 0.059818 6.28828C0.0203307 6.19694 0 6.09896 0 6C0 5.90104 0.0203307 5.80306 0.059818 5.71172C0.42146 4.85391 1.18174 3.65625 2.31924 2.63906C3.46354 1.61344 5.03611 0.75 7 0.75C8.96389 0.75 10.5365 1.61344 11.6813 2.63906ZM7 2.625C5.06771 2.625 3.5 4.13672 3.5 6C3.5 7.86328 5.06771 9.375 7 9.375C8.93229 9.375 10.5 7.86328 10.5 6C10.5 4.13672 8.93229 2.625 7 2.625Z"
+                                                            fill="#0177CD"></path>
+                                                    </svg>
                                                 </a>
                                             </div>
                                         </td>
@@ -451,4 +454,3 @@
         }
     </script>
 @endpush
-

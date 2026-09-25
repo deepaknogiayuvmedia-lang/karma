@@ -250,6 +250,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('resend-notification', 'NotificationController@resendNotification')->name('resend-notification');
             Route::post('delete', 'NotificationController@delete')->name('delete');
         });
+        Route::post('admin-notifications/mark-read', 'NotificationController@mark_admin_read')->name('admin.notifications.mark-read');
         Route::group(['prefix' => 'reviews', 'as' => 'reviews.','middleware'=>['module:user_section']], function () {
             Route::get('list', 'ReviewsController@list')->name('list')->middleware('actch');
             Route::get('export', 'ReviewsController@export')->name('export')->middleware('actch');
@@ -450,6 +451,11 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::group(['middleware'=>['module:system_settings']],function (){
                 Route::get('cookie-settings', 'BusinessSettingsController@cookie_settings')->name('cookie-settings');
                 Route::post('cookie-settings-update', 'BusinessSettingsController@cookie_setting_update')->name('cookie-settings-update');
+            });
+
+            Route::group(['middleware'=>['module:system_settings']],function (){
+                Route::get('loyalty-point', 'BusinessSettingsController@loyalty_point')->name('loyalty-point');
+                Route::post('loyalty-point/update', 'BusinessSettingsController@loyalty_point_update')->name('loyalty-point-update');
             });
 
             Route::group(['prefix' => 'shipping-method', 'as' => 'shipping-method.','middleware'=>['module:system_settings']], function () {

@@ -13,7 +13,7 @@
             <!-- Page Title -->
             <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
                 <h2 class="h1 mb-0">
-                    <img src="{{ asset('/public/assets/back-end/img/all-orders.png') }}" class="mb-1 mr-1" alt="">
+                    <img src="{{ asset('/assets/back-end/img/all-orders.png') }}" class="mb-1 mr-1" alt="">
                     <span class="page-header-title">
                     </span>
                     {{ \App\CPU\translate('Product Query') }}
@@ -82,7 +82,7 @@
 
                         <!--    <div class="order-stats order-stats_pending">-->
                         <!--        <div class="order-stats__content">-->
-                        <!--            <img width="20" src="{{ asset('/public/assets/back-end/img/pending.png') }}" class="svg" alt="">-->
+                        <!--            <img width="20" src="{{ asset('/assets/back-end/img/pending.png') }}" class="svg" alt="">-->
                         <!--            <h6 class="order-stats__subtitle">{{ \App\CPU\translate('pending') }}</h6>-->
                         <!--        </div>-->
                         <!--        <span class="order-stats__title">-->
@@ -98,7 +98,7 @@
                             <div class="order-stats order-stats_confirmed">
                                 <div class="order-stats__content"
                                     style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
-                                    <img width="20" src="{{ asset('/public/assets/back-end/img/confirmed.png') }}"
+                                    <img width="20" src="{{ asset('/assets/back-end/img/confirmed.png') }}"
                                         alt="">
                                     <h6 class="order-stats__subtitle">{{ \App\CPU\translate('confirmed') }} </h6>
                                 </div>
@@ -115,7 +115,7 @@
                             <div class="order-stats order-stats_packaging">
                                 <div class="order-stats__content"
                                     style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
-                                    <img width="20" src="{{ asset('/public/assets/back-end/img/packaging.png') }}"
+                                    <img width="20" src="{{ asset('/assets/back-end/img/packaging.png') }}"
                                         alt="">
                                     <h6 class="order-stats__subtitle">{{ \App\CPU\translate('Approval') }}
                                         {{ \App\CPU\translate('pending') }}</h6>
@@ -133,7 +133,7 @@
                             <div class="order-stats order-stats_canceled ">
                                 <div class="order-stats__content"
                                     style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
-                                    <img width="20" src="{{ asset('/public/assets/back-end/img/canceled.png') }}"
+                                    <img width="20" src="{{ asset('/assets/back-end/img/canceled.png') }}"
                                         alt="">
                                     <h6 class="order-stats__subtitle">{{ \App\CPU\translate('canceled') }}</h6>
                                 </div>
@@ -147,7 +147,7 @@
                             <div class="order-stats order-stats_returned">
                                 <div class="order-stats__content"
                                     style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
-                                    <img width="20" src="{{ asset('/public/assets/back-end/img/returned.png') }}"
+                                    <img width="20" src="{{ asset('/assets/back-end/img/returned.png') }}"
                                         alt="">
                                     <h6 class="order-stats__subtitle">{{ \App\CPU\translate('Hold') }}</h6>
                                 </div>
@@ -217,114 +217,115 @@
                             </thead>
 
                             <tbody>
-                                @if(!empty($orders))
-                                @foreach ($orders as $key => $order)
-                                <tr class="status class-all">
-                                    <td class="">
+                                @if (!empty($orders))
+                                    @foreach ($orders as $key => $order)
+                                        <tr class="status class-all">
+                                            <td class="">
 
-                                        {{ $orders->firstItem() + $key }}
-                                    </td>
-                                    <td class="">
-                                        LEAD#{{ $order['query_id'] }}
-                                    </td>
-                                    <td>
+                                                {{ $orders->firstItem() + $key }}
+                                            </td>
+                                            <td class="">
+                                                LEAD#{{ $order['query_id'] }}
+                                            </td>
+                                            <td>
 
-                                        {{ $order['product_name'] }}
-                                    </td>
-                                    <td>
-                                        <strong class="title-name">{{ $order['name'] }}</strong>
-                                        <div>{{ $order['email'] }} </div>
-                                        <div>{{ $order['mobile'] }} </div>
-                                    </td>
-                                    <td>
-                                        @if ($order['sale_employ_id'])
-                                            <?php $employee = \App\model\SaleManager::where('id', $order['sale_employ_id'])->first(); ?>
-                                            <strong class="title-name">{{ $employee['name'] }}</strong>
-                                            <div>{{ $employee['email'] }} </div>
-                                            <div>{{ $employee['mobile'] }} </div>
-                                        @endif
-                                    </td>
-                                    <td> {{ $order['address'] }} </td>
-                                    <td> {{ $order['chid'] }} </td>
-                                    <?php $price = $order['unit_price'];
-                                    if ($order['discount_type'] == 'flat') {
-                                        $disprice = $price - $order['discount'];
-                                    } elseif ($order['discount_type'] == 'percent') {
-                                        $disprice = ($price * $order['discount']) / 100;
-                                    }
-
-                                    if ($order['tax_model'] == 'exclude') {
-                                        if ($order['tax_type'] == 'percent') {
-                                            if ($order['tax'] == 0) {
-                                                $taxprice = $disprice;
-                                            } else {
-                                                $taxprice = ($disprice * $order['tax']) / 100;
+                                                {{ $order['product_name'] }}
+                                            </td>
+                                            <td>
+                                                <strong class="title-name">{{ $order['name'] }}</strong>
+                                                <div>{{ $order['email'] }} </div>
+                                                <div>{{ $order['mobile'] }} </div>
+                                            </td>
+                                            <td>
+                                                @if ($order['sale_employ_id'])
+                                                    <?php $employee = \App\model\SaleManager::where('id', $order['sale_employ_id'])->first(); ?>
+                                                    <strong class="title-name">{{ $employee['name'] }}</strong>
+                                                    <div>{{ $employee['email'] }} </div>
+                                                    <div>{{ $employee['mobile'] }} </div>
+                                                @endif
+                                            </td>
+                                            <td> {{ $order['address'] }} </td>
+                                            <td> {{ $order['chid'] }} </td>
+                                            <?php $price = $order['unit_price'];
+                                            if ($order['discount_type'] == 'flat') {
+                                                $disprice = $price - $order['discount'];
+                                            } elseif ($order['discount_type'] == 'percent') {
+                                                $disprice = ($price * $order['discount']) / 100;
                                             }
-                                        } else {
-                                            $taxprice = $disprice - $order['tax'];
-                                        }
-                                    } else {
-                                        $taxprice = $disprice;
-                                    }
+                                            
+                                            if ($order['tax_model'] == 'exclude') {
+                                                if ($order['tax_type'] == 'percent') {
+                                                    if ($order['tax'] == 0) {
+                                                        $taxprice = $disprice;
+                                                    } else {
+                                                        $taxprice = ($disprice * $order['tax']) / 100;
+                                                    }
+                                                } else {
+                                                    $taxprice = $disprice - $order['tax'];
+                                                }
+                                            } else {
+                                                $taxprice = $disprice;
+                                            }
+                                            
+                                            ?>
 
-                                    ?>
+                                            <td>{{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency(round($taxprice, 2))) }}
+                                            </td>
+                                            <td>
+                                                @if ($order['status'] != '3')
+                                                    <select id="status{{ $order['id'] }}"
+                                                        onchange="status({{ $order['id'] }})">
 
-                                    <td>{{ \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency(round($taxprice, 2))) }}
-                                    </td>
-                                    <td>
-                                        @if ($order['status'] != '3')
-                                            <select id="status{{ $order['id'] }}"
-                                                onchange="status({{ $order['id'] }})">
+                                                        <!--<option value="1" @if ($order['status'] == '1') selected @endif >{{ \App\CPU\translate('pending') }}</option>-->
+                                                        <option value="2"
+                                                            @if ($order['status'] == '2') selected @endif>
+                                                            {{ \App\CPU\translate('Approval pending') }}</option>
+                                                        <option value="6"
+                                                            @if ($order['status'] == '6') selected @endif>
+                                                            {{ \App\CPU\translate('Approval confirmed') }}</option>
+                                                        <option value="4"
+                                                            @if ($order['status'] == '4') selected @endif>
+                                                            {{ \App\CPU\translate('canceled') }}</option>
+                                                        <option value="5"
+                                                            @if ($order['status'] == '5') selected @endif>
+                                                            {{ \App\CPU\translate('hold') }}</option>
+                                                        <option value="3"
+                                                            @if ($order['status'] == '3') selected @endif disabled>
+                                                            {{ \App\CPU\translate('confirmed') }}</option>
+                                                    </select>
+                                                @else
+                                                    <span
+                                                        class="text-success fw-bold">{{ \App\CPU\translate('confirmed') }}</span>
+                                                @endif
 
-                                                <!--<option value="1" @if ($order['status'] == '1') selected @endif >{{ \App\CPU\translate('pending') }}</option>-->
-                                                <option value="2"
-                                                    @if ($order['status'] == '2') selected @endif>
-                                                    {{ \App\CPU\translate('Approval pending') }}</option>
-                                                <option value="6"
-                                                    @if ($order['status'] == '6') selected @endif>
-                                                    {{ \App\CPU\translate('Approval confirmed') }}</option>
-                                                <option value="4"
-                                                    @if ($order['status'] == '4') selected @endif>
-                                                    {{ \App\CPU\translate('canceled') }}</option>
-                                                <option value="5"
-                                                    @if ($order['status'] == '5') selected @endif>
-                                                    {{ \App\CPU\translate('hold') }}</option>
-                                                <option value="3"
-                                                    @if ($order['status'] == '3') selected @endif disabled>
-                                                    {{ \App\CPU\translate('confirmed') }}</option>
-                                            </select>
-                                        @else
-                                            <span class="text-success fw-bold">{{ \App\CPU\translate('confirmed') }}</span>
-                                    @endif
+                                            </td>
 
-                                    </td>
-
-                                    {{-- <td>
+                                            {{-- <td>
                                         <div>{{ date('d M Y', strtotime($order['created_at'])) }},</div>
                                         <div>{{ date('h:i A', strtotime($order['created_at'])) }}</div>
                                     </td> --}}
-                                    <td>
-                                        <div>{{ date('d M Y', strtotime($order['updated_at'])) }},</div>
-                                        <div>{{ date('h:i A', strtotime($order['updated_at'])) }}</div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <a class="btn btn-outline--primary square-btn btn-sm mr-1"
-                                                title="{{ \App\CPU\translate('edit') }}"
-                                                href="{{ route('sale.customer_edit', ['id' => $order['id']]) }}">
-                                                <i class="tio-edit"></i>
-                                            </a>
-                                            @if ($order['status'] == '6')
-                                                <a class="btn btn-outline--primary square-btn btn-sm mr-1"
-                                                    title="{{ \App\CPU\translate('create_order') }}"
-                                                    href="{{ route('sale.create_order', ['id' => $order['id']]) }}">
-                                                    <i class="tio-shopping"></i>
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
+                                            <td>
+                                                <div>{{ date('d M Y', strtotime($order['updated_at'])) }},</div>
+                                                <div>{{ date('h:i A', strtotime($order['updated_at'])) }}</div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <a class="btn btn-outline--primary square-btn btn-sm mr-1"
+                                                        title="{{ \App\CPU\translate('edit') }}"
+                                                        href="{{ route('sale.customer_edit', ['id' => $order['id']]) }}">
+                                                        <i class="tio-edit"></i>
+                                                    </a>
+                                                    @if ($order['status'] == '6')
+                                                        <a class="btn btn-outline--primary square-btn btn-sm mr-1"
+                                                            title="{{ \App\CPU\translate('create_order') }}"
+                                                            href="{{ route('sale.create_order', ['id' => $order['id']]) }}">
+                                                            <i class="tio-shopping"></i>
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 @endif
 
                             </tbody>
@@ -457,4 +458,3 @@
         }
     </script>
 @endpush
-

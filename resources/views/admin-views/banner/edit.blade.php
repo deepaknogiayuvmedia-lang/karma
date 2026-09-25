@@ -11,7 +11,7 @@
         <!-- Page Title -->
         <div class="mb-3 d-flex justify-content-between">
             <h2 class="h1 mb-1 text-capitalize d-flex align-items-center gap-2">
-                <img width="20" src="{{asset('/public/assets/back-end/img/banner.png')}}" alt="">
+                <img width="20" src="{{asset('/assets/back-end/img/banner.png')}}" alt="">
                 {{\App\CPU\translate('banner_update_form')}}
             </h2>
             <div>

@@ -6,6 +6,7 @@ use App\CPU\Helpers;
 use App\CPU\ImageManager;
 use App\Http\Controllers\Controller;
 use App\Model\Notification;
+use App\Model\AdminNotification;
 use Brian2694\Toastr\Facades\Toastr;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,6 +15,16 @@ use Intervention\Image\Facades\Image;
 
 class NotificationController extends Controller
 {
+    public function mark_admin_read(Request $request)
+    {
+        $query = AdminNotification::where('is_read', 0);
+        if ($request->filled('id')) {
+            $query->where('id', $request->id);
+        }
+        $query->update(['is_read' => 1]);
+        return response()->json(['success' => 1]);
+    }
+
     public function index(Request $request)
     {
         $query_param = [];

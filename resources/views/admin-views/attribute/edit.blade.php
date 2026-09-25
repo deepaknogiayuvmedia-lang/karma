@@ -12,7 +12,7 @@
         <!-- Page Title -->
         <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
             <h2 class="h1 mb-0">
-                <img src="{{asset('/public/assets/back-end/img/attribute.png')}}" class="mb-1 mr-1" alt="">
+                <img src="{{asset('/assets/back-end/img/attribute.png')}}" class="mb-1 mr-1" alt="">
                 {{\App\CPU\translate('Update')}} {{\App\CPU\translate('attribute')}}
             </h2>
         </div>

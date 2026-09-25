@@ -1,9 +1,8 @@
 @extends('layouts.back-end.app')
 
-@section('title', $delivery_man->f_name. ' '. $delivery_man->l_name. ' ' .\App\CPU\translate('Earning_Statement'))
+@section('title', $delivery_man->f_name . ' ' . $delivery_man->l_name . ' ' . \App\CPU\translate('Earning_Statement'))
 
 @push('css_or_js')
-
 @endpush
 
 @section('content')
@@ -11,8 +10,8 @@
         <!-- Page Title -->
         <div class="mb-4 pb-2">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{asset('/public/assets/back-end/img/add-new-seller.png')}}" alt="">
-                {{\App\CPU\translate('earning_statement')}}
+                <img src="{{ asset('/assets/back-end/img/add-new-seller.png') }}" alt="">
+                {{ \App\CPU\translate('earning_statement') }}
             </h2>
         </div>
         <!-- End Page Title -->
@@ -42,6 +41,4 @@
 @endsection
 
 @push('script')
-
 @endpush
-

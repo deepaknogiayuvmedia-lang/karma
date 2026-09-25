@@ -72,7 +72,7 @@
         </div>
     </div>
     <!-- Page Title-->
-    <div class="container rtl">
+    <div class="container rtl pb-5">
         <h3 class="headerTitle text-center py-3 mb-0">{{\App\CPU\translate('support_ticket')}}</h3>
     </div>
     <!-- Page Content-->

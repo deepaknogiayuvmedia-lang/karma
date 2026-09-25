@@ -212,26 +212,63 @@ class ProductController extends BaseController
     public function approve_status(Request $request)
     {
         $product = Product::find($request->id);
+        $adminId = auth('admin')->id();
+        $update = [];
+
         // Phase 8: Handle new approval workflow
         if ($product->approval_status === 'pending' || $product->approval_status === 'pending_edit') {
-            $product->approval_status = 'approved';
-            $product->edit_status = 'none';
+            $update['approval_status'] = 'approved';
+            $update['edit_status'] = 'none';
         } else {
-            $product->request_status = ($product['request_status'] == 0) ? 1 : 0;
+            $update['request_status'] = ($product['request_status'] == 0) ? 1 : 0;
         }
-        $product->save();
 
-        return redirect()->route('admin.product.list', ['seller', 'status' => $product['request_status']]);
+        // Only touch approval fields — never rewrite other product columns
+        DB::table('products')->where('id', $product->id)->update($update);
+
+        ProductChangeRequest::where('product_id', $product->id)
+            ->where('status', 'pending')
+            ->update([
+                'status' => 'approved',
+                'reviewed_by' => $adminId,
+                'reviewed_at' => now(),
+            ]);
+
+        return redirect()->route('admin.product.list', ['seller', 'status' => $update['request_status'] ?? $product['request_status']]);
     }
 
     public function deny(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'denied_note' => 'required|string|max:500',
+        ], [
+            'denied_note.required' => 'Rejection reason is required!',
+            'denied_note.max' => 'Rejection reason cannot exceed 500 characters!',
+        ]);
+
+        if ($validator->fails()) {
+            Toastr::error($validator->errors()->first());
+            return back()->withErrors($validator)->withInput();
+        }
+
         $product = Product::find($request->id);
-        // Phase 8: Handle new approval workflow
-        $product->approval_status = 'rejected';
-        $product->request_status = 2;
-        $product->denied_note = $request->denied_note;
-        $product->save();
+        $adminId = auth('admin')->id();
+
+        // Only approval fields — other product columns stay untouched
+        DB::table('products')->where('id', $product->id)->update([
+            'approval_status' => 'rejected',
+            'request_status' => 2,
+            'denied_note' => $request->denied_note,
+        ]);
+
+        ProductChangeRequest::where('product_id', $product->id)
+            ->where('status', 'pending')
+            ->update([
+                'status' => 'rejected',
+                'admin_note' => $request->denied_note,
+                'reviewed_by' => $adminId,
+                'reviewed_at' => now(),
+            ]);
 
         return redirect()->route('admin.product.list', ['seller', 'status' => 2]);
     }
@@ -240,12 +277,76 @@ class ProductController extends BaseController
     {
         $product = Product::with(['reviews', 'translations', 'rating', 'tags'])->where(['id' => $id])->first();
         $reviews = Review::where(['product_id' => $id])->whereNull('delivery_man_id')->paginate(Helpers::pagination_limit());
-        return view('admin-views.product.view', compact('product', 'reviews'));
+
+        $changeRequest = ProductChangeRequest::with(['seller', 'editRequest'])
+            ->where('product_id', $id)
+            ->where('status', 'pending')
+            ->latest()
+            ->first();
+
+        $brandMap = [];
+        $categoryMap = [];
+        $attributeMap = [];
+        $choiceAttrMap = [];
+        $colorMap = [];
+
+        if ($changeRequest && $changeRequest->old_data && $changeRequest->new_data) {
+            $brandIds = collect([
+                $changeRequest->old_data['brand_id'] ?? null,
+                $changeRequest->new_data['brand_id'] ?? null,
+            ])->filter()->unique()->toArray();
+
+            $categoryIds = collect();
+            foreach (['category_ids'] as $key) {
+                $oldCats = $changeRequest->old_data[$key] ?? [];
+                $newCats = $changeRequest->new_data[$key] ?? [];
+                $oldCats = is_string($oldCats) ? json_decode($oldCats, true) : $oldCats;
+                $newCats = is_string($newCats) ? json_decode($newCats, true) : $newCats;
+                $categoryIds = $categoryIds->merge(collect($oldCats))->merge(collect($newCats));
+            }
+            $categoryIds = $categoryIds->pluck('id')->filter()->unique()->toArray();
+
+            $oldAttrs = $changeRequest->old_data['attributes'] ?? [];
+            $newAttrs = $changeRequest->new_data['attributes'] ?? [];
+            $oldAttrs = is_string($oldAttrs) ? json_decode($oldAttrs, true) : $oldAttrs;
+            $newAttrs = is_string($newAttrs) ? json_decode($newAttrs, true) : $newAttrs;
+            $attributeIds = collect($oldAttrs)->merge($newAttrs)->filter()->unique()->toArray();
+
+            $oldChoice = $changeRequest->old_data['choice_attributes'] ?? [];
+            $newChoice = $changeRequest->new_data['choice_attributes'] ?? [];
+            $oldChoice = is_string($oldChoice) ? json_decode($oldChoice, true) : $oldChoice;
+            $newChoice = is_string($newChoice) ? json_decode($newChoice, true) : $newChoice;
+            $choiceAttrIds = collect($oldChoice)->merge($newChoice)->filter()->unique()->toArray();
+
+            $oldColors = $changeRequest->old_data['colors'] ?? [];
+            $newColors = $changeRequest->new_data['colors'] ?? [];
+            $oldColors = is_string($oldColors) ? json_decode($oldColors, true) : $oldColors;
+            $newColors = is_string($newColors) ? json_decode($newColors, true) : $newColors;
+            $colorIds = collect($oldColors)->merge($newColors)->pluck('id')->filter()->unique()->toArray();
+
+            $brandMap = $brandIds ? Brand::whereIn('id', $brandIds)->pluck('name', 'id')->toArray() : [];
+            $categoryMap = $categoryIds ? Category::whereIn('id', $categoryIds)->pluck('name', 'id')->toArray() : [];
+            $attributeMap = $attributeIds ? Attribute::whereIn('id', $attributeIds)->pluck('name', 'id')->toArray() : [];
+            $choiceAttrMap = $choiceAttrIds ? Attribute::whereIn('id', $choiceAttrIds)->pluck('name', 'id')->toArray() : [];
+            $colorMap = $colorIds ? Color::whereIn('id', $colorIds)->pluck('code', 'id')->toArray() : [];
+        }
+
+        return view('admin-views.product.view', compact(
+            'product',
+            'reviews',
+            'changeRequest',
+            'brandMap',
+            'categoryMap',
+            'attributeMap',
+            'choiceAttrMap',
+            'colorMap'
+        ));
     }
 
     public function store(Request $request)
     {
         $adminId = auth('admin')->id();
+        $request->merge(['product_type' => 'physical']);
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -313,7 +414,12 @@ class ProductController extends BaseController
             });
         }
 
-        if (is_null($request->name[array_search('en', (array) $request->lang)])) {
+        $storeEnIdx = array_search('en', (array) $request->lang);
+        if ($storeEnIdx === false) {
+            $storeEnIdx = 0;
+        }
+        $storeEnName = ($request->name ?? [])[$storeEnIdx] ?? null;
+        if (is_null($storeEnName)) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
                     'name',
@@ -349,11 +455,11 @@ class ProductController extends BaseController
 
         $p->user_id = auth('admin')->id();
         $p->added_by = 'admin';
-        $p->name = $request->name[array_search('en', (array) $request->lang)];
-        $p->technical_name = $request->technical_name[array_search('en', (array) $request->lang)];
-        $p->tally_name = $request->prn[0];
+        $p->name = $storeEnName;
+        $p->technical_name = ($request->technical_name ?? [])[$storeEnIdx] ?? null;
+        $p->tally_name = ($request->prn ?? [])[0] ?? null;
         $p->code = $request->code;  // Removed since already set
-        $p->slug = Str::slug($request->name[array_search('en', (array) $request->lang)], '-') . '-' . Str::random(6);
+        $p->slug = Str::slug($storeEnName ?? 'product', '-') . '-' . Str::random(6);
 
         $product_images = [];
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
@@ -381,25 +487,25 @@ class ProductController extends BaseController
 
         $category = [];
         $categoryName = null;
-        if ($request->category_id != null) {
+        if ($request->category_id != null && $request->category_id !== '' && $request->category_id !== '0') {
             array_push($category, [
                 'id' => $request->category_id,
                 'position' => 1,
             ]);
         }
-        if ($request->sub_category_id != null) {
+        if ($request->sub_category_id != null && $request->sub_category_id !== '' && $request->sub_category_id !== '0') {
             array_push($category, [
                 'id' => $request->sub_category_id,
                 'position' => 2,
             ]);
         }
-        if ($request->sub_sub_category_id != null) {
+        if ($request->sub_sub_category_id != null && $request->sub_sub_category_id !== '' && $request->sub_sub_category_id !== '0') {
             array_push($category, [
                 'id' => $request->sub_sub_category_id,
                 'position' => 3,
             ]);
         }
-        $categoryName = Category::find($category[count($category) - 1]['id'])?->name ?? $request->sub_sub_category_id;
+        $categoryName = (!empty($category) ? Category::find(end($category)['id'])?->name : null) ?? $request->sub_sub_category_id;
         if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
             $response = Tallymethod::createGroup($categoryName, auth('admin')->id());
             if (!Tallymethod::isSuccess($response)) {
@@ -513,7 +619,7 @@ class ProductController extends BaseController
         $p->discount_type = $request->discount_type;
         $p->discount_amount = $request->discount_type == 'flat' ? $request->unit_price - $request->discount : $request->unit_price * ($request->discount / 100);
         $p->actual_amount = $request->unit_price - $p->discount_amount;
-        $p->attributes = $request->product_type == 'physical' ? json_encode($request->choice_attributes) : json_encode([]);
+        $p->attributes = $request->product_type == 'physical' ? json_encode($request->choice_attributes ?? []) : json_encode([]);
         $p->current_stock = $request->product_type == 'physical' ? abs($stock_count) : 0;
         $p->minimum_order_qty = $request->minimum_order_qty;
         $p->video_provider = 'youtube';
@@ -626,26 +732,64 @@ class ProductController extends BaseController
     {
         $query_param = [];
         $search = $request['search'];
+        $seller_id = $request['seller_id'] ?? '';
         if ($type == 'in_house') {
-            $pro = Product::with(['seller.shop'])->where(['added_by' => 'admin']);
+            $request_status = $request['status'] ?? 'all';
+
+            if ($seller_id != '') {
+                // Selected seller: only their self-added + copy products (no admin products)
+                $pro = Product::with(['seller.shop'])
+                    ->where('added_by', 'seller')
+                    ->where('user_id', $seller_id);
+                $query_param['seller_id'] = $seller_id;
+            } else {
+                $pro = Product::with(['seller.shop'])->where(['added_by' => 'admin']);
+            }
         } else {
-            $pro = Product::with(['seller.shop'])->where(['added_by' => 'seller'])->whereNull('pid');
-            if ($request->has('status') && $request->status !== null && $request->status !== '' && $request->status !== 'all') {
-                $pro->where('request_status', $request->status);
+            $pro = Product::with(['seller.shop'])->where(['added_by' => 'seller']);
+            if ($seller_id != '') {
+                // Selected seller: only their copy-and-add products (pid not null)
+                $pro->where('user_id', $seller_id)->whereNotNull('pid');
+                $query_param['seller_id'] = $seller_id;
+            } else {
+                $pro->whereNull('pid');
+            }
+            // Default "New Seller Products": only pending (0) or denied (2) — never approved
+            $request_status = $request->has('status') ? $request['status'] : 'pending';
+            if ($request_status === 'pending') {
+                $pro->whereIn('request_status', [0, 2])
+                    ->where(function ($q) {
+                        $q->where('approval_status', '!=', 'approved')
+                          ->orWhereNull('approval_status')
+                          ->orWhere('approval_status', '');
+                    });
+            } elseif ($request_status !== 'all' && $request_status !== null && $request_status !== '') {
+                $pro->where('request_status', $request_status);
             }
         }
 
-        if ($request->has('search')) {
-            $key = explode(' ', $request['search']);
-            $pro = $pro->where(function ($q) use ($key) {
+        if ($request->has('search') && $search != '') {
+            $key = explode(' ', $search);
+            $pro = $pro->where(function ($q) use ($key, $seller_id, $type) {
                 foreach ($key as $value) {
                     $q->Where('name', 'like', "%{$value}%");
                 }
+                if (empty($seller_id)) {
+                    $q->orWhereHas('seller', function ($sq) use ($key) {
+                        foreach ($key as $value) {
+                            $sq->where('f_name', 'like', "%{$value}%")
+                               ->orWhere('l_name', 'like', "%{$value}%");
+                        }
+                    });
+                    $q->orWhereHas('seller.shop', function ($sq) use ($key) {
+                        foreach ($key as $value) {
+                            $sq->where('name', 'like', "%{$value}%");
+                        }
+                    });
+                }
             });
-            $query_param = ['search' => $request['search']];
+            $query_param['search'] = $search;
         }
-
-        $request_status = $request['status'] ?? 'all';
         $pro = $pro
             ->orderBy('id', 'DESC')
             ->paginate(Helpers::pagination_limit())
@@ -655,10 +799,20 @@ class ProductController extends BaseController
         // Counts for tabs
         $all_count = Product::where('added_by', $type == 'in_house' ? 'admin' : 'seller')
             ->when($type != 'in_house', fn($q) => $q->whereNull('pid'))
-            ->when($type != 'in_house' && $request_status !== 'all' && $request_status !== null, fn($q) => $q->where('request_status', $request_status))
+            ->when($type != 'in_house' && $request_status === 'pending', function ($q) {
+                $q->whereIn('request_status', [0, 2])
+                  ->where(function ($qq) {
+                      $qq->where('approval_status', '!=', 'approved')
+                         ->orWhereNull('approval_status')
+                         ->orWhere('approval_status', '');
+                  });
+            })
+            ->when($type != 'in_house' && $request_status !== 'all' && $request_status !== null && $request_status !== '' && $request_status !== 'pending', fn($q) => $q->where('request_status', $request_status))
             ->count();
 
-        return view('admin-views.product.list', compact('pro', 'search', 'request_status', 'type', 'all_count'));
+        $sellers = \App\Model\Seller::with('shop')->approved()->get();
+
+        return view('admin-views.product.list', compact('pro', 'search', 'request_status', 'type', 'all_count', 'sellers', 'seller_id'));
     }
 
     public function all_products(Request $request)
@@ -1020,7 +1174,13 @@ class ProductController extends BaseController
         $success = 1;
 
         if ($request['status'] == 1) {
-            if ($product->added_by == 'seller' && ($product->request_status == 0 || $product->request_status == 2)) {
+            if (
+                $product->added_by == 'seller' && (
+                    trim((string) ($product->approval_status ?? '')) !== 'approved'
+                    || $product->request_status == 0
+                    || $product->request_status == 2
+                )
+            ) {
                 $success = 0;
             } else {
                 $product->status = $request['status'];
@@ -1036,9 +1196,32 @@ class ProductController extends BaseController
 
     public function approval_status_update(Request $request)
     {
+        if ($request->approval_status == 'rejected') {
+            $validator = Validator::make($request->all(), [
+                'denied_note' => 'required|string|max:500',
+            ], [
+                'denied_note.required' => 'Rejection reason is required!',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first(),
+                    'requires_reason' => true,
+                ], 422);
+            }
+        }
+
         $product = Product::findOrFail($request->id);
-        $product->approval_status = $request->approval_status;
-        $product->save();
+        $update = ['approval_status' => $request->approval_status];
+
+        if ($request->approval_status === 'rejected') {
+            $update['request_status'] = 2;
+            $update['denied_note'] = $request->denied_note;
+        }
+
+        // Partial update: only approval fields, never other product columns
+        DB::table('products')->where('id', $product->id)->update($update);
 
         return response()->json([
             'success' => true,
@@ -1099,7 +1282,11 @@ class ProductController extends BaseController
         }
 
         $unit_price = $request->unit_price;
-        $product_name = $request->name[array_search('en', (array) $request->lang)];
+        $skuEnIdx = array_search('en', (array) $request->lang);
+        if ($skuEnIdx === false) {
+            $skuEnIdx = 0;
+        }
+        $product_name = ($request->name ?? [])[$skuEnIdx] ?? '';
 
         if ($request->has('choice_no')) {
             foreach ($request->choice_no as $key => $no) {
@@ -1146,6 +1333,7 @@ class ProductController extends BaseController
     public function update(Request $request, $id)
     {
         $adminId = auth('admin')->id();
+        $request->merge(['product_type' => 'physical']);
 
         $product = Product::find($id);
         $validator = Validator::make($request->all(), [
@@ -1213,7 +1401,12 @@ class ProductController extends BaseController
             });
         }
 
-        if (is_null($request->name[array_search('en', (array) $request->lang)])) {
+        $updateEnIdx = array_search('en', (array) $request->lang);
+        if ($updateEnIdx === false) {
+            $updateEnIdx = 0;
+        }
+        $updateEnName = ($request->name ?? [])[$updateEnIdx] ?? null;
+        if (is_null($updateEnName)) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
                     'name',
@@ -1222,7 +1415,7 @@ class ProductController extends BaseController
             });
         }
 
-        $product_images = json_decode($product->images);
+        $product_images = json_decode($product->images ?? '[]') ?? [];
         $color_image_array = [];
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $db_color_image = $product->color_image ? json_decode($product->color_image, true) : [];
@@ -1289,31 +1482,35 @@ class ProductController extends BaseController
             }
         }
 
-        $product->name = $request->name[array_search('en', (array) $request->lang)];
-        $product->technical_name = $request->technical_name[array_search('en', (array) $request->lang)];
-        $product->tally_name = $request->prn[0];
+        if ($validator->errors()->count() > 0) {
+            return response()->json(['errors' => Helpers::error_processor($validator)]);
+        }
+
+        $product->name = $updateEnName;
+        $product->technical_name = ($request->technical_name ?? [])[$updateEnIdx] ?? null;
+        $product->tally_name = ($request->prn ?? [])[0] ?? $product->tally_name;
         $categoryName = null;
         $category = [];
-        if ($request->category_id != null) {
+        if ($request->category_id != null && $request->category_id !== '' && $request->category_id !== '0') {
             array_push($category, [
                 'id' => $request->category_id,
                 'position' => 1,
             ]);
         }
-        if ($request->sub_category_id != null) {
+        if ($request->sub_category_id != null && $request->sub_category_id !== '' && $request->sub_category_id !== '0') {
             array_push($category, [
                 'id' => $request->sub_category_id,
                 'position' => 2,
             ]);
         }
-        if ($request->sub_sub_category_id != null) {
+        if ($request->sub_sub_category_id != null && $request->sub_sub_category_id !== '' && $request->sub_sub_category_id !== '0') {
             array_push($category, [
                 'id' => $request->sub_sub_category_id,
                 'position' => 3,
             ]);
         }
 
-        $categoryName = Category::find($category[count($category) - 1]['id'])?->name ?? $request->sub_sub_category_id;
+        $categoryName = (!empty($category) ? Category::find(end($category)['id'])?->name : null) ?? $request->sub_sub_category_id;
         if (\App\CPU\Tallymethod::isSyncEnabled($adminId)) {
             $response = Tallymethod::createGroup($categoryName, auth('admin')->id());
             if (!Tallymethod::isSuccess($response)) {
@@ -1429,9 +1626,9 @@ class ProductController extends BaseController
         $product->tax_type = $request->tax_type;
         $product->tax_model = $request->tax_model;
         $product->discount = $request->discount_type == 'flat' ? BackEndHelper::currency_to_usd($request->discount) : $request->discount;
-        $product->attributes = $request->product_type == 'physical' ? json_encode($request->choice_attributes) : json_encode([]);
+        $product->attributes = $request->product_type == 'physical' ? json_encode($request->choice_attributes ?? []) : json_encode([]);
         $product->discount_type = $request->discount_type;
-        $product->discount_amount = $request->discount_type == 'flat' ? $request->unit_price - $request->discount : $request->unit_price * ($request->discount / 100);
+        $product->discount_amount = $request->discount_type == 'flat' ? BackEndHelper::currency_to_usd($request->discount) : $request->unit_price * ($request->discount / 100);
         $product->actual_amount = $request->unit_price - $product->discount_amount;
         $product->current_stock = $request->product_type == 'physical' ? abs($stock_count) : 0;
         $product->video_provider = 'youtube';
@@ -1603,10 +1800,14 @@ class ProductController extends BaseController
                 }
 
                 // Sync all column fields (replicated from original at copy time)
-                $copy->name = $request->name[array_search('en', (array) $request->lang)];
-                $copy->technical_name = $request->technical_name[array_search('en', (array) $request->lang)];
-                $copy->details = $request->description[array_search('en', (array) $request->lang)] ?? $copy->details;
-                $copy->tally_name = $request->prn[0];
+                $copyEnIdx = array_search('en', (array) $request->lang);
+                if ($copyEnIdx === false) {
+                    $copyEnIdx = 0;
+                }
+                $copy->name = ($request->name ?? [])[$copyEnIdx] ?? $copy->name;
+                $copy->technical_name = ($request->technical_name ?? [])[$copyEnIdx] ?? $copy->technical_name;
+                $copy->details = ($request->description ?? [])[$copyEnIdx] ?? $copy->details;
+                $copy->tally_name = ($request->prn ?? [])[0] ?? $copy->tally_name;
                 $copy->product_type = $request->product_type;
                 $copy->category_ids = $product->category_ids;
                 $copy->brand_id = $product->brand_id;
@@ -2041,6 +2242,18 @@ class ProductController extends BaseController
 
     public function reject_edit_request(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'admin_note' => 'required|string|max:500',
+        ], [
+            'admin_note.required' => 'Rejection reason is required!',
+            'admin_note.max' => 'Rejection reason cannot exceed 500 characters!',
+        ]);
+
+        if ($validator->fails()) {
+            Toastr::error($validator->errors()->first());
+            return back()->withErrors($validator)->withInput();
+        }
+
         $editRequest = ProductEditRequest::find($request->id);
 
         if (!$editRequest) {
@@ -2295,6 +2508,18 @@ class ProductController extends BaseController
 
     public function reject_change_request(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'admin_note' => 'required|string|max:500',
+        ], [
+            'admin_note.required' => 'Rejection reason is required!',
+            'admin_note.max' => 'Rejection reason cannot exceed 500 characters!',
+        ]);
+
+        if ($validator->fails()) {
+            Toastr::error($validator->errors()->first());
+            return back()->withErrors($validator)->withInput();
+        }
+
         $changeRequest = ProductChangeRequest::find($request->id);
 
         if (!$changeRequest) {

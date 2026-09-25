@@ -11,7 +11,7 @@
         <!-- Page Title -->
         <div class="mb-4">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{ asset('/public/assets/back-end/img/all-orders.png') }}" alt="">
+                <img src="{{ asset('/assets/back-end/img/all-orders.png') }}" alt="">
                 {{ \App\CPU\translate('order_details') }}
             </h2>
         </div>
@@ -377,10 +377,7 @@
                         @if ($physical_product)
                             <ul class="list-unstyled list-unstyled-py-4">
                                 <li>
-                                    <label class="font-weight-bold title-color fz-14">
-                                        {{ \App\CPU\translate('shipping_type') }}
-                                        ({{ \App\CPU\translate(str_replace('_', ' ', $order->shipping_type)) }})
-                                    </label>
+                                   
                                     @if ($order->shipping_type == 'order_wise')
                                         <label class="font-weight-bold title-color fz-14">
                                             {{ \App\CPU\translate('shipping') }} {{ \App\CPU\translate('method') }}
@@ -399,7 +396,7 @@
                                         </option>
                                     </select>
                                 </li>
-                             
+
                                 <li class="choose_delivery_man">
                                     <label class="font-weight-bold title-color fz-14">
                                         {{ \App\CPU\translate('deliveryman_will_get') }}
@@ -444,9 +441,10 @@
                                 </li>
                                 <li class="mt-2" id="warehouse_info_section" style="display:none;">
                                     <label class="font-weight-bold title-color fz-14">
-                                        {{ \App\CPU\translate('pickup_warehouse') }} ({{ \App\CPU\translate('delhivery') }})
+                                        {{ \App\CPU\translate('pickup_warehouse') }}
+                                        ({{ \App\CPU\translate('delhivery') }})
                                     </label>
-                                    @if($pickup_warehouse)
+                                    @if ($pickup_warehouse)
                                         <div class="card card-body p-2 mb-0" style="background:#f8f9fa;">
                                             <small>
                                                 <strong>{{ $pickup_warehouse['name'] }}</strong><br>
@@ -471,8 +469,7 @@
                     @if ($order->customer)
                         <div class="card-body">
                             <h4 class="mb-4 d-flex gap-2">
-                                <img src="{{ asset('/public/assets/back-end/img/seller-information.png') }}"
-                                    alt="">
+                                <img src="{{ asset('/assets/back-end/img/seller-information.png') }}" alt="">
                                 {{ \App\CPU\translate('Customer_information') }}
                             </h4>
                             <div class="media flex-wrap gap-3">
@@ -512,7 +509,7 @@
                         @if ($order->customer)
                             <div class="card-body">
                                 <h4 class="mb-4 d-flex gap-2">
-                                    <img src="{{ asset('/public/assets/back-end/img/seller-information.png') }}"
+                                    <img src="{{ asset('/assets/back-end/img/seller-information.png') }}"
                                         alt="">
                                     {{ \App\CPU\translate('shipping_address') }}
                                 </h4>
@@ -542,8 +539,7 @@
                                     </div>
                                     <div class="d-flex align-items-start gap-2">
                                         <!-- <span>{{ \App\CPU\translate('address') }} :</span> -->
-                                        <img src="{{ asset('/public/assets/back-end/img/location.png') }}"
-                                            alt="">
+                                        <img src="{{ asset('/assets/back-end/img/location.png') }}" alt="">
                                         {{ $shipping_address ? $shipping_address->city : \App\CPU\translate('empty') }}
                                     </div>
                                 </div>
@@ -566,8 +562,7 @@
                     @if ($order->customer)
                         <div class="card-body">
                             <h4 class="mb-4 d-flex gap-2">
-                                <img src="{{ asset('/public/assets/back-end/img/seller-information.png') }}"
-                                    alt="">
+                                <img src="{{ asset('/assets/back-end/img/seller-information.png') }}" alt="">
                                 {{ \App\CPU\translate('billing_address') }}
                             </h4>
 
@@ -596,7 +591,7 @@
                                 </div>
                                 <div class="d-flex align-items-start gap-2">
                                     <!-- <span>{{ \App\CPU\translate('address') }} :</span> -->
-                                    <img src="{{ asset('/public/assets/back-end/img/location.png') }}" alt="">
+                                    <img src="{{ asset('/assets/back-end/img/location.png') }}" alt="">
                                     {{ $billing ? $billing->city : '' }}
                                 </div>
                             </div>
@@ -616,7 +611,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="mb-4 d-flex gap-2">
-                            <img src="{{ asset('/public/assets/back-end/img/shop-information.png') }}" alt="">
+                            <img src="{{ asset('/assets/back-end/img/shop-information.png') }}" alt="">
                             {{ \App\CPU\translate('Shop_Information') }}
                         </h4>
 
@@ -650,8 +645,8 @@
                                         <span class="title-color">
                                             <strong>{{ $order->seller->shop->contact }}</strong></span>
                                         <div class="d-flex align-items-start gap-2">
-                                            <img src="{{ asset('/public/assets/back-end/img/location.png') }}"
-                                                class="mt-1" alt="">
+                                            <img src="{{ asset('/assets/back-end/img/location.png') }}" class="mt-1"
+                                                alt="">
                                             {{ $order->seller->shop->address }}
                                         </div>
                                     </div>
@@ -1098,4 +1093,3 @@
         }
     </script>
 @endpush
-

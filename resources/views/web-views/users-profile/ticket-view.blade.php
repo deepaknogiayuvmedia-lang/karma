@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Page Title-->
-<div class="container rtl" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
+<div class="container rtl " style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
     <h2 class="m-0 headerTitle text-center py-3">{{\App\CPU\translate('Support Ticket Answer')}}</h2>
 </div>
 <!-- Page Content-->

@@ -521,6 +521,7 @@
                                     </li>
                                 </ul>
                             </li>
+                            @php($pendingSellerProductCount = \App\Model\Product::where('added_by', 'seller')->whereNull('pid')->whereIn('request_status', [0, 2])->where(function ($q) { $q->where('approval_status', '!=', 'approved')->orWhereNull('approval_status')->orWhere('approval_status', ''); })->count())
                             <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/product/list/seller*') || Request::is('admin/product/updated-product-list') ? 'active' : '' }}">
                                 <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle"
                                    href="javascript:"
@@ -528,17 +529,28 @@
                                     <i class="tio-airdrop nav-icon"></i>
                                     <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
                                         {{ \App\CPU\translate('Seller') }} {{ \App\CPU\translate('Products') }}
+                                        @if ($pendingSellerProductCount > 0)
+                                            <span class="badge badge-danger badge-pill ml-1"
+                                                  title="{{ \App\CPU\translate('New Seller Products') }}">
+                                                {{ $pendingSellerProductCount }}
+                                            </span>
+                                        @endif
                                     </span>
                                 </a>
                                 <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
                                     style="display: {{ Request::is('admin/product/list/seller*') || Request::is('admin/product/updated-product-list') ? 'block' : 'none' }}">
 
-                                    <li class="nav-item {{ Request::is('admin/product/list/seller') && !request()->has('status') ? 'active' : '' }}">
+                                    <li class="nav-item {{ Request::is('admin/product/list/seller') && (request()->status === null || request()->status === '' || request()->status === '0' || request()->status === 'pending') ? 'active' : '' }}">
                                         <a class="nav-link"
-                                           title="{{ \App\CPU\translate('All') }} {{ \App\CPU\translate('Products') }}"
-                                           href="{{ route('admin.product.list', ['seller']) }}">
+                                           title="{{ \App\CPU\translate('New Seller Products') }}"
+                                           href="{{ route('admin.product.list', ['seller', 'status' => 'pending']) }}">
                                             <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{ \App\CPU\translate('All Seller Products') }}</span>
+                                            <span class="text-truncate">
+                                                {{ \App\CPU\translate('New Seller Products') }}
+                                                @if ($pendingSellerProductCount > 0)
+                                                    <span class="badge badge-danger badge-pill ml-1">{{ $pendingSellerProductCount }}</span>
+                                                @endif
+                                            </span>
                                         </a>
                                     </li>
                                 </ul>
@@ -944,25 +956,7 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li
-                                class="navbar-vertical-aside-has-menu {{ Request::is('admin/customer/subscriber-list') ? 'active' : '' }}">
-                                <a class="nav-link " href="{{ route('admin.customer.subscriber-list') }}"
-                                    title="{{ \App\CPU\translate('subscribers') }}">
-                                    <span class="tio-user nav-icon"></span>
-                                    <span class="text-truncate">{{ \App\CPU\translate('subscribers') }} </span>
-                                </a>
-                            </li>
-
-                         
-                            
-                            <li
-                                class="navbar-vertical-aside-has-menu {{ Request::is('admin/sale/list') || Request::is('admin/sale/add-new') || Request::is('admin/sale/update*') ? 'active' : '' }}">
-                                <a class="nav-link " href="{{ route('admin.sale.employee.emp-list') }}"
-                                    title="{{ \App\CPU\translate('Sale Employees') }}">
-                                    <span class="tio-user nav-icon"></span>
-                                    <span class="text-truncate">{{ \App\CPU\translate('Sale Employees') }} </span>
-                                </a>
-                            </li>
+                           
                             <li
                                 class="navbar-vertical-aside-has-menu {{ Request::is('admin/employee*') || Request::is('admin/custom-role*') ? 'active' : '' }}">
                                 <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle"
@@ -1019,7 +1013,7 @@
                         </li> -->
                         @if (\App\CPU\Helpers::module_permission_check('system_settings'))
                             <li
-                                class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/web-config') || Request::is('admin/business-settings/web-config/app-settings') || Request::is('admin/product-settings/inhouse-shop') || Request::is('admin/business-settings/seller-settings') || Request::is('admin/customer/customer-settings') || Request::is('admin/refund-section/refund-index') || Request::is('admin/business-settings/shipping-method/setting') || Request::is('admin/business-settings/order-settings/index') || Request::is('admin/product-settings') || Request::is('admin/business-settings/web-config/delivery-restriction') || Request::is('admin/business-settings/cookie-settings') ? 'active' : '' }}">
+                                class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/web-config') || Request::is('admin/business-settings/web-config/app-settings') || Request::is('admin/product-settings/inhouse-shop') || Request::is('admin/business-settings/seller-settings') || Request::is('admin/customer/customer-settings') || Request::is('admin/refund-section/refund-index') || Request::is('admin/business-settings/shipping-method/setting') || Request::is('admin/business-settings/order-settings/index') || Request::is('admin/product-settings') || Request::is('admin/business-settings/web-config/delivery-restriction') || Request::is('admin/business-settings/cookie-settings') || Request::is('admin/business-settings/loyalty-point') ? 'active' : '' }}">
                                 <a class="js-navbar-vertical-aside-menu-link nav-link"
                                     href="{{ route('admin.business-settings.web-config.index') }}"
                                     title="{{ \App\CPU\translate('Business_Setup') }}">
@@ -1031,7 +1025,7 @@
                             </li>
 
                             <li
-                                class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/shipping-method/3rd-party-shipping-method') || Request::is('admin/business-settings/tally-companies') || Request::is('admin/business-settings/whatsapp/templete') || Request::is('admin/business-settings/whatsapp/index') ? 'active' : '' }}">
+                                class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/shipping-method/3rd-party-shipping-method') || Request::is('admin/business-settings/tally-companies') || Request::is('admin/business-settings/whatsapp/templete') || Request::is('admin/business-settings/whatsapp/index') || Request::is('admin/business-settings/tally-companies') || Request::is('admin/business-settings/payment-method') || Request::is('admin/social-login/view')  || Request::is('admin/business-settings/sms-module') || Request::is('admin/business-settings/mail') ? 'active' : '' }}">
                                 <a class="nav-link " href="{{ route('admin.business-settings.shipping-method.shipping-method-3rd-party') }}"
                                     title="{{ \App\CPU\translate('3rd_party') }}">
                                     <span class="tio-key nav-icon"></span>

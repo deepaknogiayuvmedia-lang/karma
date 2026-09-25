@@ -370,7 +370,7 @@
         }
 
         .navbar-sticky.mobile-head .navbar-brand img {
-            height: 38px;
+            height: 50px;
             width: auto;
         }
 
@@ -1028,9 +1028,18 @@
 
         <div class="navbar px-3 py-2 navbar-expand-md navbar-light">
             <div class="container ">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
+              <div class="d-flex gap-2 align-items-center">
+                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                 <a class="navbar-brand d-sm-none {{ Session::get('direction') === 'rtl' ? 'mr-2' : 'mr-2' }}"
+                    href="{{ route('home') }}">
+                    <img class="mobile-logo-img __inline-12"
+                        src="{{ asset(config('app.public_storage_path') . '/company') . '/' . $web_config['mob_logo']->value }}"
+                        onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
+                        alt="{{ $web_config['name']->value }}" />
+                </a>
+              </div>
                 <a class="navbar-brand d-none d-sm-block {{ Session::get('direction') === 'rtl' ? 'mr-3' : 'mr-3' }} flex-shrink-0 __min-w-7rem"
                     href="{{ route('home') }}">
                     <img class="__inline-11"
@@ -1038,13 +1047,7 @@
                         onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                         alt="{{ $web_config['name']->value }}" />
                 </a>
-                <a class="navbar-brand d-sm-none {{ Session::get('direction') === 'rtl' ? 'mr-2' : 'mr-2' }}"
-                    href="{{ route('home') }}">
-                    <img class="mobile-logo-img __inline-12"
-                        src="{{ asset(config('app.public_storage_path') . '/company') . '/' . $web_config['mob_logo']->value }}"
-                        onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                        alt="{{ $web_config['name']->value }}" />
-                </a>
+               
                 <!-- Search - Desktop-->
                 <div class="input-group-overlay d-none d-md-block mx-4 flex-grow-1"
                     style=" text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
@@ -1224,7 +1227,7 @@
     $categories = \App\Model\Category::with(['childes.childes'])->where('position', 0)->priority()->paginate(11)
 )
                     <ul
-                        class="navbar-nav mega-nav pr-2 pl-2 {{ Session::get('direction') === 'rtl' ? 'mr-2' : 'mr-2' }} d-none d-xl-block __mega-nav">
+                        class="navbar-nav mega-nav pr-2 pl-2 mt-0 {{ Session::get('direction') === 'rtl' ? 'mr-2' : 'mr-2' }} d-none d-xl-block __mega-nav">
                         <li class="nav-item">
                             <a class="nav-link dropdown-toggle {{ Session::get('direction') === 'rtl' ? 'pr-0' : 'pl-0' }}"
                                 href="#" data-toggle="dropdown">
@@ -1370,12 +1373,12 @@
 
                         @if (\App\Model\BusinessSetting::where(['type' => 'product_brand'])->first()->value)
                             <li class="nav-item dropdown {{ request('data_from') == 'brand' || request()->is('brands') ? 'active' : '' }}">
-                                <a class="nav-link dropdown-toggle" href="#"
+                                <a class="nav-link dropdown-toggle " href="#"
                                     data-toggle="dropdown">{{ \App\CPU\translate('brand') }}</a>
                                 <ul class="dropdown-menu __dropdown-menu-sizing dropdown-menu-{{ Session::get('direction') === 'rtl' ? 'right' : 'left' }} scroll-bar"
                                     style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }};">
                                     @foreach (\App\CPU\BrandManager::get_active_brands() as $brand)
-                                        <li class="__inline-17">
+                                        <li class="__inline-17 d-flex align-items-center justify-content-between">
                                             <div>
                                                 <a class="dropdown-item"
                                                     href="{{ route('products', ['id' => $brand['id'], 'data_from' => 'brand', 'page' => 1]) }}">
@@ -1390,7 +1393,7 @@
                                             </div>
                                         </li>
                                     @endforeach
-                                    <li class="__inline-17">
+                                    <li class="__inline-17 d-flex align-items-center justify-content-between">
                                         <div>
                                             <a class="dropdown-item" href="{{ route('brands') }}"
                                                 style="color: var(--primary_color) !important;">
@@ -1421,7 +1424,7 @@
                             @if ($seller_registration)
                                 <li class="nav-item {{ request()->routeIs('shop.apply') || request()->routeIs('seller.auth.login') ? 'active' : '' }} seller-zone-nav d-none d-xl-block">
                                     <div class="dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <a class="nav-link dropdown-toggle mt-0" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                             <i class="czi-store align-middle mt-n1 mr-2"></i>
                                             <span style="margin-left: 5px; margin-right: 30px;">{{ \App\CPU\translate('Seller') }} {{ \App\CPU\translate('zone') }}</span>
                                         </a>

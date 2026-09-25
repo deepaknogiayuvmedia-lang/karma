@@ -14,7 +14,7 @@
         <!-- Page Title -->
         <div class="mb-3">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img width="20" src="{{ asset('/public/assets/back-end/img/shop-info.png') }}" alt="">
+                <img width="20" src="{{ asset('/assets/back-end/img/shop-info.png') }}" alt="">
                 {{ \App\CPU\translate('Edit_Shop_Info') }}
             </h2>
         </div>
@@ -148,12 +148,12 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <div class="d-flex justify-content-between">
-                                    <label class="title-color">
-                                            {{ \App\CPU\translate('Upload GST Certificate (PDF)') }}
+                                            <label class="title-color">
+                                                {{ \App\CPU\translate('Upload GST Certificate (PDF)') }}
                                             </label>
                                             @if ($shop->gst_doc)
-                                                <a href="{{ asset('storage/document/' . $shop->gst_doc) }}" target="_blank"
-                                                    class="text-decoration-underline">
+                                                <a href="{{ asset('storage/document/' . $shop->gst_doc) }}"
+                                                    target="_blank" class="text-decoration-underline">
                                                     View GST Certificate Pdf
                                                 </a>
                                             @endif
@@ -183,13 +183,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <div class="d-flex justify-content-between">
-                                     <label class="
+                                            <label class="
                                             title-color">
-                                            {{ \App\CPU\translate('Upload PAN Card (PDF)') }}
+                                                {{ \App\CPU\translate('Upload PAN Card (PDF)') }}
                                             </label>
                                             @if ($shop->pen_doc)
-                                                <a href="{{ asset('storage/document/' . $shop->gst_doc) }}" target="_blank"
-                                                    class="text-decoration-underline">
+                                                <a href="{{ asset('storage/document/' . $shop->gst_doc) }}"
+                                                    target="_blank" class="text-decoration-underline">
                                                     View Pen Card Pdf
                                                 </a>
                                             @endif
@@ -422,4 +422,3 @@
         });
     </script>
 @endpush
-

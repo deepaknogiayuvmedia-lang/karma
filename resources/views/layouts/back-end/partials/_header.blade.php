@@ -136,6 +136,56 @@
                         </li>
                     @endif
 
+                    @php($adminUnreadCount = \App\Model\AdminNotification::unread()->count())
+                    <li class="nav-item d-none d-md-inline-block">
+                        <div class="hs-unfold dropdown">
+                            <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle"
+                               href="javascript:" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="tio-notifications-on-outlined"></i>
+                                @if ($adminUnreadCount > 0)
+                                    <span class="btn-status btn-sm-status btn-status-danger">{{ $adminUnreadCount }}</span>
+                                @endif
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" style="min-width: 320px; max-height: 380px; overflow-y: auto;">
+                                <div class="dropdown-header d-flex align-items-center justify-content-between">
+                                    <span class="title-color text-capitalize">{{ \App\CPU\translate('notifications') }}</span>
+                                    @if ($adminUnreadCount > 0)
+                                        <a href="javascript:void(0)" id="mark-all-admin-notifications"
+                                           class="fz-12"
+                                           onclick="event.preventDefault();fetch('{{ route('admin.admin.notifications.mark-read') }}',{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}}).then(function(){location.reload();});">
+                                            {{ \App\CPU\translate('Mark all read') }}
+                                        </a>
+                                    @endif
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                @php($adminNotifications = \App\Model\AdminNotification::latest()->take(10)->get())
+                                @if ($adminNotifications->isEmpty())
+                                    <div class="dropdown-item-text text-center text-muted py-3">
+                                        {{ \App\CPU\translate('no_notifications_found') }}
+                                    </div>
+                                @else
+                                    @foreach ($adminNotifications as $adminNotification)
+                                        <a class="dropdown-item py-2 d-block {{ $adminNotification->is_read ? 'opacity-50' : '' }}"
+                                           href="{{ $adminNotification->link ?: 'javascript:' }}"
+                                           data-admin-notification-id="{{ $adminNotification->id }}"
+                                           onclick="if(!{{ $adminNotification->is_read ? 'true' : 'false' }} && this.getAttribute('href').indexOf('javascript')!==0){fetch('{{ route('admin.admin.notifications.mark-read') }}',{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify({id:{{ $adminNotification->id }}})});}">
+                                            <div class="font-weight-bold text-truncate" style="max-width: 280px;">
+                                                {{ $adminNotification->title }}
+                                                @unless ($adminNotification->is_read)
+                                                    <span class="badge badge-danger badge-pill ml-1">●</span>
+                                                @endunless
+                                            </div>
+                                            <div class="fz-12 text-muted text-truncate" style="max-width: 280px;">
+                                                {{ $adminNotification->message }}
+                                            </div>
+                                            <div class="fz-11 text-muted">{{ $adminNotification->created_at->diffForHumans() }}</div>
+                                        </a>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </li>
+
                     <li class="nav-item view-web-site-info">
                         <div class="hs-unfold">
                             <a onclick="openInfoWeb()" href="javascript:"

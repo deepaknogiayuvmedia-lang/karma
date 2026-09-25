@@ -10,6 +10,22 @@ use Illuminate\Support\Facades\Log;
 
 class shepping
 {
+    public static function is_live(): bool
+    {
+        $config = Helpers::get_shipping_config();
+        if ($config && !empty($config->environment)) {
+            return $config->environment === 'live';
+        }
+        return env('APP_MODE') == 'live';
+    }
+
+    public static function base_url(): string
+    {
+        return self::is_live()
+            ? 'https://track.delhivery.com'
+            : 'https://staging-express.delhivery.com';
+    }
+
     public static function CreateWhereHouse($data)
     {
         
@@ -25,9 +41,7 @@ class shepping
             return ['status' => 'error', 'message' => 'Delhivery API token is not configured. Please set the API Secret in shipping settings.'];
         }
 
-        $url = (env('APP_MODE') == 'live'
-            ? 'https://track.delhivery.com'
-            : 'https://staging-express.delhivery.com') . '/api/backend/clientwarehouse/create/';
+        $url = self::base_url() . '/api/backend/clientwarehouse/create/';
         
         try {   
             $response = Http::withoutVerifying()->withHeaders([
@@ -78,9 +92,7 @@ class shepping
         $api_token = $config->api_secret;
 
         // Delhivery Client Warehouse Edit API endpoint
-        $url = (env('APP_MODE') == 'live'
-            ? 'https://track.delhivery.com'
-            : 'https://staging-express.delhivery.com') . '/api/backend/clientwarehouse/edit/';
+        $url = self::base_url() . '/api/backend/clientwarehouse/edit/';
 
         try {
             $response = Http::withoutVerifying()->withHeaders([
@@ -144,7 +156,7 @@ class shepping
             "add" => $shipping->address,
             "pin" => $shipping->zip,
             "phone" => $shipping->phone,
-            "order" => (string)$order->id . (env('APP_MODE') == 'dev' ? '-' . time() : ''),
+            "order" => (string)$order->id . (!self::is_live() ? '-' . time() : ''),
             "payment_mode" => $order->payment_method == 'cash_on_delivery' ? 'COD' : 'Prepaid',
             "cod_amount" => $order->payment_method == 'cash_on_delivery' ? $order->order_amount : 0,
             "total_amount" => $order->order_amount,
@@ -189,9 +201,7 @@ class shepping
             "pickup_location" => $pickup_location
         ];
 
-        $base_url = (env('APP_MODE') == 'live'
-            ? "https://track.delhivery.com"
-            : "https://staging-express.delhivery.com");
+        $base_url = self::base_url();
         $url = $base_url . "/api/cmu/create.json";
 
         try {
@@ -257,7 +267,7 @@ class shepping
         $api_token = $config->api_secret;
         
         // Delhivery Tracking API endpoint
-        $url = (env('APP_MODE') == 'live' ? "https://track.delhivery.com" : "https://staging-express.delhivery.com") . "/api/v1/packages/json/?waybill=" . $waybill;
+        $url = self::base_url() . "/api/v1/packages/json/?waybill=" . $waybill;
         
         try {
             $response = Http::withoutVerifying()->withHeaders([
@@ -315,7 +325,7 @@ class shepping
         $api_token = $config->api_secret;
         
         // Delhivery Edit/Update API endpoint
-        $url = (env('APP_MODE') == 'live' ? "https://track.delhivery.com" : "https://staging-express.delhivery.com") . "/api/p/edit";
+        $url = self::base_url() . "/api/p/edit";
         
         // Build update data
         $update_data = [
@@ -361,7 +371,7 @@ class shepping
         $api_token = $config->api_secret;
         
         // Delhivery Cancel/Edit API endpoint
-        $url = (env('APP_MODE') == 'live' ? "https://track.delhivery.com" : "https://staging-express.delhivery.com") . "/api/p/edit";
+        $url = self::base_url() . "/api/p/edit";
         
         try {
             $response = Http::withoutVerifying()->asForm()->withHeaders([
@@ -402,11 +412,9 @@ class shepping
 
         $api_token = $config->api_secret;
         
-        $url = (env('APP_MODE') == 'live'
-            ? "https://track.delhivery.com"
-            : "https://staging-express.delhivery.com") . "/c/api/pin-codes/json/?filter_codes=" . $pin;
+        $url = self::base_url() . "/c/api/pin-codes/json/?filter_codes=" . $pin;
         
-        Log::info('Delhivery pincode check', ['pin' => $pin, 'url' => $url, 'mode' => env('APP_MODE')]);
+        Log::info('Delhivery pincode check', ['pin' => $pin, 'url' => $url, 'mode' => self::is_live() ? 'live' : 'test']);
 
         try {
             $response = Http::withoutVerifying()->withHeaders([
@@ -478,9 +486,7 @@ class shepping
             }
         }
 
-        $url = (env('APP_MODE') == 'live'
-            ? "https://track.delhivery.com"
-            : "https://staging-express.delhivery.com") . "/api/kinko/v1/invoice/charges/.json";
+        $url = self::base_url() . "/api/kinko/v1/invoice/charges/.json";
 
         $params = [
             'md' => 'E',

@@ -130,12 +130,14 @@ class ShippingMethodController extends Controller
     }  
 
     public function third_party_shipping_store(Request $request) {
+        $environment = $request->environment === 'live' ? 'live' : 'test';
         \App\Model\ThirdPartyShippingMethod::updateOrCreate(
             ['user_id' => auth('admin')->id()],
             [
                 'api_key' => $request->api_key,
                 'api_secret' => $request->api_secret,
                 'status' => $request->status ? 1 : 0,
+                'environment' => $environment,
             ]
         );
 

@@ -10,7 +10,7 @@
         <!-- Page Title -->
         <div class="mb-4 pb-2">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{ asset('/public/assets/back-end/img/3rd-party.png') }}" alt="">
+                <img src="{{ asset('/assets/back-end/img/3rd-party.png') }}" alt="">
                 {{ \App\CPU\translate('3rd_party') }}
             </h2>
         </div>
@@ -240,7 +240,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img src="{{ asset('/public/assets/back-end/img/ssl-commerz.png') }}" alt="">
+                            <img src="{{ asset('/assets/back-end/img/ssl-commerz.png') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -288,7 +288,7 @@
                     @csrf
                     @if (isset($config))
                         <center class="mb-3">
-                            <img src="{{ asset('/public/assets/back-end/img/paypal.png') }}" alt="">
+                            <img src="{{ asset('/assets/back-end/img/paypal.png') }}" alt="">
                         </center>
 
                         <div class="d-flex flex-wrap gap-2 justify-content-between mb-3">
@@ -359,7 +359,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img src="{{ asset('/public/assets/back-end/img/stripe.png') }}" alt="">
+                            <img src="{{ asset('/assets/back-end/img/stripe.png') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -416,7 +416,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img src="{{ asset('/public/assets/back-end/img/razorpay.png') }}" alt="">
+                            <img src="{{ asset('/assets/back-end/img/razorpay.png') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -474,8 +474,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img height="60" src="{{ asset('/public/assets/back-end/img/senangpay.png') }}"
-                                alt="">
+                            <img height="60" src="{{ asset('/assets/back-end/img/senangpay.png') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -549,8 +548,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img height="60" src="{{ asset('/public/assets/back-end/img/paytabs.png') }}"
-                                alt="">
+                            <img height="60" src="{{ asset('/assets/back-end/img/paytabs.png') }}" alt="">
                         </center>
 
 
@@ -618,8 +616,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img height="60" src="{{ asset('/public/assets/back-end/img/paystack.png') }}"
-                                alt="">
+                            <img height="60" src="{{ asset('/assets/back-end/img/paystack.png') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -703,8 +700,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img height="60" src="{{ asset('/public/assets/back-end/img/paymob.png') }}"
-                                alt="">
+                            <img height="60" src="{{ asset('/assets/back-end/img/paymob.png') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -795,8 +791,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img height="60" src="{{ asset('/public/assets/back-end/img/fawry.svg') }}"
-                                alt="">
+                            <img height="60" src="{{ asset('/assets/back-end/img/fawry.svg') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -861,8 +856,7 @@
                         @php($config['environment'] = $config['environment'] ?? 'sandbox')
 
                         <center class="mb-3">
-                            <img height="60" src="{{ asset('/public/assets/back-end/img/mercado.svg') }}"
-                                alt="">
+                            <img height="60" src="{{ asset('/assets/back-end/img/mercado.svg') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -925,8 +919,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img height="60" src="{{ asset('/public/assets/back-end/img/liqpay4.png') }}"
-                                alt="">
+                            <img height="60" src="{{ asset('/assets/back-end/img/liqpay4.png') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -989,7 +982,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img height="60" src="{{ asset('/public/assets/back-end/img/fluterwave.png') }}"
+                            <img height="60" src="{{ asset('/assets/back-end/img/fluterwave.png') }}"
                                 alt="">
                         </center>
 
@@ -1058,8 +1051,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img height="60" src="{{ asset('/public/assets/back-end/img/paytm.png') }}"
-                                alt="">
+                            <img height="60" src="{{ asset('/assets/back-end/img/paytm.png') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -1129,8 +1121,7 @@
                         </div>
 
                         <center class="mb-3">
-                            <img height="60" src="{{ asset('/public/assets/back-end/img/bkash.png') }}"
-                                alt="">
+                            <img height="60" src="{{ asset('/assets/back-end/img/bkash.png') }}" alt="">
                         </center>
 
                         <div class="form-group">
@@ -1201,4 +1192,3 @@
         }
     </script>
 @endpush
-

@@ -4,6 +4,7 @@
         {{-- <li class="{{ Request::is('admin/business-settings/web-config/app-settings') ?'active':'' }}"><a href="{{route('admin.business-settings.web-config.app-settings')}}">{{\App\CPU\translate('App_Settings')}}</a></li> --}}
         <li class="{{ Request::is('admin/product-settings/inhouse-shop') ?'active':'' }}"><a href="{{ route('admin.product-settings.inhouse-shop') }}">{{\App\CPU\translate('In-House_Shop')}}</a></li>
         <li class="{{ Request::is('admin/business-settings/seller-settings') ?'active':'' }}"><a href="{{route('admin.business-settings.seller-settings.index')}}">{{\App\CPU\translate('Seller')}}</a></li>
+        <li class="{{ Request::is('admin/business-settings/loyalty-point') ?'active':'' }}"><a href="{{route('admin.business-settings.loyalty-point')}}">{{\App\CPU\translate('loyalty_point')}}</a></li>
         {{-- <li class="{{ Request::is('admin/customer/customer-settings') ?'active':'' }}"><a href="{{route('admin.customer.customer-settings')}}">{{\App\CPU\translate('Customer')}}</a></li> --}}
         <li class="{{ Request::is('admin/refund-section/refund-index') ?'active':'' }}"><a href="{{route('admin.refund-section.refund-index')}}">{{\App\CPU\translate('refund')}}</a></li>
         {{-- <li class="{{ Request::is('admin/business-settings/shipping-method/setting') ?'active':'' }}"><a href="{{route('admin.business-settings.shipping-method.setting')}}">{{\App\CPU\translate('Shipping_Method')}}</a></li> --}}

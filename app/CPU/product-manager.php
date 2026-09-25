@@ -7,6 +7,9 @@ use App\Model\Product;
 use App\Model\OrderDetail;
 use App\Model\Translation;
 use App\Model\ShippingMethod;
+use App\Model\Category;
+use App\Model\Brand;
+use App\Model\Attribute;
 use Illuminate\Support\Facades\DB;
 use Brian2694\Toastr\Facades\Toastr;
 
@@ -135,14 +138,18 @@ class ProductManager
     }
     public static function search_products_web($name, $limit = 10, $offset = 1)
     {
-        $key = explode(' ', $name);
-        $paginator = Product::active()->with(['rating','tags'])->lowestPricePerPid()->where(function ($q) use ($key) {
+        $key = self::search_key_terms($name);
+        $meta = self::matching_meta_ids($key);
+
+        $paginator = Product::active()->with(['rating','tags'])->lowestPricePerPid()->where(function ($q) use ($key, $meta) {
             foreach ($key as $value) {
                 $q->orWhere('name', 'like', "%{$value}%")
                 ->orWhereHas('tags',function($query)use($value){
                     $query->where('tag', 'like', "%{$value}%");
-                });
+                })
+                ->orWhere('choice_options', 'like', "%{$value}%");
             }
+            self::apply_meta_search($q, $meta);
         })->orderBy('indexing', 'asc')
           ->orderBy('priority', 'desc')
           ->paginate($limit, ['*'], 'page', $offset);
@@ -259,12 +266,15 @@ class ProductManager
 
     public static function get_search_product_ids($name)
     {
-        $key = explode(' ', $name);
+        $key = self::search_key_terms($name);
+        $meta = self::matching_meta_ids($key);
 
-        $product_ids = Product::active()->where(function ($q) use ($key) {
+        $product_ids = Product::active()->where(function ($q) use ($key, $meta) {
             foreach ($key as $value) {
-                $q->orWhere('name', 'like', "%{$value}%");
+                $q->orWhere('name', 'like', "%{$value}%")
+                ->orWhere('choice_options', 'like', "%{$value}%");
             }
+            self::apply_meta_search($q, $meta);
         })->pluck('id');
 
         $translated_ids = Translation::where('translationable_type', 'App\Model\Product')
@@ -277,6 +287,82 @@ class ProductManager
             ->pluck('translationable_id');
 
         return $product_ids->merge($translated_ids)->unique();
+    }
+
+    private static function search_key_terms($name)
+    {
+        $key = array_values(array_filter(array_map('trim', explode(' ', $name)), function ($v) {
+            return $v !== '';
+        }));
+        return $key ?: [trim($name)];
+    }
+
+    private static function matching_meta_ids($key)
+    {
+        $categoryIds = collect();
+        $brandIds = collect();
+        $attributeIds = collect();
+
+        foreach ($key as $value) {
+            $categoryIds = $categoryIds->merge(
+                Category::where('name', 'like', "%{$value}%")->pluck('id')
+            )->merge(
+                Translation::where('translationable_type', 'App\Model\Category')
+                    ->where('key', 'name')
+                    ->where('value', 'like', "%{$value}%")
+                    ->pluck('translationable_id')
+            );
+
+            $brandIds = $brandIds->merge(
+                Brand::where('name', 'like', "%{$value}%")->pluck('id')
+            )->merge(
+                Translation::where('translationable_type', 'App\Model\Brand')
+                    ->where('key', 'name')
+                    ->where('value', 'like', "%{$value}%")
+                    ->pluck('translationable_id')
+            );
+
+            $attributeIds = $attributeIds->merge(
+                Attribute::where('name', 'like', "%{$value}%")->pluck('id')
+            )->merge(
+                Translation::where('translationable_type', 'App\Model\Attribute')
+                    ->where('key', 'name')
+                    ->where('value', 'like', "%{$value}%")
+                    ->pluck('translationable_id')
+            );
+        }
+
+        return [
+            'category_ids' => $categoryIds->unique()->values(),
+            'brand_ids' => $brandIds->unique()->values(),
+            'attribute_ids' => $attributeIds->unique()->values(),
+        ];
+    }
+
+    private static function apply_meta_search($q, $meta)
+    {
+        if ($meta['category_ids']->isNotEmpty()) {
+            $q->orWhere(function ($qq) use ($meta) {
+                foreach ($meta['category_ids'] as $cid) {
+                    $qq->orWhereJsonContains('category_ids', [['id' => (string) $cid]]);
+                }
+            });
+        }
+
+        if ($meta['brand_ids']->isNotEmpty()) {
+            $q->orWhereIn('brand_id', $meta['brand_ids']);
+        }
+
+        if ($meta['attribute_ids']->isNotEmpty()) {
+            $q->orWhere(function ($qq) use ($meta) {
+                foreach ($meta['attribute_ids'] as $aid) {
+                    $qq->orWhereJsonContains('attributes', $aid)
+                       ->orWhereJsonContains('attributes', (string) $aid)
+                       ->orWhereJsonContains('choice_attributes', $aid)
+                       ->orWhereJsonContains('choice_attributes', (string) $aid);
+                }
+            });
+        }
     }
 
     public static function get_shipping_methods($product)

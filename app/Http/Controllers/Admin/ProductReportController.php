@@ -326,7 +326,7 @@ class ProductReportController extends Controller
             $rating = count($product->rating)>0?number_format($product->rating[0]->average, 2, '.', ' '):0;
             $reportData[$key] = array(
                 'Product Name' => Str::limit($product->name, 20),
-                'Product Unit Price' => BackEndHelper::set_symbol(BackEndHelper::usd_to_currency($product->unit_price)),
+                'Product Selling Price' => BackEndHelper::set_symbol(BackEndHelper::usd_to_currency($product->unit_price)),
                 'Total Amount Sold' => BackEndHelper::set_symbol(BackEndHelper::usd_to_currency(isset($product->order_details[0]->total_sold_amount) ? $product->order_details[0]->total_sold_amount : 0)),
                 'Average Product Value' => BackEndHelper::set_symbol(BackEndHelper::usd_to_currency((isset($product->order_details[0]->total_sold_amount) ? $product->order_details[0]->total_sold_amount : 0) / (isset($product->order_details[0]->product_quantity) ? $product->order_details[0]->product_quantity : 1))),
                 'Current Stock Amount' => $product->product_type == 'digital' ? ($product->status==1 ? 'Available':'Nor Available') : $product->current_stock,

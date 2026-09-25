@@ -11,7 +11,7 @@
     <!-- Page Title -->
     <div class="mb-3">
         <h2 class="h1 mb-0 d-flex gap-2">
-            <img src="{{asset('/public/assets/back-end/img/attribute.png')}}" alt="">
+            <img src="{{asset('/assets/back-end/img/attribute.png')}}" alt="">
             {{\App\CPU\translate('Attribute_Setup')}}
         </h2>
     </div>

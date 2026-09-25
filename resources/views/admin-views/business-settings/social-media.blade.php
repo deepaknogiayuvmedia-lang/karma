@@ -1,18 +1,28 @@
 @extends('layouts.back-end.app')
-@section('title', \App\CPU\translate('Social Media'))
+
+@section('title', \App\CPU\translate('social_media'))
+
 @push('css_or_js')
+    <link href="{{ asset('assets/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('assets/back-end/css/custom.css')}}" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endpush
 
 @section('content')
     <div class="content container-fluid">
         <!-- Page Title -->
-        <div class="mb-3">
+        <div class="pb-2">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{asset('/public/assets/back-end/img/social media.png')}}" width="20" alt="">
-                {{\App\CPU\translate('social_media')}}
+                <img src="{{asset('/assets/back-end/img/business-setup.png')}}" alt="">
+                {{\App\CPU\translate('Business_Setup')}}
             </h2>
         </div>
+        <!-- End Page Title -->
+
+        <!-- Inlile Menu -->
+        @include('admin-views.business-settings.business-setup-inline-menu')
+        <!-- Page Title -->
+      
         <!-- End Page Title -->
 
         <!-- Content Row -->

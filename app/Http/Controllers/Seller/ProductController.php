@@ -33,6 +33,7 @@ use App\Model\OrderDetail;
 use App\Model\Order;
 use App\Model\ProductEditRequest;
 use App\Model\ProductChangeRequest;
+use App\Model\AdminNotification;
 use App\Model\Tempproduct;
 use App\Model\Wishlist;
 use Nwidart\Modules\Json;
@@ -42,6 +43,31 @@ use function App\CPU\translate;
 
 class ProductController extends Controller
 {
+    protected static function notify_admin_new_product(Product $product, string $action = 'submitted'): void
+    {
+        try {
+            $seller = Seller::find($product->seller_id ?? $product->user_id);
+            $sellerName = $seller ? ($seller->shop->name ?? trim(($seller->f_name ?? '') . ' ' . ($seller->l_name ?? ''))) : 'Seller';
+            $title = $action === 'resubmitted'
+                ? \App\CPU\translate('Seller Resubmitted Product')
+                : \App\CPU\translate('New Seller Product Submitted');
+            $message = \App\CPU\translate('Product') . ': ' . $product->name
+                . ' | ' . \App\CPU\translate('Seller') . ': ' . $sellerName
+                . ' | ' . \App\CPU\translate('Code') . ': ' . $product->code;
+
+            AdminNotification::create([
+                'product_id' => $product->id,
+                'seller_id' => $product->seller_id ?? $product->user_id,
+                'title' => $title,
+                'message' => $message,
+                'link' => route('admin.product.view', $product->id),
+                'is_read' => 0,
+            ]);
+        } catch (\Throwable $e) {
+            // notification must never block product save
+        }
+    }
+
     public function add_new()
     {
         $cat = Category::where(['parent_id' => 0])->get();
@@ -61,8 +87,13 @@ class ProductController extends Controller
                 'success' => 1,
             ], 200);
         } elseif ($request['status'] == 1) {
-            if (Product::find($request['id'])->request_status == 1) {
-                Product::where(['id' => $request['id']])->update([
+            $product = Product::where(['id' => $request['id'], 'added_by' => 'seller', 'user_id' => \auth('seller')->id()])->first();
+            $isApproved = $product && (
+                ($product->approval_status ?? '') === 'approved'
+                || (int) ($product->request_status ?? 0) === 1
+            );
+            if ($isApproved) {
+                Product::where(['id' => $request['id'], 'added_by' => 'seller', 'user_id' => \auth('seller')->id()])->update([
                     'status' => $request['status'],
                 ]);
                 return response()->json([
@@ -105,27 +136,84 @@ class ProductController extends Controller
             $duplicate->featured       = 0;
             $duplicate->featured_status = 0;
             $duplicate->code = $code;
+            // Copied products are auto-verified — no admin approval needed
+            $duplicate->approval_status = 'approved';
+            $duplicate->edit_status = 'none';
+            $duplicate->request_status = 1;
+            $duplicate->denied_note = null;
 
-            // Update variations with qty from modal
+            // Price related changes from copy modal
+            if ($request->filled('unit')) {
+                $duplicate->unit = $request->unit;
+            }
+            if ($request->filled('purchase_price')) {
+                $duplicate->purchase_price = Convert::usd(abs($request->purchase_price));
+            }
+            if ($request->filled('discount')) {
+                $duplicate->discount = ($request->discount_type ?? 'flat') == 'flat'
+                    ? Convert::usd(abs($request->discount))
+                    : abs($request->discount);
+                $duplicate->discount_type = $request->discount_type ?? 'flat';
+            }
+            if ($request->filled('tax')) {
+                $duplicate->tax = ($request->tax_model ?? 'include') == 'flat'
+                    ? Convert::usd(abs($request->tax))
+                    : abs($request->tax);
+                $duplicate->tax_model = $request->tax_model ?? 'include';
+            }
+            if ($request->filled('shipping_cost')) {
+                $duplicate->shipping_cost = Convert::usd(abs($request->shipping_cost));
+            }
+            if ($request->filled('minimum_order_qty')) {
+                $duplicate->minimum_order_qty = abs($request->minimum_order_qty);
+            }
+
+            // Update variations with price/qty/sku from modal
             $variants = $request->variants ?? [];
-            $stock_count = 0;
+            $variations = json_decode($duplicate->variation, true) ?? [];
+
+            // Remove deleted variants
+            $deletedVariants = $request->deleted_variants ?? [];
+            if (!empty($deletedVariants) && is_array($deletedVariants)) {
+                $variations = array_values(array_filter($variations, function ($item) use ($deletedVariants) {
+                    return !in_array($item['type'], $deletedVariants);
+                }));
+            }
+
             if (!empty($variants) && is_array($variants)) {
-                $variations = json_decode($duplicate->variation, true) ?? [];
                 foreach ($variants as $variantData) {
                     $variantType = $variantData['type'] ?? '';
                     $variantQty = abs(intval($variantData['qty'] ?? 0));
+                    $variantPrice = isset($variantData['price']) ? Convert::usd(abs($variantData['price'])) : null;
+                    $variantSku = $variantData['sku'] ?? null;
+
                     foreach ($variations as &$item) {
                         if ($item['type'] == $variantType) {
                             $item['qty'] = $variantQty;
+                            if ($variantPrice !== null) {
+                                $item['price'] = $variantPrice;
+                            }
+                            if ($variantSku !== null && $variantSku !== '') {
+                                $item['sku'] = $variantSku;
+                            }
                         }
-                        $stock_count += $item['qty'];
                     }
                     unset($item);
                 }
-                $duplicate->variation = json_encode($variations);
-                $duplicate->current_stock = $stock_count;
-            } else {
-                $duplicate->current_stock  = 0;
+            }
+
+            $stock_count = 0;
+            foreach ($variations as $item) {
+                $stock_count += $item['qty'] ?? 0;
+            }
+            $duplicate->variation = json_encode($variations);
+            $duplicate->current_stock = count($variations) > 0 ? $stock_count : 0;
+
+            // Sync choice options with updated variations
+            $choice_options = json_decode($duplicate->choice_options, true) ?? [];
+            if (!empty($choice_options) && count($choice_options) === 1) {
+                $choice_options[0]['options'] = array_column($variations, 'type');
+                $duplicate->choice_options = json_encode($choice_options);
             }
 
             unset($duplicate->reviews_count);
@@ -171,6 +259,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
+        $request->merge(['product_type' => 'physical']);
         $validator = Validator::make($request->all(), [
             'name'                  => 'required',
             'category_id'           => 'required',
@@ -238,7 +327,12 @@ class ProductController extends Controller
             }
         }
 
-        if (is_null($request->name[array_search('en', (array) $request->lang)])) {
+        $storeEnIdx = array_search('en', (array) $request->lang);
+        if ($storeEnIdx === false) {
+            $storeEnIdx = 0;
+        }
+        $storeEnName = ($request->name ?? [])[$storeEnIdx] ?? null;
+        if (is_null($storeEnName)) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
                     'name',
@@ -250,10 +344,10 @@ class ProductController extends Controller
         $product = new Product();
         $product->user_id = auth('seller')->id();
         $product->added_by = "seller";
-        $product->name = $request->name[array_search('en', (array) $request->lang)];
-        $product->technical_name = $request->technical_name[array_search('en', (array) $request->lang)];
-        $product->tally_name = $request->prn[0];
-        $product->slug = Str::slug($request->name[array_search('en', (array) $request->lang)], '-') . '-' . Str::random(6);
+        $product->name = $storeEnName;
+        $product->technical_name = ($request->technical_name ?? [])[$storeEnIdx] ?? null;
+        $product->tally_name = ($request->prn ?? [])[0] ?? null;
+        $product->slug = Str::slug($storeEnName ?? 'product', '-') . '-' . Str::random(6);
 
         $product_images = [];
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
@@ -281,27 +375,31 @@ class ProductController extends Controller
 
         $category = [];
 
-        if ($request->category_id != null) {
+        if ($request->category_id != null && $request->category_id !== '' && $request->category_id !== '0') {
             array_push($category, [
                 'id' => $request->category_id,
                 'position' => 1,
             ]);
         }
-        if ($request->sub_category_id != null) {
+        if ($request->sub_category_id != null && $request->sub_category_id !== '' && $request->sub_category_id !== '0') {
             array_push($category, [
                 'id' => $request->sub_category_id,
                 'position' => 2,
             ]);
         }
-        if ($request->sub_sub_category_id != null) {
+        if ($request->sub_sub_category_id != null && $request->sub_sub_category_id !== '' && $request->sub_sub_category_id !== '0') {
             array_push($category, [
                 'id' => $request->sub_sub_category_id,
                 'position' => 3,
             ]);
         }
 
-        $category_last = $category[count($category) - 1]['id'];
-        $category_obj = Category::find($category_last);
+        if ($validator->errors()->count() > 0) {
+            return response()->json(['errors' => Helpers::error_processor($validator)]);
+        }
+
+        $category_last = !empty($category) ? end($category)['id'] : null;
+        $category_obj = $category_last ? Category::find($category_last) : null;
         $categoryName = $category_obj ? $category_obj->name : $request->sub_sub_category_id;
         if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {
             $response = Tallymethod::createGroup($categoryName,auth('seller')->id());
@@ -318,7 +416,7 @@ class ProductController extends Controller
         $product->product_type          = $request->product_type;
         $product->code                  = $request->code;
         $product->minimum_order_qty     = $request->minimum_order_qty;
-        $product->details               = $request->description[array_search('en', (array) $request->lang)];
+        $product->details               = ($request->description ?? [])[$storeEnIdx] ?? null;
 
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $product->colors = $request->product_type == 'physical' ? json_encode($request->colors) : json_encode([]);
@@ -420,7 +518,7 @@ class ProductController extends Controller
         $product->discount_type  = $request->discount_type;
         $product->discount_amount = $request->discount_type == 'flat' ? $request->unit_price - $request->discount : $request->unit_price * ($request->discount / 100);
         $product->actual_amount =   $request->unit_price - $product->discount_amount;
-        $product->attributes     = $request->product_type == 'physical' ? json_encode($request->choice_attributes) : json_encode([]);
+        $product->attributes     = $request->product_type == 'physical' ? json_encode($request->choice_attributes ?? []) : json_encode([]);
         $product->current_stock  = $request->product_type == 'physical' ? abs($stock_count) : 0;
         $product->video_provider = 'youtube';
         $product->video_url      = $request->video_link;
@@ -518,6 +616,11 @@ class ProductController extends Controller
                 }
             }
             Translation::insert($data);
+
+            if ((int) ($product->request_status ?? 0) === 0) {
+                self::notify_admin_new_product($product, 'submitted');
+            }
+
             Toastr::success('Product added successfully!');
             return redirect()->route('seller.product.list');
         }
@@ -543,7 +646,7 @@ class ProductController extends Controller
 
         return view('seller-views.product.list', compact('products', 'search'));
     }
-    function adminlist(Request $request)
+    function copy_product_list(Request $request)
     {
         $query_param = [];
         $search = $request['search'];
@@ -551,12 +654,40 @@ class ProductController extends Controller
         $sellerproduct = Product::where(['added_by' => 'seller', 'user_id' => $sellerId])->where('pid', '!=', null)->pluck('pid')->toArray();
         $myProductIds = Product::where(['added_by' => 'seller', 'user_id' => $sellerId])->pluck('id')->toArray();
 
+        // Only products that are visible on website UI (same conditions as Product::active())
+        $brand_setting = \App\Model\BusinessSetting::where('type', 'product_brand')->first()->value ?? null;
+        $digital_product_setting = \App\Model\BusinessSetting::where('type', 'digital_product')->first()->value ?? null;
+        $allowed_types = $digital_product_setting ? ['physical', 'digital'] : ['physical'];
+
+        $uiVisibleOnly = function ($q) use ($brand_setting, $allowed_types) {
+            $q->where('status', 1)
+                ->where(function ($qq) {
+                    $qq->where('approval_status', 'approved')
+                       ->orWhereNull('approval_status');
+                })
+                ->whereIn('product_type', $allowed_types)
+                ->when($brand_setting, function ($qq) {
+                    $qq->whereHas('brand', function ($query) {
+                        $query->where(['status' => 1]);
+                    });
+                }, function ($qq) {
+                    $qq->whereNull('brand_id');
+                });
+        };
+
+        $sellerApprovedOnly = function ($q) {
+            $q->whereHas('seller', function ($query) {
+                $query->where(['status' => 'approved']);
+            });
+        };
+
         if ($request->has('search')) {
             $key = explode(' ', $request['search']);
             $query_param = ['search' => $request['search']];
 
             $adminProducts = Product::where(['added_by' => 'admin'])
                 ->whereNotIn('id', $sellerproduct)
+                ->where($uiVisibleOnly)
                 ->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->Where('name', 'like', "%{$value}%");
@@ -566,6 +697,8 @@ class ProductController extends Controller
             $sellerProducts = Product::where('added_by', 'seller')
                 ->where('user_id', '!=', $sellerId)
                 ->whereNotIn('id', $myProductIds)
+                ->where($uiVisibleOnly)
+                ->where($sellerApprovedOnly)
                 ->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->Where('name', 'like', "%{$value}%");
@@ -577,11 +710,15 @@ class ProductController extends Controller
                 ->get();
         } else {
             $adminProducts = Product::where(['added_by' => 'admin'])
-                ->whereNotIn('id', $sellerproduct)->get();
+                ->whereNotIn('id', $sellerproduct)
+                ->where($uiVisibleOnly)
+                ->get();
 
             $sellerProducts = Product::where('added_by', 'seller')
                 ->where('user_id', '!=', $sellerId)
                 ->whereNotIn('id', $myProductIds)
+                ->where($uiVisibleOnly)
+                ->where($sellerApprovedOnly)
                 ->whereNotIn('pid', $adminProducts->pluck('id')->toArray())
                 ->groupBy('pid')
                 ->selectRaw('*, MIN(id) as id')
@@ -905,7 +1042,11 @@ class ProductController extends Controller
         }
 
         $unit_price = $request->unit_price;
-        $product_name = $request->name[array_search('en', (array) $request->lang)];
+        $skuEnIdx = array_search('en', (array) $request->lang);
+        if ($skuEnIdx === false) {
+            $skuEnIdx = 0;
+        }
+        $product_name = ($request->name ?? [])[$skuEnIdx] ?? '';
 
         if ($request->has('choice_no')) {
             foreach ($request->choice_no as $key => $no) {
@@ -937,7 +1078,58 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        $product = Product::find($id);
+        $product = Product::withoutGlobalScopes()->find($id);
+        if (!$product) {
+            Toastr::error(translate('Product not found!'));
+            return redirect()->route('seller.product.list');
+        }
+
+        $originalApprovalStatus = $product->approval_status;
+        $originalRequestStatus = (int) $product->request_status;
+        $isDeniedResubmit = $originalRequestStatus == 2 || $originalApprovalStatus === 'rejected';
+
+        $oldSnapshot = null;
+        if ($isDeniedResubmit) {
+            $oldSnapshot = [
+                'name' => $product->name,
+                'technical_name' => $product->technical_name,
+                'tally_name' => $product->tally_name,
+                'description' => $product->details,
+                'unit_price' => $product->unit_price,
+                'purchase_price' => $product->purchase_price,
+                'discount' => $product->discount,
+                'discount_type' => $product->discount_type,
+                'tax' => $product->tax,
+                'tax_model' => $product->tax_model,
+                'unit' => $product->unit,
+                'minimum_order_qty' => $product->minimum_order_qty,
+                'shipping_cost' => $product->shipping_cost,
+                'category_ids' => $product->category_ids,
+                'brand_id' => $product->brand_id,
+                'colors' => $product->colors,
+                'attributes' => $product->attributes,
+                'choice_attributes' => $product->choice_attributes,
+                'variation' => $product->variation,
+                'stocks' => $product->stocks,
+                'sku' => $product->sku,
+                'code' => $product->code,
+                'video_provider' => $product->video_provider,
+                'video_url' => $product->video_url,
+                'meta_title' => $product->meta_title,
+                'meta_description' => $product->meta_description,
+                'product_type' => $product->product_type,
+                'images' => $product->images,
+                'thumbnail' => $product->thumbnail,
+                'meta_image' => $product->meta_image,
+                'color_image' => $product->color_image,
+                'choice_options' => $product->choice_options,
+                'admin_commission' => $product->admin_commission,
+                'admin_commission_type' => $product->admin_commission_type,
+                'priority' => $product->priority,
+            ];
+        }
+
+        $request->merge(['product_type' => 'physical']);
         $validator = Validator::make($request->all(), [
             'name'                  => 'required',
             'category_id'           => 'required',
@@ -990,7 +1182,12 @@ class ProductController extends Controller
             }
         }
 
-        if (is_null($request->name[array_search('en', (array) $request->lang)])) {
+        $updateEnIdx = array_search('en', (array) $request->lang);
+        if ($updateEnIdx === false) {
+            $updateEnIdx = 0;
+        }
+        $updateEnName = ($request->name ?? [])[$updateEnIdx] ?? null;
+        if (is_null($updateEnName)) {
             $validator->after(function ($validator) {
                 $validator->errors()->add(
                     'name',
@@ -999,7 +1196,7 @@ class ProductController extends Controller
             });
         }
 
-        $product_images = json_decode($product->images);
+        $product_images = json_decode($product->images ?? '[]') ?? [];
         $color_image_array = [];
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $db_color_image = $product->color_image ? json_decode($product->color_image, true) : [];
@@ -1066,32 +1263,36 @@ class ProductController extends Controller
             }
         }
 
-        $product->name = $request->name[array_search('en', (array) $request->lang)];
-        $product->technical_name = $request->technical_name[array_search('en', (array) $request->lang)];
-        $product->tally_name = $request->prn[0];
+        if ($validator->errors()->count() > 0) {
+            return response()->json(['errors' => Helpers::error_processor($validator)]);
+        }
+
+        $product->name = $updateEnName;
+        $product->technical_name = ($request->technical_name ?? [])[$updateEnIdx] ?? null;
+        $product->tally_name = ($request->prn ?? [])[0] ?? $product->tally_name;
 
         $category = [];
         $categoryName = null;
-        if ($request->category_id != null) {
+        if ($request->category_id != null && $request->category_id !== '' && $request->category_id !== '0') {
             array_push($category, [
                 'id' => $request->category_id,
                 'position' => 1,
             ]);
         }
-        if ($request->sub_category_id != null) {
+        if ($request->sub_category_id != null && $request->sub_category_id !== '' && $request->sub_category_id !== '0') {
             array_push($category, [
                 'id' => $request->sub_category_id,
                 'position' => 2,
             ]);
         }
-        if ($request->sub_sub_category_id != null) {
+        if ($request->sub_sub_category_id != null && $request->sub_sub_category_id !== '' && $request->sub_sub_category_id !== '0') {
             array_push($category, [
                 'id' => $request->sub_sub_category_id,
                 'position' => 3,
             ]);
         }
-        $category_last = $category[count($category) - 1]['id'];
-        $category_obj = Category::find($category_last);
+        $category_last = !empty($category) ? end($category)['id'] : null;
+        $category_obj = $category_last ? Category::find($category_last) : null;
         $categoryName = $category_obj ? $category_obj->name : $request->sub_sub_category_id;
         if (\App\CPU\Tallymethod::isSyncEnabled(auth('seller')->id())) {
             $response = Tallymethod::createGroup($categoryName,auth('seller')->id());
@@ -1106,7 +1307,7 @@ class ProductController extends Controller
         $product->brand_id              = isset($request->brand_id) ? $request->brand_id : null;
         $product->unit                  = $request->product_type == 'physical' ? $request->unit : null;
         $product->digital_product_type  = $request->product_type == 'digital' ? $request->digital_product_type : null;
-        $product->details               = $request->description[array_search('en', (array) $request->lang)];
+        $product->details               = ($request->description ?? [])[$updateEnIdx] ?? $product->details;
 
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $product->colors = $request->product_type == 'physical' ? json_encode($request->colors) : json_encode([]);
@@ -1207,13 +1408,11 @@ class ProductController extends Controller
         $product->discount          = $request->discount_type == 'flat' ? Convert::usd($request->discount) : $request->discount;
         $product->discount_amount = $request->discount_type == 'flat' ? $request->unit_price - $request->discount : $request->unit_price * ($request->discount / 100);
         $product->actual_amount = $request->unit_price - $product->discount_amount;
-        $product->attributes        = $request->product_type == 'physical' ? json_encode($request->choice_attributes) : json_encode([]);
+        $product->attributes        = $request->product_type == 'physical' ? json_encode($request->choice_attributes ?? []) : json_encode([]);
         $product->discount_type     = $request->discount_type;
         $product->current_stock     = $request->product_type == 'physical' ? abs($stock_count) : 0;
         $product->shipping_cost     = $request->product_type == 'physical' ? (Helpers::get_business_settings('product_wise_shipping_cost_approval') == 1 ? $product->shipping_cost : Convert::usd($request->shipping_cost)) : 0;
         $product->multiply_qty      = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
-        // Update category_ids
-        $product->category_ids = json_encode($request->category ?? []);
         // Phase 8: Approval Workflow - approved products need re-approval after edit
         if ($product->approval_status === 'approved') {
             $product->approval_status = 'pending_edit';
@@ -1230,8 +1429,11 @@ class ProductController extends Controller
 
         $product->video_provider = 'youtube';
         $product->video_url = $request->video_link;
-        if ($product->request_status == 2) {
+        if ($product->request_status == 2 || $product->approval_status === 'rejected') {
             $product->request_status = 0;
+            $product->approval_status = 'pending';
+            $product->edit_status = 'none';
+            $product->denied_note = null;
         }
 
         if ($request->ajax()) {
@@ -1276,6 +1478,99 @@ class ProductController extends Controller
             $product->meta_description = $request->meta_description;
             if ($request->file('meta_image')) {
                 $product->meta_image = ImageManager::update('product/meta/', $product->meta_image, 'png', $request->file('meta_image'), $product->id);
+            }
+
+            $wasApproved = $originalApprovalStatus === 'approved';
+
+            if ($isDeniedResubmit || !$wasApproved) {
+                foreach ($request->lang ?? [] as $index => $locale) {
+                    if ($locale === 'en') {
+                        continue;
+                    }
+                    $fieldMap = [
+                        'name' => 'name',
+                        'description' => 'description',
+                        'technical_name' => 'technical_name',
+                        'prn' => 'tally_name',
+                    ];
+                    foreach ($fieldMap as $reqKey => $transKey) {
+                        $val = $request->{$reqKey}[$index] ?? null;
+                        if ($val) {
+                            Translation::updateOrCreate(
+                                [
+                                    'translationable_type' => 'App\Model\Product',
+                                    'translationable_id' => $product->id,
+                                    'locale' => $locale,
+                                    'key' => $transKey,
+                                ],
+                                ['value' => $val]
+                            );
+                        }
+                    }
+                }
+
+                $product->save();
+
+                if ($isDeniedResubmit) {
+                    self::notify_admin_new_product($product, 'resubmitted');
+                    $newSnapshot = [
+                        'name' => $product->name,
+                        'technical_name' => $product->technical_name,
+                        'tally_name' => $product->tally_name,
+                        'description' => $product->details,
+                        'unit_price' => $product->unit_price,
+                        'purchase_price' => $product->purchase_price,
+                        'discount' => $product->discount,
+                        'discount_type' => $product->discount_type,
+                        'tax' => $product->tax,
+                        'tax_model' => $product->tax_model,
+                        'unit' => $product->unit,
+                        'minimum_order_qty' => $product->minimum_order_qty,
+                        'shipping_cost' => $product->shipping_cost,
+                        'category_ids' => $product->category_ids,
+                        'brand_id' => $product->brand_id,
+                        'colors' => $product->colors,
+                        'attributes' => $product->attributes,
+                        'choice_attributes' => $product->choice_attributes,
+                        'variation' => $product->variation,
+                        'stocks' => $product->stocks,
+                        'sku' => $product->sku,
+                        'code' => $product->code,
+                        'video_provider' => $product->video_provider,
+                        'video_url' => $product->video_url,
+                        'meta_title' => $product->meta_title,
+                        'meta_description' => $product->meta_description,
+                        'product_type' => $product->product_type,
+                        'images' => $product->images,
+                        'thumbnail' => $product->thumbnail,
+                        'meta_image' => $product->meta_image,
+                        'color_image' => $product->color_image,
+                        'choice_options' => $product->choice_options,
+                        'admin_commission' => $product->admin_commission,
+                        'admin_commission_type' => $product->admin_commission_type,
+                        'priority' => $product->priority,
+                    ];
+
+                    ProductChangeRequest::where('product_id', $id)
+                        ->where('seller_id', auth('seller')->id())
+                        ->where('status', 'pending')
+                        ->delete();
+
+                    ProductChangeRequest::create([
+                        'product_id' => $id,
+                        'seller_id' => auth('seller')->id(),
+                        'edit_request_id' => null,
+                        'old_data' => $oldSnapshot,
+                        'new_data' => $newSnapshot,
+                        'status' => 'pending',
+                        'seller_note' => 'Product resubmitted after denial with field changes',
+                    ]);
+
+                    Toastr::success('Product resubmitted for admin approval.');
+                } else {
+                    Toastr::success(translate('product updated successfully!'));
+                }
+                return redirect()->route('seller.product.list');
             }
 
             // Capture old product data for change request
@@ -1323,7 +1618,7 @@ class ProductController extends Controller
             $newData = [
                 'name' => $request->name[0] ?? $product->name,
                 'technical_name' => $request->technical_name ?? $product->technical_name,
-                'tally_name' => $request->prn[0] ?? $product->tally_name,
+                'tally_name' => ($request->prn ?? [])[0] ?? $product->tally_name,
                 'description' => $request->description[0] ?? $product->details,
                 'unit_price' => $request->unit_price,
                 'purchase_price' => $request->purchase_price ?? $product->purchase_price,
@@ -1334,7 +1629,7 @@ class ProductController extends Controller
                 'unit' => $request->unit,
                 'minimum_order_qty' => $request->minimum_order_qty,
                 'shipping_cost' => $request->shipping_cost,
-                'category_ids' => json_encode($request->category ?? []),
+                'category_ids' => json_encode($category),
                 'brand_id' => $request->brand_id ?? $product->brand_id,
                 'colors' => json_encode($request->colors ?? []),
                 'attributes' => json_encode($request->choice_attributes ?? []),
@@ -1420,12 +1715,17 @@ class ProductController extends Controller
                 return back();
             }
 
-            // Create change request
+            // Create change request (approved product edits only)
             $editRequest = ProductEditRequest::where('product_id', $id)
                 ->where('seller_id', auth('seller')->id())
                 ->where('status', 'approved')
                 ->latest()
                 ->first();
+
+            if (!$editRequest) {
+                Toastr::error('You need approved edit access to modify this product. Please request edit access first.');
+                return back();
+            }
 
             ProductChangeRequest::create([
                 'product_id' => $id,
@@ -1437,12 +1737,11 @@ class ProductController extends Controller
                 'seller_note' => 'Product edit submitted for admin approval',
             ]);
 
-            // Set product to pending_edit status
-            if ($product->approval_status === 'approved') {
-                $product->approval_status = 'pending_edit';
-                $product->edit_status = 'pending_edit';
-                $product->save();
-            }
+            // Persist only status flags; field changes live in the change request until admin applies them
+            DB::table('products')->where('id', $product->id)->update([
+                'approval_status' => 'pending_edit',
+                'edit_status' => 'pending_edit',
+            ]);
 
             // Invalidate the edit request so seller can't edit again without new request
             $editRequest->status = 'used';

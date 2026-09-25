@@ -10,7 +10,7 @@
         <!-- Page Title -->
         <div class="mb-4 pb-2">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{ asset('/public/assets/back-end/img/3rd-party.png') }}" alt="">
+                <img src="{{ asset('/assets/back-end/img/3rd-party.png') }}" alt="">
                 {{ \App\CPU\translate('3rd_party') }}
             </h2>
         </div>
@@ -39,9 +39,8 @@
                             </div>
 
                             <center class="mb-3 d-flex justify-content-center">
-                                <img height="60" src="{{ asset('/public/assets/front-end/img/download.png') }}"
-                                    onerror="this.src='{{ asset('/public/assets/back-end/img/3rd-party.png') }}'"
-                                    alt="">
+                                <img height="60" src="{{ asset('/assets/front-end/img/download.png') }}"
+                                    onerror="this.src='{{ asset('/assets/back-end/img/3rd-party.png') }}'" alt="">
                             </center>
 
 
@@ -56,6 +55,23 @@
                                 <input type="text" class="form-control" name="api_secret"
                                     value="{{ isset($config) ? $config['api_secret'] : '' }}">
                             </div>
+
+                            <div class="form-group">
+                                <label class="d-flex title-color">{{ \App\CPU\translate('Environment') }}</label>
+                                <select class="form-control" name="environment">
+                                    @php($env = isset($config) ? ($config['environment'] ?? 'test') : 'test')
+                                    <option value="test" {{ $env === 'test' || $env === 'dev' ? 'selected' : '' }}>
+                                        {{ \App\CPU\translate('Test') }}
+                                    </option>
+                                    <option value="live" {{ $env === 'live' ? 'selected' : '' }}>
+                                        {{ \App\CPU\translate('Live') }}
+                                    </option>
+                                </select>
+                                <small class="text-muted d-block mt-1">
+                                    {{ \App\CPU\translate('Test = Delhivery staging API | Live = Delhivery production API') }}
+                                </small>
+                            </div>
+
                             <div class="mt-3 d-flex flex-wrap justify-content-end gap-10">
                                 <button type="submit"
                                     class="btn btn--primary px-4 text-uppercase">{{ \App\CPU\translate('save') }}</button>
@@ -67,4 +83,3 @@
         </div>
     </div>
 @endsection
-

@@ -14,7 +14,7 @@
         <!-- Page Title -->
         <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
             <h2 class="h1 mb-0 d-flex gap-2">
-                <img src="{{ asset('/public/assets/back-end/img/inhouse-product-list.png') }}" alt="">
+                <img src="{{ asset('/assets/back-end/img/inhouse-product-list.png') }}" alt="">
                 {{ \App\CPU\translate('Product') }} {{ \App\CPU\translate('Edit') }}
             </h2>
             <div>
@@ -22,7 +22,7 @@
             </div>
         </div>
         <!-- End Page Title -->
-  
+
         <!-- Content Row -->
         <div class="row">
             <div class="col-md-12">
@@ -38,7 +38,7 @@
                             @php($default_lang = 'en')
 
                             @php($default_lang = json_decode($language)[0])
-                            @if(isset($language_status) && $language_status == 1)
+                            @if (isset($language_status) && $language_status == 1)
                                 <ul class="nav nav-tabs w-fit-content mb-4">
                                     @foreach (json_decode($language) as $lang)
                                         <li class="nav-item text-capitalize">
@@ -52,7 +52,7 @@
                         </div>
 
                         <div class="card-body">
-                            @if(isset($language_status) && $language_status == 1)
+                            @if (isset($language_status) && $language_status == 1)
                                 @foreach (json_decode($language) as $lang)
                                     <?php
                                     if (count($product['translations'])) {
@@ -73,7 +73,8 @@
                                         }
                                     }
                                     ?>
-                                    <div class="{{ $lang != 'en' ? 'd-none' : '' }} lang_form" id="{{ $lang }}-form">
+                                    <div class="{{ $lang != 'en' ? 'd-none' : '' }} lang_form"
+                                        id="{{ $lang }}-form">
 
                                         <div class="row">
                                             <div class="col-md-4 form-group">
@@ -85,16 +86,17 @@
                                                 <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="name[]"
                                                     id="{{ $lang }}_name"
                                                     value="{{ $translate[$lang]['name'] ?? $product['name'] }}"
-                                                    class="form-control" placeholder="{{ \App\CPU\translate('New Product') }}"
-                                                    required>
+                                                    class="form-control"
+                                                    placeholder="{{ \App\CPU\translate('New Product') }}" required>
                                                 <input type="hidden" name="lang[]" value="{{ $lang }}">
                                             </div>
                                             <div class="col-md-4 form-group">
                                                 <label class="title-color"
                                                     for="{{ $lang }}_technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
                                                 <div style="position:relative;" class="tech-wrapper">
-                                                    <input type="text" name="technical_name[]" id="{{ $lang }}_technical_name"
-                                                        class="form-control" value="{{ old('technical_name')[$loop->index] ?? $translate[$lang]['technical_name'] ?? $product->technical_name ?? '' }}"
+                                                    <input type="text" name="technical_name[]"
+                                                        id="{{ $lang }}_technical_name" class="form-control"
+                                                        value="{{ old('technical_name')[$loop->index] ?? ($translate[$lang]['technical_name'] ?? ($product->technical_name ?? '')) }}"
                                                         placeholder="{{ \App\CPU\translate('Technical Name') }}">
                                                 </div>
                                             </div>
@@ -104,9 +106,11 @@
                                                         class="text-danger">*</span>
                                                     ({{ strtoupper($lang) }})</label>
                                                 <input type="text" {{ $lang == 'en' ? 'required' : '' }} name="prn[]"
-                                                    id="prn_name" value="{{ $translate[$lang]['tally_name'] ?? $product->tally_name ?? '' }}"
+                                                    id="prn_name"
+                                                    value="{{ $translate[$lang]['tally_name'] ?? ($product->tally_name ?? '') }}"
                                                     class="form-control"
-                                                    placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
+                                                    placeholder="{{ \App\CPU\translate('Product Register Name') }}"
+                                                    required>
                                             </div>
                                         </div>
 
@@ -115,7 +119,8 @@
                                                 ({{ strtoupper($lang) }})</label>
                                             <div style="position:relative;">
                                                 <textarea name="description[]" class="tiny-editor w-100" rows="10">{!! $translate[$lang]['description'] ?? $product['details'] !!}</textarea>
-                                                <div id="editor-loading" class="text-center border rounded" style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
+                                                <div id="editor-loading" class="text-center border rounded"
+                                                    style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
                                                     <div class="spinner-border text-primary" role="status">
                                                         <span class="sr-only">Loading...</span>
                                                     </div>
@@ -148,24 +153,21 @@
                                 <div class="lang_form" id="en-form">
                                     <div class="row">
                                         <div class="col-md-4 form-group">
-                                            <label class="title-color"
-                                                for="en_name">{{ \App\CPU\translate('name') }}<span
+                                            <label class="title-color" for="en_name">{{ \App\CPU\translate('name') }}<span
                                                     class="text-danger">*</span>
-                                                
+
                                             </label>
-                                            <input type="text" required name="name[]"
-                                                id="en_name"
-                                                value="{{ $translate['name'] ?? $product['name'] }}"
-                                                class="form-control" placeholder="{{ \App\CPU\translate('New Product') }}"
-                                                required>
+                                            <input type="text" required name="name[]" id="en_name"
+                                                value="{{ $translate['name'] ?? $product['name'] }}" class="form-control"
+                                                placeholder="{{ \App\CPU\translate('New Product') }}" required>
                                             <input type="hidden" name="lang[]" value="en">
                                         </div>
                                         <div class="col-md-4 form-group">
                                             <label class="title-color"
                                                 for="en_technical_name">{{ \App\CPU\translate('Technical Name') }}</label>
                                             <div style="position:relative;" class="tech-wrapper">
-                                                <input type="text" name="technical_name[]"
-                                                    class="form-control" value="{{ $translate['technical_name'] ?? $product->technical_name ?? '' }}"
+                                                <input type="text" name="technical_name[]" class="form-control"
+                                                    value="{{ $translate['technical_name'] ?? ($product->technical_name ?? '') }}"
                                                     placeholder="{{ \App\CPU\translate('Technical Name') }}">
                                             </div>
                                         </div>
@@ -173,9 +175,9 @@
                                             <label class="title-color"
                                                 for="en_name">{{ \App\CPU\translate('Product Register Name') }}<span
                                                     class="text-danger">*</span>
-                                                </label>
-                                            <input type="text" name="prn[]"
-                                                id="prn_name" value="{{ $translate['tally_name'] ?? $product->tally_name ?? '' }}"
+                                            </label>
+                                            <input type="text" name="prn[]" id="prn_name"
+                                                value="{{ $translate['tally_name'] ?? ($product->tally_name ?? '') }}"
                                                 class="form-control"
                                                 placeholder="{{ \App\CPU\translate('Product Register Name') }}" required>
                                         </div>
@@ -183,10 +185,11 @@
 
                                     <div class="form-group pt-4">
                                         <label class="title-color">{{ \App\CPU\translate('description') }}
-                                            </label>
+                                        </label>
                                         <div style="position:relative;">
                                             <textarea name="description[]" class="tiny-editor w-100" rows="10">{!! $translate['description'] ?? $product['details'] !!}</textarea>
-                                            <div id="editor-loading" class="text-center border rounded" style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
+                                            <div id="editor-loading" class="text-center border rounded"
+                                                style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:10; background:#fff; align-items:center; justify-content:center; flex-direction:column;">
                                                 <div class="spinner-border text-primary" role="status">
                                                     <span class="sr-only">Loading...</span>
                                                 </div>
@@ -205,25 +208,11 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-4 form-group">
-                                    <label for="name"
-                                        class="title-color">{{ \App\CPU\translate('product_type') }}</label>
-                                    <select name="product_type" id="product_type" class="form-control" required>
-                                        <option value="physical"
-                                            {{ $product->product_type == 'physical' ? 'selected' : '' }}>
-                                            {{ \App\CPU\translate('physical') }}</option>
-                                        @if ($digital_product_setting)
-                                            <option value="digital"
-                                                {{ $product->product_type == 'digital' ? 'selected' : '' }}>
-                                                {{ \App\CPU\translate('digital') }}</option>
-                                        @endif
-                                    </select>
-                                </div>
-                                <div class="col-md-4" id="digital_product_type_show">
+                                <input type="hidden" name="product_type" id="product_type" value="physical">
+                                <div class="col-md-4" id="digital_product_type_show" style="display: none;">
                                     <label for="digital_product_type"
                                         class="title-color">{{ \App\CPU\translate('digital_product_type') }}</label>
-                                    <select name="digital_product_type" id="digital_product_type" class="form-control"
-                                        required>
+                                    <select name="digital_product_type" id="digital_product_type" class="form-control">
                                         <option value="{{ old('category_id') }}"
                                             {{ !$product->digital_product_type ? 'selected' : '' }} disabled>---Select---
                                         </option>
@@ -235,7 +224,7 @@
                                             {{ \App\CPU\translate('Ready Product') }}</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4" id="digital_file_ready_show">
+                                <div class="col-md-4" id="digital_file_ready_show" style="display: none;">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label for="digital_file_ready"
@@ -270,7 +259,8 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-4" id="sub-category-select-div" style="{{ count($product_category) >= 2 ? '' : 'display: none;' }}">
+                                <div class="col-md-4" id="sub-category-select-div"
+                                    style="{{ count($product_category) >= 2 ? '' : 'display: none;' }}">
                                     <label for="name"
                                         class="title-color">{{ \App\CPU\translate('Sub Category') }}</label>
                                     <select class="js-example-basic-multiple js-states js-example-responsive form-control"
@@ -407,7 +397,9 @@
                                         placeholder="{{ \App\CPU\translate('Unit price') }}" name="unit_price"
                                         class="form-control" value={{ \App\CPU\Convert::default($product->unit_price) }}
                                         required>
-                                    <small id="tax-price-note" class="text-muted font-italic"><i class="fa fa-info-circle"></i> {{ \App\CPU\translate('Price should be tax inclusive') }}</small>
+                                    <small id="tax-price-note" class="text-muted font-italic"><i
+                                            class="fa fa-info-circle"></i>
+                                        {{ \App\CPU\translate('Price should be tax inclusive') }}</small>
                                 </div>
                                 <div class="col-md-6 form-group">
                                     <label class="title-color">{{ \App\CPU\translate('Purchese price') }}</label>
@@ -417,7 +409,8 @@
                                         value={{ \App\CPU\Convert::default($product->purchase_price) }} required>
                                 </div>
                                 <div class="col-md-3 form-group">
-                                    <label class="title-color">{{ \App\CPU\translate('Admin Commission') }} ({{ \App\CPU\translate('optional') }})</label>
+                                    <label class="title-color">{{ \App\CPU\translate('Admin Commission') }}
+                                        ({{ \App\CPU\translate('optional') }})</label>
                                     <input type="number" min="0" step="0.01"
                                         placeholder="{{ \App\CPU\translate('Commission') }}"
                                         value="{{ $product->admin_commission }}" name="admin_commission"
@@ -426,20 +419,25 @@
                                 <div class="col-md-3 form-group">
                                     <label class="title-color">{{ \App\CPU\translate('Commission Type') }}</label>
                                     <select name="admin_commission_type" class="form-control">
-                                        <option value="percentage" {{ $product->admin_commission_type == 'percentage' ? 'selected' : '' }}>{{ \App\CPU\translate('Percentage') }} (%)</option>
-                                        <option value="fixed" {{ $product->admin_commission_type == 'fixed' ? 'selected' : '' }}>{{ \App\CPU\translate('Fixed') }} ({{ \App\CPU\translate('INR') }})</option>
+                                        <option value="percentage"
+                                            {{ $product->admin_commission_type == 'percentage' ? 'selected' : '' }}>
+                                            {{ \App\CPU\translate('Percentage') }} (%)</option>
+                                        <option value="fixed"
+                                            {{ $product->admin_commission_type == 'fixed' ? 'selected' : '' }}>
+                                            {{ \App\CPU\translate('Fixed') }} ({{ \App\CPU\translate('INR') }})</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4 form-group">
                                     <label class="title-color">{{ \App\CPU\translate('Tax') }}</label>
-                                    <label class="text-info title-color">{{ \App\CPU\translate('Percent') }} ( % )</label>
+                                    <label class="text-info title-color">{{ \App\CPU\translate('Percent') }} ( %
+                                        )</label>
                                     <input type="number" min="0" value={{ $product->tax }} step="0.01"
                                         placeholder="{{ \App\CPU\translate('Tax') }}" name="tax"
                                         class="form-control" required>
                                     <input name="tax_type" value="percent" class="d-none">
                                 </div>
 
-                                <div class="col-md-2 form-group">
+                                <div class="col-md-2 form-group" style="display: none;">
                                     <label class="title-color">{{ \App\CPU\translate('Tax_Model') }}</label>
                                     <select name="tax_model" id="tax_model" class="form-control" required>
                                         <option value="include" {{ $product->tax_model == 'include' ? 'selected' : '' }}>
@@ -933,7 +931,7 @@
         });
 
         $('input[name="unit_price"]').on('keyup', function() {
-            let product_type = $('#product_type').val();
+            let product_type = $('#product_type').val() || 'physical';
             if (product_type === 'physical') {
                 update_sku();
             }
@@ -1174,7 +1172,7 @@
         });
 
         function product_type() {
-            let product_type = $('#product_type').val();
+            let product_type = $('#product_type').val() || 'physical';
 
             if (product_type === 'physical') {
                 $('#digital_product_type_show').hide();
@@ -1206,18 +1204,24 @@
             let $wrapper = input.closest('.tech-wrapper');
             let $list = $wrapper.find('.tech-suggestions');
             if (!$list.length) {
-                $list = $('<div class="tech-suggestions list-group" style="position:absolute;z-index:9999;width:100%;background:#fff;border:1px solid #ddd;display:none;max-height:200px;overflow-y:auto;"></div>');
+                $list = $(
+                    '<div class="tech-suggestions list-group" style="position:absolute;z-index:9999;width:100%;background:#fff;border:1px solid #ddd;display:none;max-height:200px;overflow-y:auto;"></div>'
+                    );
                 $wrapper.append($list);
             }
             if (val.length < 2) {
                 $list.hide();
                 return;
             }
-            $.get('{{ url("/") }}/admin/product/search-categories', {q: val}, function(data) {
+            $.get('{{ url('/') }}/admin/product/search-categories', {
+                q: val
+            }, function(data) {
                 $list.empty();
                 if (data.length > 0) {
                     data.forEach(function(item) {
-                        $list.append('<button type="button" class="list-group-item list-group-item-action tech-suggestion-item" style="cursor:pointer;font-size:13px;">' + item + '</button>');
+                        $list.append(
+                            '<button type="button" class="list-group-item list-group-item-action tech-suggestion-item" style="cursor:pointer;font-size:13px;">' +
+                            item + '</button>');
                     });
                     $list.show();
                 } else {
@@ -1241,15 +1245,15 @@
 
         $('#tax_model').on('change', function() {
             var val = $(this).val();
-            var note = val === 'include'
-                ? '{!! \App\CPU\translate("Price should be tax inclusive") !!}'
-                : '{!! \App\CPU\translate("Price should be tax exclusive") !!}';
+            var note = val === 'include' ?
+                '{!! \App\CPU\translate('Price should be tax inclusive') !!}' :
+                '{!! \App\CPU\translate('Price should be tax exclusive') !!}';
             $('#tax-price-note').html('<i class="fa fa-info-circle"></i> ' + note);
         });
 
         // Set initial note based on selected tax_model
         if ($('#tax_model').val() === 'exclude') {
-            $('#tax-price-note').html('<i class="fa fa-info-circle"></i> {!! \App\CPU\translate("Price should be tax exclusive") !!}');
+            $('#tax-price-note').html('<i class="fa fa-info-circle"></i> {!! \App\CPU\translate('Price should be tax exclusive') !!}');
         }
     </script>
 
@@ -1257,4 +1261,3 @@
 
     {{-- ck editor --}}
 @endpush
-

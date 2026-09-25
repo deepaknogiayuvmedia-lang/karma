@@ -10,7 +10,7 @@
         <!-- Page Title -->
         <div class="mb-3">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{ asset('/public/assets/back-end/img/add-new-seller.png') }}" alt="">
+                <img src="{{ asset('/assets/back-end/img/add-new-seller.png') }}" alt="">
                 {{ \App\CPU\translate('seller_details') }}
             </h2>
         </div>
@@ -124,8 +124,8 @@
                 <div class="row justify-content-between align-items-center g-2 mb-3">
                     <div class="col-sm-6">
                         <h4 class="d-flex align-items-center text-capitalize gap-10 mb-0">
-                            <img width="20" class="mb-1"
-                                src="{{ asset('/public/assets/back-end/img/admin-wallet.png') }}" alt="">
+                            <img width="20" class="mb-1" src="{{ asset('/assets/back-end/img/admin-wallet.png') }}"
+                                alt="">
                             {{ \App\CPU\translate('Seller_Wallet') }}
                         </h4>
                     </div>
@@ -136,8 +136,8 @@
                         <!-- Card -->
                         <div class="card h-100 d-flex justify-content-center align-items-center">
                             <div class="card-body d-flex flex-column gap-10 align-items-center justify-content-center">
-                                <img width="48" class="mb-2"
-                                    src="{{ asset('/public/assets/back-end/img/withdraw.png') }}" alt="">
+                                <img width="48" class="mb-2" src="{{ asset('/assets/back-end/img/withdraw.png') }}"
+                                    alt="">
                                 <h3 class="for-card-count mb-0 fz-24">
                                     {{ $seller->wallet ? \App\CPU\BackEndHelper::set_symbol(\App\CPU\BackEndHelper::usd_to_currency($seller->wallet->total_earning)) : 0 }}
                                 </h3>
@@ -162,7 +162,7 @@
                                         </div>
                                         <div>
                                             <img width="40" class="mb-2"
-                                                src="{{ asset('/public/assets/back-end/img/pw.png') }}" alt="">
+                                                src="{{ asset('/assets/back-end/img/pw.png') }}" alt="">
                                         </div>
                                     </div>
                                 </div>
@@ -178,7 +178,7 @@
                                                 {{ \App\CPU\translate('Total_Commission_given') }}</div>
                                         </div>
                                         <div>
-                                            <img width="40" src="{{ asset('/public/assets/back-end/img/tcg.png') }}"
+                                            <img width="40" src="{{ asset('/assets/back-end/img/tcg.png') }}"
                                                 alt="">
                                         </div>
                                     </div>
@@ -195,7 +195,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <img width="40" src="{{ asset('/public/assets/back-end/img/aw.png') }}"
+                                            <img width="40" src="{{ asset('/assets/back-end/img/aw.png') }}"
                                                 alt="">
                                         </div>
                                     </div>
@@ -212,7 +212,7 @@
                                                 {{ \App\CPU\translate('total_delivery_charge_earned') }}</div>
                                         </div>
                                         <div>
-                                            <img width="40" src="{{ asset('/public/assets/back-end/img/tdce.png') }}"
+                                            <img width="40" src="{{ asset('/assets/back-end/img/tdce.png') }}"
                                                 alt="">
                                         </div>
                                     </div>
@@ -229,7 +229,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <img width="40" src="{{ asset('/public/assets/back-end/img/ttg.png') }}"
+                                            <img width="40" src="{{ asset('/assets/back-end/img/ttg.png') }}"
                                                 alt="">
                                         </div>
                                     </div>
@@ -246,7 +246,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <img width="40" src="{{ asset('/public/assets/back-end/img/cc.png') }}"
+                                            <img width="40" src="{{ asset('/assets/back-end/img/cc.png') }}"
                                                 alt="">
                                         </div>
                                     </div>
@@ -410,72 +410,72 @@
                 $wherehouse = json_decode($seller->shop->wherehouse, true) ?? null;
 
             @endphp
-            @if($wherehouse)
-            <div class="col-md-6 mt-3">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title">{{ \App\CPU\translate('WhereHouse_Info') }}</h5>
-                        @if ($seller->shop->status != 'approved')
-                            <form class="d-inline-block" action="{{ route('admin.sellers.addressupdateStatus') }}"
-                                method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="{{ $seller->shop->id }}">
-                                <input type="hidden" name="status" value="Approved">
-                                <button type="submit"
-                                    class="btn btn-sm btn-outline-success">{{ \App\CPU\translate('Approved') }}</button>
-                            </form>
-                        @endif
-                     
-                    </div>
-                    <div class="card-body">
-                        <div class="flex-start">
-                            <div>
-                                <h6>{{ \App\CPU\translate('address') }} : </h6>
-                            </div>
-                            <div class="mx-1">
-                                <h6>{{ $wherehouse['address_line1'] ? $wherehouse['address_line1'] : \App\CPU\translate('No Data found') }}
-                                </h6>
-                            </div>
+            @if ($wherehouse)
+                <div class="col-md-6 mt-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">{{ \App\CPU\translate('WhereHouse_Info') }}</h5>
+                            @if ($seller->shop->status != 'approved')
+                                <form class="d-inline-block" action="{{ route('admin.sellers.addressupdateStatus') }}"
+                                    method="POST">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $seller->shop->id }}">
+                                    <input type="hidden" name="status" value="Approved">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-outline-success">{{ \App\CPU\translate('Approved') }}</button>
+                                </form>
+                            @endif
+
                         </div>
-                        <div class="flex-start">
-                            <div>
-                                <h6>{{ \App\CPU\translate('City') }} : </h6>
+                        <div class="card-body">
+                            <div class="flex-start">
+                                <div>
+                                    <h6>{{ \App\CPU\translate('address') }} : </h6>
+                                </div>
+                                <div class="mx-1">
+                                    <h6>{{ $wherehouse['address_line1'] ? $wherehouse['address_line1'] : \App\CPU\translate('No Data found') }}
+                                    </h6>
+                                </div>
                             </div>
-                            <div class="mx-1">
-                                <h6>{{ $wherehouse['city'] ? $wherehouse['city'] : \App\CPU\translate('No Data found') }}
-                                </h6>
+                            <div class="flex-start">
+                                <div>
+                                    <h6>{{ \App\CPU\translate('City') }} : </h6>
+                                </div>
+                                <div class="mx-1">
+                                    <h6>{{ $wherehouse['city'] ? $wherehouse['city'] : \App\CPU\translate('No Data found') }}
+                                    </h6>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex-start">
-                            <div>
-                                <h6>{{ \App\CPU\translate('state') }} : </h6>
+                            <div class="flex-start">
+                                <div>
+                                    <h6>{{ \App\CPU\translate('state') }} : </h6>
+                                </div>
+                                <div class="mx-1">
+                                    <h6>{{ $wherehouse['state'] ? $wherehouse['state'] : \App\CPU\translate('No Data found') }}
+                                    </h6>
+                                </div>
                             </div>
-                            <div class="mx-1">
-                                <h6>{{ $wherehouse['state'] ? $wherehouse['state'] : \App\CPU\translate('No Data found') }}
-                                </h6>
+                            <div class="flex-start">
+                                <div>
+                                    <h6>{{ \App\CPU\translate('Pin Code') }} : </h6>
+                                </div>
+                                <div class="mx-1">
+                                    <h6>{{ $wherehouse['pincode'] ? $wherehouse['pincode'] : \App\CPU\translate('No Data found') }}
+                                    </h6>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex-start">
-                            <div>
-                                <h6>{{ \App\CPU\translate('Pin Code') }} : </h6>
-                            </div>
-                            <div class="mx-1">
-                                <h6>{{ $wherehouse['pincode'] ? $wherehouse['pincode'] : \App\CPU\translate('No Data found') }}
-                                </h6>
-                            </div>
-                        </div>
-                        <div class="flex-start">
-                            <div>
-                                <h6>{{ \App\CPU\translate('Country') }} : </h6>
-                            </div>
-                            <div class="mx-1">
-                                <h6>{{ $wherehouse['country'] ? $wherehouse['country'] : \App\CPU\translate('No Data found') }}
-                                </h6>
+                            <div class="flex-start">
+                                <div>
+                                    <h6>{{ \App\CPU\translate('Country') }} : </h6>
+                                </div>
+                                <div class="mx-1">
+                                    <h6>{{ $wherehouse['country'] ? $wherehouse['country'] : \App\CPU\translate('No Data found') }}
+                                    </h6>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
             @endif
         </div>
     </div>
@@ -483,4 +483,3 @@
 
 @push('script')
 @endpush
-

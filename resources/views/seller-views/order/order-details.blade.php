@@ -11,7 +11,7 @@
         <!-- Page Title -->
         <div class="mb-4">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{ asset('/public/assets/back-end/img/all-orders.png') }}" alt="">
+                <img src="{{ asset('/assets/back-end/img/all-orders.png') }}" alt="">
                 {{ \App\CPU\translate('order_details') }}
             </h2>
         </div>
@@ -377,7 +377,7 @@
                                             </option>
                                         </select>
                                     </li>
-                                    
+
                                     <li class="choose_delivery_man mt-3">
                                         <label class="font-weight-bold title-color fz-14">
                                             {{ \App\CPU\translate('deliveryman_will_get') }}
@@ -395,7 +395,6 @@
                                             value="{{ $order->expected_delivery_date }}" name="expected_delivery_date"
                                             id="expected_delivery_date" class="form-control" required>
                                     </li>
-
                                 @endif
                                 <li class=" mt-3" id="by_third_party_delivery_service_info">
                                     <span>
@@ -424,9 +423,10 @@
                                 </li>
                                 <li class="mt-2" id="warehouse_info_section" style="display:none;">
                                     <label class="font-weight-bold title-color fz-14">
-                                        {{ \App\CPU\translate('pickup_warehouse') }} ({{ \App\CPU\translate('delhivery') }})
+                                        {{ \App\CPU\translate('pickup_warehouse') }}
+                                        ({{ \App\CPU\translate('delhivery') }})
                                     </label>
-                                    @if($pickup_warehouse)
+                                    @if ($pickup_warehouse)
                                         <div class="card card-body p-2 mb-0" style="background:#f8f9fa;">
                                             <small>
                                                 <strong>{{ $pickup_warehouse['name'] }}</strong><br>
@@ -451,8 +451,7 @@
                     @if ($order->customer)
                         <div class="card-body">
                             <h4 class="mb-4 d-flex align-items-center gap-2">
-                                <img src="{{ asset('/public/assets/back-end/img/seller-information.png') }}"
-                                    alt="">
+                                <img src="{{ asset('/assets/back-end/img/seller-information.png') }}" alt="">
                                 {{ \App\CPU\translate('Customer_information') }}
                             </h4>
                             <div class="media">
@@ -494,7 +493,7 @@
                         @if ($order->customer)
                             <div class="card-body">
                                 <h4 class="mb-4 d-flex align-items-center gap-2">
-                                    <img src="{{ asset('/public/assets/back-end/img/seller-information.png') }}"
+                                    <img src="{{ asset('/assets/back-end/img/seller-information.png') }}"
                                         alt="">
                                     {{ \App\CPU\translate('shipping_address') }}
                                 </h4>
@@ -524,8 +523,7 @@
                                     </div>
                                     <div class="d-flex align-items-start gap-2">
                                         <!-- <span>{{ \App\CPU\translate('address') }} :</span> -->
-                                        <img src="{{ asset('/public/assets/back-end/img/location.png') }}"
-                                            alt="">
+                                        <img src="{{ asset('/assets/back-end/img/location.png') }}" alt="">
                                         {{ $shipping_address ? $shipping_address->address : '' }}
                                     </div>
                                 </div>
@@ -548,8 +546,7 @@
                     @if ($order->customer)
                         <div class="card-body">
                             <h4 class="mb-4 d-flex gap-2">
-                                <img src="{{ asset('/public/assets/back-end/img/seller-information.png') }}"
-                                    alt="">
+                                <img src="{{ asset('/assets/back-end/img/seller-information.png') }}" alt="">
                                 {{ \App\CPU\translate('billing_address') }}
                             </h4>
 
@@ -577,7 +574,7 @@
                                     <strong>{{ $billing ? $billing->zip : '' }}</strong>
                                 </div>
                                 <div class="d-flex align-items-start gap-2">
-                                    <img src="{{ asset('/public/assets/back-end/img/location.png') }}" alt="">
+                                    <img src="{{ asset('/assets/back-end/img/location.png') }}" alt="">
                                     {{ $billing ? $billing->address : '' }}
                                 </div>
                             </div>
@@ -597,7 +594,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="mb-4 d-flex gap-2">
-                            <img src="{{ asset('/public/assets/back-end/img/shop-information.png') }}" alt="">
+                            <img src="{{ asset('/assets/back-end/img/shop-information.png') }}" alt="">
                             {{ \App\CPU\translate('Shop_Information') }}
                         </h4>
 
@@ -618,8 +615,8 @@
                                     <span class="title-color">
                                         <strong>{{ $order->seller->shop->contact }}</strong></span>
                                     <div class="d-flex align-items-start gap-2">
-                                        <img src="{{ asset('/public/assets/back-end/img/location.png') }}"
-                                            class="mt-1" alt="">
+                                        <img src="{{ asset('/assets/back-end/img/location.png') }}" class="mt-1"
+                                            alt="">
                                         {{ $order->seller->shop->address }}
                                     </div>
                                 </div>
@@ -668,14 +665,14 @@
             var value = $(this).val();
             Swal.fire({
                 title: '{{ \App\CPU\translate('
-                                            Are you sure Change this ? ') }}',
+                                                            Are you sure Change this ? ') }}',
                 text: "{{ \App\CPU\translate('You wont be able to revert this!') }}",
                 showCancelButton: true,
                 confirmButtonColor: '#377dff',
                 cancelButtonColor: 'secondary',
                 confirmButtonText: '{{ \App\CPU\translate('
-                                            Yes,
-                                            Change it ') }}!'
+                                                            Yes,
+                                                            Change it ') }}!'
             }).then((result) => {
                 if (result.value) {
                     $.ajaxSetup({
@@ -694,13 +691,13 @@
                             if (data.customer_status == 0) {
                                 toastr.warning(
                                     '{{ \App\CPU\translate('
-                                                                                                        Account has been deleted, you can not change the status!') }}!'
+                                                                                                                                            Account has been deleted, you can not change the status!') }}!'
                                 );
                                 // location.reload();
                             } else {
                                 toastr.success(
                                     '{{ \App\CPU\translate('
-                                                                                                        Status Change successfully ') }}'
+                                                                                                                                            Status Change successfully ') }}'
                                 );
                                 // location.reload();
                             }
@@ -714,14 +711,14 @@
             var value = status;
             Swal.fire({
                 title: '{{ \App\CPU\translate('
-                                            Are you sure Change this ? ') }}',
+                                                            Are you sure Change this ? ') }}',
                 text: "{{ \App\CPU\translate('You wont be able to revert this!') }}",
                 showCancelButton: true,
                 confirmButtonColor: '#377dff',
                 cancelButtonColor: 'secondary',
                 confirmButtonText: '{{ \App\CPU\translate('
-                                            Yes,
-                                            Change it!') }}'
+                                                            Yes,
+                                                            Change it!') }}'
             }).then((result) => {
                 if (result.value) {
                     $.ajaxSetup({
@@ -740,26 +737,26 @@
                             if (data.success == 0) {
                                 toastr.success(
                                     '{{ \App\CPU\translate('
-                                                                                                        Order is already delivered, You can not change it!!') }}'
+                                                                                                                                            Order is already delivered, You can not change it!!') }}'
                                 );
                                 // location.reload();
                             } else {
                                 if (data.payment_status == 0) {
                                     toastr.warning(
                                         '{{ \App\CPU\translate('
-                                                                                                                    Before delivered you need to make payment status paid!') }}!'
+                                                                                                                                                            Before delivered you need to make payment status paid!') }}!'
                                     );
                                     // location.reload();
                                 } else if (data.customer_status == 0) {
                                     toastr.warning(
                                         '{{ \App\CPU\translate('
-                                                                                                                    Account has been deleted, you can not change the status!') }}!'
+                                                                                                                                                            Account has been deleted, you can not change the status!') }}!'
                                     );
                                     // location.reload();
                                 } else {
                                     toastr.success(
                                         '{{ \App\CPU\translate('
-                                                                                                                    Status Change successfully ') }}!'
+                                                                                                                                                            Status Change successfully ') }}!'
                                     );
                                     // location.reload();
                                 }
@@ -863,13 +860,13 @@
                 type: "GET",
                 url: '{{ url(' / ') }}/seller/orders/add-delivery-man/{{ $order[
                     '
-                                            id '
+                                                            id '
                 ] }}/' +
                     id,
                 data: {
                     'order_id': '{{ $order[
                         '
-                                                        id '
+                                                                            id '
                     ] }}',
                     'delivery_man_id': id
                 },
@@ -904,7 +901,7 @@
 
         function waiting_for_location() {
             toastr.warning('{{ \App\CPU\translate('
-                                    waiting_for_location ') }}', {
+                                                waiting_for_location ') }}', {
                 CloseButton: true,
                 ProgressBar: true
             });
@@ -925,7 +922,7 @@
                 data: {
                     'order_id': '{{ $order[
                         '
-                                                        id '
+                                                                            id '
                     ] }}',
                     'field_name': field_name,
                     'field_val': field_val
@@ -1012,9 +1009,9 @@
                     map: map,
                     title: "{{ $order->customer['f_name'] ??
                         "
-                                                    " }} {{ $order->customer['l_name'] ??
+                                                                        " }} {{ $order->customer['l_name'] ??
                         "
-                                                    " }}",
+                                                                        " }}",
                     icon: "{{ asset('assets/front-end/img/customer_location.png') }}"
                 });
 
@@ -1023,11 +1020,11 @@
                         infowindow.setContent(
                             "<div style='float:left'><img style='max-height:40px;wide:auto;' src='{{ asset(config('app.public_storage_path') . '/profile/') }}{{ $order->customer->image ??
                                 "
-                                                                            " }}'></div><div style='float:right; padding: 10px;'><b>{{ $order->customer->f_name ??
+                                                                                                        " }}'></div><div style='float:right; padding: 10px;'><b>{{ $order->customer->f_name ??
                                 "
-                                                                            " }} {{ $order->customer->l_name ??
+                                                                                                        " }} {{ $order->customer->l_name ??
                                 "
-                                                                            " }}</b><br/>{{ $shipping_address->address }}</div>"
+                                                                                                        " }}</b><br/>{{ $shipping_address->address }}</div>"
                         );
                         infowindow.open(map, marker);
                     }
@@ -1047,4 +1044,3 @@
         });
     </script>
 @endpush
-

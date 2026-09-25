@@ -377,6 +377,24 @@ class WebController extends Controller
             return response()->json(['suggestions' => []]);
         }
 
+        $suggestions = collect();
+
+        $categoryNames = \App\Model\Category::where('name', 'like', "%{$name}%")
+            ->limit(5)->pluck('name');
+        $translatedCategoryNames = \App\Model\Translation::where('translationable_type', 'App\Model\Category')
+            ->where('key', 'name')
+            ->where('value', 'like', "%{$name}%")
+            ->limit(5)->pluck('value');
+        $suggestions = $suggestions->merge($categoryNames)->merge($translatedCategoryNames);
+
+        $brandNames = \App\Model\Brand::where('name', 'like', "%{$name}%")
+            ->limit(5)->pluck('name');
+        $translatedBrandNames = \App\Model\Translation::where('translationable_type', 'App\Model\Brand')
+            ->where('key', 'name')
+            ->where('value', 'like', "%{$name}%")
+            ->limit(5)->pluck('value');
+        $suggestions = $suggestions->merge($brandNames)->merge($translatedBrandNames);
+
         $result = ProductManager::search_products_web($name);
         $products = $result['products'] ?? null;
 
@@ -389,7 +407,8 @@ class WebController extends Controller
             $products = collect($products);
         }
 
-        $suggestions = $products->take(10)->pluck('name')->unique()->values();
+        $suggestions = $suggestions->merge($products->take(10)->pluck('name'))
+            ->unique()->filter()->values()->take(12);
 
         return response()->json(['suggestions' => $suggestions]);
     }
@@ -1110,10 +1129,12 @@ class WebController extends Controller
             ]);
         }
 
-        // Get all physical products in cart
-        $cart_items = \App\Model\Cart::where('customer_id', auth('customer')->id())
-            ->where('product_type', 'physical')
-            ->get();
+        // Get all physical products in cart (supports guest/offline cart too)
+        $cart_items = collect(\App\CPU\CartManager::get_cart())
+            ->filter(function ($item) {
+                return data_get($item, 'product_type') === 'physical';
+            })
+            ->values();
 
         if ($cart_items->isEmpty()) {
             return response()->json([
@@ -1127,11 +1148,11 @@ class WebController extends Controller
         $total_cod_amount = 0;
         $total_weight_grams = 0;
         foreach ($cart_items as $item) {
-            $product = \App\Model\Product::find($item->product_id);
+            $product = \App\Model\Product::find(data_get($item, 'product_id'));
             if ($product) {
-                $total_shipping_cost += \App\CPU\CartManager::get_shipping_cost_for_product_category_wise($product, $item->quantity);
-                $total_cod_amount += ($product->unit_price ?? 0) * $item->quantity;
-                $total_weight_grams += 500 * $item->quantity;
+                $total_shipping_cost += \App\CPU\CartManager::get_shipping_cost_for_product_category_wise($product, data_get($item, 'quantity'));
+                $total_cod_amount += ($product->unit_price ?? 0) * data_get($item, 'quantity');
+                $total_weight_grams += 500 * data_get($item, 'quantity');
             }
         }
 
@@ -1143,13 +1164,27 @@ class WebController extends Controller
             max($total_weight_grams, 500)
         );
 
-        
-
         // Use API charges if available, else fallback to product shipping_cost
         $final_shipping_cost = $total_shipping_cost;
-        if ($charges['status'] === 'success' && isset($charges['total_amount']) && $charges['total_amount'] > 0) {
+        if (($charges['status'] ?? '') === 'success' && isset($charges['total_amount']) && $charges['total_amount'] > 0) {
             $final_shipping_cost = $charges['total_amount'];
         }
+
+        // Persist Delhivery charge so order summary + order placement use it
+        $cart_group_ids = \App\CPU\CartManager::get_cart_group_ids($request);
+        foreach ($cart_group_ids as $index => $group_id) {
+            \App\Model\CartShipping::updateOrCreate(
+                ['cart_group_id' => $group_id],
+                ['shipping_cost' => $index === 0 ? $final_shipping_cost : 0]
+            );
+            \App\Model\Cart::where('cart_group_id', $group_id)
+                ->where('product_type', 'physical')
+                ->update(['shipping_cost' => 0]);
+        }
+        session([
+            'delhivery_pincode' => $pincode,
+            'delhivery_shipping_cost' => $final_shipping_cost,
+        ]);
 
         // Calculate estimated delivery date (5-7 business days)
         $business_days = 5;
@@ -1248,15 +1283,21 @@ class WebController extends Controller
         }
 
         // -----------------------------
-        // Sorting
+        // Sorting (selling price = after discount, matches card display)
         // -----------------------------
+
+        $selling_price_sql = "CASE
+            WHEN discount_type = 'percent' THEN unit_price - (unit_price * discount / 100)
+            WHEN discount_type = 'flat' THEN unit_price - discount
+            ELSE unit_price
+        END";
 
         if ($request['sort_by'] == 'latest') {
             $fetched = $query->orderBy('indexing', 'asc')->latest();
         } elseif ($request['sort_by'] == 'low-high') {
-            $fetched = $query->orderBy('unit_price', 'ASC');
+            $fetched = $query->orderByRaw($selling_price_sql . ' ASC')->orderBy('unit_price', 'ASC');
         } elseif ($request['sort_by'] == 'high-low') {
-            $fetched = $query->orderBy('unit_price', 'DESC');
+            $fetched = $query->orderByRaw($selling_price_sql . ' DESC')->orderBy('unit_price', 'DESC');
         } elseif ($request['sort_by'] == 'a-z') {
             $fetched = $query->orderBy('name', 'ASC');
         } elseif ($request['sort_by'] == 'z-a') {
@@ -1266,14 +1307,23 @@ class WebController extends Controller
         }
 
         // -----------------------------
-        // Price Filter
+        // Price Filter (open-ended min/max; never collapse missing max to 0)
         // -----------------------------
 
-        if (($request['min_price'] !== null && $request['min_price'] !== '') || ($request['max_price'] !== null && $request['max_price'] !== '')) {
-            $min = Helpers::convert_currency_to_usd($request['min_price']);
-            $max = Helpers::convert_currency_to_usd($request['max_price']);
+        $has_min = $request['min_price'] !== null && $request['min_price'] !== '';
+        $has_max = $request['max_price'] !== null && $request['max_price'] !== '';
+        if ($has_min || $has_max) {
+            $min = $has_min ? Helpers::convert_currency_to_usd($request['min_price']) : null;
+            $max = $has_max ? Helpers::convert_currency_to_usd($request['max_price']) : null;
             if ($min !== null && $max !== null) {
+                if ($min > $max) {
+                    [$min, $max] = [$max, $min];
+                }
                 $fetched->whereBetween('unit_price', [$min, $max]);
+            } elseif ($min !== null) {
+                $fetched->where('unit_price', '>=', $min);
+            } elseif ($max !== null) {
+                $fetched->where('unit_price', '<=', $max);
             }
         }
 
@@ -1298,10 +1348,18 @@ class WebController extends Controller
         // AJAX response
         // -----------------------------
 
-        if ($request->ajax()) {
+        $is_ajax = $request->ajax() || $request->boolean('is_ajax');
+        if ($is_ajax) {
             return response()->json([
                 'total_product' => $products->total(),
-                'view' => view('web-views.products._ajax-products', compact('products'))->render()
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'has_more' => $products->hasMorePages(),
+                'sort_by' => $request['sort_by'],
+                'view' => view('web-views.products._ajax-products', [
+                    'products' => $products,
+                    'show_pagination' => false,
+                ])->render()
             ]);
         }
 
@@ -1427,11 +1485,18 @@ class WebController extends Controller
             'max_price' => $request['max_price'],
         ];
 
-        $products = $fetched->paginate(5)->appends($data);
+        $products = $fetched->paginate(20)->appends($data);
 
         if ($request->ajax()) {
             return response()->json([
-                'view' => view('web-views.products._ajax-products', compact('products'))->render()
+                'total_product' => $products->total(),
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'has_more' => $products->hasMorePages(),
+                'view' => view('web-views.products._ajax-products', [
+                    'products' => $products,
+                    'show_pagination' => false,
+                ])->render()
             ], 200);
         }
         if ($request['data_from'] == 'category') {
@@ -1446,7 +1511,7 @@ class WebController extends Controller
 
     public function viewWishlist()
     {
-        $brand_setting = BusinessSetting::where('type', 'product_brand')->first()->value;
+        $brand_setting = BusinessSetting::where('type', 'product_brand')->first()->value ?? 0;
         $digital_product_setting = BusinessSetting::where('type', 'digital_product')->first()->value;
 
         $wishlists = Wishlist::whereHas('wishlistProduct', function ($q) {
@@ -1491,12 +1556,13 @@ class WebController extends Controller
         Wishlist::where(['product_id' => $request['id'], 'customer_id' => auth('customer')->id()])->delete();
         $data = 'Product has been remove from wishlist!';
         $wishlists = Wishlist::where('customer_id', auth('customer')->id())->get();
+        $brand_setting = BusinessSetting::where('type', 'product_brand')->first()->value ?? 0;
         session()->put('wish_list', Wishlist::where('customer_id', auth('customer')->user()->id)->pluck('product_id')->toArray());
         return response()->json([
             'success' => $data,
             'count' => count($wishlists),
             'id' => $request->id,
-            'wishlist' => view('web-views.partials._wish-list-data', compact('wishlists'))->render(),
+            'wishlist' => view('web-views.partials._wish-list-data', compact('wishlists', 'brand_setting'))->render(),
         ]);
     }
 

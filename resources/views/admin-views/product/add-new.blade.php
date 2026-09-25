@@ -13,7 +13,7 @@
         <!-- Page Title -->
         <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
             <h2 class="h1 mb-0 d-flex gap-2">
-                <img src="{{ asset('/public/assets/back-end/img/inhouse-product-list.png') }}" alt="">
+                <img src="{{ asset('/assets/back-end/img/inhouse-product-list.png') }}" alt="">
                 {{ \App\CPU\translate('Add') }} {{ \App\CPU\translate('New') }} {{ \App\CPU\translate('Product ') }}
             </h2>
         </div>
@@ -165,24 +165,12 @@
                         <div class="card-body">
                             <div class="form-group">
                                 <div class="row">
-                                    <div class="col-md-4">
-
-                                        <label for="name"
-                                            class="title-color">{{ \App\CPU\translate('product_type') }}
-                                        </label>
-                                        <select name="product_type" id="product_type" class="form-control" required>
-                                            <option value="physical" selected>{{ \App\CPU\translate('physical') }}
-                                            </option>
-                                            @if ($digital_product_setting)
-                                                <option value="digital">{{ \App\CPU\translate('digital') }}</option>
-                                            @endif
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4" id="digital_product_type_show">
+                                    <input type="hidden" name="product_type" id="product_type" value="physical">
+                                    <div class="col-md-4" id="digital_product_type_show" style="display: none;">
                                         <label for="digital_product_type"
                                             class="title-color">{{ \App\CPU\translate('digital_product_type') }}</label>
                                         <select name="digital_product_type" id="digital_product_type"
-                                            class="form-control" required>
+                                            class="form-control">
                                             <option value="{{ old('category_id') }}" selected disabled>
                                                 ---{{ \App\CPU\translate('Select') }}---</option>
                                             <option value="ready_after_sell">{{ \App\CPU\translate('Ready After Sell') }}
@@ -191,7 +179,7 @@
                                             </option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4" id="digital_file_ready_show">
+                                    <div class="col-md-4" id="digital_file_ready_show" style="display: none;">
                                         <label for="digital_file_ready"
                                             class="title-color">{{ \App\CPU\translate('ready_product_upload') }}</label>
                                         <input type="file" name="digital_file_ready" id="digital_file_ready"
@@ -334,7 +322,9 @@
                                     <input type="number" min="0" step="0.01"
                                         placeholder="{{ \App\CPU\translate('Unit price') }}" name="unit_price"
                                         value="{{ old('unit_price') }}" class="form-control" required>
-                                    <small id="tax-price-note" class="text-muted font-italic"><i class="fa fa-info-circle"></i> {{ \App\CPU\translate('Price should be tax inclusive') }}</small>
+                                    <small id="tax-price-note" class="text-muted font-italic"><i
+                                            class="fa fa-info-circle"></i>
+                                        {{ \App\CPU\translate('Price should be tax inclusive') }}</small>
                                 </div>
                                 <div class="col-md-6 form-group">
                                     <label class="title-color">{{ \App\CPU\translate('Market price') }}</label>
@@ -369,7 +359,7 @@
                                     <input name="tax_type" value="percent" class="d-none">
                                 </div>
 
-                                <div class="col-md-2 form-group">
+                                <div class="col-md-2 form-group" style="display: none;">
                                     <label class="title-color">{{ \App\CPU\translate('Tax_Model') }}</label>
                                     <select name="tax_model" id="tax_model" class="form-control" required>
                                         <option value="include">{{ \App\CPU\translate('include') }}</option>
@@ -839,7 +829,7 @@
         }
 
         $('input[name="unit_price"]').on('keyup', function() {
-            let product_type = $('#product_type').val();
+            let product_type = $('#product_type').val() || 'physical';
             if (product_type === 'physical') {
                 update_sku();
             }
@@ -972,7 +962,7 @@
         });
 
         function product_type() {
-            let product_type = $('#product_type').val();
+            let product_type = $('#product_type').val() || 'physical';
 
             if (product_type === 'physical') {
                 $('#digital_product_type_show').hide();
@@ -1006,7 +996,7 @@
             if (!$list.length) {
                 $list = $(
                     '<div class="tech-suggestions list-group" style="position:absolute;z-index:9999;width:100%;background:#fff;border:1px solid #ddd;display:none;max-height:200px;overflow-y:auto;"></div>'
-                    );
+                );
                 $wrapper.append($list);
             }
             if (val.length < 2) {
@@ -1045,9 +1035,9 @@
 
         $('#tax_model').on('change', function() {
             var val = $(this).val();
-            var note = val === 'include'
-                ? '{!! \App\CPU\translate("Price should be tax inclusive") !!}'
-                : '{!! \App\CPU\translate("Price should be tax exclusive") !!}';
+            var note = val === 'include' ?
+                '{!! \App\CPU\translate('Price should be tax inclusive') !!}' :
+                '{!! \App\CPU\translate('Price should be tax exclusive') !!}';
             $('#tax-price-note').html('<i class="fa fa-info-circle"></i> ' + note);
         });
     </script>

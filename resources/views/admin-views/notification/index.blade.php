@@ -10,7 +10,7 @@
         <!-- Page Title -->
         <div class="mb-3">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img width="20" src="{{ asset('/public/assets/back-end/img/push_notification.png') }}" alt="">
+                <img width="20" src="{{ asset('/assets/back-end/img/push_notification.png') }}" alt="">
                 {{ \App\CPU\translate('push_notification') }}
             </h2>
         </div>
@@ -38,16 +38,19 @@
                                         <label class="title-color text-capitalize"
                                             for="exampleFormControlInput1">{{ \App\CPU\translate('Role Type') }} </label>
                                         <select name="role_type" class="form-control" required>
-                                            <option value="" selected disabled>{{ \App\CPU\translate('Select Role Type') }}</option>
+                                            <option value="" selected disabled>
+                                                {{ \App\CPU\translate('Select Role Type') }}</option>
                                             <option value="customer">{{ \App\CPU\translate('Customer') }}</option>
                                             <option value="seller">{{ \App\CPU\translate('Seller') }}</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label class="title-color text-capitalize"
-                                            for="exampleFormControlInput1">{{ \App\CPU\translate('Notification Type') }} </label>
+                                            for="exampleFormControlInput1">{{ \App\CPU\translate('Notification Type') }}
+                                        </label>
                                         <select name="notification_type" class="form-control" required>
-                                            <option value="" selected disabled>{{ \App\CPU\translate('Select Notification Type') }}</option>
+                                            <option value="" selected disabled>
+                                                {{ \App\CPU\translate('Select Notification Type') }}</option>
                                             <option value="danger">{{ \App\CPU\translate('Danger') }}</option>
                                             <option value="warning">{{ \App\CPU\translate('Warning') }}</option>
                                             <option value="info">{{ \App\CPU\translate('Info') }}</option>
@@ -65,8 +68,8 @@
                                         <center>
                                             <img class="upload-img-view mb-4" id="viewer"
                                                 onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                src="{{ asset('assets/admin/img/900x400/img1.jpg') }}"
-                                                alt="image" height="274px"/>
+                                                src="{{ asset('assets/admin/img/900x400/img1.jpg') }}" alt="image"
+                                                height="274px" />
                                         </center>
                                         <label class="title-color text-capitalize">{{ \App\CPU\translate('Image') }}
                                         </label>
@@ -260,7 +263,7 @@
                         success: function() {
                             toastr.success(
                                 '{{ \App\CPU\translate('notification deleted successfully') }}'
-                                );
+                            );
                             location.reload();
                         }
                     });
@@ -329,4 +332,3 @@
         }
     </script>
 @endpush
-

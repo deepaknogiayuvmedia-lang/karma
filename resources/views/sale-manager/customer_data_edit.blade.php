@@ -11,7 +11,7 @@
         <!-- Page Title -->
         <div class="mb-3">
             <h2 class="h1 mb-1 text-capitalize d-flex align-items-center gap-2">
-                <img width="20" src="{{ asset('/public/assets/back-end/img/banner.png') }}" alt="">
+                <img width="20" src="{{ asset('/assets/back-end/img/banner.png') }}" alt="">
                 {{ \App\CPU\translate('customer_update_form') }}
             </h2>
         </div>
@@ -61,8 +61,8 @@
                                     <div class="form-group">
                                         <label for="email"
                                             class="title-color text-capitalize">{{ \App\CPU\translate('email') }}</label>
-                                        <input type="text" name="email" class="form-control" value="{{ $query['email'] }}"
-                                            required>
+                                        <input type="text" name="email" class="form-control"
+                                            value="{{ $query['email'] }}" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -80,7 +80,8 @@
                                     <div class="form-group">
                                         <label for="Address"
                                             class="title-color text-capitalize">{{ \App\CPU\translate('Pincode') }}</label>
-                                        <input type="number" name="address" class="form-control" value="{{ $query['address'] }}" required>
+                                        <input type="number" name="address" class="form-control"
+                                            value="{{ $query['address'] }}" required>
 
                                     </div>
                                 </div>
@@ -99,4 +100,3 @@
         </div>
     </div>
 @endsection
-

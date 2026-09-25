@@ -48,7 +48,7 @@
         <!-- Page Title -->
         <div class="mb-3">
             <h2 class="h1 mb-0 text-capitalize d-flex gap-2">
-                <img src="{{ asset('/public/assets/back-end/img/inhouse-product-list.png') }}" alt="">
+                <img src="{{ asset('/assets/back-end/img/inhouse-product-list.png') }}" alt="">
                 @if ($type == 'in_house')
                     {{ \App\CPU\translate('In-House_Product_List') }}
                 @elseif($type == 'seller')
@@ -56,6 +56,18 @@
                 @endif
                 <span class="badge badge-soft-dark radius-50 fz-14 ml-1">{{ $pro->total() }}</span>
             </h2>
+            @if (
+                $type == 'seller' &&
+                    $request_status !== 'all' &&
+                    $request_status !== null &&
+                    $request_status !== '' &&
+                    $request_status !== 1 &&
+                    $request_status !== '1')
+                <div class="alert alert-warning mb-0 mt-2 d-flex align-items-center gap-2" role="alert">
+                    <i class="tio-info-o"></i>
+                    <span>{{ \App\CPU\translate('You need to approved to publish product') }}</span>
+                </div>
+            @endif
         </div>
         <!-- End Page Title -->
 
@@ -67,18 +79,32 @@
                             <div class="col-lg-4">
                                 <!-- Search -->
                                 <form action="{{ url()->current() }}" method="GET">
-                                    <div class="input-group input-group-custom input-group-merge">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                <i class="tio-search"></i>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <div class="input-group input-group-custom input-group-merge flex-grow-1"
+                                            style="max-width: 350px;">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="tio-search"></i>
+                                                </div>
                                             </div>
+                                            <input id="datatableSearch_" type="search" name="search" class="form-control"
+                                                placeholder="{{ \App\CPU\translate('Search by Product, Seller or Shop name') }}"
+                                                aria-label="Search products" value="{{ $search }}">
+                                            <input type="hidden" value="{{ $request_status }}" name="status">
+                                            <button type="submit"
+                                                class="btn btn--primary">{{ \App\CPU\translate('search') }}</button>
                                         </div>
-                                        <input id="datatableSearch_" type="search" name="search" class="form-control"
-                                            placeholder="{{ \App\CPU\translate('Search Product Name') }}"
-                                            aria-label="Search orders" value="{{ $search }}" required>
-                                        <input type="hidden" value="{{ $request_status }}" name="status">
-                                        <button type="submit"
-                                            class="btn btn--primary">{{ \App\CPU\translate('search') }}</button>
+                                        <select name="seller_id" class="form-control" style="max-width: 250px;"
+                                            onchange="this.form.submit()">
+                                            <option value="">{{ \App\CPU\translate('All Vendors') }}</option>
+                                            @foreach ($sellers as $seller)
+                                                @php($shopName = $seller->shop ? $seller->shop->name : $seller->f_name . ' ' . $seller->l_name)
+                                                <option value="{{ $seller->id }}"
+                                                    {{ ($seller_id ?? '') == $seller->id ? 'selected' : '' }}>
+                                                    {{ $shopName }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </form>
                                 <!-- End Search -->
@@ -146,9 +172,7 @@
                             class="table table-hover table-borderless table-thead-bordered table-nowrap table-align-middle card-table w-100">
                             <thead class="thead-light thead-50 text-capitalize">
                                 <tr>
-                                    <th class="text-center" style="width:40px;">
-                                        <input type="checkbox" id="selectAll" class="select-all-checkbox">
-                                    </th>
+                                   
                                     <th>{{ \App\CPU\translate('SL') }}</th>
                                     <th>{{ \App\CPU\translate('Product Name') }}</th>
                                     <th class="text-right">{{ \App\CPU\translate('Commission') }}</th>
@@ -157,6 +181,10 @@
                                     <th class="text-center">{{ \App\CPU\translate('Show_as_featured') }}</th>
                                     <th class="text-center">{{ \App\CPU\translate('Active') }}
                                         {{ \App\CPU\translate('status') }}</th>
+                                    <th class="text-center">{{ \App\CPU\translate('Verify Status') }}</th>
+                                    @if ($type == 'seller')
+                                        <th class="text-center">{{ \App\CPU\translate('Request Status') }}</th>
+                                    @endif
                                     <th class="text-center">{{ \App\CPU\translate('Seller ') }}</th>
                                     <th class="text-center">{{ \App\CPU\translate('Action') }}</th>
                                 </tr>
@@ -164,18 +192,16 @@
                             <tbody>
                                 @foreach ($pro as $k => $p)
                                     <tr>
-                                        <td class="text-center">
-                                            <input type="checkbox" class="product-checkbox" value="{{ $p['id'] }}">
-                                        </td>
+                                      
                                         <th scope="row">{{ $pro->firstItem() + $k }}</th>
                                         <td>
                                             <a href="{{ route('admin.product.view', [$p['id']]) }}"
                                                 class="media align-items-center gap-2">
                                                 <img src="{{ \App\CPU\ProductManager::product_image_path('thumbnail') }}/{{ $p['thumbnail'] }}"
-                                                    onerror="this.src='{{ asset('/public/assets/back-end/img/brand-logo.png') }}'"
+                                                    onerror="this.src='{{ asset('/assets/back-end/img/brand-logo.png') }}'"
                                                     class="avatar border" alt="">
                                                 <span class="media-body title-color hover-c1">
-                                                    {{ \Illuminate\Support\Str::limit($p['name'], 20) }}
+                                                    {{ \Illuminate\Support\Str::limit($p['name'], 30) }}
                                                 </span>
                                             </a>
                                         </td>
@@ -210,12 +236,53 @@
                                             </label>
                                         </td>
                                         <td class="text-center">
-                                            <label class="mx-auto switcher">
-                                                <input type="checkbox" class="status switcher_input"
-                                                    id="{{ $p['id'] }}" {{ $p->status == 1 ? 'checked' : '' }}>
-                                                <span class="switcher_control"></span>
-                                            </label>
+                                            @if ($p->added_by == 'seller' && trim((string) ($p->approval_status ?? '')) !== 'approved')
+                                                <span class="text-muted"
+                                                    title="{{ \App\CPU\translate('Product must be approved first') }}">-</span>
+                                            @else
+                                                <label class="mx-auto switcher">
+                                                    <input type="checkbox" class="status switcher_input"
+                                                        id="{{ $p['id'] }}" {{ $p->status == 1 ? 'checked' : '' }}>
+                                                    <span class="switcher_control"></span>
+                                                </label>
+                                            @endif
                                         </td>
+                                        <td class="text-center">
+                                            <select class="form-control form-control-sm approval-status"
+                                                data-id="{{ $p['id'] }}" style="width: auto; display: inline-block;">
+                                                <option value="draft"
+                                                    {{ ($p->approval_status ?? 'draft') == 'draft' ? 'selected' : '' }}>
+                                                    {{ \App\CPU\translate('Draft') }}</option>
+                                                <option value="pending"
+                                                    {{ ($p->approval_status ?? 'draft') == 'pending' ? 'selected' : '' }}>
+                                                    {{ \App\CPU\translate('Pending') }}</option>
+                                                <option value="approved"
+                                                    {{ ($p->approval_status ?? 'draft') == 'approved' ? 'selected' : '' }}>
+                                                    {{ \App\CPU\translate('Approved') }}</option>
+                                                <option value="rejected"
+                                                    {{ ($p->approval_status ?? 'draft') == 'rejected' ? 'selected' : '' }}>
+                                                    {{ \App\CPU\translate('Rejected') }}</option>
+                                                <option value="pending_edit"
+                                                    {{ ($p->approval_status ?? 'draft') == 'pending_edit' ? 'selected' : '' }}>
+                                                    {{ \App\CPU\translate('Pending Edit') }}</option>
+                                            </select>
+                                        </td>
+
+                                        @if ($type == 'seller')
+                                            <td class="text-center">
+                                                @php($rs = (int) ($p->request_status ?? 1))
+                                                @if ($rs == 0)
+                                                    <span
+                                                        class="badge badge-soft-warning">{{ \App\CPU\translate('New Request') }}</span>
+                                                @elseif ($rs == 1)
+                                                    <span
+                                                        class="badge badge-soft-success">{{ \App\CPU\translate('Approved') }}</span>
+                                                @elseif ($rs == 2)
+                                                    <span
+                                                        class="badge badge-soft-danger">{{ \App\CPU\translate('Denied') }}</span>
+                                                @endif
+                                            </td>
+                                        @endif
 
                                         <td class="text-center">
                                             @if ($p['added_by'] == 'seller' && $p->seller)
@@ -248,7 +315,8 @@
                                                 </div>
                                             @elseif($p['added_by'] == 'admin')
                                                 <div class="d-flex flex-column align-items-center gap-1">
-                                                    <span class="badge badge-soft-info">{{ \App\CPU\translate('In-House') }}</span>
+                                                    <span
+                                                        class="badge badge-soft-info">{{ \App\CPU\translate('In-House') }}</span>
                                                     @php($copiedCount = \App\Model\Product::where('pid', $p['id'])->count())
                                                     @if ($copiedCount > 0)
                                                         <button type="button" class="btn btn-outline-info btn-xs mt-1"
@@ -273,10 +341,10 @@
                                                     href="{{ route('admin.product.view', [$p['id']]) }}">
                                                     <i class="tio-invisible"></i>
                                                 </a>
-                                                <button type="button" class="btn btn-outline-primary btn-sm square-btn edit-price-btn"
+                                                <button type="button"
+                                                    class="btn btn-outline-primary btn-sm square-btn edit-price-btn"
                                                     title="{{ \App\CPU\translate('Edit Price & Variants') }}"
-                                                    data-id="{{ $p['id'] }}"
-                                                    data-unit="{{ $p['unit'] ?? 'pc' }}"
+                                                    data-id="{{ $p['id'] }}" data-unit="{{ $p['unit'] ?? 'pc' }}"
                                                     data-unit-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['unit_price']) }}"
                                                     data-purchase-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['purchase_price']) }}"
                                                     data-discount="{{ $p['discount'] ?? 0 }}"
@@ -300,8 +368,8 @@
                                                     <i class="tio-delete"></i>
                                                 </a>
                                             </div>
-                                            <form action="{{ route('admin.product.delete', [$p['id']]) }}" method="post"
-                                                id="product-{{ $p['id'] }}">
+                                            <form action="{{ route('admin.product.delete', [$p['id']]) }}"
+                                                method="post" id="product-{{ $p['id'] }}">
                                                 @csrf @method('delete')
                                             </form>
                                         </td>
@@ -334,7 +402,8 @@
     <div class="modal fade" id="editPriceVariantsModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
-                <div class="modal-header" style="border-bottom: 1px solid #dee2e6; padding: 12px 20px; background: #f8f9fa;">
+                <div class="modal-header"
+                    style="border-bottom: 1px solid #dee2e6; padding: 12px 20px; background: #f8f9fa;">
                     <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
                         <i class="tio-money mr-1"></i> {{ \App\CPU\translate('Edit Price & Variants') }}
                         <span class="text-primary ml-1" id="modalProductName" style="font-size: 14px;"></span>
@@ -357,7 +426,9 @@
                         <div class="card-body p-3">
                             <div class="row">
                                 <div class="col-md-3 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Unit') }} <span class="text-danger">*</span></label>
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Unit') }} <span
+                                            class="text-danger">*</span></label>
                                     <select class="form-control form-control-sm" id="editUnit">
                                         @foreach (\App\CPU\Helpers::units() as $x)
                                             <option value="{{ $x }}">{{ $x }}</option>
@@ -365,96 +436,132 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Unit price') }} <span class="text-danger">*</span></label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editUnitPrice">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Unit price') }} <span
+                                            class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control form-control-sm" id="editUnitPrice">
                                 </div>
                                 <div class="col-md-3 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Market price') }} <span class="text-danger">*</span></label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editPurchasePrice">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Market price') }} <span
+                                            class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control form-control-sm" id="editPurchasePrice">
                                 </div>
                                 <div class="col-md-3 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Tax') }}</label>
-                                    <label class="badge badge-soft-info mb-1" style="font-size: 10px;">{{ \App\CPU\translate('Percent') }} ( % )</label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editTax">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Tax') }}</label>
+                                    <label class="badge badge-soft-info mb-1"
+                                        style="font-size: 10px;">{{ \App\CPU\translate('Percent') }} ( % )</label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control form-control-sm" id="editTax">
                                     <input type="hidden" name="tax_type" value="percent">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Tax_Model') }}</label>
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Tax_Model') }}</label>
                                     <select class="form-control form-control-sm" id="editTaxModel">
                                         <option value="include">{{ \App\CPU\translate('include') }}</option>
                                         <option value="exclude">{{ \App\CPU\translate('exclude') }}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('discount_type') }}</label>
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('discount_type') }}</label>
                                     <select class="form-control form-control-sm" id="editDiscountType">
                                         <option value="flat">{{ \App\CPU\translate('Flat') }}</option>
                                         <option value="percent">{{ \App\CPU\translate('Percent') }}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Discount') }}</label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editDiscount">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('Discount') }}</label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control form-control-sm" id="editDiscount">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('total') }} {{ \App\CPU\translate('Quantity') }}</label>
-                                    <input type="number" min="0" step="1" class="form-control form-control-sm" id="editCurrentStock">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('total') }}
+                                        {{ \App\CPU\translate('Quantity') }}</label>
+                                    <input type="number" min="0" step="1"
+                                        class="form-control form-control-sm" id="editCurrentStock">
                                 </div>
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('minimum_order_quantity') }}</label>
-                                    <input type="number" min="1" step="1" class="form-control form-control-sm" id="editMinOrder">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('minimum_order_quantity') }}</label>
+                                    <input type="number" min="1" step="1"
+                                        class="form-control form-control-sm" id="editMinOrder">
                                 </div>
                                 <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('shipping_cost') }}</label>
-                                    <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="editShippingCost">
+                                    <label class="title-color mb-1"
+                                        style="font-size: 12px;">{{ \App\CPU\translate('shipping_cost') }}</label>
+                                    <input type="number" step="0.01" min="0"
+                                        class="form-control form-control-sm" id="editShippingCost">
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="card" style="border: 1px solid #e9ecef;">
-                        <div class="card-header py-2 d-flex justify-content-between align-items-center" style="background: #f1f3f5;">
+                        <div class="card-header py-2 d-flex justify-content-between align-items-center"
+                            style="background: #f1f3f5;">
                             <h6 class="mb-0 font-weight-bold" style="font-size: 13px;">
                                 <i class="tio-list mr-1"></i> {{ \App\CPU\translate('Variants') }}
                             </h6>
-                            <button type="button" class="btn btn--primary btn-sm" id="addVariantBtn" style="font-size: 12px; padding: 3px 10px;">
+                            <button type="button" class="btn btn--primary btn-sm" id="addVariantBtn"
+                                style="font-size: 12px; padding: 3px 10px;">
                                 <i class="tio-add mr-1"></i> {{ \App\CPU\translate('Add Variant') }}
                             </button>
                         </div>
                         <div class="card-body p-3">
                             <div id="editVariantsContainer">
                                 <p class="text-muted text-center mb-0">
-                                    <i class="fa fa-spinner fa-spin mr-1"></i> {{ \App\CPU\translate('Loading variants...') }}
+                                    <i class="fa fa-spinner fa-spin mr-1"></i>
+                                    {{ \App\CPU\translate('Loading variants...') }}
                                 </p>
                             </div>
 
-                            <div id="addVariantForm" class="mt-3 d-none" style="border: 1px dashed #4e73df; border-radius: 6px; padding: 12px; background: #f0f4ff;">
+                            <div id="addVariantForm" class="mt-3 d-none"
+                                style="border: 1px dashed #4e73df; border-radius: 6px; padding: 12px; background: #f0f4ff;">
                                 <div class="row align-items-end">
                                     <div class="col-md-3">
-                                        <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Variant Name') }} <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control form-control-sm" id="newVariantType" placeholder="e.g. Red-XL">
+                                        <label class="title-color mb-1"
+                                            style="font-size: 12px;">{{ \App\CPU\translate('Variant Name') }} <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="newVariantType"
+                                            placeholder="e.g. Red-XL">
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Price') }} <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="newVariantPrice" placeholder="0.00">
+                                        <label class="title-color mb-1"
+                                            style="font-size: 12px;">{{ \App\CPU\translate('Price') }} <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" step="0.01" min="0"
+                                            class="form-control form-control-sm" id="newVariantPrice" placeholder="0.00">
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="title-color mb-1" style="font-size: 12px;">{{ \App\CPU\translate('Quantity') }} <span class="text-danger">*</span></label>
-                                        <input type="number" min="0" class="form-control form-control-sm" id="newVariantQty" placeholder="0">
+                                        <label class="title-color mb-1"
+                                            style="font-size: 12px;">{{ \App\CPU\translate('Quantity') }} <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" min="0" class="form-control form-control-sm"
+                                            id="newVariantQty" placeholder="0">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="title-color mb-1" style="font-size: 12px;">SKU</label>
-                                        <input type="text" class="form-control form-control-sm" id="newVariantSku" placeholder="SKU">
+                                        <input type="text" class="form-control form-control-sm" id="newVariantSku"
+                                            placeholder="SKU">
                                     </div>
                                     <div class="col-md-3 d-flex gap-1">
-                                        <button type="button" class="btn btn--primary btn-sm" id="confirmAddVariantBtn" style="font-size: 12px; padding: 5px 12px;">
+                                        <button type="button" class="btn btn--primary btn-sm" id="confirmAddVariantBtn"
+                                            style="font-size: 12px; padding: 5px 12px;">
                                             <i class="tio-check mr-1"></i> {{ \App\CPU\translate('Add') }}
                                         </button>
-                                        <button type="button" class="btn btn-secondary btn-sm" id="cancelAddVariantBtn" style="font-size: 12px; padding: 5px 12px;">
+                                        <button type="button" class="btn btn-secondary btn-sm" id="cancelAddVariantBtn"
+                                            style="font-size: 12px; padding: 5px 12px;">
                                             <i class="tio-clear mr-1"></i> {{ \App\CPU\translate('Cancel') }}
                                         </button>
                                     </div>
@@ -487,6 +594,73 @@
         // Call the dataTables jQuery plugin
         $(document).ready(function() {
             $('#dataTable').DataTable();
+
+            $('.approval-status').each(function() {
+                $(this).data('prev', $(this).val());
+            });
+        });
+
+        $(document).on('change', '.approval-status', function() {
+            var select = $(this);
+            var id = select.data('id');
+            var approval_status = select.val();
+            var prev = select.data('prev') || 'draft';
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
+            });
+
+            if (approval_status === 'rejected') {
+                var reason = prompt('{{ \App\CPU\translate('Enter rejection reason') }}:');
+                if (reason === null || !reason.trim()) {
+                    select.val(prev);
+                    toastr.error('{{ \App\CPU\translate('Rejection reason is required!') }}');
+                    return;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('admin.product.approval-status-update') }}',
+                    data: {
+                        id: id,
+                        approval_status: approval_status,
+                        denied_note: reason.trim()
+                    },
+                    success: function() {
+                        select.data('prev', approval_status);
+                        toastr.success('{{ \App\CPU\translate('Verify status updated successfully') }}');
+                    },
+                    error: function(response) {
+                        var msg = (response.responseJSON && response.responseJSON.message) ?
+                            response.responseJSON.message :
+                            '{{ \App\CPU\translate('Something went wrong') }}';
+                        select.val(prev);
+                        toastr.error(msg);
+                    }
+                });
+                return;
+            }
+
+            select.data('prev', approval_status);
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('admin.product.approval-status-update') }}',
+                data: {
+                    id: id,
+                    approval_status: approval_status
+                },
+                success: function() {
+                    toastr.success('{{ \App\CPU\translate('Verify status updated successfully') }}');
+                },
+                error: function(response) {
+                    var msg = (response.responseJSON && response.responseJSON.message) ?
+                        response.responseJSON.message :
+                        '{{ \App\CPU\translate('Something went wrong') }}';
+                    select.val(prev);
+                    toastr.error(msg);
+                }
+            });
         });
 
         $(document).on('change', '.status', function() {
@@ -512,12 +686,12 @@
                     if (data.success == true) {
                         toastr.success(
                             '{{ \App\CPU\translate('
-                                                                                                                                        Status updated successfully ') }}'
+                                                                                                                                                                    Status updated successfully ') }}'
                         );
                     } else if (data.success == false) {
                         toastr.error(
                             '{{ \App\CPU\translate('
-                                                                                                                                        Status updated failed.Product must be approved ') }}'
+                                                                                                                                                                    Status updated failed.Product must be approved ') }}'
                         );
                         setTimeout(function() {
                             location.reload();
@@ -542,12 +716,12 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        toastr.success('{{ \App\CPU\translate("Featured status updated successfully") }}');
+                        toastr.success('{{ \App\CPU\translate('Featured status updated successfully') }}');
                     } else {
                         element.checked = originalChecked;
                         Swal.fire({
                             icon: 'error',
-                            title: '{{ \App\CPU\translate("Cannot Feature Product") }}',
+                            title: '{{ \App\CPU\translate('Cannot Feature Product') }}',
                             text: response.message,
                             confirmButtonColor: '#d33',
                             confirmButtonText: 'OK'
@@ -559,8 +733,9 @@
                     var data = response.responseJSON;
                     Swal.fire({
                         icon: 'error',
-                        title: '{{ \App\CPU\translate("Cannot Feature Product") }}',
-                        text: data ? data.message : '{{ \App\CPU\translate("Something went wrong") }}',
+                        title: '{{ \App\CPU\translate('Cannot Feature Product') }}',
+                        text: data ? data.message :
+                            '{{ \App\CPU\translate('Something went wrong') }}',
                         confirmButtonColor: '#d33',
                         confirmButtonText: 'OK'
                     });
@@ -601,16 +776,21 @@
                     if (data.sellers.length === 0) {
                         tbody.html(
                             '<tr><td colspan="8" class="text-center text-muted">No sellers have copied this product yet</td></tr>'
-                            );
+                        );
                         return;
                     }
                     $.each(data.sellers, function(index, seller) {
                         var featuredBtn = buildFeaturedBtn(seller.id, seller.featured);
                         var verifyStatus = seller.approval_status || 'draft';
-                        var verifyOptions = ['draft', 'pending', 'approved', 'rejected', 'pending_edit'];
-                        var verifySelect = '<select class="form-control form-control-sm seller-approval-status" data-id="' + seller.id + '" style="width:auto;display:inline-block;">';
+                        var verifyOptions = ['draft', 'pending', 'approved', 'rejected',
+                        'pending_edit'];
+                        var verifySelect =
+                            '<select class="form-control form-control-sm seller-approval-status" data-id="' +
+                            seller.id + '" style="width:auto;display:inline-block;">';
                         $.each(verifyOptions, function(i, opt) {
-                            verifySelect += '<option value="' + opt + '"' + (verifyStatus === opt ? ' selected' : '') + '>' + opt.charAt(0).toUpperCase() + opt.slice(1).replace('_', ' ') + '</option>';
+                            verifySelect += '<option value="' + opt + '"' + (verifyStatus ===
+                                    opt ? ' selected' : '') + '>' + opt.charAt(0)
+                            .toUpperCase() + opt.slice(1).replace('_', ' ') + '</option>';
                         });
                         verifySelect += '</select>';
                         tbody.append('<tr>' +
@@ -619,16 +799,21 @@
                             '<td>' + seller.shop_name + '</td>' +
                             '<td>' + formatPrice(seller.price) + '</td>' +
                             '<td>' + seller.stock + '</td>' +
-                            '<td><span class="badge badge-' + (seller.status == 1 ? 'success' : 'danger') + '">' + (seller.status == 1 ? 'Active' : 'Inactive') + '</span></td>' +
+                            '<td><span class="badge badge-' + (seller.status == 1 ? 'success' :
+                                'danger') + '">' + (seller.status == 1 ? 'Active' : 'Inactive') +
+                            '</span></td>' +
                             '<td>' + verifySelect + '</td>' +
                             '<td>' + featuredBtn + '</td>' +
                             '</tr>');
+                    });
+                    $('#sellerTableBody .seller-approval-status').each(function() {
+                        $(this).data('prev', $(this).val());
                     });
                 },
                 error: function() {
                     $('#sellerTableBody').html(
                         '<tr><td colspan="7" class="text-center text-danger">Failed to load seller data</td></tr>'
-                        );
+                    );
                 }
             });
         }
@@ -637,9 +822,10 @@
         function buildFeaturedBtn(id, isFeatured) {
             var checked = (isFeatured == 1 || isFeatured === true) ? 'checked' : '';
             return '<label class="mx-auto switcher">' +
-                   '<input class="switcher_input toggle-seller-featured-chk" type="checkbox" data-id="' + id + '" ' + checked + '>' +
-                   '<span class="switcher_control"></span>' +
-                   '</label>';
+                '<input class="switcher_input toggle-seller-featured-chk" type="checkbox" data-id="' + id + '" ' + checked +
+                '>' +
+                '<span class="switcher_control"></span>' +
+                '</label>';
         }
 
         // Handle toggle feature switch change inside sellers modal
@@ -649,12 +835,16 @@
             var isChecked = chk.is(':checked');
 
             $.ajaxSetup({
-                headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
             });
             $.ajax({
                 url: '{{ route('admin.product.toggle-seller-featured') }}',
                 method: 'POST',
-                data: { seller_product_id: sellerId },
+                data: {
+                    seller_product_id: sellerId
+                },
                 success: function(data) {
                     if (data.success) {
                         toastr.success(data.message);
@@ -670,7 +860,7 @@
                         chk.prop('checked', !isChecked);
                         Swal.fire({
                             icon: 'error',
-                            title: '{{ \App\CPU\translate("Cannot Feature Product") }}',
+                            title: '{{ \App\CPU\translate('Cannot Feature Product') }}',
                             text: data.message,
                             confirmButtonColor: '#d33',
                             confirmButtonText: 'OK'
@@ -682,8 +872,9 @@
                     var data = response.responseJSON;
                     Swal.fire({
                         icon: 'error',
-                        title: '{{ \App\CPU\translate("Cannot Feature Product") }}',
-                        text: data ? data.message : '{{ \App\CPU\translate("Something went wrong") }}',
+                        title: '{{ \App\CPU\translate('Cannot Feature Product') }}',
+                        text: data ? data.message :
+                            '{{ \App\CPU\translate('Something went wrong') }}',
                         confirmButtonColor: '#d33',
                         confirmButtonText: 'OK'
                     });
@@ -696,21 +887,63 @@
             var select = $(this);
             var sellerId = select.data('id');
             var approval_status = select.val();
+            var prev = select.data('prev') || 'draft';
 
             $.ajaxSetup({
-                headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
             });
+
+            if (approval_status === 'rejected') {
+                var reason = prompt('{{ \App\CPU\translate('Enter rejection reason') }}:');
+                if (reason === null || !reason.trim()) {
+                    select.val(prev);
+                    toastr.error('{{ \App\CPU\translate('Rejection reason is required!') }}');
+                    return;
+                }
+                $.ajax({
+                    url: '{{ route('admin.product.approval-status-update') }}',
+                    method: 'POST',
+                    data: {
+                        id: sellerId,
+                        approval_status: approval_status,
+                        denied_note: reason.trim()
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            select.data('prev', approval_status);
+                            toastr.success(
+                                '{{ \App\CPU\translate('Verify status updated successfully') }}');
+                        }
+                    },
+                    error: function(response) {
+                        select.val(prev);
+                        var msg = (response.responseJSON && response.responseJSON.message) ? response
+                            .responseJSON.message :
+                            '{{ \App\CPU\translate('Something went wrong') }}';
+                        toastr.error(msg);
+                    }
+                });
+                return;
+            }
+
+            select.data('prev', approval_status);
             $.ajax({
                 url: '{{ route('admin.product.approval-status-update') }}',
                 method: 'POST',
-                data: { id: sellerId, approval_status: approval_status },
+                data: {
+                    id: sellerId,
+                    approval_status: approval_status
+                },
                 success: function(data) {
                     if (data.success) {
-                        toastr.success('{{ \App\CPU\translate("Verify status updated successfully") }}');
+                        toastr.success(
+                            '{{ \App\CPU\translate('Verify status updated successfully') }}');
                     }
                 },
                 error: function() {
-                    toastr.error('{{ \App\CPU\translate("Something went wrong") }}');
+                    toastr.error('{{ \App\CPU\translate('Something went wrong') }}');
                 }
             });
         });
@@ -810,11 +1043,14 @@
 
             var statusBadge = $('#modalSellerStatus');
             if (status === 'approved') {
-                statusBadge.removeClass().addClass('badge badge-soft-success font-weight-semibold px-3 py-1 mt-1').text('Active / Approved');
+                statusBadge.removeClass().addClass('badge badge-soft-success font-weight-semibold px-3 py-1 mt-1')
+                    .text('Active / Approved');
             } else if (status === 'pending') {
-                statusBadge.removeClass().addClass('badge badge-soft-warning font-weight-semibold px-3 py-1 mt-1').text('Pending Approval');
+                statusBadge.removeClass().addClass('badge badge-soft-warning font-weight-semibold px-3 py-1 mt-1')
+                    .text('Pending Approval');
             } else {
-                statusBadge.removeClass().addClass('badge badge-soft-danger font-weight-semibold px-3 py-1 mt-1').text(status.charAt(0).toUpperCase() + status.slice(1));
+                statusBadge.removeClass().addClass('badge badge-soft-danger font-weight-semibold px-3 py-1 mt-1')
+                    .text(status.charAt(0).toUpperCase() + status.slice(1));
             }
 
             $('#uploaderSellerModal').modal('show');
@@ -840,12 +1076,16 @@
 
             // Load variations via AJAX
             $.ajaxSetup({
-                headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
             });
             $.ajax({
                 url: "{{ route('admin.product.get-variations') }}",
                 method: 'GET',
-                data: { id: productId },
+                data: {
+                    id: productId
+                },
                 success: function(data) {
                     var container = $('#editVariantsContainer');
                     container.empty();
@@ -929,14 +1169,17 @@
                 });
             });
 
-            var deletedVariants = $('#deletedVariants').val() ? $('#deletedVariants').val().split(',').filter(Boolean) : [];
+            var deletedVariants = $('#deletedVariants').val() ? $('#deletedVariants').val().split(',').filter(
+                Boolean) : [];
 
             $('#saveBtnText').addClass('d-none');
             $('#saveBtnLoader').removeClass('d-none');
             $('#savePriceVariantsBtn').prop('disabled', true);
 
             $.ajaxSetup({
-                headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') }
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
             });
             $.ajax({
                 url: "{{ route('admin.product.update-price-variants') }}",
@@ -965,7 +1208,7 @@
                     }
                 },
                 error: function() {
-                    toastr.error('{{ \App\CPU\translate("Something went wrong") }}');
+                    toastr.error('{{ \App\CPU\translate('Something went wrong') }}');
                 },
                 complete: function() {
                     $('#saveBtnText').removeClass('d-none');
@@ -997,17 +1240,17 @@
             var variantSku = $('#newVariantSku').val();
 
             if (!variantType) {
-                toastr.error('{{ \App\CPU\translate("Variant name is required") }}');
+                toastr.error('{{ \App\CPU\translate('Variant name is required') }}');
                 $('#newVariantType').focus();
                 return;
             }
             if (!variantPrice || parseFloat(variantPrice) < 0) {
-                toastr.error('{{ \App\CPU\translate("Valid price is required") }}');
+                toastr.error('{{ \App\CPU\translate('Valid price is required') }}');
                 $('#newVariantPrice').focus();
                 return;
             }
             if (!variantQty || parseInt(variantQty) < 0) {
-                toastr.error('{{ \App\CPU\translate("Valid quantity is required") }}');
+                toastr.error('{{ \App\CPU\translate('Valid quantity is required') }}');
                 $('#newVariantQty').focus();
                 return;
             }
@@ -1019,7 +1262,7 @@
                 }
             });
             if (exists) {
-                toastr.error('{{ \App\CPU\translate("Variant with this name already exists") }}');
+                toastr.error('{{ \App\CPU\translate('Variant with this name already exists') }}');
                 return;
             }
 
@@ -1052,7 +1295,7 @@
             `);
 
             $('#addVariantForm').addClass('d-none');
-            toastr.success('{{ \App\CPU\translate("Variant added") }}');
+            toastr.success('{{ \App\CPU\translate('Variant added') }}');
         });
 
         // Delete Variant
@@ -1164,9 +1407,12 @@
 <!-- Uploader Seller Details Modal -->
 <div class="modal fade" id="uploaderSellerModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content" style="border-radius: 14px; overflow: hidden; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-            <div class="modal-header bg-primary text-white" style="background: linear-gradient(135deg, #1b7e5a 0%, #156347 100%); padding: 18px 24px;">
-                <h5 class="modal-title text-white font-weight-bold d-flex align-items-center gap-2" id="uploaderSellerModalLabel">
+        <div class="modal-content"
+            style="border-radius: 14px; overflow: hidden; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div class="modal-header bg-primary text-white"
+                style="background: linear-gradient(135deg, #1b7e5a 0%, #156347 100%); padding: 18px 24px;">
+                <h5 class="modal-title text-white font-weight-bold d-flex align-items-center gap-2"
+                    id="uploaderSellerModalLabel">
                     <i class="tio-user-big"></i> {{ \App\CPU\translate('Uploader Seller Details') }}
                 </h5>
                 <button type="button" class="close text-white opacity-80" data-dismiss="modal" aria-label="Close">
@@ -1175,29 +1421,35 @@
             </div>
             <div class="modal-body p-4">
                 <div class="text-center mb-4">
-                    <div class="avatar avatar-xxl avatar-circle mx-auto mb-2 border shadow-sm" style="width: 70px; height: 70px; background-color: #eaf5f0; display: flex; align-items: center; justify-content: center;">
+                    <div class="avatar avatar-xxl avatar-circle mx-auto mb-2 border shadow-sm"
+                        style="width: 70px; height: 70px; background-color: #eaf5f0; display: flex; align-items: center; justify-content: center;">
                         <i class="tio-shop text-success" style="font-size: 32px;"></i>
                     </div>
                     <h4 class="font-weight-bold mb-0 text-dark" id="modalShopName">Shop Name</h4>
-                    <span class="badge badge-soft-success font-weight-semibold px-3 py-1 mt-1" id="modalSellerStatus">Active</span>
+                    <span class="badge badge-soft-success font-weight-semibold px-3 py-1 mt-1"
+                        id="modalSellerStatus">Active</span>
                 </div>
 
                 <div class="card border-0 bg-light rounded-10 p-3 mb-3">
                     <div class="row g-3">
                         <div class="col-6 mb-3">
-                            <label class="text-muted fz-12 mb-1 d-block"><i class="tio-user"></i> {{ \App\CPU\translate('Seller Name') }}</label>
+                            <label class="text-muted fz-12 mb-1 d-block"><i class="tio-user"></i>
+                                {{ \App\CPU\translate('Seller Name') }}</label>
                             <span class="font-weight-bold text-dark d-block" id="modalSellerName">-</span>
                         </div>
                         <div class="col-6 mb-3">
-                            <label class="text-muted fz-12 mb-1 d-block"><i class="tio-call"></i> {{ \App\CPU\translate('Phone') }}</label>
+                            <label class="text-muted fz-12 mb-1 d-block"><i class="tio-call"></i>
+                                {{ \App\CPU\translate('Phone') }}</label>
                             <span class="font-weight-bold text-dark d-block" id="modalSellerPhone">-</span>
                         </div>
                         <div class="col-12 mb-3">
-                            <label class="text-muted fz-12 mb-1 d-block"><i class="tio-email"></i> {{ \App\CPU\translate('Email') }}</label>
+                            <label class="text-muted fz-12 mb-1 d-block"><i class="tio-email"></i>
+                                {{ \App\CPU\translate('Email') }}</label>
                             <span class="font-weight-bold text-dark d-block" id="modalSellerEmail">-</span>
                         </div>
                         <div class="col-12">
-                            <label class="text-muted fz-12 mb-1 d-block"><i class="tio-poi"></i> {{ \App\CPU\translate('Shop Address') }}</label>
+                            <label class="text-muted fz-12 mb-1 d-block"><i class="tio-poi"></i>
+                                {{ \App\CPU\translate('Shop Address') }}</label>
                             <span class="font-weight-bold text-dark d-block" id="modalSellerAddress">-</span>
                         </div>
                     </div>
@@ -1208,8 +1460,10 @@
                 </div>
             </div>
             <div class="modal-footer bg-light px-4 py-3 justify-content-between">
-                <button type="button" class="btn btn-secondary radius-50 px-4" data-dismiss="modal">{{ \App\CPU\translate('Close') }}</button>
-                <a href="#" id="modalSellerProfileBtn" class="btn btn--primary radius-50 px-4" target="_blank">
+                <button type="button" class="btn btn-secondary radius-50 px-4"
+                    data-dismiss="modal">{{ \App\CPU\translate('Close') }}</button>
+                <a href="#" id="modalSellerProfileBtn" class="btn btn--primary radius-50 px-4"
+                    target="_blank">
                     <i class="tio-invisible"></i> {{ \App\CPU\translate('View Full Profile') }}
                 </a>
             </div>

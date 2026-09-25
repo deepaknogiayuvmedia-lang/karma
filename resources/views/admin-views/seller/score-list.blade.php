@@ -10,7 +10,7 @@
         <!-- Page Title -->
         <div class="mb-4">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{ asset('/public/assets/back-end/img/add-new-seller.png') }}" alt="">
+                <img src="{{ asset('/assets/back-end/img/add-new-seller.png') }}" alt="">
                 {{ \App\CPU\translate('seller_score_list') }}
                 <span class="badge badge-soft-dark radius-50 fz-12">{{ $sellers->total() }}</span>
             </h2>
@@ -129,4 +129,3 @@
 
 @push('script')
 @endpush
-

@@ -14,7 +14,7 @@
         <div class="page-header">
             <div class="row align-items-end">
                 <h2 class="col-sm mb-2 mb-sm-0 h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                    <img width="20" src="{{ asset('/public/assets/back-end/img/profile_setting.png') }}" alt="">
+                    <img width="20" src="{{ asset('/assets/back-end/img/profile_setting.png') }}" alt="">
                     {{ \App\CPU\translate('Settings') }}
                 </h2>
 
@@ -78,8 +78,8 @@
             </div>
 
             <div class="col-lg-9">
-                <form action="{{ route('admin.profile.update', [$data->id]) }}" method="post" enctype="multipart/form-data"
-                    id="admin-profile-form">
+                <form action="{{ route('admin.profile.update', [$data->id]) }}" method="post"
+                    enctype="multipart/form-data" id="admin-profile-form">
                     @csrf
                     <!-- Card -->
                     <div class="card mb-3 mb-lg-5" id="generalDiv">
@@ -95,10 +95,10 @@
                         <!-- Avatar -->
                         <label class="avatar avatar-xxl avatar-circle avatar-border-lg avatar-uploader profile-cover-avatar"
                             for="avatarUploader">
-                            <img id="viewer"
-                                onerror="this.src='{{ asset('assets/back-end/img/160x160/img1.jpg') }}'"
+                            <img id="viewer" onerror="this.src='{{ asset('assets/back-end/img/160x160/img1.jpg') }}'"
                                 class="avatar-img"
-                                src="{{ asset(config('app.public_storage_path') . '/admin') }}/{{ $data->image }}" alt="Image">
+                                src="{{ asset(config('app.public_storage_path') . '/admin') }}/{{ $data->image }}"
+                                alt="Image">
                         </label>
                         <!-- End Avatar -->
                     </div>
@@ -280,7 +280,8 @@
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" name="address_line1" id="address_line1"
                                         placeholder="{{ \App\CPU\translate('Enter address line 1') }}"
-                                        aria-label="Enter address line 1" value="{{ $wherehouse['address_line1'] ?? '' }}">
+                                        aria-label="Enter address line 1"
+                                        value="{{ $wherehouse['address_line1'] ?? '' }}">
                                 </div>
                             </div>
                             <!-- End Form Group -->
@@ -292,7 +293,8 @@
 
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" name="city" id="city"
-                                        placeholder="{{ \App\CPU\translate('Enter city') }}" aria-label="Enter city" value="{{ $wherehouse['city'] ?? '' }}">
+                                        placeholder="{{ \App\CPU\translate('Enter city') }}" aria-label="Enter city"
+                                        value="{{ $wherehouse['city'] ?? '' }}">
                                 </div>
                             </div>
                             <!-- End Form Group -->
@@ -304,7 +306,8 @@
 
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" name="state" id="state"
-                                        placeholder="{{ \App\CPU\translate('Enter state') }}" aria-label="Enter state" value="{{ $wherehouse['state'] ?? '' }}">
+                                        placeholder="{{ \App\CPU\translate('Enter state') }}" aria-label="Enter state"
+                                        value="{{ $wherehouse['state'] ?? '' }}">
                                 </div>
                             </div>
                             <!-- End Form Group -->
@@ -329,7 +332,8 @@
 
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" name="phone" id="phone"
-                                        placeholder="{{ \App\CPU\translate('Enter phone') }}" aria-label="Enter phone" value="{{ $wherehouse['phone'] ?? '' }}">
+                                        placeholder="{{ \App\CPU\translate('Enter phone') }}" aria-label="Enter phone"
+                                        value="{{ $wherehouse['phone'] ?? '' }}">
                                 </div>
                             </div>
                             <!-- End Form Group -->
@@ -402,4 +406,3 @@
 
 @push('script')
 @endpush
-

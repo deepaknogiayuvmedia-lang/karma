@@ -13,8 +13,9 @@ class UserWalletController extends Controller
     public function index()
     {
         $wallet_status = Helpers::get_business_settings('wallet_status');
+        $loyalty_point_status = Helpers::get_business_settings('loyalty_point_status');
 
-        if($wallet_status == 1)
+        if($wallet_status == 1 && $loyalty_point_status == 1)
         {
             $total_wallet_balance = auth('customer')->user()->wallet_balance;
         $wallet_transactio_list = WalletTransaction::where('user_id',auth('customer')->id())

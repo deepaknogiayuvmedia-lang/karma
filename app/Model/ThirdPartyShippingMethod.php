@@ -13,5 +13,6 @@ class ThirdPartyShippingMethod extends Model
         'api_key',
         'api_secret',
         'status',
+        'environment',
     ];
 }

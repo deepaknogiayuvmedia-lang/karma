@@ -37,12 +37,18 @@
                     <a href="{{url()->previous()}}" class="btn btn--primary">
                         <i class="tio-back-ui"></i> {{\App\CPU\translate('Back')}}
                     </a>
+                    @if($product['request_status'] == 2 || ($product['approval_status'] ?? '') == 'rejected')
+                        <a href="{{ route('seller.product.edit', [$product['id']]) }}" class="btn btn--primary">
+                            <i class="tio-edit"></i> {{\App\CPU\translate('Edit & Resubmit')}}
+                        </a>
+                    @endif
                 </div>
             </div>
-            @if($product['request_status'] == 2)
+            @if($product['request_status'] == 2 || ($product['approval_status'] ?? '') == 'rejected')
                 <div class="card mb-3 mb-lg-5 mt-2 mt-lg-3 bg-warning">
                     <div class="card-body text-center">
-                        <span class="text-dark">{{ $product['denied_note'] }}</span>
+                        <span class="text-dark fw-bold">{{\App\CPU\translate('denied_note')}}:</span>
+                        <span class="text-dark">{{ $product['denied_note'] ?: \App\CPU\translate('No reason provided') }}</span>
                     </div>
                 </div>
             @endif
@@ -74,10 +80,6 @@
                                 @endif
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <span class="text-muted">{{\App\CPU\translate('Product Type')}}:</span>
-                                    <p class="mb-0"><span class="badge badge-soft-primary">{{ ucfirst($product->product_type) }}</span></p>
-                                </div>
                                 <div class="mb-3">
                                     <span class="text-muted">{{\App\CPU\translate('Product Code')}}:</span>
                                     <p class="mb-0">{{ $product->code }}</p>

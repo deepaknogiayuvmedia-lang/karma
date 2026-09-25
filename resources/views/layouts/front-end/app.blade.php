@@ -451,7 +451,7 @@
             h4 { font-size: 18px !important; font-weight: 600 !important; }
             h5 { font-size: 16px !important; font-weight: 600 !important; }
             h6 { font-size: 14px !important; font-weight: 600 !important; }
-            p, span, small, a, li, td, th { font-size: 14px !important; font-weight: 400 !important; text-transform: none !important; color: #262d34 !important; }
+            p, span, small, a, li, td, th { font-size: 14px !important; font-weight: 400 !important; text-transform: none !important; ; }
             strong, b { font-weight: 700 !important; text-transform: none !important; }
             .nav-link, .navbar-brand, .dropdown-item { font-size: 14px !important; text-transform: none !important; }
             .product-name, .product-price, .section-title, .page-title { text-transform: none !important; }
@@ -562,23 +562,23 @@
 
     <!-- Mobile Bottom Navigation Toolbar (BigHaat Specification) -->
     <div class="bh-mobile-nav">
-        <a href="{{ route('home') }}" class="bh-mobile-nav-item {{ request()->is('/') ? 'active' : '' }}">
+        <a href="{{ route('home') }}" class="bh-mobile-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
             <i class="fa fa-home"></i>
             <span>{{ \App\CPU\translate('Home') }}</span>
         </a>
-        <a href="{{ route('categories') }}" class="bh-mobile-nav-item {{ request()->is('categories*') ? 'active' : '' }}">
-            <i class="fa fa-th-large"></i>
-            <span>{{ \App\CPU\translate('Categories') }}</span>
+        <a href="{{ route('brands') }}" class="bh-mobile-nav-item {{ request()->routeIs('brands') ? 'active' : '' }}">
+            <i class="fa fa-certificate"></i>
+            <span>{{ \App\CPU\translate('Brands') }}</span>
         </a>
-        <a href="{{ route('products', ['data_from' => 'search', 'page' => 1]) }}" class="bh-mobile-nav-item">
+        <a href="{{ route('products', ['data_from' => 'search', 'page' => 1]) }}" class="bh-mobile-nav-item {{ request()->routeIs('products', 'searched-products', 'category-products', 'discounted-products') ? 'active' : '' }}">
             <i class="fa fa-search"></i>
             <span>{{ \App\CPU\translate('Search') }}</span>
         </a>
-        <a href="{{ route('account-oder') }}" class="bh-mobile-nav-item {{ request()->is('account-oder*') ? 'active' : '' }}">
+        <a href="{{ auth('customer')->check() ? route('account-oder') : route('customer.auth.login') }}" class="bh-mobile-nav-item {{ request()->routeIs('account-oder') ? 'active' : '' }}">
             <i class="fa fa-shopping-bag"></i>
             <span>{{ \App\CPU\translate('Orders') }}</span>
         </a>
-        <a href="{{ route('user-account') }}" class="bh-mobile-nav-item {{ request()->is('user-account*') ? 'active' : '' }}">
+        <a href="{{ auth('customer')->check() ? route('user-account') : route('customer.auth.login') }}" class="bh-mobile-nav-item {{ request()->routeIs('user-account') ? 'active' : '' }}">
             <i class="fa fa-user"></i>
             <span>{{ \App\CPU\translate('Account') }}</span>
         </a>
@@ -711,6 +711,32 @@
         });
     </script>
     <script>
+        function setWishlistActive(product_id, active) {
+            var selector = '[data-wishlist-product="' + product_id + '"]';
+            $(selector).each(function() {
+                var $btn = $(this);
+                var $icon = $btn.find('i');
+                if (active) {
+                    $btn.addClass('active');
+                    $btn.attr('title', @json(\App\CPU\translate('Remove from Wishlist')));
+                    $icon.removeClass('fa-heart-o').addClass('fa-heart');
+                } else {
+                    $btn.removeClass('active');
+                    $btn.attr('title', @json(\App\CPU\translate('Add to Wishlist')));
+                    $icon.removeClass('fa-heart').addClass('fa-heart-o');
+                }
+            });
+        }
+
+        function toggleWishlist(product_id) {
+            var $btn = $('[data-wishlist-product="' + product_id + '"]').first();
+            if ($btn.hasClass('active')) {
+                removeWishlist(product_id);
+            } else {
+                addWishlist(product_id);
+            }
+        }
+
         function addWishlist(product_id) {
             $.ajaxSetup({
                 headers: {
@@ -735,8 +761,10 @@
                         $('.countWishlist').html(data.count);
                         $('.countWishlist-' + product_id).text(data.product_count);
                         $('.tooltip').html('');
+                        setWishlistActive(product_id, true);
 
                     } else if (data.value == 2) {
+                        setWishlistActive(product_id, true);
                         Swal.fire({
                             type: 'info',
                             title: 'WishList',
@@ -777,6 +805,7 @@
                     $('.countWishlist').html(data.count);
                     $('#set-wish-list').html(data.wishlist);
                     $('.tooltip').html('');
+                    setWishlistActive(product_id, false);
                 },
                 complete: function() {
                     $('#loading').hide();

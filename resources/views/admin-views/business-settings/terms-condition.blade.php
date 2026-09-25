@@ -3,7 +3,6 @@
 @section('title', \App\CPU\translate('Terms & Condition'))
 
 @push('css_or_js')
-
 @endpush
 
 @section('content')
@@ -11,8 +10,8 @@
         <!-- Page Title -->
         <div class="mb-3">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img width="20" src="{{asset('/public/assets/back-end/img/Pages.png')}}" alt="">
-                {{\App\CPU\translate('pages')}}
+                <img width="20" src="{{ asset('/assets/back-end/img/Pages.png') }}" alt="">
+                {{ \App\CPU\translate('pages') }}
             </h2>
         </div>
         <!-- End Page Title -->
@@ -25,18 +24,18 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">{{\App\CPU\translate('terms_and_condition')}}</h5>
+                        <h5 class="mb-0">{{ \App\CPU\translate('terms_and_condition') }}</h5>
                     </div>
 
-                    <form action="{{route('admin.business-settings.update-terms')}}" method="post">
+                    <form action="{{ route('admin.business-settings.update-terms') }}" method="post">
                         @csrf
                         <div class="card-body">
                             <div class="form-group">
-                                <textarea class="form-control" rows="10"
-                                    name="value">{{$terms_condition->value}}</textarea>
+                                <textarea class="form-control" rows="10" name="value">{{ $terms_condition->value }}</textarea>
                             </div>
                             <div class="form-group">
-                                <input class="form-control btn--primary" type="submit" value="{{\App\CPU\translate('submit')}}" name="btn">
+                                <input class="form-control btn--primary" type="submit"
+                                    value="{{ \App\CPU\translate('submit') }}" name="btn">
                             </div>
                         </div>
                     </form>
@@ -48,4 +47,3 @@
 
 @push('script')
 @endpush
-

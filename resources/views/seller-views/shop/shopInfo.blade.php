@@ -10,7 +10,7 @@
         <!-- Page Title -->
         <div class="mb-3">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img width="20" src="{{ asset('/public/assets/back-end/img/shop-info.png') }}" alt="">
+                <img width="20" src="{{ asset('/assets/back-end/img/shop-info.png') }}" alt="">
                 {{ \App\CPU\translate('Shop_Info') }}
             </h2>
         </div>
@@ -247,7 +247,7 @@
                         success: function(data) {
                             toastr.success(
                                 '{{ \App\CPU\translate('temporary_close_inactive_successfully') }}!'
-                                );
+                            );
                             location.reload();
                         }
                     });
@@ -278,4 +278,3 @@
         })
     </script>
 @endpush
-

@@ -38,7 +38,16 @@
             </h2>
         </div>
         <!-- End Page Title -->
-      
+
+        @if ($product['request_status'] == 2 || ($product['approval_status'] ?? '') == 'rejected')
+            <div class="card mb-3 mb-lg-5 bg-warning">
+                <div class="card-body text-center">
+                    <span class="text-dark fw-bold">{{ \App\CPU\translate('Rejection Reason') }}:</span>
+                    <span class="text-dark">{{ $product['denied_note'] ?: \App\CPU\translate('No reason provided') }}</span>
+                </div>
+            </div>
+        @endif
+
         <!-- Content Row -->
         <div class="row">
             <div class="col-md-12">
@@ -217,25 +226,11 @@
                         <div class="card-body">
                             <div class="form-group">
                                 <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label for="name"
-                                            class="title-color">{{ \App\CPU\translate('product_type') }}</label>
-                                        <select name="product_type" id="product_type" class="form-control" required>
-                                            <option value="physical"
-                                                {{ $product->product_type == 'physical' ? 'selected' : '' }}>
-                                                {{ \App\CPU\translate('physical') }}</option>
-                                            @if ($digital_product_setting)
-                                                <option value="digital"
-                                                    {{ $product->product_type == 'digital' ? 'selected' : '' }}>
-                                                    {{ \App\CPU\translate('digital') }}</option>
-                                            @endif
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4 mb-3" id="digital_product_type_show">
+                                    <input type="hidden" name="product_type" id="product_type" value="physical">
+                                    <div class="col-md-4 mb-3" id="digital_product_type_show" style="display: none;">
                                         <label for="digital_product_type"
                                             class="title-color">{{ \App\CPU\translate('digital_product_type') }}</label>
-                                        <select name="digital_product_type" id="digital_product_type" class="form-control"
-                                            required>
+                                        <select name="digital_product_type" id="digital_product_type" class="form-control">
                                             <option value="{{ old('digital_product_type') }}"
                                                 {{ !$product->digital_product_type ? 'selected' : '' }} disabled>
                                                 ---Select---</option>
@@ -247,7 +242,7 @@
                                                 {{ \App\CPU\translate('Ready Product') }}</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4 mb-3" id="digital_file_ready_show">
+                                    <div class="col-md-4 mb-3" id="digital_file_ready_show" style="display: none;">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label for="digital_file_ready"
@@ -422,7 +417,7 @@
                                             class="form-control" required>
                                         <input name="tax_type" value="percent" class="d--none">
                                     </div>
-                                    <div class="col-md-2 form-group mb-3">
+                                    <div class="col-md-2 form-group mb-3" style="display: none;">
                                         <label class="title-color">{{ \App\CPU\translate('Tax_Model') }}</label>
                                         <select name="tax_model" id="tax_model" class="form-control" required>
                                             <option value="include"
@@ -650,7 +645,7 @@
                                 </div>
                             </div>
                             <div class="col-12 d-flex justify-content-end mt-3">
-                                @if ($product['request_status'] == 2)
+                                @if ($product['request_status'] == 2 || ($product['approval_status'] ?? '') == 'rejected')
                                     <button type="button" onclick="check()"
                                         class="btn btn--primary px-4">{{ \App\CPU\translate('resubmit') }}</button>
                                 @else
@@ -1150,7 +1145,7 @@
         });
 
         function product_type() {
-            let product_type = $('#product_type').val();
+            let product_type = $('#product_type').val() || 'physical';
 
             if (product_type === 'physical') {
                 $('#digital_product_type_show').hide();

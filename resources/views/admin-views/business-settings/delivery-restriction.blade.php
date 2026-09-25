@@ -19,7 +19,7 @@
         <!-- Page Title -->
         <div class="pb-2">
             <h2 class="h1 mb-0 text-capitalize d-flex align-items-center gap-2">
-                <img src="{{asset('/public/assets/back-end/img/business-setup.png')}}" alt="">
+                <img src="{{asset('/assets/back-end/img/business-setup.png')}}" alt="">
                 {{\App\CPU\translate('Business_Setup')}}
             </h2>
         </div>

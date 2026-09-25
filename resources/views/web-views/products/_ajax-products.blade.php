@@ -11,10 +11,12 @@
     </div>
 @endforeach
 </div>
+@if(($show_pagination ?? true) && method_exists($products, 'links') && $products->hasPages())
 <div class="col-12">
     <nav class="d-flex justify-content-center pt-2" aria-label="Page navigation"
          id="paginator-ajax">
         {!! $products->links() !!}
     </nav>
 </div>
+@endif
 

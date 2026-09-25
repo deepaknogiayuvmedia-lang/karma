@@ -79,6 +79,29 @@
                     @if($physical_product_view)
                         <h2 class="h4 pb-3 mb-2 mt-5">{{ \App\CPU\translate('choose_shipping_address')}}</h2>
                         @php($shipping_addresses=\App\Model\ShippingAddress::where('customer_id',auth('customer')->id())->where('is_billing',0)->get())
+
+                        @if($zip_restrict_status != 1)
+                        <div class="card __card mb-3" id="checkout-pincode-card">
+                            <div class="card-body">
+                                <label class="font-weight-bold mb-2">{{ \App\CPU\translate('Enter pincode to check delivery') }}</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control"
+                                           name="checkout_pincode" id="checkout_pincode_input"
+                                           maxlength="6" value="{{ session('delhivery_pincode') ?? '' }}"
+                                           placeholder="{{ \App\CPU\translate('Enter pincode') }}"
+                                           oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-success" id="checkout_calc_shipping_btn"
+                                                style="background:#168A3A; border-color:#168A3A; color:#fff; font-weight:600;">
+                                            <i class="fa fa-truck mr-1"></i> {{ \App\CPU\translate('Check') }}
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="checkout_shipping_result" class="mt-2" @if(!session('delhivery_shipping_cost')) style="display:none;" @endif></div>
+                            </div>
+                        </div>
+                        @endif
+
                         <form method="post" class="card __card" id="address-form">
                             <div class="card-body p-0">
                                 <ul class="list-group">
@@ -168,23 +191,16 @@
                                                                     <option value="">{{ \App\CPU\translate('No_zip_to_deliver') }}</option>
                                                                 @endforelse
                                                             </select>
-                                                        @else
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control"
-                                                                   name="zip" id="checkout_pincode_input"
-                                                                   maxlength="6"
-                                                                   placeholder="{{ \App\CPU\translate('Enter pincode') }}"
-                                                                   oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-                                                                   {{$shipping_addresses->count()==0?'required':''}}>
-                                                            <div class="input-group-append">
-                                                                <button type="button" class="btn btn-success" id="checkout_calc_shipping_btn"
-                                                                        style="background:#168A3A; border-color:#168A3A; color:#fff; font-weight:600;">
-                                                                    <i class="fa fa-truck mr-1"></i> {{ \App\CPU\translate('Check') }}
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                        @endif
-                                                        <div id="checkout_shipping_result" class="mt-2" style="display:none;"></div>
+                                                         @else
+                                                         <div class="input-group">
+                                                             <input type="text" class="form-control"
+                                                                    name="zip"
+                                                                    maxlength="6"
+                                                                    placeholder="{{ \App\CPU\translate('Enter pincode') }}"
+                                                                    oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                                                                    {{$shipping_addresses->count()==0?'required':''}}>
+                                                         </div>
+                                                         @endif
                                                     </div>
                                                     <div class="form-group">
                                                         <label
@@ -463,7 +479,7 @@
         }
     </script>
     <script
-        src="https://maps.googleapis.com/maps/api/js?key={{\App\CPU\Helpers::get_business_settings('map_api_key')}}&libraries=places&v=3.49"></script>
+        src="https://maps.googleapis.com/maps/api/js?key={{\App\CPU\Helpers::get_business_settings('map_api_key')}}&libraries=places&v=3.49" defer></script>
     <script>
         function initAutocomplete() {
             var myLatLng = {
@@ -819,10 +835,24 @@
                         $('#checkout_shipping_result').html(html);
                     }
                     $('#checkout_shipping_result').show();
+
+                    // Refresh order summary shipping + total
+                    if (response.status === 'success' && response.serviceable) {
+                        $.get('{{ route('checkout-details') }}', function(html) {
+                            var $tmp = $('<div>').append($.parseHTML(html));
+                            var shipRow = $tmp.find('#order-summary-shipping');
+                            var totalRow = $tmp.find('#order-summary-total');
+                            if (shipRow.length) $('#order-summary-shipping').text(shipRow.text());
+                            if (totalRow.length) $('#order-summary-total').text(totalRow.text());
+                        });
+                    }
                 },
-                error: function() {
+                error: function(xhr) {
                     $btn.removeAttr('disabled').html('<i class="fa fa-truck mr-1"></i> {{ \App\CPU\translate("Check") }}');
-                    toastr.error('{{ \App\CPU\translate("Error checking shipping. Please try again.") }}');
+                    var msg = (xhr.responseJSON && xhr.responseJSON.message)
+                        ? xhr.responseJSON.message
+                        : '{{ \App\CPU\translate("Error checking shipping. Please try again.") }}';
+                    toastr.error(msg);
                 }
             });
         });

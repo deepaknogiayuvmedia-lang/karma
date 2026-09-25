@@ -131,7 +131,7 @@
                                             <th>Product</th>
                                             <th>Model</th>
                                             <th>Quantity</th>
-                                            <th>Unit Price</th>
+                                            <th>Selling Price</th>
                                             <th>Total</th>
                                         </thead>
                                         <tbody>

@@ -15,7 +15,7 @@
                 <div class="col-md-4 col-6 text-end  text-md-right">
                     @php($social_media = \App\Model\SocialMedia::where('active_status', 1)->get())
                     @if (isset($social_media))
-                        <div class="d-inline-flex gap-2">
+                        <div class="d-flex justify-content-end gap-2">
                             @foreach ($social_media as $item)
                                 <a class="btn btn-sm btn-circle text-white mx-1 bh-footer-social-icon"
                                     target="_blank" href="{{ $item->link }}">

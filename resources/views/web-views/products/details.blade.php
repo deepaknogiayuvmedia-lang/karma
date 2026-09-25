@@ -716,6 +716,12 @@
             transform: scale(1.05);
         }
 
+        .bhpdp-btn-wish.active {
+            background: #fee2e2;
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+
         /* Out of Stock Button */
         .bhpdp-btn-oos {
             flex: 1;
@@ -2150,9 +2156,13 @@
                             </button>
                         @endif
 
-                        <button type="button" onclick="addWishlist('{{ $product['id'] }}')" class="bhpdp-btn-wish"
-                            title="Add to Wishlist">
-                            <i class="fa fa-heart-o"></i>
+                        @php($inWishlist = auth('customer')->check() && in_array((int) $product['id'], array_map('intval', (array) session('wish_list', []))))
+                        <button type="button"
+                            onclick="toggleWishlist('{{ $product['id'] }}')"
+                            class="bhpdp-btn-wish {{ $inWishlist ? 'active' : '' }}"
+                            data-wishlist-product="{{ $product['id'] }}"
+                            title="{{ $inWishlist ? \App\CPU\translate('Remove from Wishlist') : \App\CPU\translate('Add to Wishlist') }}">
+                            <i class="fa {{ $inWishlist ? 'fa-heart' : 'fa-heart-o' }}"></i>
                         </button>
                     </div>
 
