@@ -24,8 +24,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // Sync temp products to products table every 5 minutes
-        $schedule->command('sync:temp-products')->everySecond();
+        // Sync temp products to products table every minute
+        $schedule->command('sync:temp-products')->everyMinute();
         
         // Update product auto indexing based on price, reviews, and stock
         $schedule->command('products:update-indexing')->everyMinute();
@@ -38,6 +38,9 @@ class Kernel extends ConsoleKernel
 
         // Recalculate product ranking scores based on priority, performance, and reviews
         $schedule->command('products:update-ranking')->daily();
+
+        // Poll Delhivery for shipment status and update order statuses
+        $schedule->command('orders:sync-delhivery-status')->everyFiveMinutes();
     }
 
     /**

@@ -49,11 +49,11 @@ class shepping
                 'Content-Type' => 'application/json'
             ])->post($url, $data);
            
-            error_log("===== DELHIVERY CREATE WAREHOUSE REQUEST =====");
-            error_log("URL: " . $url);
-            error_log("Data: " . json_encode($data));
-            error_log("Response Status: " . $response->status());
-            error_log("Response Body: " . $response->body());
+            Log::info("===== DELHIVERY CREATE WAREHOUSE REQUEST =====");
+            Log::info("URL: " . $url);
+            Log::info("Data: " . json_encode($data));
+            Log::info("Response Status: " . $response->status());
+            Log::info("Response Body: " . $response->body());
 
             if ($response->successful()) {
                 return [
@@ -76,7 +76,7 @@ class shepping
                 'data' => $body
             ];
         } catch (\Exception $e) {
-            error_log("DELHIVERY CREATE WAREHOUSE EXCEPTION: " . $e->getMessage());
+            Log::info("DELHIVERY CREATE WAREHOUSE EXCEPTION: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Exception: ' . $e->getMessage()];
         }
     }
@@ -205,6 +205,10 @@ class shepping
         $url = $base_url . "/api/cmu/create.json";
 
         try {
+            Log::info("===== DELHIVERY CREATE SHIPMENT REQUEST =====");
+            Log::info("URL: " . $url);
+            Log::info("Payload: " . json_encode($payload));
+
             $response = Http::withoutVerifying()->asForm()->withHeaders([
                 'Authorization' => 'Token ' . $api_token,
             ])->post($url, [
@@ -212,9 +216,9 @@ class shepping
                 'data' => json_encode($payload)
             ]);
 
-            error_log("===== DELHIVERY CREATE SHIPMENT RESPONSE =====");
-            error_log("Status: " . $response->status());
-            error_log("Body: " . $response->body());
+            Log::info("===== DELHIVERY CREATE SHIPMENT RESPONSE =====");
+            Log::info("Status: " . $response->status());
+            Log::info("Body: " . $response->body());
 
             $result = $response->json();
 
@@ -251,7 +255,7 @@ class shepping
                 'data' => $result
             ];
         } catch (\Exception $e) {
-            error_log("DELHIVERY CREATE SHIPMENT EXCEPTION: " . $e->getMessage());
+            Log::info("DELHIVERY CREATE SHIPMENT EXCEPTION: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Exception: ' . $e->getMessage()];
         }
     }

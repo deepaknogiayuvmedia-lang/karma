@@ -1090,38 +1090,9 @@
                             <i class="navbar-tool-icon czi-close close-icon"></i>
                         </div>
                     </a>
-                    {{-- <div class="navbar-tool dropdown {{Session::get('direction') === "rtl" ? 'mr-md-3' : 'ml-md-3'}}">
-                        <a class="navbar-tool-icon-box bg-secondary dropdown-toggle" href="{{route('wishlists')}}">
-                            <span class="navbar-tool-label">
-                                <span
-                                    class="countWishlist">{{session()->has('wish_list')?count(session('wish_list')):0}}</span>
-                            </span>
-                            <i class="navbar-tool-icon czi-heart"></i>
-                        </a>
-                    </div> --}}
+                  
                     @if (auth('customer')->check())
-                        {{-- <div class="navbar-tool dropdown {{Session::get('direction') === "rtl" ? 'mr-md-3' : 'ml-md-3'}}">
-                        <a class="navbar-tool-icon-box bg-secondary dropdown-toggle" href="javascript:" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="notification_icon">
-                            <span class="navbar-tool-label">
-                                <span class="countNotification">0</span>
-                            </span>
-                            <i class="navbar-tool-icon czi-bell"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-{{Session::get('direction') === "rtl" ? 'left' : 'right'}}" style="width: 330px; padding: 0;">
-                            <div class="widget widget-cart px-3 pt-3 pb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="font-size-sm mb-0">{{\App\CPU\translate('Notifications')}}</h5>
-                                </div>
-                                <div id="notification-list" style="max-height: 20rem; overflow-y: auto;">
-                                    <p class="text-center font-size-xs text-muted py-3 mb-0">{{\App\CPU\translate('Loading...')}}</p>
-                                </div>
-                                <div class="dropdown-divider my-2"></div>
-                                <a class="btn btn--primary btn-sm btn-block" href="{{route('notifications')}}">
-                                    {{\App\CPU\translate('View All')}}
-                                </a>
-                            </div>
-                        </div>
-                    </div> --}}
+                     
                         <div class="dropdown">
                             <a class="navbar-tool ml-3" type="button" data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
@@ -1382,7 +1353,7 @@
                                             <div>
                                                 <a class="dropdown-item"
                                                     href="{{ route('products', ['id' => $brand['id'], 'data_from' => 'brand', 'page' => 1]) }}">
-                                                    {{ $brand['name'] }}
+                                                    {{ Str::limit($brand['name'], 20) }}
                                                 </a>
                                             </div>
                                             <div class="align-baseline">

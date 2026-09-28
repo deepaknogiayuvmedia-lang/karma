@@ -182,8 +182,8 @@ class ShippingMethodController extends Controller
         $existing_config = \App\CPU\Helpers::get_shipping_config();
         if ($existing_config && $existing_config->status) {
             $result = \App\CPU\shepping::CreateWhereHouse($delhivery_data);
-            error_log("===== DELHIVERY WAREHOUSE STORE RESPONSE =====");
-            error_log(json_encode($result, JSON_PRETTY_PRINT));
+            \Illuminate\Support\Facades\Log::info("===== DELHIVERY WAREHOUSE STORE RESPONSE =====");
+            \Illuminate\Support\Facades\Log::info(json_encode($result, JSON_PRETTY_PRINT));
         }
 
         Toastr::success('Warehouse Updated Successfully!');

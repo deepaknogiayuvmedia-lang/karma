@@ -1457,12 +1457,12 @@
             loop: false,
             autoplay: false,
             margin: 20,
-            nav: false,
+            nav: true,
             navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
             dots: true,
             autoplayHoverPause: true,
             '{{ session('direction ') }}': false,
-            // center: true,
+                // center: true,
             responsive: {
                 //X-Small
                 0: {
@@ -1506,6 +1506,7 @@
             autoplayTimeout: 3000,
             margin: 10,
             nav: false,
+            navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
             dots: true,
             autoplayHoverPause: true,
             '{{ session('direction') }}': false,

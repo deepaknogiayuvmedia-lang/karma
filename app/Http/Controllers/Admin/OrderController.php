@@ -875,9 +875,9 @@ class OrderController extends Controller
 
         $result = \App\CPU\shepping::CreateShipment($order_id);
 
-        error_log("===== DELHIVERY API RESPONSE (Order #$order_id) =====");
-        error_log(json_encode($result, JSON_PRETTY_PRINT));
-        error_log("===== END DELHIVERY API RESPONSE =====");
+        \Illuminate\Support\Facades\Log::info("===== DELHIVERY API RESPONSE (Order #$order_id) =====");
+        \Illuminate\Support\Facades\Log::info(json_encode($result, JSON_PRETTY_PRINT));
+        \Illuminate\Support\Facades\Log::info("===== END DELHIVERY API RESPONSE =====");
 
         if ($result['status'] == 'success' || $result['status'] == 'partial') {
             $order->delivery_type = 'third_party_delivery';

@@ -1074,6 +1074,9 @@
                             if (data.status == 'success') {
                                 toastr.success(data.message);
                                 location.reload();
+                            } else if (data.status == 'warning') {
+                                toastr.warning(data.message);
+                                location.reload();
                             } else {
                                 toastr.error(data.message);
                             }

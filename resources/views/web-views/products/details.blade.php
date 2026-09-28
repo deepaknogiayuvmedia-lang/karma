@@ -1652,6 +1652,7 @@
     $overallRating = \App\CPU\ProductManager::get_overall_rating($product->reviews);
     $rating = \App\CPU\ProductManager::get_rating($product->reviews);
     $decimal_point_settings = \App\CPU\Helpers::get_business_settings('decimal_point_settings');
+    $reviews_of_product = \App\Model\Review::where('product_id', $product->id)->paginate(2);
     ?>
 
     <div class="container">
@@ -2156,7 +2157,7 @@
                             </button>
                         @endif
 
-                        @php($inWishlist = auth('customer')->check() && in_array((int) $product['id'], array_map('intval', (array) session('wish_list', []))))
+                        @php $inWishlist = auth('customer')->check() && in_array((int) $product['id'], array_map('intval', (array) session('wish_list', []))); @endphp
                         <button type="button"
                             onclick="toggleWishlist('{{ $product['id'] }}')"
                             class="bhpdp-btn-wish {{ $inWishlist ? 'active' : '' }}"
@@ -2192,8 +2193,7 @@
             <div class="bhpdp-tabs-inner" id="bhTabs">
                 <button class="bhpdp-tab-btn active" onclick="bhSwitchTab('overview')"
                     data-tab="overview">Overview</button>
-                @if (count($product->reviews) > 0 ||
-                        ($reviews_of_product = App\Model\Review::where('product_id', $product->id)->count() > 0))
+                @if (count($product->reviews) > 0 || $reviews_of_product->count() > 0)
                     <button class="bhpdp-tab-btn" onclick="bhSwitchTab('reviews')" data-tab="reviews">Reviews
                         ({{ $overallRating[1] }})</button>
                 @endif
@@ -2234,10 +2234,6 @@
 
             {{-- Reviews Tab --}}
             <div class="bhpdp-tab-pane" id="tab-reviews">
-                @php
-                    $reviews_of_product = App\Model\Review::where('product_id', $product->id)->paginate(2);
-                @endphp
-
                 @if ($reviews_of_product->count() > 0)
                     <div class="bhpdp-reviews-summary">
                         <div class="bhpdp-reviews-big-rating">
@@ -2324,7 +2320,7 @@
                             </div>
                         @endforeach
                     </div>
-                @else"
+                @else
                     <div style="text-align:center; padding:40px 0; color:#999;">
                         <small>{{ \App\CPU\translate('similar') }}
                             {{ \App\CPU\translate('product_not_available') }}</small>
