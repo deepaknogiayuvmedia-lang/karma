@@ -1173,10 +1173,12 @@ class WebController extends Controller
         // Persist Delhivery charge so order summary + order placement use it
         $cart_group_ids = \App\CPU\CartManager::get_cart_group_ids($request);
         foreach ($cart_group_ids as $index => $group_id) {
-            \App\Model\CartShipping::updateOrCreate(
-                ['cart_group_id' => $group_id],
-                ['shipping_cost' => $index === 0 ? $final_shipping_cost : 0]
-            );
+            $cart_shipping = \App\Model\CartShipping::firstOrNew(['cart_group_id' => $group_id]);
+            $cart_shipping->shipping_method_id = $cart_shipping->shipping_method_id
+                ?? \App\Model\ShippingMethod::orderBy('id')->value('id')
+                ?? 0;
+            $cart_shipping->shipping_cost = $index === 0 ? $final_shipping_cost : 0;
+            $cart_shipping->save();
             \App\Model\Cart::where('cart_group_id', $group_id)
                 ->where('product_type', 'physical')
                 ->update(['shipping_cost' => 0]);

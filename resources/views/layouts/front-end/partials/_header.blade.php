@@ -1198,10 +1198,10 @@
     $categories = \App\Model\Category::with(['childes.childes'])->where('position', 0)->priority()->paginate(11)
 )
                     <ul
-                        class="navbar-nav mega-nav pr-2 pl-2 mt-0 {{ Session::get('direction') === 'rtl' ? 'mr-2' : 'mr-2' }} d-none d-xl-block __mega-nav">
-                        <li class="nav-item">
+                        class="navbar-nav mega-nav m-0 {{ Session::get('direction') === 'rtl' ? 'mr-2' : 'mr-2' }} d-none d-xl-block __mega-nav">
+                        <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle {{ Session::get('direction') === 'rtl' ? 'pr-0' : 'pl-0' }}"
-                                href="#" data-toggle="dropdown">
+                                href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i
                                     class="czi-menu align-middle mt-n1 {{ Session::get('direction') === 'rtl' ? 'mr-2' : 'mr-2' }}"></i>
                                 <span

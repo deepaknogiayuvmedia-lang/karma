@@ -182,7 +182,7 @@
   <section class="hero">
     <div class="container">
 
-      <h1>Terms & Conditions</h1>
+      <h1 class="text-white">Terms & Conditions</h1>
 
       <p>
         Welcome to PRO KISSAN. By accessing or using our platform, you agree to comply with the following terms and conditions.

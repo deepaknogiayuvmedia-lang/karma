@@ -417,10 +417,11 @@ class OrderManager
         $seller_data = Cart::where(['cart_group_id' => $cart_group_id])->first();
         $shipping_method = CartShipping::where(['cart_group_id' => $cart_group_id])->first();
         if (isset($shipping_method)) {
-            $shipping_method_id = $shipping_method->shipping_method_id;
+            $shipping_method_id = $shipping_method->shipping_method_id ?? 0;
         } else {
             $shipping_method_id = 0;
         }
+        $shipping_method_id = (int) $shipping_method_id;
 
         $shipping_model = Helpers::get_business_settings('shipping_method');
         if ($shipping_model == 'inhouse_shipping') {

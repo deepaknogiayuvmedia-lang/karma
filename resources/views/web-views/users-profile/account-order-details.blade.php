@@ -422,11 +422,13 @@
                                                 <p class="mb-0 text-dark">
                                                     <span class="font-weight-bold">
                                                         {{\App\CPU\translate('delivery_service_name')}} :
-                                                    </span> {{$order->delivery_service_name}}
-                                                    <br>
-                                                    <span class="font-weight-bold">
-                                                        {{\App\CPU\translate('tracking_id')}} :
-                                                    </span> {{$order->third_party_delivery_tracking_id}}
+                                                    </span>                                                     {{$order->delivery_service_name}}
+                                                    @if(!empty($order->third_party_delivery_tracking_id))
+                                                        <br>
+                                                        <span class="font-weight-bold">
+                                                            {{\App\CPU\translate('tracking_id')}} :
+                                                        </span> {{$order->third_party_delivery_tracking_id}}
+                                                    @endif
                                                 </p>
                                             @endif
                                         </div>
@@ -552,10 +554,12 @@
                                 <i class="fa fa-file-text-o"></i>
                                 {{\App\CPU\translate('generate_invoice')}}
                             </a>
-                            <a href="{{route('track-order.result',['order_id'=>$order['id'],'from_order_details'=>1])}}" class="btn-track-action flex-grow-1">
-                                <i class="fa fa-truck"></i>
-                                {{\App\CPU\translate('Track')}} {{\App\CPU\translate('Order')}}
-                            </a>
+                            @if(!empty($order->third_party_delivery_tracking_id))
+                                <a href="{{route('track-order.result',['order_id'=>$order['id'],'from_order_details'=>1])}}" class="btn-track-action flex-grow-1">
+                                    <i class="fa fa-truck"></i>
+                                    {{\App\CPU\translate('Track')}} {{\App\CPU\translate('Order')}}
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

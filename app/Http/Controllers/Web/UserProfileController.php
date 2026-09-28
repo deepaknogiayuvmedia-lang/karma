@@ -417,7 +417,7 @@ class UserProfileController extends Controller
             }
             if($request->from_order_details==1)
             {
-                $orderDetails = Order::where('third_party_delivery_tracking_id',$request['order_id'])->whereHas('details',function ($query){
+                $orderDetails = Order::where('id',$request['order_id'])->whereHas('details',function ($query){
                     $query->where('customer_id',auth('customer')->id());
                 })->first();
             }

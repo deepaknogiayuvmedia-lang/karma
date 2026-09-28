@@ -20535,7 +20535,7 @@ body {
     position: relative;
     margin-top: 6px;
     line-height: 17px;
-    width: 304px;
+    
     border-radius: 3px;
 }
 
@@ -21017,7 +21017,7 @@ html[dir="rtl"] .badge-style {
 }
 
 .dropdown-menu {
-    min-width: 304px !important;
+    /* min-width: 304px !important; */
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
 }
@@ -26711,11 +26711,11 @@ a:hover {
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    width: 44px;
-    height: 44px;
+    width: 30px;
+    height: 30px;
     margin: 0;
     padding: 0;
-    font-size: 18px;
+    font-size: 12px;
     line-height: 1;
     color: var(--bh-text-primary);
     background-color: #fff;
@@ -26751,7 +26751,7 @@ a:hover {
 @media (max-width: 576px) {
     .owl-carousel .owl-nav,
     .owl-carousel.owl-theme .owl-nav {
-        padding: 0 6px
+        display: none;
     }
 
     .owl-carousel .owl-nav [class*="owl-"],
@@ -26875,7 +26875,10 @@ a:hover {
     height: 100%;
     background: #000
 }
-
+.__img-18{
+    width: 18px;
+    height: 18px;
+}
 .owl-carousel .owl-video-play-icon {
     position: absolute;
     height: 80px;

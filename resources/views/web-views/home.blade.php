@@ -427,14 +427,14 @@
             }
 
             .mobile-sticky-category .cate-item span {
-                text-align: center;
-                line-height: 1.2;
+                text-align: center !important;
+                line-height: 1.2 !important;
                 /* max-width: 70px; */
-                overflow: hidden;
-                font-size: 10px;
-                color: #555;
-                display: block;
-                font-weight: 900;
+                overflow: hidden !important;
+                font-size: 10px !important;
+                color: #555 !important;
+                display: block  !important;
+                font-weight: 900 !important;
             }
 
             @media (min-width: 769px) {
@@ -827,8 +827,8 @@
             <div class='bh-home-section container-fluid px-0'>
                 <div class="row m-0">
                     <div class="col-md-12 p-0">
-                        <div class="carousel-wrap">
-                            <div class="owl-carousel owl-theme" id="main_section_banner_slider">
+                        <div class="container-fluid carousel-wrap">
+                            <div class=" owl-carousel owl-theme" id="main_section_banner_slider">
                                 @foreach ($main_section_banners as $mainbanner)
                                     <div class="item">
                                         <a href="{{ $mainbanner->url && $mainbanner->url != '#' ? $mainbanner->url : 'javascript:' }}"
@@ -1418,7 +1418,8 @@
             autoplay: true,
             autoplayTimeout: 3000,
             margin: 12,
-            nav: false,
+                nav: true,
+            navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
             dots: false,
             autoplayHoverPause: true,
             responsive: {
@@ -1531,7 +1532,8 @@
             autoplay: true,
             autoplayTimeout: 3500,
             margin: 10,
-            nav: false,
+                nav: true,
+            navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
             dots: true,
             autoplayHoverPause: true,
             '{{ session('direction') }}': true,
