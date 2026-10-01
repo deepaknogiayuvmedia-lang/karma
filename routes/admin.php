@@ -203,6 +203,14 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::get('dashboard', 'ShipRocketController@index')->name('index');
         });
 
+        Route::middleware(['auth', 'admin'])->prefix('delhivery')->name('delhivery.')->group(function () {
+            Route::get('/settings', 'DelhiveryController@settings')->name('settings');
+            Route::post('/settings', 'DelhiveryController@saveSettings')->name('settings.save');
+            Route::post('/orders/{orderId}/create-shipment', 'DelhiveryController@createShipment')->name('shipment.create');
+            Route::post('/shipments/{shipment}/sync', 'DelhiveryController@syncTracking')->name('shipment.sync');
+            Route::post('/shipments/{shipment}/cancel', 'DelhiveryController@cancelShipment')->name('shipment.cancel');
+        });
+
         Route::group(['prefix' => 'social-login', 'as' => 'social-login.','middleware'=>['module:system_settings']], function () {
             Route::get('view', 'BusinessSettingsController@viewSocialLogin')->name('view');
             Route::post('update/{service}', 'BusinessSettingsController@updateSocialLogin')->name('update');

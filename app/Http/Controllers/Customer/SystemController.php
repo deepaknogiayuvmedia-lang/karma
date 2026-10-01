@@ -74,9 +74,9 @@ class SystemController extends Controller
 
         if (isset($shipping['save_address']) && $shipping['save_address'] == 'on') {
 
-            if ($shipping['contact_person_name'] == null || $shipping['address'] == null || $shipping['city'] == null || $shipping['zip'] == null || $shipping['country'] == null ) {
+            if ($shipping['contact_person_name'] == null || $shipping['address'] == null || $shipping['city'] == null || $shipping['state'] == null || $shipping['zip'] == null || $shipping['country'] == null ) {
                 return response()->json([
-                    'errors' => translate('Fill_all_required_fields_of_shipping_address')
+                    'errors' => translate('Fill_all_required_fields_of_shipping_address_state_and_country_are_required')
                 ], 403);
             }
             elseif ($country_restrict_status && !self::delivery_country_exist_check($shipping['country'])) {
@@ -96,6 +96,7 @@ class SystemController extends Controller
                 'address_type' => $shipping['address_type'],
                 'address' => $shipping['address'],
                 'city' => $shipping['city'],
+                'state' => $shipping['state'],
                 'zip' => $shipping['zip'],
                 'country' => $shipping['country'],
                 'phone' => $shipping['phone'],
@@ -109,9 +110,9 @@ class SystemController extends Controller
         }
         else if (isset($shipping['shipping_method_id']) && $shipping['shipping_method_id'] == 0) {
 
-            if ($shipping['contact_person_name'] == null || $shipping['address'] == null || $shipping['city'] == null || $shipping['zip'] == null || $shipping['country'] == null ) {
+            if ($shipping['contact_person_name'] == null || $shipping['address'] == null || $shipping['city'] == null || $shipping['state'] == null || $shipping['zip'] == null || $shipping['country'] == null ) {
                 return response()->json([
-                    'errors' => translate('Fill_all_required_fields_of_shipping/billing_address')
+                    'errors' => translate('Fill_all_required_fields_of_shipping_billing_address_state_and_country_are_required')
                 ], 403);
             }
             elseif ($country_restrict_status && !self::delivery_country_exist_check($shipping['country'])) {
@@ -131,6 +132,7 @@ class SystemController extends Controller
                 'address_type' => $shipping['address_type'],
                 'address' => $shipping['address'],
                 'city' => $shipping['city'],
+                'state' => $shipping['state'],
                 'zip' => $shipping['zip'],
                 'country' => $shipping['country'],
                 'phone' => $shipping['phone'],
@@ -168,9 +170,9 @@ class SystemController extends Controller
         if ($request->billing_addresss_same_shipping == 'false') {
             if (isset($billing['save_address_billing']) && $billing['save_address_billing'] == 'on') {
 
-                if ($billing['billing_contact_person_name'] == null || $billing['billing_address'] == null || $billing['billing_city'] == null|| $billing['billing_zip'] == null || $billing['billing_country'] == null  ) {
+                if ($billing['billing_contact_person_name'] == null || $billing['billing_address'] == null || $billing['billing_city'] == null || $billing['billing_state'] == null || $billing['billing_zip'] == null || $billing['billing_country'] == null  ) {
                     return response()->json([
-                        'errors' => translate('Fill_all_required_fields_of_billing_address')
+                        'errors' => translate('Fill_all_required_fields_of_billing_address_state_and_country_are_required')
                     ], 403);
                 }
                 elseif ($country_restrict_status && !self::delivery_country_exist_check($billing['billing_country'])) {
@@ -190,6 +192,7 @@ class SystemController extends Controller
                     'address_type' => $billing['billing_address_type'],
                     'address' => $billing['billing_address'],
                     'city' => $billing['billing_city'],
+                    'state' => $billing['billing_state'],
                     'zip' => $billing['billing_zip'],
                     'country' => $billing['billing_country'],
                     'phone' => $billing['billing_phone'],
@@ -204,9 +207,9 @@ class SystemController extends Controller
             }
             elseif ($billing['billing_method_id'] == 0) {
 
-                if ($billing['billing_contact_person_name'] == null || $billing['billing_address'] == null || $billing['billing_city'] == null || $billing['billing_zip'] == null || $billing['billing_country'] == null  ) {
+                if ($billing['billing_contact_person_name'] == null || $billing['billing_address'] == null || $billing['billing_city'] == null || $billing['billing_state'] == null || $billing['billing_zip'] == null || $billing['billing_country'] == null  ) {
                     return response()->json([
-                        'errors' => translate('Fill_all_required_fields_of_billing_address')
+                        'errors' => translate('Fill_all_required_fields_of_billing_address_state_and_country_are_required')
                     ], 403);
                 }
                 elseif ($country_restrict_status && !self::delivery_country_exist_check($billing['billing_country'])) {
@@ -226,6 +229,7 @@ class SystemController extends Controller
                     'address_type' => $billing['billing_address_type'],
                     'address' => $billing['billing_address'],
                     'city' => $billing['billing_city'],
+                    'state' => $billing['billing_state'],
                     'zip' => $billing['billing_zip'],
                     'country' => $billing['billing_country'],
                     'phone' => $billing['billing_phone'],

@@ -57,7 +57,7 @@
                             <div class="col-md-6 mb-4">
                                 <div class="text-center">
                                     <img class="upload-img-view" id="viewer"
-                                        src="{{asset('public\assets\back-end\img\400x400\img2.jpg')}}" alt="banner image"/>
+                                        src="{{asset('assets\back-end\img\400x400\img2.jpg')}}" alt="banner image"/>
                                 </div>
                             </div>
                         </div>

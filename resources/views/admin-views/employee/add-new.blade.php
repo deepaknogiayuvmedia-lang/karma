@@ -76,7 +76,7 @@
                                     </div>
                                     <div class="text-center">
                                         <img class="upload-img-view" id="viewer"
-                                            src="{{ asset('public\assets\back-end\img\400x400\img2.jpg') }}"
+                                            src="{{ asset('assets\back-end\img\400x400\img2.jpg') }}"
                                             alt="Product thumbnail" />
                                     </div>
                                 </div>

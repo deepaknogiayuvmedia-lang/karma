@@ -14,7 +14,8 @@ class shepping
     {
         $config = Helpers::get_shipping_config();
         if ($config && !empty($config->environment)) {
-            return $config->environment === 'live';
+            $environment = strtolower((string) $config->environment);
+            return in_array($environment, ['live', 'production'], true);
         }
         return env('APP_MODE') == 'live';
     }
@@ -118,6 +119,162 @@ class shepping
 
     // shipment create
 
+    private static function normalize_delhivery_value($value, $default = '')
+    {
+        if (is_null($value)) {
+            return $default;
+        }
+
+        return trim((string) $value) ?: $default;
+    }
+
+    private static function extract_address_value($data, array $keys)
+    {
+        if (is_object($data)) {
+            $data = get_object_vars($data);
+        }
+
+        if (!is_array($data)) {
+            return null;
+        }
+
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $data) && !is_null($data[$key])) {
+                return $data[$key];
+            }
+        }
+
+        foreach ($data as $value) {
+            if (is_array($value) || is_object($value)) {
+                $nested = self::extract_address_value($value, $keys);
+                if (!is_null($nested)) {
+                    return $nested;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static function resolve_order_shipping_address($order)
+    {
+        $shipping = ShippingAddress::find($order->shipping_address ?? null);
+        if ($shipping) {
+            return (object) [
+                'contact_person_name' => $shipping->contact_person_name ?? ($order->customer->f_name ?? '') . ' ' . ($order->customer->l_name ?? ''),
+                'address' => $shipping->address ?? '',
+                'zip' => $shipping->zip ?? '',
+                'phone' => $shipping->phone ?? $order->customer->phone ?? '',
+                'city' => $shipping->city ?? '',
+                'state' => $shipping->state ?? '',
+                'country' => $shipping->country ?? 'India',
+            ];
+        }
+
+        $rawAddress = $order->shipping_address_data ?? null;
+        $decoded = null;
+
+        if (is_string($rawAddress)) {
+            $decoded = json_decode($rawAddress, true);
+        } elseif (is_array($rawAddress) || is_object($rawAddress)) {
+            $decoded = (array) $rawAddress;
+        }
+
+        if (!$decoded) {
+            return null;
+        }
+
+        $contactName = self::extract_address_value($decoded, ['contact_person_name', 'name', 'customer_name', 'shipping_name']);
+        $address = self::extract_address_value($decoded, ['address', 'address_line1', 'address1', 'shipping_address']);
+        $city = self::extract_address_value($decoded, ['city', 'shipping_city']);
+        $state = self::extract_address_value($decoded, ['state', 'shipping_state', 'province', 'region']);
+        $zip = self::extract_address_value($decoded, ['zip', 'postal_code', 'postcode', 'pincode', 'shipping_postcode']);
+        $phone = self::extract_address_value($decoded, ['phone', 'mobile', 'shipping_phone']);
+        $country = self::extract_address_value($decoded, ['country', 'shipping_country']);
+
+        return (object) [
+            'contact_person_name' => $contactName ?? ($order->customer->f_name ?? '') . ' ' . ($order->customer->l_name ?? ''),
+            'address' => $address ?? '',
+            'zip' => $zip ?? '',
+            'phone' => $phone ?? $order->customer->phone ?? '',
+            'city' => $city ?? '',
+            'state' => $state ?? '',
+            'country' => $country ?? 'India',
+        ];
+    }
+
+    private static function extract_delhivery_waybill($payload)
+    {
+        if (!is_array($payload)) {
+            return null;
+        }
+
+        $queue = [$payload];
+
+        while (!empty($queue)) {
+            $current = array_shift($queue);
+            if (!is_array($current)) {
+                continue;
+            }
+
+            foreach ($current as $key => $value) {
+                if (in_array(strtolower((string) $key), ['waybill', 'awb'], true)) {
+                    $waybill = trim((string) $value);
+                    if ($waybill !== '') {
+                        return $waybill;
+                    }
+                }
+
+                if (is_array($value)) {
+                    $queue[] = $value;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static function extract_delhivery_error_message($payload)
+    {
+        if (!is_array($payload)) {
+            return 'Unknown error from Delhivery';
+        }
+
+        $possibleKeys = ['rmk', 'error', 'message', 'remarks'];
+
+        foreach ($possibleKeys as $key) {
+            if (!isset($payload[$key])) {
+                continue;
+            }
+
+            $value = $payload[$key];
+            if (is_array($value)) {
+                if (isset($value[0]) && is_string($value[0])) {
+                    return $value[0];
+                }
+                if (isset($value['message']) && is_string($value['message'])) {
+                    return $value['message'];
+                }
+                continue;
+            }
+
+            if (is_string($value) && trim($value) !== '') {
+                return $value;
+            }
+        }
+
+        foreach ($payload as $value) {
+            if (is_array($value)) {
+                $nested = self::extract_delhivery_error_message($value);
+                if ($nested !== 'Unknown error from Delhivery') {
+                    return $nested;
+                }
+            }
+        }
+
+        return 'Unknown error from Delhivery';
+    }
+
     public static function CreateShipment($order_id)
     {
         $config = Helpers::get_shipping_config();
@@ -130,40 +287,58 @@ class shepping
             return ['status' => 'error', 'message' => 'Order not found'];
         }
 
-        $shipping = ShippingAddress::find($order->shipping_address);
-        if (!$shipping) {
-            $shipping_data = json_decode($order->shipping_address_data);
-            if ($shipping_data) {
-                $shipping = (object)[
-                    'contact_person_name' => $shipping_data->contact_person_name ?? ($order->customer->f_name . ' ' . $order->customer->l_name),
-                    'address' => $shipping_data->address ?? '',
-                    'zip' => $shipping_data->zip ?? '',
-                    'phone' => $shipping_data->phone ?? $order->customer->phone,
-                    'city' => $shipping_data->city ?? '',
-                    'state' => $shipping_data->state ?? '',
-                ];
-            }
-        }
+        $shipping = self::resolve_order_shipping_address($order);
         if (!$shipping) {
             return ['status' => 'error', 'message' => 'Shipping address not found'];
+        }
+
+        $customer_name = self::normalize_delhivery_value($shipping->contact_person_name ?? ($order->customer->f_name . ' ' . $order->customer->l_name), 'Customer');
+        $address = self::normalize_delhivery_value($shipping->address ?? '', 'Address not provided');
+        $city = self::normalize_delhivery_value($shipping->city ?? '', '');
+        $state = self::normalize_delhivery_value($shipping->state ?? '', '');
+        $zip = preg_replace('/\D+/', '', (string) ($shipping->zip ?? ''));
+        $phone = preg_replace('/\D+/', '', (string) ($shipping->phone ?? $order->customer->phone ?? ''));
+        if (strlen($phone) > 10) {
+            $phone = substr($phone, -10);
+        }
+
+        $missingFields = [];
+        if ($address === 'Address not provided') { $missingFields[] = 'address'; }
+        if ($city === '') { $missingFields[] = 'city'; }
+        if ($state === '') { $missingFields[] = 'state'; }
+        if (strlen($zip) !== 6) { $missingFields[] = 'pin'; }
+        if (strlen($phone) < 10) { $missingFields[] = 'phone'; }
+        if (!empty($missingFields)) {
+            return [
+                'status' => 'error',
+                'message' => 'Delhivery request blocked: missing required delivery fields (' . implode(', ', $missingFields) . '). Please complete the shipping address before creating the shipment.',
+                'data' => ['missing_fields' => $missingFields],
+            ];
         }
 
         $api_token = $config->api_secret;
         
         // Prepare shipment data
         $shipment_data = [
-            "name" => $shipping->contact_person_name,
-            "add" => $shipping->address,
-            "pin" => $shipping->zip,
-            "phone" => $shipping->phone,
+            "name" => $customer_name,
+            "add" => $address,
+            "pin" => $zip,
+            "phone" => $phone,
             "order" => (string)$order->id . (!self::is_live() ? '-' . time() : ''),
             "payment_mode" => $order->payment_method == 'cash_on_delivery' ? 'COD' : 'Prepaid',
             "cod_amount" => $order->payment_method == 'cash_on_delivery' ? $order->order_amount : 0,
             "total_amount" => $order->order_amount,
-            "city" => $shipping->city ?? '',
-            "state" => $shipping->state ?? '',
+            "city" => $city,
+            "state" => $state,
             "country" => "India"
         ];
+
+        $shipment_data = array_filter($shipment_data, function ($value, $key) {
+            if ($key === 'cod_amount' || $key === 'total_amount' || $key === 'phone' || $key === 'pin') {
+                return true;
+            }
+            return $value !== null && $value !== '';
+        }, ARRAY_FILTER_USE_BOTH);
         $pickup_location = [
             "name" => trim(Helpers::get_business_settings('company_name') ?? "Karma"),
             "add" => "Ajmer",
@@ -221,19 +396,19 @@ class shepping
             Log::info("Body: " . $response->body());
 
             $result = $response->json();
+            $waybill = self::extract_delhivery_waybill($result);
 
             if ($response->successful() && isset($result['success']) && $result['success']) {
                 return [
                     'status' => 'success',
-                    'waybill' => $result['packages'][0]['waybill'],
+                    'waybill' => $waybill ?: ($result['packages'][0]['waybill'] ?? null),
                     'data' => $result
                 ];
             }
 
             // Even if success=false, check if waybill was generated (partial save)
-            if (isset($result['packages'][0]['waybill']) && !empty($result['packages'][0]['waybill'])) {
-                $waybill = $result['packages'][0]['waybill'];
-                $remarks = $result['packages'][0]['remarks'][0] ?? ($result['rmk'] ?? '');
+            if ($waybill) {
+                $remarks = self::extract_delhivery_error_message($result);
 
                 return [
                     'status' => 'partial',
@@ -244,10 +419,7 @@ class shepping
             }
 
             // No waybill - full failure
-            $error_message = $result['rmk'] ?? 'Unknown error from Delhivery';
-            if (isset($result['packages'][0]['remarks'][0])) {
-                $error_message = $result['packages'][0]['remarks'][0];
-            }
+            $error_message = self::extract_delhivery_error_message($result);
 
             return [
                 'status' => 'error',
@@ -308,20 +480,7 @@ class shepping
             return ['status' => 'error', 'message' => 'Order not found'];
         }
 
-        $shipping = ShippingAddress::find($order->shipping_address);
-        if (!$shipping) {
-            $shipping_data = json_decode($order->shipping_address_data);
-            if ($shipping_data) {
-                $shipping = (object)[
-                    'contact_person_name' => $shipping_data->contact_person_name ?? ($order->customer->f_name . ' ' . $order->customer->l_name),
-                    'address' => $shipping_data->address ?? '',
-                    'zip' => $shipping_data->zip ?? '',
-                    'phone' => $shipping_data->phone ?? $order->customer->phone,
-                    'city' => $shipping_data->city ?? '',
-                    'state' => $shipping_data->state ?? '',
-                ];
-            }
-        }
+        $shipping = self::resolve_order_shipping_address($order);
         if (!$shipping) {
             return ['status' => 'error', 'message' => 'Shipping address not found'];
         }

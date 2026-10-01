@@ -926,6 +926,129 @@
             margin: 4px 0;
             border-color: #e8eee9;
         }
+
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .seller-tablet-nav > .container {
+                width: 100%;
+                max-width: 100%;
+                padding-right: 16px;
+                padding-left: 16px;
+            }
+
+            .seller-tablet-nav .navbar-collapse {
+                display: flex !important;
+                flex-flow: row wrap;
+                align-items: center;
+                gap: 0 8px;
+                width: 100%;
+            }
+
+            .seller-tablet-nav .seller-tablet-categories {
+                flex: 0 0 auto;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .seller-tablet-nav .seller-tablet-categories .nav-link {
+                height: 42px;
+                padding: 0 12px !important;
+                color: #fff !important;
+                font-size: 13px !important;
+                white-space: nowrap;
+            }
+
+            .seller-tablet-nav .seller-tablet-categories .nav-link i {
+                margin-right: 8px !important;
+            }
+
+            .seller-tablet-nav .seller-tablet-primary {
+                display: flex;
+                flex: 1 1 auto;
+                justify-content: space-between;
+                min-width: 0;
+                margin: 0;
+            }
+
+            .seller-tablet-nav .seller-tablet-primary > .nav-item {
+                flex: 0 0 auto;
+            }
+
+            .seller-tablet-nav .seller-tablet-primary .nav-link {
+                height: 42px;
+                padding: 0 10px !important;
+                border: 0;
+                color: #fff !important;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+
+            .seller-tablet-nav .seller-tablet-primary .nav-item.active > .nav-link {
+                background: rgba(255, 255, 255, .12);
+                color: #fff !important;
+            }
+
+            .seller-tablet-nav .seller-tablet-seller {
+                flex: 0 0 auto;
+                margin: 0 0 0 auto !important;
+            }
+
+            .seller-tablet-nav .seller-tablet-seller .btn.dropdown-toggle {
+                width: auto;
+                height: 36px;
+                padding: 0 12px !important;
+                border: 1px solid rgba(255, 255, 255, .55);
+                border-radius: 5px;
+                color: #fff !important;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+
+            .seller-tablet-nav .seller-tablet-help {
+                display: flex;
+                flex: 0 0 100%;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 18px;
+                min-height: 30px;
+                margin: 0;
+                padding: 3px 8px 0;
+                border-top: 1px solid rgba(255, 255, 255, .18);
+                background: transparent;
+            }
+
+            .seller-tablet-nav .seller-tablet-help .mobile-menu-footer-title {
+                margin: 0 auto 0 0;
+                color: rgba(255, 255, 255, .72);
+                font-size: 11px;
+            }
+
+            .seller-tablet-nav .seller-tablet-help .mobile-menu-footer-link {
+                display: inline-flex;
+                flex: 0 0 auto;
+                gap: 6px;
+                padding: 0;
+                color: #fff;
+                font-size: 11px;
+                white-space: nowrap;
+            }
+
+            .seller-tablet-nav .seller-tablet-help .mobile-menu-footer-link i {
+                width: auto;
+                color: #d6ed71;
+                font-size: 12px;
+            }
+
+            .seller-tablet-nav .seller-tablet-help .mobile-menu-footer-link svg {
+                fill: #d6ed71 !important;
+            }
+
+            .seller-tablet-nav .seller-tablet-help .mobile-menu-footer-version {
+                margin: 0;
+                color: rgba(255, 255, 255, .58);
+                font-size: 10px;
+            }
+        }
        
     }
 </style>
@@ -1187,7 +1310,7 @@
             </div>
         </div>
 
-        <div class="navbar navbar-expand-md navbar-stuck-menu pt-0 ">
+        <div class="navbar navbar-expand-md navbar-stuck-menu pt-0 seller-tablet-nav">
             <div class="container px-10px ">
                 <div class="collapse navbar-collapse" id="navbarCollapse"
                     style="text-align: {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }}; ">
@@ -1279,7 +1402,7 @@
                         </li>
                     </ul>
 
-                    <ul class="navbar-nav mega-nav1 pr-2 pl-2 d-block d-xl-none"><!--mobile-->
+                    <ul class="navbar-nav mega-nav1 pr-2 pl-2 d-block d-xl-none seller-tablet-categories"><!--mobile-->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle {{ Session::get('direction') === 'rtl' ? 'pr-0' : 'pl-0' }}"
                                 href="#" data-toggle="dropdown">
@@ -1336,7 +1459,7 @@
                         </li>
                     </ul>
                     <!-- Primary menu-->
-                    <ul class="navbar-nav"
+                    <ul class="navbar-nav seller-tablet-primary"
                         style="{{ Session::get('direction') === 'rtl' ? 'padding-right: 0px' : '' }}">
                         <li class="nav-item dropdown {{ request()->is('/') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('home') }}">{{ \App\CPU\translate('Home') }}</a>
@@ -1387,7 +1510,7 @@
 
                        
                     </ul>
-                    <ul class="navbar-nav ml-auto" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}}" >
+                    <ul class="navbar-nav ml-auto seller-tablet-seller" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}}" >
                          @php($business_mode = \App\CPU\Helpers::get_business_settings('business_mode'))
                         @if ($business_mode == 'multi')
                           
@@ -1439,7 +1562,7 @@
                         @endif
                     </ul>
                     <!-- Mobile Menu Footer -->
-                    <div class="mobile-menu-footer d-xl-none">
+                    <div class="mobile-menu-footer d-xl-none seller-tablet-help">
                         <div class="mobile-menu-footer-title">{{ \App\CPU\translate('Need Help?') }}</div>
                         <a href="tel:{{ $web_config['phone']->value ?? '' }}" class="mobile-menu-footer-link">
                             <i class="fa fa-headset"></i>

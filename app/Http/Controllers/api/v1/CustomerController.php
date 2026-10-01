@@ -161,12 +161,16 @@ class CustomerController extends Controller
             'address_type' => 'required',
             'address' => 'required',
             'city' => 'required',
+            'state' => 'required|string|min:2',
             'zip' => 'required',
             'country' => 'required',
             'phone' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',
             'is_billing' => 'required'
+        ], [
+            'state.required' => 'State is required for Delhivery API validation.',
+            'state.min' => 'State must be at least 2 characters long.',
         ]);
 
         if ($validator->fails()) {
@@ -190,6 +194,7 @@ class CustomerController extends Controller
             'address_type' => $request->address_type,
             'address' => $request->address,
             'city' => $request->city,
+            'state' => $request->state,
             'zip' => $request->zip,
             'country' => $request->country,
             'phone' => $request->phone,
@@ -205,6 +210,26 @@ class CustomerController extends Controller
 
     public function update_address(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'contact_person_name' => 'required',
+            'address_type' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required|string|min:2',
+            'zip' => 'required',
+            'country' => 'required',
+            'phone' => 'required',
+            'latitude' => 'required',
+            'longitude' => 'required',
+            'is_billing' => 'required'
+        ], [
+            'state.required' => 'State is required for Delhivery API validation.',
+            'state.min' => 'State must be at least 2 characters long.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => Helpers::error_processor($validator)], 403);
+        }
 
         $shipping_address = ShippingAddress::where(['customer_id' => $request->user()->id, 'id' => $request->id])->first();
         if (!$shipping_address) {
@@ -227,6 +252,7 @@ class CustomerController extends Controller
                 'address_type' => $request->address_type,
                 'address' => $request->address,
                 'city' => $request->city,
+                'state' => $request->state,
                 'zip' => $request->zip,
                 'country' => $request->country,
                 'phone' => $request->phone,

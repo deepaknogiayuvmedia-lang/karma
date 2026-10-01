@@ -41,6 +41,9 @@ class Kernel extends ConsoleKernel
 
         // Poll Delhivery for shipment status and update order statuses
         $schedule->command('orders:sync-delhivery-status')->everyFiveMinutes();
+
+        // Keep Delhivery shipment records in sync with the carrier
+        $schedule->command('delhivery:sync-tracking')->everyThirtyMinutes();
     }
 
     /**

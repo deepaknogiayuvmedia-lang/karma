@@ -54,7 +54,7 @@
                             <div class="form-group">
                                 <center>
                                     <img class="upload-img-view" id="viewer"
-                                        src="{{ asset('public\assets\back-end\img\400x400\img2.jpg') }}"
+                                        src="{{ asset('assets\back-end\img\400x400\img2.jpg') }}"
                                         alt="banner image" />
                                 </center>
                             </div>
@@ -138,7 +138,7 @@
                         <div class="col-lg-6 form-group">
                             <center>
                                 <img class="upload-img-view" id="viewerLogo"
-                                    src="{{ asset('public\assets\back-end\img\400x400\img2.jpg') }}"
+                                    src="{{ asset('assets\back-end\img\400x400\img2.jpg') }}"
                                     alt="banner image" />
                             </center>
 
@@ -160,7 +160,7 @@
                         <div class="col-lg-6 form-group">
                             <center>
                                 <img class="upload-img-view upload-img-view__banner" id="viewerBanner"
-                                    src="{{ asset('public\assets\back-end\img\400x400\img2.jpg') }}"
+                                    src="{{ asset('assets\back-end\img\400x400\img2.jpg') }}"
                                     alt="banner image" />
                             </center>
 

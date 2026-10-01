@@ -46,6 +46,9 @@ class OrderStatusSync
         if (str_contains($s, 'out for delivery')) {
             return 'out_for_delivery';
         }
+        if (str_contains($s, 'not picked')) {
+            return 'canceled';
+        }
         if (str_contains($s, 'undeliver') || str_contains($s, 'attempt') || str_contains($s, 'failed')) {
             return 'failed';
         }

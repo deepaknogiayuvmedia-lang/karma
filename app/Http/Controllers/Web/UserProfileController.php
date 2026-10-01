@@ -135,9 +135,13 @@ class UserProfileController extends Controller
             'name' => 'required',
             'phone' => 'required',
             'city' => 'required',
+            'state' => 'required|string|min:2',
             'zip' => 'required',
             'country' => 'required',
             'address' => 'required',
+        ], [
+            'state.required' => 'State is required for Delhivery API validation.',
+            'state.min' => 'State must be at least 2 characters long.',
         ]);
 
         $country_restrict_status = Helpers::get_business_settings('delivery_country_restriction');
@@ -163,6 +167,7 @@ class UserProfileController extends Controller
             'address_type' => $request->addressAs,
             'address' => $request->address,
             'city' => $request->city,
+            'state' => $request->state,
             'zip' => $request->zip,
             'country' => $request->country,
             'phone' => $request->phone,
@@ -207,9 +212,13 @@ class UserProfileController extends Controller
             'name' => 'required',
             'phone' => 'required',
             'city' => 'required',
+            'state' => 'required|string|min:2',
             'zip' => 'required',
             'country' => 'required',
             'address' => 'required',
+        ], [
+            'state.required' => 'State is required for Delhivery API validation.',
+            'state.min' => 'State must be at least 2 characters long.',
         ]);
 
         $country_restrict_status = Helpers::get_business_settings('delivery_country_restriction');
@@ -233,6 +242,7 @@ class UserProfileController extends Controller
             'address_type' => $request->addressAs,
             'address' => $request->address,
             'city' => $request->city,
+            'state' => $request->state,
             'zip' => $request->zip,
             'country' => $request->country,
             'phone' => $request->phone,
@@ -245,7 +255,7 @@ class UserProfileController extends Controller
         if (auth('customer')->check()) {
             ShippingAddress::where('id', $request->id)->update($updateAddress);
             Toastr::success(translate('Data_updated_successfully!'));
-            return redirect()->back();
+            return redirect()->route('account-address')->with('success', translate('Data_updated_successfully!'));
         } else {
             Toastr::error(translate('Insufficient_permission!'));
             return redirect()->back();

@@ -141,6 +141,19 @@ class ShippingMethodController extends Controller
             ]
         );
 
+        \App\Models\DelhiverySetting::updateOrCreate(
+            ['name' => 'Delhivery'],
+            [
+                'environment' => $environment === 'live' ? 'production' : 'staging',
+                'base_url' => $environment === 'live'
+                    ? 'https://track.delhivery.com'
+                    : 'https://staging-express.delhivery.com',
+                'api_token' => $request->api_secret,
+                'pickup_location' => 'Default Warehouse',
+                'is_enabled' => $request->status ? 1 : 0,
+            ]
+        );
+
         Toastr::success('Shipping Method Updated Successfully!');
         return back();
     }

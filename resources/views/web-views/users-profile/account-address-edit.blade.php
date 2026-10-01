@@ -469,6 +469,15 @@
                                     </div>
                                 </div>
                                 <div class="form-group col-md-6">
+                                    <label for="state">{{\App\CPU\translate('State')}}</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fa fa-map-signs"></i>
+                                        <input class="form-control" type="text" id="state" name="state" value="{{$shippingAddress->state ?? ''}}" placeholder="{{\App\CPU\translate('State')}}" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
                                     <label for="zip_code">{{\App\CPU\translate('zip_code')}}</label>
                                     @if($zip_restrict_status)
                                         <div class="input-icon-wrap">
@@ -486,9 +495,7 @@
                                         </div>
                                     @endif
                                 </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-12 country-field">
+                                <div class="form-group col-md-6 country-field">
                                     <label for="country_select"><i class="fa fa-globe"></i>{{\App\CPU\translate('Country')}}</label>
                                     <div class="input-icon-wrap">
                                         <i class="fa fa-map-marker field-icon"></i>
@@ -506,7 +513,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="form-row">
                                 <div class="form-group col-md-12">
                                     <label for="address">{{\App\CPU\translate('address')}}</label>

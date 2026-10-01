@@ -523,24 +523,35 @@
                                 <div class="d-flex flex-column gap-2">
                                     <div>
                                         <span>{{ \App\CPU\translate('Name') }} :</span>
-                                        <strong>{{ $shipping_address ? $shipping_address->contact_person_name : '' }}</strong>
+                                        <strong>{{ $shipping_address ? ($shipping_address->contact_person_name ?? '') : '' }}</strong>
                                     </div>
                                     <div>
                                         <span>{{ \App\CPU\translate('Contact') }}:</span>
-                                        <strong>{{ $shipping_address ? $shipping_address->phone : '' }}</strong>
+                                        <strong>{{ $shipping_address ? ($shipping_address->phone ?? '') : '' }}</strong>
+                                    </div>
+                                    <div>
+                                        <span>{{ \App\CPU\translate('Address') }}:</span>
+                                        <strong>{{ $shipping_address ? ($shipping_address->address ?? '') : '' }}</strong>
                                     </div>
                                     <div>
                                         <span>{{ \App\CPU\translate('City') }}:</span>
-                                        <strong>{{ $shipping_address ? $shipping_address->city : '' }}</strong>
+                                        <strong>{{ $shipping_address ? ($shipping_address->city ?? '') : '' }}</strong>
+                                    </div>
+                                    <div>
+                                        <span>{{ \App\CPU\translate('State') }}:</span>
+                                        <strong>{{ $shipping_address ? ($shipping_address->state ?? '') : '' }}</strong>
+                                    </div>
+                                    <div>
+                                        <span>{{ \App\CPU\translate('Country') }}:</span>
+                                        <strong>{{ $shipping_address ? ($shipping_address->country ?? '') : '' }}</strong>
                                     </div>
                                     <div>
                                         <span>{{ \App\CPU\translate('zip_code') }} :</span>
-                                        <strong>{{ $shipping_address ? $shipping_address->zip : '' }}</strong>
+                                        <strong>{{ $shipping_address ? ($shipping_address->zip ?? '') : '' }}</strong>
                                     </div>
                                     <div class="d-flex align-items-start gap-2">
-                                        <!-- <span>{{ \App\CPU\translate('address') }} :</span> -->
                                         <img src="{{ asset('/assets/back-end/img/location.png') }}" alt="">
-                                        {{ $shipping_address ? $shipping_address->city : \App\CPU\translate('empty') }}
+                                        {{ $shipping_address ? trim(($shipping_address->address ?? '') . ', ' . ($shipping_address->city ?? '') . ', ' . ($shipping_address->state ?? '') . ', ' . ($shipping_address->country ?? '') . ' - ' . ($shipping_address->zip ?? '')) : \App\CPU\translate('empty') }}
                                     </div>
                                 </div>
                             </div>
@@ -575,24 +586,35 @@
                             <div class="d-flex flex-column gap-2">
                                 <div>
                                     <span>{{ \App\CPU\translate('Name') }} :</span>
-                                    <strong>{{ $billing ? $billing->contact_person_name : '' }}</strong>
+                                    <strong>{{ $billing ? ($billing->contact_person_name ?? '') : '' }}</strong>
                                 </div>
                                 <div>
                                     <span>{{ \App\CPU\translate('Contact') }}:</span>
-                                    <strong>{{ $billing ? $billing->phone : '' }}</strong>
+                                    <strong>{{ $billing ? ($billing->phone ?? '') : '' }}</strong>
+                                </div>
+                                <div>
+                                    <span>{{ \App\CPU\translate('Address') }}:</span>
+                                    <strong>{{ $billing ? ($billing->address ?? '') : '' }}</strong>
                                 </div>
                                 <div>
                                     <span>{{ \App\CPU\translate('City') }}:</span>
-                                    <strong>{{ $billing ? $billing->city : '' }}</strong>
+                                    <strong>{{ $billing ? ($billing->city ?? '') : '' }}</strong>
+                                </div>
+                                <div>
+                                    <span>{{ \App\CPU\translate('State') }}:</span>
+                                    <strong>{{ $billing ? ($billing->state ?? '') : '' }}</strong>
+                                </div>
+                                <div>
+                                    <span>{{ \App\CPU\translate('Country') }}:</span>
+                                    <strong>{{ $billing ? ($billing->country ?? '') : '' }}</strong>
                                 </div>
                                 <div>
                                     <span>{{ \App\CPU\translate('zip_code') }} :</span>
-                                    <strong>{{ $billing ? $billing->zip : '' }}</strong>
+                                    <strong>{{ $billing ? ($billing->zip ?? '') : '' }}</strong>
                                 </div>
                                 <div class="d-flex align-items-start gap-2">
-                                    <!-- <span>{{ \App\CPU\translate('address') }} :</span> -->
                                     <img src="{{ asset('/assets/back-end/img/location.png') }}" alt="">
-                                    {{ $billing ? $billing->city : '' }}
+                                    {{ $billing ? trim(($billing->address ?? '') . ', ' . ($billing->city ?? '') . ', ' . ($billing->state ?? '') . ', ' . ($billing->country ?? '') . ' - ' . ($billing->zip ?? '')) : '' }}
                                 </div>
                             </div>
                         </div>

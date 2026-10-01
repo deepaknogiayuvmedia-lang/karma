@@ -26976,10 +26976,10 @@ a:hover {
     border-radius: 30px
 }
 
-.owl-theme .owl-dots .owl-dot.active span,
+/* .owl-theme .owl-dots .owl-dot.active span,
 .owl-theme .owl-dots .owl-dot:hover span {
     background: #869791
-}
+} */
 
 .category_div {
     background: #fcfcfc no-repeat padding-box;
@@ -27415,9 +27415,6 @@ widget .btn>i {
         margin: 0px;
     }
 
-    .footer_banner_img {
-        height: 165px;
-    }
 
     .banner_product {
         height: 490px !important;
@@ -27430,9 +27427,7 @@ widget .btn>i {
         height: 378px !important;
     }
 
-    .footer_banner_img {
-        height: 165px !important;
-    }
+  
 
     .banner_product {
         background: white;

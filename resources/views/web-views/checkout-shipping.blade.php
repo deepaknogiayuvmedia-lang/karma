@@ -178,6 +178,12 @@
                                                                name="city" {{$shipping_addresses->count()==0?'required':''}}>
                                                     </div>
 
+                                                    <div class="form-group">
+                                                        <label for="exampleInputEmail1">{{ \App\CPU\translate('State')}}<span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control"
+                                                               name="state" {{$shipping_addresses->count()==0?'required':''}}>
+                                                    </div>
+
                                                      <div class="form-group">
                                                         <label
                                                             for="exampleInputEmail1">{{ \App\CPU\translate('zip_code')}}
@@ -350,6 +356,12 @@
                                                                 class="text-danger">*</span></label>
                                                         <input type="text" class="form-control"
                                                             name="billing_city" {{$billing_addresses->count()==0?'required':''}}>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="exampleInputEmail1">{{ \App\CPU\translate('State')}}<span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control"
+                                                            name="billing_state" {{$billing_addresses->count()==0?'required':''}}>
                                                     </div>
 
                                                     <div class="form-group">

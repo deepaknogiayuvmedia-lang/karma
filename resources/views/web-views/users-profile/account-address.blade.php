@@ -53,6 +53,105 @@
             transform: none !important;
             top: 41px !important;
         }
+
+        .address-card {
+            border: 1px solid #E5E7EB;
+            border-radius: 18px;
+            overflow: hidden;
+            background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+            box-shadow: 0 6px 22px rgba(17, 24, 39, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .address-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(17, 24, 39, 0.09);
+        }
+
+        .address-card-header {
+            background: #fff;
+            border-bottom: 1px solid #E5E7EB;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .address-pin {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(17, 24, 39, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .address-badge {
+            background: {{$web_config['primary_color']}};
+            color: #fff;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            padding: 6px 10px;
+            display: inline-block;
+        }
+
+        .address-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .address-action-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F3F4F6;
+            color: #374151;
+            transition: all 0.2s ease;
+        }
+
+        .address-action-btn:hover {
+            background: {{$web_config['primary_color']}};
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .address-card-body {
+            padding: 18px;
+        }
+
+        .address-person {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        .address-meta {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.92rem;
+            color: #374151;
+        }
+
+        .address-meta strong {
+            min-width: 86px;
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .address-meta span {
+            flex: 1;
+        }
     </style>
 @endpush
 
@@ -200,29 +299,27 @@
                     <div class="row g-3">
                     @foreach($shippingAddresses as $shippingAddress)
                         <section class="col-lg-6 col-md-6">
-                            <div class="card __shadow h-100">
-
-                                    <div class="card-header d-flex justify-content-between d-flex align-items-center">
-                                        <div>
-                                            <i class="fa fa-thumb-tack fa-2x iconHad" aria-hidden="true"></i>
+                            <div class="card address-card h-100">
+                                <div class="address-card-header">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="address-pin">
+                                            <i class="fa fa-thumb-tack iconHad" aria-hidden="true"></i>
                                         </div>
                                         <div>
-                                            <span> {{\App\CPU\translate($shippingAddress['address_type'])}} {{\App\CPU\translate('address')}} ({{$shippingAddress['is_billing']==1?\App\CPU\translate('Billing_address'):\App\CPU\translate('shipping_address')}}) </span>
-                                        </div>
-
-                                        <div class="d-flex justify-content-between">
-
-
-                                                <a class="" title="Edit Address" id="edit" href="{{route('address-edit',$shippingAddress->id)}}">
-                                                    <i class="fa fa-edit fa-lg"></i>
-                                                </a>
-
-                                                <a class="" title="Delete Address" href="{{ route('address-delete',['id'=>$shippingAddress->id])}}" onclick="return confirm('{{\App\CPU\translate('Are you sure you want to Delete')}}?');" id="delete">
-                                                    <i class="fa fa-trash fa-lg"></i>
-                                                </a>
-
+                                            <div class="address-badge">
+                                                {{\App\CPU\translate($shippingAddress['address_type'])}}
+                                            </div>
                                         </div>
                                     </div>
+                                    <div class="address-actions">
+                                        <a class="address-action-btn" title="Edit Address" id="edit" href="{{route('address-edit',$shippingAddress->id)}}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <a class="address-action-btn" title="Delete Address" href="{{ route('address-delete',['id'=>$shippingAddress->id])}}" onclick="return confirm('{{\App\CPU\translate('Are you sure you want to Delete')}}?');" id="delete">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
 
 
                                     {{-- Modal Address Edit --}}
@@ -318,20 +415,15 @@
                                             </div>
                                         </div>
 
-                                    <div class="card-body">
-                                        <div class="font-name"><span>{{$shippingAddress['contact_person_name']}}</span>
-                                        </div>
-                                        <div><span class="font-nameA"> <strong>{{\App\CPU\translate('Phone')}}  :</strong>  {{$shippingAddress['phone']}}</span>
-                                        </div>
-                                        <div><span class="font-nameA"> <strong>{{\App\CPU\translate('City')}}  :</strong>  {{$shippingAddress['city']}}</span>
-                                        </div>
-                                        <div><span class="font-nameA"> <strong> {{\App\CPU\translate('zip_code')}} :</strong> {{$shippingAddress['zip']}}</span>
-                                        </div>
-                                        <div><span class="font-nameA"> <strong>{{\App\CPU\translate('address')}} :</strong> {{$shippingAddress['address']}}</span>
-                                        </div>
-                                        <div><span class="font-nameA"> <strong>{{\App\CPU\translate('country')}} :</strong> {{$shippingAddress['country']}}</span>
-                                        </div>
-
+                                    <div class="card-body address-card-body">
+                                        <div class="address-person">{{$shippingAddress['contact_person_name']}}</div>
+                                        <div class="address-meta"><strong>{{\App\CPU\translate('Type')}}</strong><span>{{ $shippingAddress['is_billing']==1 ? \App\CPU\translate('Billing_address') : \App\CPU\translate('shipping_address') }}</span></div>
+                                        <div class="address-meta"><strong>{{\App\CPU\translate('Phone')}}</strong><span>{{$shippingAddress['phone']}}</span></div>
+                                        <div class="address-meta"><strong>{{\App\CPU\translate('City')}}</strong><span>{{$shippingAddress['city']}}</span></div>
+                                        <div class="address-meta"><strong>{{\App\CPU\translate('State')}}</strong><span>{{$shippingAddress['state'] ?? '-'}}</span></div>
+                                        <div class="address-meta"><strong>{{\App\CPU\translate('zip_code')}}</strong><span>{{$shippingAddress['zip']}}</span></div>
+                                        <div class="address-meta"><strong>{{\App\CPU\translate('address')}}</strong><span>{{$shippingAddress['address']}}</span></div>
+                                        <div class="address-meta"><strong>{{\App\CPU\translate('country')}}</strong><span>{{$shippingAddress['country']}}</span></div>
                                     </div>
 
                             </div>

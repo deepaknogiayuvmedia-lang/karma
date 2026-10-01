@@ -5,16 +5,265 @@
 @push('css_or_js')
 <link href="{{asset('assets/back-end')}}/css/select2.min.css" rel="stylesheet"/>
 <link href="{{asset('assets/back-end/css/croppie.css')}}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<style>
+    .seller-apply-page {
+        --seller-ink: #183d2c;
+        --seller-green: #236a48;
+        --seller-lime: #d6ed71;
+        --seller-muted: #66756b;
+        --seller-line: #dfe8df;
+        max-width: 1180px;
+        padding-top: 42px !important;
+        padding-bottom: 64px !important;
+        color: var(--seller-ink);
+        font-family: 'DM Sans', sans-serif;
+    }
+    .seller-apply-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(300px, .82fr);
+        gap: 36px;
+        align-items: center;
+        margin-bottom: 34px;
+    }
+    .seller-apply-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 15px;
+        color: var(--seller-green);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .seller-apply-kicker::before {
+        width: 22px;
+        height: 2px;
+        background: #e59843;
+        content: '';
+    }
+    .seller-apply-hero h1 {
+        max-width: 600px;
+        margin: 0;
+        color: var(--seller-ink);
+        font-family: 'DM Serif Display', Georgia, serif;
+        font-size: 46px;
+        font-weight: 400;
+        line-height: 1.08;
+    }
+    .seller-apply-hero p {
+        max-width: 490px;
+        margin: 15px 0 0;
+        color: var(--seller-muted);
+        font-size: 15px;
+        line-height: 1.7;
+    }
+    .seller-apply-hero-image {
+        min-height: 218px;
+        border-radius: 12px;
+        background: #46764c url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=85') center 53% / cover no-repeat;
+        box-shadow: inset 0 -60px 90px rgba(20, 52, 34, .18);
+    }
+    .seller-apply-form {
+        display: grid;
+        gap: 20px;
+    }
+    .seller-apply-page .__card {
+        overflow: hidden;
+        border: 1px solid var(--seller-line);
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: none;
+    }
+    .seller-apply-page .__card .card-header {
+        padding: 20px 26px;
+        border-bottom: 1px solid var(--seller-line);
+        background: #fbfcf8;
+    }
+    .seller-apply-page .__card .card-header h5 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--seller-ink);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+    }
+    .seller-apply-page .__card .card-header svg {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 auto;
+    }
+    .seller-apply-page .__card .card-body {
+        padding: 26px;
+    }
+    .seller-apply-page .seller-field label {
+        display: block;
+        margin-bottom: 7px;
+        color: #344c3e;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    .seller-apply-page .form-control {
+        min-height: 46px;
+        border: 1px solid #d9e2da;
+        border-radius: 6px;
+        background-color: #fff;
+        color: var(--seller-ink);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        box-shadow: none;
+    }
+    .seller-apply-page textarea.form-control {
+        min-height: 46px;
+        padding-top: 12px;
+        resize: vertical;
+    }
+    .seller-apply-page .form-control:focus {
+        border-color: var(--seller-green);
+        box-shadow: 0 0 0 3px rgba(35, 106, 72, .12);
+    }
+    .seller-apply-page .form-control::placeholder {
+        color: #89958c;
+        opacity: 1;
+    }
+    .seller-apply-page .seller-upload {
+        height: 100%;
+        padding: 14px;
+        border: 1px dashed #bacbbd;
+        border-radius: 8px;
+        background: #fbfcf8;
+    }
+    .seller-apply-page .seller-upload-preview {
+        display: block;
+        width: 100%;
+        height: 116px;
+        margin-bottom: 12px;
+        border-radius: 5px;
+        background: #edf2e9;
+        object-fit: contain;
+    }
+    .seller-apply-page .seller-profile-preview {
+        width: 128px;
+        height: 128px;
+        margin: 0 auto 12px;
+        object-fit: cover;
+    }
+    .seller-apply-page .custom-file-label {
+        overflow: hidden;
+        border-color: #d9e2da;
+        border-radius: 5px;
+        color: var(--seller-green);
+        font-size: 13px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .seller-apply-page .custom-file-label::after {
+        color: #fff;
+        border: 0;
+        border-radius: 0 4px 4px 0;
+        background: var(--seller-green);
+    }
+    .seller-apply-page .seller-captcha-row {
+        align-items: center;
+    }
+    .seller-apply-page #inputCheckd {
+        width: 17px;
+        height: 17px;
+        accent-color: var(--seller-green);
+    }
+    .seller-apply-page #apply {
+        min-height: 50px;
+        margin-top: 8px;
+        border: 0;
+        border-radius: 6px;
+        background: var(--seller-green);
+        color: #fff;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        transition: background .18s ease, transform .18s ease;
+    }
+    .seller-apply-page #apply:not(:disabled):hover {
+        transform: translateY(-1px);
+        background: #174b33;
+    }
+    .seller-apply-page #apply:disabled {
+        background: #9aafa0;
+        cursor: not-allowed;
+    }
+    .seller-apply-page .seller-login-link {
+        display: inline-block;
+        margin-top: 15px;
+        color: var(--seller-green);
+        font-size: 13px;
+        font-weight: 600;
+    }
+    .seller-apply-page .seller-form-errors {
+        padding: 14px 18px;
+        border-left: 4px solid #c45c3d;
+        border-radius: 4px;
+        background: #fff3ee;
+        color: #753820;
+        font-size: 14px;
+    }
+    .seller-apply-page .seller-form-errors ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+    @media (max-width: 767px) {
+        .seller-apply-page {
+            padding-top: 28px !important;
+            padding-bottom: 40px !important;
+        }
+        .seller-apply-hero {
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .seller-apply-hero h1 {
+            font-size: 36px;
+        }
+        .seller-apply-hero-image {
+            min-height: 150px;
+        }
+        .seller-apply-page .__card .card-header,
+        .seller-apply-page .__card .card-body {
+            padding: 18px;
+        }
+        .seller-apply-page .seller-upload-preview {
+            height: 90px;
+        }
+        .seller-apply-page .seller-profile-preview {
+            height: 128px;
+        }
+    }
+</style>
 @endpush
 
 
 @section('content')
 
-<div class="container py-5 rtl" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
-
-    <h3 class="mb-3 text-center"> {{\App\CPU\translate('Shop')}} {{\App\CPU\translate('Application')}}</h3>
-    <form class="__shop-apply" action="{{route('shop.apply')}}" id="form-id" method="post" enctype="multipart/form-data">
+<div class="container py-5 rtl seller-apply-page" style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
+    <header class="seller-apply-hero">
+        <div>
+            <span class="seller-apply-kicker">{{ \App\CPU\translate('Seller') }} {{ \App\CPU\translate('Application') }}</span>
+            <h1>{{ \App\CPU\translate('Make room for your next customer.') }}</h1>
+            <p>{{ \App\CPU\translate('Apply to open your shop on Pro Kissan.') }}</p>
+        </div>
+        <div class="seller-apply-hero-image" role="img" aria-label="Green agricultural fields"></div>
+    </header>
+    @if ($errors->any())
+        <div class="seller-form-errors" role="alert">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    <form class="__shop-apply seller-apply-form" action="{{route('shop.apply', request()->query())}}" id="form-id" method="post" enctype="multipart/form-data">
         @csrf
         <div class="card __card mb-3">
             <div class="card-header">
@@ -44,34 +293,43 @@
             </div>
             <div class="card-body">
                 <div class="row g-3">
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 seller-field">
+                        <label for="exampleFirstName">{{ \App\CPU\translate('first_name') }}</label>
                         <input type="text" class="form-control form-control-user" id="exampleFirstName" name="f_name" value="{{old('f_name')}}" placeholder="{{\App\CPU\translate('first_name')}}" required>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 seller-field">
+                        <label for="exampleLastName">{{ \App\CPU\translate('last_name') }}</label>
                         <input type="text" class="form-control form-control-user" id="exampleLastName" name="l_name" value="{{old('l_name')}}" placeholder="{{\App\CPU\translate('last_name')}}" required>
                     </div>
-                    <div class="col-sm-6 mt-4">
+                    <div class="col-sm-6 seller-field">
+                        <label for="exampleInputEmail">{{ \App\CPU\translate('email_address') }}</label>
                         <input type="email" class="form-control form-control-user" id="exampleInputEmail" name="email" value="{{old('email')}}" placeholder="{{\App\CPU\translate('email_address')}}" required>
                     </div>
-                    <div class="col-sm-6"><small class="text-danger">( * {{\App\CPU\translate('country_code_is_must')}} {{\App\CPU\translate('like_for_BD_880')}} )</small>
-                        <input type="number" class="form-control form-control-user" id="exampleInputPhone" name="phone" value="{{old('phone')}}" placeholder="{{\App\CPU\translate('phone_number')}}" required>
+                    <div class="col-sm-6 seller-field">
+                        <label for="exampleInputPhone">{{ \App\CPU\translate('phone_number') }}</label>
+                        <input type="tel" class="form-control form-control-user" id="exampleInputPhone" name="phone" value="{{old('phone')}}" placeholder="{{\App\CPU\translate('phone_number')}}" required>
                     </div>
-                    <div class="col-sm-6">
-                        <input type="password" class="form-control form-control-user" minlength="6" id="exampleInputPassword" name="password" placeholder="{{\App\CPU\translate('password')}}" required>
+                    <div class="col-sm-6 seller-field">
+                        <label for="exampleInputPassword">{{ \App\CPU\translate('password') }}</label>
+                        <input type="password" class="form-control form-control-user" minlength="8" id="exampleInputPassword" name="password" placeholder="{{\App\CPU\translate('password')}}" required>
                     </div>
-                    <div class="col-sm-6">
-                        <input type="password" class="form-control form-control-user" minlength="6" id="exampleRepeatPassword" placeholder="{{\App\CPU\translate('repeat_password')}}" required>
+                    <div class="col-sm-6 seller-field">
+                        <label for="exampleRepeatPassword">{{ \App\CPU\translate('repeat_password') }}</label>
+                        <input type="password" class="form-control form-control-user" minlength="8" id="exampleRepeatPassword" name="password_confirmation" placeholder="{{\App\CPU\translate('repeat_password')}}" required>
                         <div class="pass invalid-feedback">{{\App\CPU\translate('Repeat')}}  {{\App\CPU\translate('password')}} {{\App\CPU\translate('not match')}} .</div>
                     </div>
-                    <div class="col-sm-12">
+                    <div class="col-sm-12 seller-field">
+                        <label for="customFileUpload">{{ \App\CPU\translate('Upload') }} {{ \App\CPU\translate('image') }}</label>
+                        <div class="seller-upload">
                         <center>
-                            <img class="__img-125px object-cover" id="viewer"
-                                src="{{asset('public\assets\back-end\img\400x400\img2.jpg')}}" alt="banner image"/>
+                            <img class="seller-upload-preview seller-profile-preview" id="viewer"
+                                src="{{asset('assets/front-end/img/image-place-holder.png')}}" alt="Seller profile image preview"/>
                         </center>
                         <div class="custom-file mt-3">
                             <input type="file" name="image" id="customFileUpload" class="custom-file-input"
-                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
+                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp,image/*" required>
                             <label class="custom-file-label" for="customFileUpload">{{\App\CPU\translate('Upload')}} {{\App\CPU\translate('image')}}</label>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -86,41 +344,49 @@
             </div>
             <div class="card-body">
                 <div class="row g-3">
-                    <div class="col-sm-6 ">
-                        <input type="text" class="form-control form-control-user" id="shop_name" name="shop_name" placeholder="{{\App\CPU\translate('shop_name')}}" value="{{old('shop_name')}}"required>
+                    <div class="col-sm-6 seller-field">
+                        <label for="shop_name">{{ \App\CPU\translate('shop_name') }}</label>
+                        <input type="text" class="form-control form-control-user" id="shop_name" name="shop_name" placeholder="{{\App\CPU\translate('shop_name')}}" value="{{old('shop_name')}}" required>
                     </div>
-                    <div class="col-sm-6">
-                        <textarea name="shop_address" class="form-control" id="shop_address"rows="1" placeholder="{{\App\CPU\translate('shop_address')}}">{{old('shop_address')}}</textarea>
+                    <div class="col-sm-6 seller-field">
+                        <label for="shop_address">{{ \App\CPU\translate('shop_address') }}</label>
+                        <textarea name="shop_address" class="form-control" id="shop_address" rows="1" placeholder="{{\App\CPU\translate('shop_address')}}" required>{{old('shop_address')}}</textarea>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 seller-field">
+                        <label for="LogoUpload">{{ \App\CPU\translate('Upload') }} {{ \App\CPU\translate('logo') }}</label>
+                        <div class="seller-upload">
                         <div class="pb-3">
                             <center>
-                                <img class="__img-125px object-cover" id="viewerLogo"
-                                    src="{{asset('public\assets\back-end\img\400x400\img2.jpg')}}" alt="banner image"/>
+                                <img class="seller-upload-preview" id="viewerLogo"
+                                    src="{{asset('assets/front-end/img/image-place-holder.png')}}" alt="Shop logo preview"/>
                             </center>
                         </div>
 
                         <div class="form-group mb-0">
                             <div class="custom-file">
                                 <input type="file" name="logo" id="LogoUpload" class="custom-file-input"
-                                    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
+                                    accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp,image/*" required>
                                 <label class="custom-file-label" for="LogoUpload">{{\App\CPU\translate('Upload')}} {{\App\CPU\translate('logo')}}</label>
                             </div>
                         </div>
+                        </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 seller-field">
+                        <label for="BannerUpload">{{ \App\CPU\translate('Upload') }} {{ \App\CPU\translate('Banner') }}</label>
+                        <div class="seller-upload">
                         <div class="pb-3">
                             <center>
-                                <img class="__img-125px object-cover" id="viewerBanner"
-                                        src="{{asset('public\assets\back-end\img\400x400\img2.jpg')}}" alt="banner image"/>
+                                <img class="seller-upload-preview" id="viewerBanner"
+                                        src="{{asset('assets/front-end/img/image-place-holder.png')}}" alt="Shop banner preview"/>
                             </center>
                         </div>
 
                         <div class="form-group">
                             <div class="custom-file">
-                                <input type="file" name="banner" id="BannerUpload" class="custom-file-input overflow-hidden __p-2p" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp|image/*">
+                                <input type="file" name="banner" id="BannerUpload" class="custom-file-input overflow-hidden __p-2p" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff, .webp,image/*" required>
                                 <label class="custom-file-label" for="BannerUpload">{{\App\CPU\translate('Upload')}} {{\App\CPU\translate('Banner')}}</label>
                             </div>
+                        </div>
                         </div>
                     </div>
                     {{-- recaptcha --}}
@@ -130,7 +396,7 @@
                         <br/>
                     @else
                     <div class="col-12">
-                        <div class="row py-2">
+                        <div class="row py-2 seller-captcha-row">
                             <div class="col-6 pr-0">
                                 <input type="text" class="form-control __h-40" name="default_captcha_value" value=""
                                        placeholder="{{\App\CPU\translate('Enter captcha value')}}" class="border-0" autocomplete="off">
@@ -161,7 +427,7 @@
                         <input type="hidden" name="from_submit" value="seller">
                         <button type="submit" class="btn btn--primary btn-user btn-block" id="apply" disabled>{{\App\CPU\translate('Apply')}} {{\App\CPU\translate('Shop')}} </button>
                         <div class="text-center">
-                            <a class="small"  href="{{route('seller.auth.login')}}">{{\App\CPU\translate('already_have_an_account?_login.')}}</a>
+                            <a class="seller-login-link" href="{{route('seller.auth.login')}}">{{\App\CPU\translate('already_have_an_account?_login.')}}</a>
                         </div>
                     </div>
                 </div>
@@ -236,22 +502,14 @@
             $('.pass').show();
         }
     });
-    $('#apply').on('click',function () {
-
-        var image = $("#image-set").val();
-        if (image=="")
-        {
-            $('.image').show();
-            return false;
-        }
+    $('#form-id').on('submit',function (event) {
         var pass = $("#exampleInputPassword").val();
         var passRepeat = $("#exampleRepeatPassword").val();
         if (pass!=passRepeat){
+            event.preventDefault();
             $('.pass').show();
-            return false;
+            $("#exampleRepeatPassword").trigger('focus');
         }
-
-
     });
     function Validate(file) {
         var x;

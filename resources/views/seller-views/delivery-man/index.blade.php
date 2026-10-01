@@ -102,7 +102,7 @@
                                 </div>
                                 <center class="mt-4">
                                     <img class="upload-img-view" id="viewer"
-                                        src="{{ asset('public\assets\back-end\img\400x400\img2.jpg') }}"
+                                        src="{{ asset('assets\back-end\img\400x400\img2.jpg') }}"
                                         alt="delivery-man image" />
                                 </center>
 
