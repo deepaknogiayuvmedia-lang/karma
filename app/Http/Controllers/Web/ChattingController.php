@@ -75,6 +75,7 @@ class ChattingController extends Controller
     }
     public function messages(Request $request)
     {
+        $shops = collect();
 
         if ($request->has('shop_id'))
         {

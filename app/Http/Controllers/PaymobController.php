@@ -166,6 +166,9 @@ class PaymobController extends Controller
         $config = Helpers::get_business_settings('paymob_accept');
         $data = $request->all();
         ksort($data);
+        if (!isset($data['hmac'])) {
+            return redirect()->route('payment-fail');
+        }
         $hmac = $data['hmac'];
         $array = [
             'amount_cents',

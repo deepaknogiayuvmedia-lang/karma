@@ -331,10 +331,17 @@ class UserProfileController extends Controller
     }
 
     public function single_ticket(Request $request , $id)
-    {   
-    // dd( $request->all());
-        $ticket = SupportTicket::where('id', $id)->first();
-        // dd($ticket);
+    {
+        if (!auth('customer')->check()) {
+            return redirect()->route('customer.auth.login');
+        }
+
+        $ticket = SupportTicket::where('id', $id)->where('user_id', auth('customer')->id())->first();
+
+        if (!$ticket) {
+            return redirect()->route('account-tickets')->with('error', 'Ticket not found');
+        }
+
         return view('web-views.users-profile.ticket-view', compact('ticket'));
     }
 
@@ -412,10 +419,13 @@ class UserProfileController extends Controller
         $user =  auth('customer')->user();
        
         if(!isset($user)){
-            $user_id = User::where('phone',$request->phone_number)->first()->id;
-            $orderDetails = Order::where('id',$request['order_id'])->whereHas('details',function ($query) use($user_id){
-                $query->where('customer_id',$user_id);
-            })->first();
+            $customer = User::where('phone',$request->phone_number)->first();
+            $orderDetails = null;
+            if($customer){
+                $orderDetails = Order::where('id',$request['order_id'])->whereHas('details',function ($query) use($customer){
+                    $query->where('customer_id',$customer->id);
+                })->first();
+            }
 
         }else{
             if($user->phone == $request->phone_number){
@@ -448,7 +458,17 @@ class UserProfileController extends Controller
 
     public function track_last_order()
     {
-        $orderDetails = OrderManager::track_order(Order::where('customer_id', auth('customer')->id())->latest()->first()->id);
+        if (!auth('customer')->check()) {
+            return redirect()->route('customer.auth.login');
+        }
+
+        $last_order = Order::where('customer_id', auth('customer')->id())->latest()->first();
+
+        if ($last_order == null) {
+            return redirect()->route('track-order.index')->with('Error', \App\CPU\translate('Invalid Order Id or Phone Number'));
+        }
+
+        $orderDetails = OrderManager::track_order($last_order->id);
 
         if ($orderDetails != null) {
             $tracking_info = null;

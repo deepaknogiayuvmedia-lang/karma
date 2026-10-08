@@ -112,6 +112,11 @@ class MercadoPagoController extends Controller
     }
     public function get_test_user(Request $request)
     {
+        if (empty($this->data['access_token'] ?? null)) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'MercadoPago is not configured. Please add your access token.');
+        }
+
         // curl -X POST \
         // -H "Content-Type: application/json" \
         // -H 'Authorization: Bearer PROD_ACCESS_TOKEN' \

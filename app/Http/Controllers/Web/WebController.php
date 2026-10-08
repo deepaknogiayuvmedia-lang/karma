@@ -319,6 +319,13 @@ class WebController extends Controller
     public function categories_by_category($id)
     {
         $category = Category::with(['childes.childes'])->where('id', $id)->first();
+
+        if (!$category) {
+            return response()->json([
+                'view' => '',
+            ]);
+        }
+
         return response()->json([
             'view' => view('web-views.partials._category-list-ajax', compact('category'))->render(),
         ]);
@@ -346,7 +353,13 @@ class WebController extends Controller
     public function seller_profile($id)
     {
         $seller_info = Seller::find($id);
-        return view('web-views.seller-profile', compact('seller_info'));
+
+        if (!$seller_info) {
+            Toastr::warning(translate('not_found'));
+            return redirect('/');
+        }
+
+        return redirect()->route('shopView', $seller_info->id);
     }
 
     public function searched_products(Request $request)
@@ -619,8 +632,15 @@ class WebController extends Controller
 
     public function checkout_complete_wallet(Request $request = null)
     {
+        if (!auth('customer')->check()) {
+            return redirect()->route('customer.auth.login');
+        }
+
         $cartTotal = CartManager::cart_grand_total();
         $user = Helpers::get_customer($request);
+        if (!is_object($user)) {
+            return redirect()->route('customer.auth.login');
+        }
         if ($cartTotal > $user->wallet_balance) {
             Toastr::warning(translate('inefficient balance in your wallet to pay for this order!!'));
             return back();
@@ -836,6 +856,15 @@ class WebController extends Controller
     public function quick_view(Request $request)
     {
         $product = ProductManager::get_product($request->product_id);
+
+        if (!$product) {
+            return response()->json([
+                'success' => 0,
+                'view' => '',
+                'message' => translate('product_not_found'),
+            ], 404);
+        }
+
         $order_details = OrderDetail::where('product_id', $product->id)->get();
         $wishlists = Wishlist::where('product_id', $product->id)->get();
         $countOrder = count($order_details);
@@ -846,12 +875,12 @@ class WebController extends Controller
         $seller_vacation_end_date = ($product->added_by == 'seller' && isset($product->seller->shop->vacation_end_date)) ? date('Y-m-d', strtotime($product->seller->shop->vacation_end_date)) : null;
         $seller_temporary_close = ($product->added_by == 'seller' && isset($product->seller->shop->temporary_close)) ? $product->seller->shop->temporary_close : false;
 
-        $temporary_close = Helpers::get_business_settings('temporary_close');
-        $inhouse_vacation = Helpers::get_business_settings('vacation_add');
-        $inhouse_vacation_start_date = $product->added_by == 'admin' ? $inhouse_vacation['vacation_start_date'] : null;
-        $inhouse_vacation_end_date = $product->added_by == 'admin' ? $inhouse_vacation['vacation_end_date'] : null;
-        $inhouse_vacation_status = $product->added_by == 'admin' ? $inhouse_vacation['status'] : false;
-        $inhouse_temporary_close = $product->added_by == 'admin' ? $temporary_close['status'] : false;
+        $temporary_close = Helpers::get_business_settings('temporary_close') ?? [];
+        $inhouse_vacation = Helpers::get_business_settings('vacation_add') ?? [];
+        $inhouse_vacation_start_date = $product->added_by == 'admin' ? ($inhouse_vacation['vacation_start_date'] ?? null) : null;
+        $inhouse_vacation_end_date = $product->added_by == 'admin' ? ($inhouse_vacation['vacation_end_date'] ?? null) : null;
+        $inhouse_vacation_status = $product->added_by == 'admin' ? ($inhouse_vacation['status'] ?? false) : false;
+        $inhouse_temporary_close = $product->added_by == 'admin' ? ($temporary_close['status'] ?? false) : false;
 
         return response()->json([
             'success' => 1,
@@ -1385,130 +1414,32 @@ class WebController extends Controller
         return view('web-views.products.view', compact('products', 'data'), $data);
     }
 
+    public function top_rated(Request $request)
+    {
+        $request->merge(['data_from' => 'top-rated']);
+
+        return $this->products($request);
+    }
+
+    public function best_sell(Request $request)
+    {
+        $request->merge(['data_from' => 'best-selling']);
+
+        return $this->products($request);
+    }
+
+    public function new_product(Request $request)
+    {
+        $request->merge(['data_from' => 'latest']);
+
+        return $this->products($request);
+    }
+
     public function discounted_products(Request $request)
     {
-        $request['sort_by'] == null ? $request['sort_by'] == 'latest' : $request['sort_by'];
+        $request->merge(['data_from' => 'discounted']);
 
-        $porduct_data = Product::active()->with(['reviews'])->lowestPricePerPid();
-
-        if ($request['data_from'] == 'category') {
-            $query = $porduct_data->whereJsonContains('category_ids', [['id' => (string) $request['id']]]);
-        }
-
-        if ($request['data_from'] == 'brand') {
-            $query = $porduct_data->where('brand_id', $request['id']);
-        }
-
-        if ($request['data_from'] == 'latest') {
-            $query = $porduct_data->orderBy('id', 'DESC');
-        }
-
-        if ($request['data_from'] == 'top-rated') {
-            $reviews = Review::select('product_id', DB::raw('AVG(rating) as count'))
-                ->groupBy('product_id')
-                ->orderBy('count', 'desc')
-                ->get();
-            $product_ids = [];
-            foreach ($reviews as $review) {
-                array_push($product_ids, $review['product_id']);
-            }
-            $query = $porduct_data->whereIn('id', $product_ids);
-        }
-
-        if ($request['data_from'] == 'best-selling') {
-            $details = OrderDetail::with('product')
-                ->select('product_id', DB::raw('COUNT(product_id) as count'))
-                ->groupBy('product_id')
-                ->orderBy('count', 'desc')
-                ->get();
-            $product_ids = [];
-            foreach ($details as $detail) {
-                array_push($product_ids, $detail['product_id']);
-            }
-            $query = $porduct_data->whereIn('id', $product_ids);
-        }
-
-        if ($request['data_from'] == 'most-favorite') {
-            $details = Wishlist::with('product')
-                ->select('product_id', DB::raw('COUNT(product_id) as count'))
-                ->groupBy('product_id')
-                ->orderBy('count', 'desc')
-                ->get();
-            $product_ids = [];
-            foreach ($details as $detail) {
-                array_push($product_ids, $detail['product_id']);
-            }
-            $query = $porduct_data->whereIn('id', $product_ids);
-        }
-
-        if ($request['data_from'] == 'featured') {
-            $query = Product::with(['reviews'])->active()->lowestPricePerPid()->where('featured', 1)->orderBy('priority', 'desc')->orderBy('indexing', 'asc');
-        }
-
-        if ($request['data_from'] == 'search') {
-            $product_ids = ProductManager::get_search_product_ids($request['name']);
-            if ($product_ids->isEmpty()) {
-                $query = Product::whereRaw('0 = 1');
-            } else {
-                $query = $porduct_data->whereIn('id', $product_ids);
-            }
-        }
-
-        if ($request['data_from'] == 'discounted_products') {
-            $query = Product::with(['reviews'])->active()->where('discount', '!=', 0);
-        }
-
-        if ($request['sort_by'] == 'latest') {
-            $fetched = $query->latest();
-        } elseif ($request['sort_by'] == 'low-high') {
-            return 'low';
-            // $fetched = $query->orderBy('unit_price', 'ASC');
-        } elseif ($request['sort_by'] == 'high-low') {
-            $fetched = $query->orderBy('unit_price', 'DESC');
-        } elseif ($request['sort_by'] == 'a-z') {
-            $fetched = $query->orderBy('name', 'ASC');
-        } elseif ($request['sort_by'] == 'z-a') {
-            $fetched = $query->orderBy('name', 'DESC');
-        } else {
-            $fetched = $query;
-        }
-
-        if ($request['min_price'] != null || $request['max_price'] != null) {
-            $fetched = $fetched->whereBetween('unit_price', [Helpers::convert_currency_to_usd($request['min_price']), Helpers::convert_currency_to_usd($request['max_price'])]);
-        }
-
-        $data = [
-            'id' => $request['id'],
-            'name' => $request['name'],
-            'data_from' => $request['data_from'],
-            'sort_by' => $request['sort_by'],
-            'page_no' => $request['page'],
-            'min_price' => $request['min_price'],
-            'max_price' => $request['max_price'],
-        ];
-
-        $products = $fetched->paginate(20)->appends($data);
-
-        if ($request->ajax()) {
-            return response()->json([
-                'total_product' => $products->total(),
-                'current_page' => $products->currentPage(),
-                'last_page' => $products->lastPage(),
-                'has_more' => $products->hasMorePages(),
-                'view' => view('web-views.products._ajax-products', [
-                    'products' => $products,
-                    'show_pagination' => false,
-                ])->render()
-            ], 200);
-        }
-        if ($request['data_from'] == 'category') {
-            $data['brand_name'] = Category::find((int) $request['id'])->name;
-        }
-        if ($request['data_from'] == 'brand') {
-            $data['brand_name'] = Brand::active()->find((int) $request['id'])->name;
-        }
-
-        return view('web-views.products.view', compact('products', 'data'), $data);
+        return $this->products($request);
     }
 
     public function viewWishlist()
@@ -1643,7 +1574,11 @@ class WebController extends Controller
 
     public function orderdetails()
     {
-        return view('web-views.orderdetails');
+        if (auth('customer')->check()) {
+            return redirect()->route('account-oder');
+        }
+
+        return redirect()->route('home');
     }
 
     public function chat_for_product(Request $request)

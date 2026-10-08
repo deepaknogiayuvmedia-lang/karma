@@ -20,6 +20,10 @@ class RazorPayController extends Controller
 {
     public function payWithRazorpay()
     {
+        if (!view()->exists('razor-pay')) {
+            return redirect()->route('checkout-payment');
+        }
+
         return view('razor-pay');
     }
 

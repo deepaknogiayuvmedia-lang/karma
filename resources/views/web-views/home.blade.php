@@ -1249,7 +1249,7 @@
         $('#mobile-category-slider').owlCarousel({
             loop: false,
             autoplay: false,
-            margin: 0,
+            margin: 5,
             nav: false,
             dots: false,
             pullDrag: true,
@@ -1258,7 +1258,7 @@
             touchDrag: true,
             responsive: {
                 0: {
-                    items: 3
+                    items: 6
                 },
                 480: {
                     items: 5

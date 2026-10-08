@@ -77,7 +77,15 @@ class BkashPaymentController extends Controller
         $order_amount = CartManager::cart_grand_total() - $discount;
 
         $user = Helpers::get_customer();
+        if (!is_object($user)) {
+            return redirect()->route('customer.auth.login');
+        }
+
         $response = self::getToken();
+        if (empty($response['id_token'])) {
+            return redirect()->route('checkout-payment')
+                ->with('error', 'bKash payment is not configured or token could not be generated.');
+        }
         $auth = $response['id_token'];
         session()->put('token', $auth);
         $callbackURL = route('bkash-callback', ['token' => $auth]);

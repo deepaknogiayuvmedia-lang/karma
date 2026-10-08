@@ -61,7 +61,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
     });
 
     //wallet payment
-    Route::get('checkout-complete-wallet', 'WebController@checkout_complete_wallet')->name('checkout-complete-wallet');
+    Route::get('checkout-complete-wallet', 'WebController@checkout_complete_wallet')->name('checkout-complete-wallet')->middleware('customer');
 
     Route::post('subscription', 'WebController@subscription')->name('subscription');
     Route::get('search-shop', 'WebController@search_shop')->name('search-shop');
@@ -110,7 +110,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
     ROute::get('account-address-edit/{id}', 'UserProfileController@address_edit')->name('address-edit');
     Route::post('account-address-update', 'UserProfileController@address_update')->name('address-update');
     Route::get('account-payment', 'UserProfileController@account_payment')->name('account-payment');
-    Route::get('account-oder', 'UserProfileController@account_oder')->name('account-oder');
+    Route::get('account-oder', 'UserProfileController@account_oder')->name('account-oder')->middleware('customer');
     Route::get('account-order-details', 'UserProfileController@account_order_details')->name('account-order-details')->middleware('customer');
     Route::get('generate-invoice/{id}', 'UserProfileController@generate_invoice')->name('generate-invoice');
     Route::get('account-wishlist', 'UserProfileController@account_wishlist')->name('account-wishlist'); //add to card not work
@@ -122,13 +122,13 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
     Route::post('ticket-submit', 'UserProfileController@ticket_submit')->name('ticket-submit');
     Route::get('account-delete/{id}', 'UserProfileController@account_delete')->name('account-delete');
     // Chatting start
-    Route::get('chat/{type}', 'ChattingController@chat_list')->name('chat');
-    Route::get('messages', 'ChattingController@messages')->name('messages');
-    Route::post('messages-store', 'ChattingController@messages_store')->name('messages_store');
+    Route::get('chat/{type}', 'ChattingController@chat_list')->name('chat')->middleware('customer');
+    Route::get('messages', 'ChattingController@messages')->name('messages')->middleware('customer');
+    Route::post('messages-store', 'ChattingController@messages_store')->name('messages_store')->middleware('customer');
     // chatting end
 
     //Support Ticket
-    Route::group(['prefix' => 'support-ticket', 'as' => 'support-ticket.'], function () {
+    Route::group(['prefix' => 'support-ticket', 'as' => 'support-ticket.', 'middleware' => ['customer']], function () {
         Route::get('{id}', 'UserProfileController@single_ticket')->name('index');
         Route::post('{id}', 'UserProfileController@comment_submit')->name('comment');
         Route::get('delete/{id}', 'UserProfileController@support_ticket_delete')->name('delete');
@@ -138,14 +138,14 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
     Route::get('account-transaction', 'UserProfileController@account_transaction')->name('account-transaction');
     Route::get('account-wallet-history', 'UserProfileController@account_wallet_history')->name('account-wallet-history');
 
-    Route::get('wallet', 'UserWalletController@index')->name('wallet');
-    Route::get('loyalty', 'UserLoyaltyController@index')->name('loyalty');
-    Route::post('loyalty-exchange-currency', 'UserLoyaltyController@loyalty_exchange_currency')->name('loyalty-exchange-currency');
+    Route::get('wallet', 'UserWalletController@index')->name('wallet')->middleware('customer');
+    Route::get('loyalty', 'UserLoyaltyController@index')->name('loyalty')->middleware('customer');
+    Route::post('loyalty-exchange-currency', 'UserLoyaltyController@loyalty_exchange_currency')->name('loyalty-exchange-currency')->middleware('customer');
 
     Route::group(['prefix' => 'track-order', 'as' => 'track-order.'], function () {
         Route::get('', 'UserProfileController@track_order')->name('index');
         Route::get('result-view', 'UserProfileController@track_order_result')->name('result-view');
-        Route::get('last', 'UserProfileController@track_last_order')->name('last');
+        Route::get('last', 'UserProfileController@track_last_order')->name('last')->middleware('customer');
         Route::any('result', 'UserProfileController@track_order_result')->name('result');
     });
 
@@ -238,6 +238,10 @@ Route::match(['get', 'post'], '/return-senang-pay', 'SenangPayController@return_
 Route::post('/paystack-pay', 'PaystackController@redirectToGateway')->name('paystack-pay');
 Route::get('/paystack-callback', 'PaystackController@handleGatewayCallback')->name('paystack-callback');
 Route::get('/paystack', function () {
+    if (!view()->exists('paystack')) {
+        return redirect()->route('checkout-payment');
+    }
+
     return view('paystack');
 });
 

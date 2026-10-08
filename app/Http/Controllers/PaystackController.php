@@ -28,7 +28,15 @@ class PaystackController extends Controller
 
     public function handleGatewayCallback(Request $request)
     {
-        $paymentDetails = Paystack::getPaymentData();
+        try {
+            $paymentDetails = Paystack::getPaymentData();
+        } catch (\Throwable $e) {
+            return redirect()->route('payment-fail');
+        }
+
+        if (!is_array($paymentDetails) || empty($paymentDetails['status'])) {
+            return redirect()->route('payment-fail');
+        }
 
         if ($paymentDetails['status'] == true) {
             $unique_id = OrderManager::gen_unique_id();

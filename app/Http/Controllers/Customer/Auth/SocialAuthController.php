@@ -17,14 +17,36 @@ use  App\CPU\ImageManager;
 
 class SocialAuthController extends Controller
 {
+    protected static $allowed_drivers = ['facebook', 'google', 'twitter', 'github', 'linkedin', 'gitlab', 'bitbucket'];
+
     public function redirectToProvider(Request $request, $service)
     {
-        return Socialite::driver($service)->redirect();
+        if (!in_array(strtolower($service), self::$allowed_drivers, true)) {
+            return redirect()->route('customer.auth.login')
+                ->with('error', 'Selected social login service is not supported.');
+        }
+
+        try {
+            return Socialite::driver($service)->redirect();
+        } catch (\Throwable $e) {
+            return redirect()->route('customer.auth.login')
+                ->with('error', 'Social login service is not configured.');
+        }
     }
 
     public function handleProviderCallback($service)
     {
-        $user_data = Socialite::driver($service)->stateless()->user();
+        if (!in_array(strtolower($service), self::$allowed_drivers, true)) {
+            return redirect()->route('customer.auth.login')
+                ->with('error', 'Selected social login service is not supported.');
+        }
+
+        try {
+            $user_data = Socialite::driver($service)->stateless()->user();
+        } catch (\Throwable $e) {
+            return redirect()->route('customer.auth.login')
+                ->with('error', 'Social login failed. Please try again.');
+        }
         // dd($user_data['picture']);
         $user = User::where('email', $user_data->getEmail())->first();
         $user_img = $user_data['picture'];

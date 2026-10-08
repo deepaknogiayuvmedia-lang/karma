@@ -286,6 +286,11 @@ class LiqPayController extends Controller
         $value = CartManager::cart_grand_total() - $discount;
         $config = Helpers::get_business_settings('liqpay');
 
+        if (empty($config['public_key'] ?? null) || empty($config['private_key'] ?? null)) {
+            return redirect()->route('checkout-payment')
+                ->with('error', 'LiqPay payment is not configured. Please add your API keys.');
+        }
+
         $public_key = $config['public_key'];
         $private_key = $config['private_key'];
         $liqpay = new LiqPay($public_key, $private_key);

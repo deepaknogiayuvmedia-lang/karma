@@ -291,6 +291,9 @@ class PaytmController extends Controller
         $discount = session()->has('coupon_discount') ? session('coupon_discount') : 0;
         $value = CartManager::cart_grand_total() - $discount;
         $user = Helpers::get_customer();
+        if (!is_object($user)) {
+            return redirect()->route('customer.auth.login');
+        }
 
         $paramList = array();
         $ORDER_ID = $order_id;

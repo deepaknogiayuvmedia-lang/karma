@@ -34,6 +34,10 @@ class StripePaymentController extends Controller
 
         session()->put('transaction_ref', $tran);
         $config = \App\CPU\Helpers::get_business_settings('stripe');
+        if (empty($config['api_key'] ?? null)) {
+            return redirect()->route('checkout-payment')
+                ->with('error', 'Stripe payment is not configured. Please add your API key.');
+        }
         Stripe::setApiKey($config['api_key']);
         header('Content-Type: application/json');
 

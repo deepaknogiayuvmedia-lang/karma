@@ -57,7 +57,11 @@ class SystemController extends Controller
         }
         $shipping['cart_group_id'] = $request['cart_group_id'];
         $shipping['shipping_method_id'] = $request['id'];
-        $shipping['shipping_cost'] = ShippingMethod::find($request['id'])->cost;
+        $method = ShippingMethod::find($request['id']);
+        if (!$method) {
+            return;
+        }
+        $shipping['shipping_cost'] = $method->cost;
         $shipping->save();
     }
 
