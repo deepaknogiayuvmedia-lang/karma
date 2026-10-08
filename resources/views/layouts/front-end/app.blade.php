@@ -79,7 +79,7 @@
 
     <link rel="stylesheet" href="{{ asset('assets/front-end') }}/css/style.css" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Titillium+Web:wght@400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Titillium+Web:wght@400;600;700&display=swap"
         rel="stylesheet">
     {{-- light box --}}
     <link rel="stylesheet" href="{{ asset('css/lightbox.css') }}">

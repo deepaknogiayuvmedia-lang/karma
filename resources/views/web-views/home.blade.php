@@ -397,6 +397,7 @@
                 width: 100%;
                 max-width: 100%;
                 box-sizing: border-box;
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             }
 
             .mobile-sticky-category .owl-stage {
@@ -404,13 +405,22 @@
                 align-items: center;
             }
 
+            /* Keep every item at its exact slot width so 6 fit in any mobile screen */
+            .mobile-sticky-category .owl-item {
+                flex: 0 0 auto;
+                box-sizing: border-box;
+            }
+
             .mobile-sticky-category .cate-item {
-                padding: 0 12px;
-                text-decoration: none;
-                color: #333;
-                display: block;
+                display: block !important;
+                width: 100%;
+                padding: 6px 4px !important;
+                text-decoration: none !important;
+                color: #2c3138;
                 text-align: center;
                 border-right: 1px solid #f0f0f0;
+                box-sizing: border-box;
+                max-width: 100%;
             }
 
             .mobile-sticky-category .owl-item:last-child .cate-item {
@@ -418,23 +428,31 @@
             }
 
             .mobile-sticky-category .cate-item img {
-                width: 50px;
-                height: 50px;
+                width: clamp(36px, 8vw, 50px);
+                height: clamp(36px, 8vw, 50px);
                 object-fit: cover;
                 border-radius: 50%;
                 margin: 0 auto 4px;
                 display: block;
             }
 
+            /* Category label typography: Inter, responsive size, proper weight (600), 2-line clamp */
             .mobile-sticky-category .cate-item span {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+                font-size: clamp(10px, 2.7vw, 12px) !important;
+                font-weight: 600 !important;
+                letter-spacing: -0.01em;
+                color: #2c3138 !important;
                 text-align: center !important;
-                line-height: 1.2 !important;
-                /* max-width: 70px; */
+                line-height: 1.3 !important;
+                margin-top: 3px !important;
+                max-width: 100%;
                 overflow: hidden !important;
-                font-size: 10px !important;
-                color: #555 !important;
-                display: block  !important;
-                font-weight: 900 !important;
+                white-space: normal;
+                word-break: break-word;
+                display: -webkit-box !important;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
             }
 
             @media (min-width: 769px) {
@@ -1249,21 +1267,16 @@
         $('#mobile-category-slider').owlCarousel({
             loop: false,
             autoplay: false,
-            margin: 5,
+            margin: 0,
             nav: false,
             dots: false,
             pullDrag: true,
             freeDrag: false,
             mouseDrag: true,
             touchDrag: true,
+            // Always show exactly 6 categories per view on every mobile screen size
             responsive: {
                 0: {
-                    items: 6
-                },
-                480: {
-                    items: 5
-                },
-                640: {
                     items: 6
                 }
             }

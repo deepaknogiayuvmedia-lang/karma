@@ -270,8 +270,7 @@
     /* ========== PREMIUM MOBILE MENU - NAVBAR.MD DESIGN ========== */
     @media (max-width: 767px) {
 
-        /* ---- Google Font Import ---- */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        /* Google Font (Inter) is loaded globally in the layout <head> */
 
         /* ---- Global Mobile Reset ---- */
         #navbarCollapse,
