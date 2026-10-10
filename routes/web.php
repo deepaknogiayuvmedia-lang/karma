@@ -56,6 +56,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
         Route::get('digital-product-download/{id}', 'WebController@digital_product_download')->name('digital-product-download')->middleware('customer');
         Route::get('submit-review/{id}', 'UserProfileController@submit_review')->name('submit-review');
         Route::post('review', 'ReviewController@store')->name('review.store');
+        Route::post('product-review', 'ReviewController@store_product_review')->name('product.review.store')->middleware('customer');
         Route::get('deliveryman-review/{id}', 'ReviewController@delivery_man_review')->name('deliveryman-review');
         Route::post('submit-deliveryman-review', 'ReviewController@delivery_man_submit')->name('submit-deliveryman-review');
     });

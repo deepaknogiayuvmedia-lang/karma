@@ -451,7 +451,7 @@
             h4 { font-size: 18px !important; font-weight: 600 !important; }
             h5 { font-size: 16px !important; font-weight: 600 !important; }
             h6 { font-size: 14px !important; font-weight: 600 !important; }
-            p, span, small, a, li, td, th { font-size: 14px !important; font-weight: 400 !important; text-transform: none !important; ; }
+            p, span, small, a, li, td, th { font-size: 11px !important; font-weight: 400 !important; text-transform: none !important; ; }
             strong, b { font-weight: 700 !important; text-transform: none !important; }
             .nav-link, .navbar-brand, .dropdown-item { font-size: 14px !important; text-transform: none !important; }
             .product-name, .product-price, .section-title, .page-title { text-transform: none !important; }

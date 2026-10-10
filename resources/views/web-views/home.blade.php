@@ -402,7 +402,7 @@
 
             .mobile-sticky-category .owl-stage {
                 display: flex;
-                align-items: center;
+                /* align-items: center; */
             }
 
             /* Keep every item at its exact slot width so 6 fit in any mobile screen */
@@ -435,11 +435,18 @@
                 margin: 0 auto 4px;
                 display: block;
             }
-
+@media (min-width: 769px) {
+                .mobile-sticky-category {
+                    display: none !important;
+                }
+                  .mobile-sticky-category .cate-item span {
+                    font-size: 12px !important;
+                  }
+            }
             /* Category label typography: Inter, responsive size, proper weight (600), 2-line clamp */
             .mobile-sticky-category .cate-item span {
                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-                font-size: clamp(10px, 2.7vw, 12px) !important;
+                font-size: 8px !important;
                 font-weight: 600 !important;
                 letter-spacing: -0.01em;
                 color: #2c3138 !important;
@@ -455,11 +462,7 @@
                 -webkit-line-clamp: 2;
             }
 
-            @media (min-width: 769px) {
-                .mobile-sticky-category {
-                    display: none !important;
-                }
-            }
+            
         </style>
     @endpush
 
@@ -633,11 +636,11 @@
                                     </div>
                                 </div>
 
-                                <div class="row g-3">
+                                <div class="owl-carousel owl-theme" id="best-selling-slider">
                                     @foreach ($bestSellProduct as $key => $bestSell)
                                         @if ($bestSell && $bestSell->product)
                                             @php($product = $bestSell->product)
-                                            <div class="col-xxl-2 col-xl-2-4 col-lg-2-4 col-md-4 col-sm-4 col-6 mb-3 px-2">
+                                            <div class="item">
                                                 @include('web-views.partials._single-product', [
                                                     'product' => $product,
                                                     'decimal_point_settings' => $decimal_point_settings,
@@ -1226,6 +1229,48 @@
         $('#new-arrivals-slider').owlCarousel({
             loop: true,
             autoplay: true,
+            margin: 15,
+            nav: true,
+            navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],
+            dots: false,
+            autoplayHoverPause: true,
+            '{{ session('direction') }}': true,
+            responsive: {
+                0: {
+                    items: 2,
+                    margin: 8
+                },
+                360: {
+                    items: 2,
+                    margin: 10
+                },
+                576: {
+                    items: 3,
+                    margin: 12
+                },
+                768: {
+                    items: 3,
+                    margin: 15
+                },
+                992: {
+                    items: 5,
+                    margin: 15
+                },
+                1200: {
+                    items: 5,
+                    margin: 15
+                },
+                1400: {
+                    items: 6,
+                    margin: 15
+                }
+            }
+        });
+
+        // Best Sellings - slider on all devices
+        $('#best-selling-slider').owlCarousel({
+            loop: {{ count($bestSellProduct) > 6 ? 'true' : 'false' }},
+            autoplay: {{ count($bestSellProduct) > 6 ? 'true' : 'false' }},
             margin: 15,
             nav: true,
             navText: ["<i class='czi-arrow-left'></i>", "<i class='czi-arrow-right'></i>"],

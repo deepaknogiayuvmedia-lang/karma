@@ -110,6 +110,26 @@ class Product extends Model
         return $this->hasMany(Review::class, 'product_id');
     }
 
+    public function faqs()
+    {
+        return $this->hasMany(ProductFaq::class)->orderBy('sort_order');
+    }
+
+    public function specifications()
+    {
+        return $this->hasMany(ProductSpecification::class)->orderBy('sort_order');
+    }
+
+    public function features()
+    {
+        return $this->hasMany(ProductFeature::class)->orderBy('sort_order');
+    }
+
+    public function packs()
+    {
+        return $this->hasMany(ProductPack::class)->orderBy('sort_order');
+    }
+
     public function brand()
     {
         return $this->belongsTo(Brand::class);

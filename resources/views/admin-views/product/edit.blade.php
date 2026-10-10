@@ -204,6 +204,18 @@
 
                     <div class="card mt-2 rest-part">
                         <div class="card-header">
+                            <h4 class="mb-0">Overview</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group" style="position:relative;">
+                                <label class="title-color" for="product_overview">Overview</label>
+                                <textarea name="overview" id="product_overview" class="w-100 tiny-editor" rows="8">{!! old('overview', $product->description ?? '') !!}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-2 rest-part">
+                        <div class="card-header">
                             <h4 class="mb-0">{{ \App\CPU\translate('General Info') }}</h4>
                         </div>
                         <div class="card-body">
@@ -384,6 +396,8 @@
                             </div>
                         </div>
                     </div>
+
+                    @include('partials.product-multipack-fields')
 
                     <div class="card mt-2 rest-part">
                         <div class="card-header">

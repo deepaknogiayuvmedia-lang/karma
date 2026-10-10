@@ -15844,7 +15844,7 @@ a.nav-link:hover .media-tab-media {
 }
 
 .navbar-nav .dropdown-menu {
-    min-width: 12.5rem;
+    min-width: 15.5rem;
     border-color: #e3e9ef;
     box-shadow: none
 }

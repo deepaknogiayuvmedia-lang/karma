@@ -49,6 +49,42 @@ class ReviewController extends Controller
         return redirect()->route('account-order-details', ['id' => $request->order_id]);
     }
 
+    public function store_product_review(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'rating'     => 'required|integer|min:1|max:5',
+            'comment'    => 'required|string|max:1000',
+        ]);
+
+        $image_array = [];
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $image) {
+                $image_array[] = ImageManager::upload('review/', 'png', $image);
+            }
+        }
+
+        Review::updateOrCreate(
+            [
+                'delivery_man_id' => null,
+                'customer_id'     => auth('customer')->id(),
+                'product_id'      => $request->product_id,
+                'order_id'        => null,
+            ],
+            [
+                'customer_id' => auth('customer')->id(),
+                'product_id'  => $request->product_id,
+                'order_id'    => null,
+                'comment'     => $request->comment,
+                'rating'      => $request->rating,
+                'attachment'  => json_encode($image_array),
+            ]
+        );
+
+        Toastr::success(translate('successfully_added_review'));
+        return redirect()->back();
+    }
+
     public function delivery_man_review(Request $request, $id)
     {
         $order = Order::where(['id' => $id, 'customer_id' => auth('customer')->id(), 'payment_status' => 'paid'])->first();

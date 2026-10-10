@@ -11,7 +11,6 @@
                             alt="{{ $web_config['name']->value }}" style="max-height: 48px; width: auto;" />
                     </a>
                 </div>
-             
                 <div class="col-md-4 col-6 text-end  text-md-right">
                     @php($social_media = \App\Model\SocialMedia::where('active_status', 1)->get())
                     @if (isset($social_media))
@@ -28,7 +27,6 @@
             </div>
         </div>
     </div>
-
     <!-- Main Footer Body (4-Column Desktop Layout: Quick Links, Policy, Contact Us, Info) -->
     <div class="bh-footer-body">
         <div class="container">
@@ -117,8 +115,6 @@
                         </div>
                     @endif
                 </div>
-
-               
             </div>
         </div>
     </div>

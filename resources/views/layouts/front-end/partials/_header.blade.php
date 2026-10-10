@@ -284,7 +284,7 @@
             top: 0;
             z-index: 1040;
             background: #0f5132;
-            box-shadow: 0 2px 12px rgba(15, 81, 50, 0.15);
+            /* box-shadow: 0 2px 12px rgba(15, 81, 50, 0.15); */
             min-height: 64px;
         }
 
@@ -1065,13 +1065,13 @@
 <!-- End Google Tag Manager (noscript) -->
 <style>
     @media(width < 576px) {
-        header.box-shadow-sm.rtl.__inline-10 {
+        header.rtl.__inline-10 {
             position: sticky !important;
             top: 0;
             z-index: 99;
         }
 
-        header.box-shadow-sm.rtl.__inline-10 .navbar-stuck {
+        header.rtl.__inline-10 .navbar-stuck {
             position: static;
             animation: none;
         }
@@ -1079,7 +1079,7 @@
 
     }
 </style>
-<header class="box-shadow-sm rtl __inline-10" style="position:relative;">
+<header class=" rtl __inline-10" style="position:relative;">
     @if (isset($language_status) && $language_status == 1)
         <!-- Topbar-->
         <div class="topbar">
@@ -1281,7 +1281,7 @@
         </div>
         <!-- Mobile Search Overlay -->
         <div id="mobileSearchOverlay" class="d-md-none"
-            style="background:#fff; padding:10px 15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border-top:1px solid #eee;">
+            style="background:#fff; padding:10px 15px;  border-top:1px solid #eee;">
             <div class="d-flex align-items-center" style="gap: 8px;">
                 <form action="{{ route('products') }}" method="GET" id="mobileSearchForm" class="flex-grow-1">
                     <input name="data_from" value="search" hidden>

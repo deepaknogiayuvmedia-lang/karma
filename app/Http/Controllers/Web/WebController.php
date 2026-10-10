@@ -168,7 +168,7 @@ class WebController extends Controller
             })
             ->filter()
             ->unique('product_id')
-            ->take(4)
+            ->take(10)
             ->values();
 
         if ($bestSellProduct->count() == 0) {
@@ -906,7 +906,7 @@ class WebController extends Controller
 
     public function product($slug)
     {
-        $product = Product::active()->with(['reviews', 'seller.shop', 'tags'])->where('slug', $slug)->first();
+        $product = Product::active()->with(['reviews', 'seller.shop', 'tags', 'faqs', 'specifications', 'features', 'packs'])->where('slug', $slug)->first();
         if ($product != null) {
             $countOrder = OrderDetail::where('product_id', $product->id)->count();
             $countWishlist = Wishlist::where('product_id', $product->id)->count();

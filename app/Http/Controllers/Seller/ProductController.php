@@ -417,6 +417,7 @@ class ProductController extends Controller
         $product->code                  = $request->code;
         $product->minimum_order_qty     = $request->minimum_order_qty;
         $product->details               = ($request->description ?? [])[$storeEnIdx] ?? null;
+        $product->description           = $request->overview ?? null;
 
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $product->colors = $request->product_type == 'physical' ? json_encode($request->colors) : json_encode([]);
@@ -575,6 +576,37 @@ class ProductController extends Controller
                 }
             }
             $product->tags()->sync($tag_ids);
+
+            // Save multipack variants (type='multi') -> PDP "Multipack (Big Savings)"
+            if ($request->has('multipack') && is_array($request->multipack)) {
+                $mpNames  = $request->multipack['name'] ?? [];
+                $mpSubs   = $request->multipack['sub'] ?? [];
+                $mpPrices = $request->multipack['price'] ?? [];
+                $mpMrps   = $request->multipack['mrp'] ?? [];
+                $mpDiscs  = $request->multipack['discount'] ?? [];
+                $mpRates  = $request->multipack['unit_rate'] ?? [];
+                $mpBadges = $request->multipack['badge'] ?? [];
+                foreach ($mpNames as $i => $mpName) {
+                    $mpName  = trim((string) $mpName);
+                    $mpPrice = $mpPrices[$i] ?? null;
+                    if ($mpName === '' || $mpPrice === null || $mpPrice === '') {
+                        continue;
+                    }
+                    \App\Model\ProductPack::create([
+                        'product_id' => $product->id,
+                        'type'       => 'multi',
+                        'name'       => $mpName,
+                        'sub'        => $mpSubs[$i] ?? null,
+                        'price'      => $mpPrice,
+                        'mrp'        => $mpMrps[$i] ?? $mpPrice,
+                        'discount'   => $mpDiscs[$i] ?? 0,
+                        'unit_rate'  => $mpRates[$i] ?? null,
+                        'badge'      => $mpBadges[$i] ?? null,
+                        'is_active'  => false,
+                        'sort_order' => $i,
+                    ]);
+                }
+            }
 
             $data = [];
             foreach ($request->lang as $index => $key) {
@@ -794,8 +826,23 @@ class ProductController extends Controller
 
         $variations = json_decode($product->variation, true) ?? [];
 
+        $multipacks = $product->packs()->where('type', 'multi')->orderBy('sort_order')->get()
+            ->map(function ($pk) {
+                return [
+                    'name' => $pk->name,
+                    'sub' => $pk->sub,
+                    'quantity' => $pk->quantity,
+                    'price' => $pk->price,
+                    'mrp' => $pk->mrp,
+                    'discount' => $pk->discount,
+                    'unit_rate' => $pk->unit_rate,
+                    'badge' => $pk->badge,
+                ];
+            })->values()->toArray();
+
         return response()->json([
             'variations' => $variations,
+            'multipacks' => $multipacks,
             'product_name' => $product->name,
         ]);
     }
@@ -960,6 +1007,36 @@ class ProductController extends Controller
         }
 
         $product->save();
+
+        // Save multipack variants (type='multi') -> PDP "Multipack (Big Savings)"
+        if ($request->has('manage_multipacks')) {
+            \App\Model\ProductPack::where('product_id', $product->id)->where('type', 'multi')->delete();
+            $mpRows = is_array($request->multipacks) ? $request->multipacks : [];
+            foreach ($mpRows as $i => $mp) {
+                if (!is_array($mp)) {
+                    continue;
+                }
+                $mpName  = trim((string) ($mp['name'] ?? ''));
+                $mpPrice = $mp['price'] ?? null;
+                if ($mpName === '' || $mpPrice === null || $mpPrice === '') {
+                    continue;
+                }
+                \App\Model\ProductPack::create([
+                    'product_id' => $product->id,
+                    'type'       => 'multi',
+                    'name'       => $mpName,
+                    'sub'        => $mp['sub'] ?? null,
+                    'quantity'   => $mp['quantity'] ?? 1,
+                    'price'      => $mpPrice,
+                    'mrp'        => $mp['mrp'] ?? $mpPrice,
+                    'discount'   => $mp['discount'] ?? 0,
+                    'unit_rate'  => $mp['unit_rate'] ?? null,
+                    'badge'      => $mp['badge'] ?? null,
+                    'is_active'  => false,
+                    'sort_order' => $i,
+                ]);
+            }
+        }
 
         return response()->json(['success' => true, 'message' => 'Product updated successfully']);
     }
@@ -1308,6 +1385,39 @@ class ProductController extends Controller
         $product->unit                  = $request->product_type == 'physical' ? $request->unit : null;
         $product->digital_product_type  = $request->product_type == 'digital' ? $request->digital_product_type : null;
         $product->details               = ($request->description ?? [])[$updateEnIdx] ?? $product->details;
+        $product->description           = $request->overview ?? $product->description;
+
+        // Replace multipack variants (type='multi') -> PDP "Multipack (Big Savings)"
+        \App\Model\ProductPack::where('product_id', $product->id)->where('type', 'multi')->delete();
+        if ($request->has('multipack') && is_array($request->multipack)) {
+            $mpNames  = $request->multipack['name'] ?? [];
+            $mpSubs   = $request->multipack['sub'] ?? [];
+            $mpPrices = $request->multipack['price'] ?? [];
+            $mpMrps   = $request->multipack['mrp'] ?? [];
+            $mpDiscs  = $request->multipack['discount'] ?? [];
+            $mpRates  = $request->multipack['unit_rate'] ?? [];
+            $mpBadges = $request->multipack['badge'] ?? [];
+            foreach ($mpNames as $i => $mpName) {
+                $mpName  = trim((string) $mpName);
+                $mpPrice = $mpPrices[$i] ?? null;
+                if ($mpName === '' || $mpPrice === null || $mpPrice === '') {
+                    continue;
+                }
+                \App\Model\ProductPack::create([
+                    'product_id' => $product->id,
+                    'type'       => 'multi',
+                    'name'       => $mpName,
+                    'sub'        => $mpSubs[$i] ?? null,
+                    'price'      => $mpPrice,
+                    'mrp'        => $mpMrps[$i] ?? $mpPrice,
+                    'discount'   => $mpDiscs[$i] ?? 0,
+                    'unit_rate'  => $mpRates[$i] ?? null,
+                    'badge'      => $mpBadges[$i] ?? null,
+                    'is_active'  => false,
+                    'sort_order' => $i,
+                ]);
+            }
+        }
 
         if ($request->has('colors_active') && $request->has('colors') && count($request->colors) > 0) {
             $product->colors = $request->product_type == 'physical' ? json_encode($request->colors) : json_encode([]);

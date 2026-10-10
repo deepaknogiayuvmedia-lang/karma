@@ -569,6 +569,30 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="card mt-3" style="border: 1px solid #e9ecef;">
+                        <div class="card-header py-2 d-flex justify-content-between align-items-center"
+                            style="background: #f1f3f5;">
+                            <h6 class="mb-0 font-weight-bold" style="font-size: 13px;">
+                                <i class="tio-gift mr-1"></i> {{ \App\CPU\translate('Multipack Variants') }}
+                                <span class="text-muted font-weight-normal" style="font-size: 11px;">({{ \App\CPU\translate('Big Savings') }})</span>
+                            </h6>
+                            <button type="button" class="btn btn--primary btn-sm" id="addMultipackBtn"
+                                style="font-size: 12px; padding: 3px 10px;">
+                                <i class="tio-add mr-1"></i> {{ \App\CPU\translate('Add Multipack') }}
+                            </button>
+                        </div>
+                        <div class="card-body p-3">
+                            <p class="text-muted mb-2" style="font-size: 11px;">
+                                {{ \App\CPU\translate('Bundle packs shown in the "Multipack (Big Savings)" section on the product page. Leave empty to hide it.') }}
+                            </p>
+                            <div id="editMultipacksContainer">
+                                <p class="text-muted text-center mb-0" style="font-size: 12px;">
+                                    {{ \App\CPU\translate('No multipack variants yet.') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer" style="border-top: 1px solid #dee2e6; padding: 12px 20px; background: #f8f9fa;">
                     <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
@@ -1056,6 +1080,110 @@
             $('#uploaderSellerModal').modal('show');
         });
 
+        // --- Multipack (Big Savings) helpers for the Edit Price & Variants modal ---
+        function bhEsc(v) {
+            return String(v == null ? '' : v)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        // Product's single variant types (e.g. 500ml, 1liter...) - set when the modal opens
+        var bhVariantTypes = [];
+
+        function bhSubOptions(sel) {
+            var out = '<option value="">{{ \App\CPU\translate('Select size') }}</option>';
+            var matched = false;
+            (bhVariantTypes || []).forEach(function(t) {
+                var s = (sel != null && String(sel) !== '' && String(t) === String(sel)) ? ' selected' : '';
+                if (s) { matched = true; }
+                out += '<option value="' + bhEsc(t) + '"' + s + '>' + bhEsc(t) + '</option>';
+            });
+            // Keep an existing sub value even if it is not in the variant list
+            if (sel != null && String(sel) !== '' && !matched) {
+                out += '<option value="' + bhEsc(sel) + '" selected>' + bhEsc(sel) + '</option>';
+            }
+            return out;
+        }
+
+        function bhAutoPackName(row) {
+            var sub = $.trim(row.find('.mp-sub').val() || '');
+            var qty = $.trim(row.find('.mp-qty').val() || '');
+            var name = '';
+            if (sub && qty) {
+                name = sub + ' x ' + qty + ' Pack';
+            } else if (sub) {
+                name = sub;
+            } else if (qty) {
+                name = qty + ' Pack';
+            }
+            row.find('.mp-name').val(name);
+        }
+
+        function multipackRowHtml(mp) {
+            mp = mp || {};
+            var qty = (mp.quantity != null && mp.quantity !== '') ? mp.quantity : '';
+            return `
+                <div class="border rounded p-2 mb-2 multipack-row" style="background: #f8f9fa;">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="title-color mb-1" style="font-size: 11px;">{{ \App\CPU\translate('Sub Label') }} <span class="text-danger">*</span></label>
+                            <select class="form-control form-control-sm mp-sub">${bhSubOptions(mp.sub)}</select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="title-color mb-1" style="font-size: 11px;">{{ \App\CPU\translate('Quantity') }} <span class="text-danger">*</span></label>
+                            <input type="number" step="1" min="1" class="form-control form-control-sm mp-qty" value="${bhEsc(qty)}" placeholder="2">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="title-color mb-1" style="font-size: 11px;">{{ \App\CPU\translate('Pack Name') }} <span class="text-muted">({{ \App\CPU\translate('auto') }})</span></label>
+                            <input type="text" class="form-control form-control-sm mp-name" value="${bhEsc(mp.name)}" placeholder="{{ \App\CPU\translate('Select size + quantity') }}" readonly style="background: #eef1f4;">
+                        </div>
+                        <div class="col-md-3 text-right">
+                            <label class="title-color mb-1 d-block" style="font-size: 11px; visibility: hidden;">-</label>
+                            <button type="button" class="btn btn-danger btn-sm delete-multipack-btn" title="{{ \App\CPU\translate('Delete') }}" style="padding: 4px 8px; font-size: 11px;">
+                                <i class="tio-delete"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="col-md-3">
+                            <label class="title-color mb-1" style="font-size: 11px;">{{ \App\CPU\translate('Price') }} <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="0" class="form-control form-control-sm mp-price" value="${bhEsc(mp.price)}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="title-color mb-1" style="font-size: 11px;">{{ \App\CPU\translate('MRP') }}</label>
+                            <input type="number" step="0.01" min="0" class="form-control form-control-sm mp-mrp" value="${bhEsc(mp.mrp)}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="title-color mb-1" style="font-size: 11px;">{{ \App\CPU\translate('Discount') }} %</label>
+                            <input type="number" step="1" min="0" max="100" class="form-control form-control-sm mp-discount" value="${bhEsc(mp.discount)}">
+                        </div>
+                    </div>
+                    <input type="hidden" class="mp-unit-rate" value="${bhEsc(mp.unit_rate)}">
+                    <input type="hidden" class="mp-badge" value="${bhEsc(mp.badge)}">
+                </div>
+            `;
+        }
+
+        // Add a new (empty) multipack row
+        $(document).on('click', '#addMultipackBtn', function() {
+            var box = $('#editMultipacksContainer');
+            box.find('p.text-muted').remove();
+            box.append(multipackRowHtml(null));
+        });
+
+        // Remove a multipack row (client-side; persisted on Save)
+        $(document).on('click', '.delete-multipack-btn', function() {
+            $(this).closest('.multipack-row').remove();
+        });
+
+        // Auto-generate Pack Name from Sub Label + Quantity
+        $(document).on('change', '.mp-sub', function() {
+            bhAutoPackName($(this).closest('.multipack-row'));
+        });
+        $(document).on('input', '.mp-qty', function() {
+            bhAutoPackName($(this).closest('.multipack-row'));
+        });
+
         // Edit Price & Variants Modal
         $(document).on('click', '.edit-price-btn', function() {
             var btn = $(this);
@@ -1149,6 +1277,23 @@
                             </div>
                         `);
                     }
+
+                    // Sub Label dropdown options = product's single variant sizes
+                    bhVariantTypes = (data.variations || [])
+                        .map(function(v) { return v && v.type ? v.type : ''; })
+                        .filter(Boolean);
+
+                    // Render multipack variants (Big Savings)
+                    var mpBox = $('#editMultipacksContainer');
+                    mpBox.empty();
+                    var mpList = (data.multipacks && data.multipacks.length) ? data.multipacks : [];
+                    if (mpList.length > 0) {
+                        mpList.forEach(function(mp) {
+                            mpBox.append(multipackRowHtml(mp));
+                        });
+                    } else {
+                        mpBox.append('<p class="text-muted text-center mb-0" style="font-size: 12px;">{{ \App\CPU\translate('No multipack variants yet.') }}</p>');
+                    }
                 }
             });
 
@@ -1171,6 +1316,32 @@
 
             var deletedVariants = $('#deletedVariants').val() ? $('#deletedVariants').val().split(',').filter(
                 Boolean) : [];
+
+            var multipacks = [];
+            $('.multipack-row').each(function() {
+                var row = $(this);
+                var mpSub = $.trim(row.find('.mp-sub').val() || '');
+                var mpQty = $.trim(row.find('.mp-qty').val() || '');
+                var mpPrice = row.find('.mp-price').val();
+                if (!mpSub || !mpQty || !mpPrice || mpPrice == null) {
+                    return; // skip incomplete rows (size + quantity + price are required)
+                }
+                var mpName = $.trim(row.find('.mp-name').val() || '');
+                if (!mpName) {
+                    mpName = mpSub + ' x ' + mpQty + ' Pack';
+                    row.find('.mp-name').val(mpName);
+                }
+                multipacks.push({
+                    name: mpName,
+                    sub: mpSub,
+                    quantity: parseInt(mpQty, 10) || 1,
+                    price: mpPrice,
+                    mrp: row.find('.mp-mrp').val(),
+                    discount: row.find('.mp-discount').val(),
+                    unit_rate: row.find('.mp-unit-rate').val(),
+                    badge: row.find('.mp-badge').val()
+                });
+            });
 
             $('#saveBtnText').addClass('d-none');
             $('#saveBtnLoader').removeClass('d-none');
@@ -1196,7 +1367,9 @@
                     shipping_cost: $('#editShippingCost').val(),
                     minimum_order_qty: $('#editMinOrder').val(),
                     variants: variants,
-                    deleted_variants: deletedVariants
+                    deleted_variants: deletedVariants,
+                    multipacks: multipacks,
+                    manage_multipacks: 1
                 },
                 success: function(data) {
                     if (data.success) {
