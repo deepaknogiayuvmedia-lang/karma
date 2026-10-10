@@ -1,3 +1,4 @@
+<?php use function App\CPU\translate; ?>
 <!-- Custom Reports Menu Item - Add to your admin sidebar/navigation -->
 <!-- This can be integrated into your admin navigation menu -->
 

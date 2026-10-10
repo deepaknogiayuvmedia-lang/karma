@@ -150,9 +150,28 @@ class DashboardController extends Controller
         ], 200);
     }
 
+    public function business_overview(Request $request)
+    {
+        $data = self::order_stats_data();
+
+        $admin_wallet = SellerWallet::where('seller_id', auth('seller')->id())->first();
+        $data['total_earning'] = $admin_wallet->total_earning ?? 0;
+        $data['withdrawn'] = $admin_wallet->withdrawn ?? 0;
+        $data['commission_given'] = $admin_wallet->commission_given ?? 0;
+        $data['pending_withdraw'] = $admin_wallet->pending_withdraw ?? 0;
+        $data['delivery_charge_earned'] = $admin_wallet->delivery_charge_earned ?? 0;
+        $data['collected_cash'] = $admin_wallet->collected_cash ?? 0;
+        $data['total_tax_collected'] = $admin_wallet->total_tax_collected ?? 0;
+
+        return response()->json([
+            'view' => view('seller-views.partials._dashboard-wallet-stats', compact('data'))->render()
+        ], 200);
+    }
+
     public function get_earning_statitics(Request $request){
         $dateType = $request->type;
 
+        $key_range = array();
         $seller_data = array();
         if($dateType == 'yearEarn') {
             $number = 12;

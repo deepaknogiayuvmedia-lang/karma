@@ -27,7 +27,6 @@ use App\Http\Controllers\Controller;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
-use Barryvdh\DomPDF\PDF;
 
 class ProductController extends Controller
 {
@@ -679,9 +678,10 @@ class ProductController extends Controller
         $product = Product::where('id', $request->id)->first();
         $quantity = $request->quantity ?? 30;
         if (isset($product->code)) {
-            $pdf = app()->make(PDF::class);
-            $pdf->loadView('seller-views.product.barcode-pdf', compact('product', 'quantity'));
-            $pdf->save(storage_path('app/public/product/barcode.pdf'));
+            Helpers::gen_mpdf_file(
+                view('seller-views.product.barcode-pdf', compact('product', 'quantity')),
+                storage_path('app/public/product/barcode.pdf')
+            );
             return response()->json(asset(config('app.public_storage_path').'/product/barcode.pdf'));
         } else {
             return response()->json(['message' => translate('Please update product code!')], 203);

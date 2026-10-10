@@ -42,6 +42,13 @@ return [
         'redirect' => env('FACEBOOK_SERVICE_CALLBACK'),
     ],
 
+    'xbees' => [
+        'url' => env('XBEES_API_URL'),
+        'token' => env('XBEES_API_TOKEN'),
+        'username' => env('XBEES_API_USERNAME'),
+        'password' => env('XBEES_API_PASSWORD'),
+    ],
+
     'twitter' => [
         'client_id' => env('TWITTER_CLIENT_ID'),
         'client_secret' => env('TWITTER_CLIENT_SECRET'),

@@ -134,7 +134,9 @@ class MercadoPagoController extends Controller
         ));
         curl_setopt($curl, CURLOPT_POSTFIELDS, '{"site_id":"MLA"}');
         $response = curl_exec($curl);
-        dd($response);
+        curl_close($curl);
+
+        return response()->json(['response' => $response]);
 
     }
 }

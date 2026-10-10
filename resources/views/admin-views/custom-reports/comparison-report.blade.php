@@ -1,3 +1,4 @@
+<?php use function App\CPU\translate; ?>
 @extends('layouts.back-end.app')
 
 @section('title', 'Vendor & Delivery Comparison Report')

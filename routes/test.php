@@ -57,7 +57,6 @@ Route::post('aws-upload', function (Request $request) {
     $path = Storage::disk('s3')->put('images', $request->image);
     $path = Storage::disk('s3')->url($path);
 
-    dd($path);
     /* Store $imageName name in DATABASE from HERE */
     return back()
         ->with('success', 'You have successfully upload image.')

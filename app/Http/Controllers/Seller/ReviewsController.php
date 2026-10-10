@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Seller;
 
+use Rap2hpoutre\FastExcel\FastExcel;
+
 use App\User;
 use App\CPU\Helpers;
 use App\Model\Review;

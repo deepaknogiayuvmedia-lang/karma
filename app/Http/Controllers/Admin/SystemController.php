@@ -43,7 +43,7 @@ class SystemController extends Controller
             SearchFunction::create($data);
         }
 
-        dd('success');
+        return response()->json(['message' => 'success']);
     }
 
     public function maintenance_mode()

@@ -12,7 +12,7 @@ use App\Model\DeliverymanWallet;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\CPU\Helpers;
 use Illuminate\Support\Facades\DB;
 use Rap2hpoutre\FastExcel\FastExcel;
 
@@ -121,10 +121,11 @@ class VendorDeliveryReportController extends Controller
             $cancelled_orders = $orders->where('order_status', 'cancelled')->count();
             $total_orders = $orders->count();
 
-            $total_earning = DB::table('deliveryman_transactions')
+            $total_earning = DB::table('delivery_man_transactions')
                 ->where('delivery_man_id', $delivery_man->id)
+                ->where('transaction_type', 'deliveryman_charge')
                 ->whereBetween('created_at', [$from_date, $to_date])
-                ->sum('amount');
+                ->sum('credit');
 
             $avg_rating = DB::table('reviews')
                 ->where('delivery_man_id', $delivery_man->id)
@@ -217,14 +218,16 @@ class VendorDeliveryReportController extends Controller
                 ];
             });
 
-        $pdf = Pdf::loadView('admin-views.custom-reports.vendor-pdf', [
-            'sellers' => $sellers,
-            'from_date' => Carbon::parse($from_date)->format('Y-m-d'),
-            'to_date' => Carbon::parse($to_date)->format('Y-m-d'),
-            'generated_at' => now()->format('Y-m-d H:i:s'),
-        ]);
-
-        return $pdf->download('vendor-report-' . now()->format('Y-m-d-His') . '.pdf');
+        Helpers::gen_mpdf(
+            view('admin-views.custom-reports.vendor-pdf', [
+                'sellers' => $sellers,
+                'from_date' => Carbon::parse($from_date)->format('Y-m-d'),
+                'to_date' => Carbon::parse($to_date)->format('Y-m-d'),
+                'generated_at' => now()->format('Y-m-d H:i:s'),
+            ]),
+            'vendor_report_',
+            now()->format('Y-m-d-His')
+        );
     }
 
     /**
@@ -298,10 +301,11 @@ class VendorDeliveryReportController extends Controller
                 $cancelled_orders = $orders->where('order_status', 'cancelled')->count();
                 $total_orders = $orders->count();
 
-                $total_earning = DB::table('deliveryman_transactions')
+                $total_earning = DB::table('delivery_man_transactions')
                     ->where('delivery_man_id', $delivery_man->id)
+                    ->where('transaction_type', 'deliveryman_charge')
                     ->whereBetween('created_at', [$from_date, $to_date])
-                    ->sum('amount');
+                    ->sum('credit');
 
                 $avg_rating = DB::table('reviews')
                     ->where('delivery_man_id', $delivery_man->id)
@@ -323,14 +327,16 @@ class VendorDeliveryReportController extends Controller
                 ];
             });
 
-        $pdf = Pdf::loadView('admin-views.custom-reports.delivery-pdf', [
-            'delivery_men' => $delivery_men,
-            'from_date' => Carbon::parse($from_date)->format('Y-m-d'),
-            'to_date' => Carbon::parse($to_date)->format('Y-m-d'),
-            'generated_at' => now()->format('Y-m-d H:i:s'),
-        ]);
-
-        return $pdf->download('delivery-report-' . now()->format('Y-m-d-His') . '.pdf');
+        Helpers::gen_mpdf(
+            view('admin-views.custom-reports.delivery-pdf', [
+                'delivery_men' => $delivery_men,
+                'from_date' => Carbon::parse($from_date)->format('Y-m-d'),
+                'to_date' => Carbon::parse($to_date)->format('Y-m-d'),
+                'generated_at' => now()->format('Y-m-d H:i:s'),
+            ]),
+            'delivery_report_',
+            now()->format('Y-m-d-His')
+        );
     }
 
     /**
@@ -357,10 +363,11 @@ class VendorDeliveryReportController extends Controller
                 $cancelled_orders = $orders->where('order_status', 'cancelled')->count();
                 $total_orders = $orders->count();
 
-                $total_earning = DB::table('deliveryman_transactions')
+                $total_earning = DB::table('delivery_man_transactions')
                     ->where('delivery_man_id', $delivery_man->id)
+                    ->where('transaction_type', 'deliveryman_charge')
                     ->whereBetween('created_at', [$from_date, $to_date])
-                    ->sum('amount');
+                    ->sum('credit');
 
                 $avg_rating = DB::table('reviews')
                     ->where('delivery_man_id', $delivery_man->id)

@@ -112,8 +112,11 @@ class PaytabsController extends Controller
             ]
         ];
         $page = $plugin->send_api_request($request_url, $data);
-        header('Location:' . $page['redirect_url']); /* Redirect browser */
-        exit();
+        if (!empty($page['redirect_url'])) {
+            return redirect()->away($page['redirect_url']);
+        }
+        Toastr::error(translate('Payment_gateway_error'));
+        return redirect()->route('checkout-payment');
     }
 
     public function callback_response(Request $request)

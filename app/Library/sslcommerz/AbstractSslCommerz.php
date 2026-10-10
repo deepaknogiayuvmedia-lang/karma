@@ -113,11 +113,10 @@ abstract class AbstractSslCommerz implements SslCommerzInterface
     /**
      * @param $url
      * @param bool $permanent
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function redirect($url, $permanent = false)
     {
-        header('Location: ' . $url, true, $permanent ? 301 : 302);
-
-        exit();
+        return redirect()->away($url, $permanent ? 301 : 302);
     }
 }

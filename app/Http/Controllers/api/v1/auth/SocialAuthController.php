@@ -60,7 +60,6 @@ class SocialAuthController extends Controller
                 ];
                 $response = Request::create('/oauth/token', 'POST', $apple_data);
                 $data = json_decode($response->getBody()->getContent(), true);
-                dd($data);
             }
         } catch (\Exception $exception) {
             return response()->json(['error' => 'wrong credential.']);

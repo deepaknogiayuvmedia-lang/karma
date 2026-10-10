@@ -1,3 +1,4 @@
+<?php use function App\CPU\translate; ?>
 <!-- Dashboard Widget for Custom Reports -->
 <!-- Add this to resources/views/admin-views/system/dashboard.blade.php -->
 

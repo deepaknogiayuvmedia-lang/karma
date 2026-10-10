@@ -14,10 +14,11 @@ use App\Model\OrderDetail;
 use App\Model\ShippingAddress;
 use App\Model\SupportTicket;
 use App\Model\Wishlist;
+use App\Model\BusinessSetting;
+use App\Model\Transaction;
 use App\Model\RefundRequest;
 use App\Traits\CommonTrait;
 use App\User;
-use Barryvdh\DomPDF\Facade as PDF;
 use Brian2694\Toastr\Facades\Toastr;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -275,8 +276,12 @@ class UserProfileController extends Controller
     public function account_payment()
     {
         if (auth('customer')->check()) {
-            return view('web-views.users-profile.account-payment');
+            $transactions = Transaction::with('order')
+                ->where('payer_id', auth('customer')->id())
+                ->orderBy('id', 'DESC')
+                ->paginate(15);
 
+            return view('web-views.users-profile.account-payment', compact('transactions'));
         } else {
             return redirect()->route('home');
         }
@@ -291,7 +296,14 @@ class UserProfileController extends Controller
 
     public function account_order_details(Request $request)
     {
-        $order = Order::with(['details.product', 'delivery_man_review'])->find($request->id);
+        $order = Order::with(['details.product', 'delivery_man_review'])
+            ->where('customer_id', auth('customer')->id())
+            ->find($request->id);
+
+        if (!$order) {
+            abort(404);
+        }
+
         return view('web-views.users-profile.account-order-details', compact('order'));
     }
 
@@ -299,7 +311,8 @@ class UserProfileController extends Controller
     {
         if (auth('customer')->check()) {
             $wishlists = Wishlist::where('customer_id', auth('customer')->id())->get();
-            return view('web-views.products.wishlist', compact('wishlists'));
+            $brand_setting = BusinessSetting::where('type', 'product_brand')->first()->value ?? 0;
+            return view('web-views.users-profile.account-wishlist', compact('wishlists', 'brand_setting'));
         } else {
             return redirect()->route('home');
         }
@@ -336,7 +349,7 @@ class UserProfileController extends Controller
             return redirect()->route('customer.auth.login');
         }
 
-        $ticket = SupportTicket::where('id', $id)->where('user_id', auth('customer')->id())->first();
+        $ticket = SupportTicket::where('id', $id)->where('customer_id', auth('customer')->id())->first();
 
         if (!$ticket) {
             return redirect()->route('account-tickets')->with('error', 'Ticket not found');
@@ -347,6 +360,12 @@ class UserProfileController extends Controller
 
     public function comment_submit(Request $request, $id)
     {
+        $ticket = SupportTicket::where('id', $id)->where('customer_id', auth('customer')->id())->first();
+
+        if (!$ticket) {
+            return redirect()->route('account-tickets')->with('error', 'Ticket not found');
+        }
+
         DB::table('support_tickets')->where(['id' => $id])->update([
             'status' => 'open',
             'updated_at' => now(),
@@ -364,6 +383,12 @@ class UserProfileController extends Controller
 
     public function support_ticket_close($id)
     {
+        $ticket = SupportTicket::where('id', $id)->where('customer_id', auth('customer')->id())->first();
+
+        if (!$ticket) {
+            return redirect()->route('account-tickets')->with('error', 'Ticket not found');
+        }
+
         DB::table('support_tickets')->where(['id' => $id])->update([
             'status' => 'close',
             'updated_at' => now(),
@@ -388,8 +413,13 @@ class UserProfileController extends Controller
     {
 
         if (auth('customer')->check()) {
-            $support = SupportTicket::find($request->id);
-            $support->delete();
+            $support = SupportTicket::where('customer_id', auth('customer')->id())
+                ->find($request->id);
+
+            if ($support) {
+                $support->delete();
+            }
+
             return redirect()->back();
         } else {
             return redirect()->back();

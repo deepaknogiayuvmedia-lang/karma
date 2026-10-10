@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Seller;
 
+use Rap2hpoutre\FastExcel\FastExcel;
+
 use App\CPU\BackEndHelper;
 use App\CPU\Convert;
 use App\CPU\Helpers;

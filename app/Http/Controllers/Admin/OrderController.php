@@ -685,16 +685,24 @@ class OrderController extends Controller
     }
     public function addExpressDelivery(Request $request)
     {
-        $url = 'http://stageusermanagementapi.xbees.in/api/auth/generateToken';
-    
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer xyz',
-        ])->post($url, [
-            'username' => 'admin@herbanix.com',
-            'password' => '$herbanix$',
+        $config = config('services.xbees', []);
+
+        if (empty($config['url']) || empty($config['username']) || empty($config['password'])) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Express delivery is not configured.',
+            ], 503);
+        }
+
+        $headers = ['Content-Type' => 'application/json'];
+        if (!empty($config['token'])) {
+            $headers['Authorization'] = 'Bearer ' . $config['token'];
+        }
+
+        $response = Http::withHeaders($headers)->post($config['url'], [
+            'username' => $config['username'],
+            'password' => $config['password'],
         ]);
-        // dd($response);
         // Handle the response as needed
         $responseData = $response->json();
         $orderIdJson = $request->input('orderId');

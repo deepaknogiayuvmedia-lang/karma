@@ -979,6 +979,16 @@ class Helpers
         $mpdf->Output($file_prefix . $file_postfix . '.pdf', 'D');
     }
 
+    public static function gen_mpdf_file($view, $absolute_path)
+    {
+        $mpdf = new \Mpdf\Mpdf(['default_font' => 'FreeSerif', 'mode' => 'utf-8', 'format' => [190, 250]]);
+        $mpdf->autoScriptToLang = true;
+        $mpdf->autoLangToFont = true;
+
+        $mpdf->WriteHTML($view->render());
+        $mpdf->Output($absolute_path, 'F');
+    }
+
     public static function get_whatsapp_config()
     {
         $whatsapp = \App\Model\WhatsAppSetting::where('user_id', auth('admin')->id())->first();

@@ -32,7 +32,6 @@ class ShipRocketController extends Controller
     {
         if ($this->loginDetails['status_code'] != 200) {
             return view('admin-views.shiprocket.login');
-            dd($this->loginDetails['message']);
         }
 
         $orderDetails = [

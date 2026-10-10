@@ -16,3 +16,9 @@ composer-setup.php
 /installation
 /database backup
 *.md
+
+# Secrets / database dumps must never be committed
+/datadb/
+*.sql
+*.sql.gz
+.rnd

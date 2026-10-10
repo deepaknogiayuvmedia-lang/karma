@@ -220,7 +220,7 @@ class SslCommerzNotification extends AbstractSslCommerz
 
         if ($type == 'hosted') {
             if (isset($formattedResponse['GatewayPageURL']) && $formattedResponse['GatewayPageURL'] != '') {
-                $this->redirect($formattedResponse['GatewayPageURL']);
+                return $this->redirect($formattedResponse['GatewayPageURL']);
             } else {
                 $errorMessage = "No redirect URL found!";
                 return $errorMessage;
