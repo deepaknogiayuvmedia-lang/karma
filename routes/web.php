@@ -47,7 +47,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
         Route::get('checkout-details', 'WebController@checkout_details')->name('checkout-details');
         Route::get('checkout-shipping', 'WebController@checkout_details')->name('checkout-shipping')->middleware('customer');
         Route::get('checkout-payment', 'WebController@checkout_payment')->name('checkout-payment')->middleware('customer');
-        Route::get('checkout-review', 'WebController@checkout_review')->name('checkout-review')->middleware('customer');
+        Route::get('checkout-review', 'WebController@checkout_payment')->name('checkout-review')->middleware('customer');
         Route::get('checkout-complete', 'WebController@checkout_complete')->name('checkout-complete')->middleware('customer');
         Route::post('offline-payment-checkout-complete', 'WebController@offline_payment_checkout_complete')->name('offline-payment-checkout-complete')->middleware('customer');
         Route::get('order-placed', 'WebController@order_placed')->name('order-placed')->middleware('customer');
@@ -224,7 +224,6 @@ Route::get('pay-stripe/fail', 'StripePaymentController@fail')->name('pay-stripe.
 // Get Route For Show Payment razorpay Form
 Route::get('paywithrazorpay', 'RazorPayController@payWithRazorpay')->name('paywithrazorpay');
 Route::post('payment-razor', 'RazorPayController@payment')->name('payment-razor');
-Route::post('payment-razor/payment2', 'RazorPayController@payment_mobile')->name('payment-razor.payment2');
 Route::get('payment-razor/success', 'RazorPayController@success')->name('payment-razor.success');
 Route::get('payment-razor/fail', 'RazorPayController@fail')->name('payment-razor.fail');
 

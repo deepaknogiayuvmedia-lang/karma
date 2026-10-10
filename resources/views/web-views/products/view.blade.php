@@ -15,13 +15,7 @@
 
     <style>
         .for-count-value {
-
-        {{Session::get('direction') === "rtl" ? 'left' : 'right'}}: 0.6875 rem;;
-        }
-
-        .for-count-value {
-
-        {{Session::get('direction') === "rtl" ? 'left' : 'right'}}: 0.6875 rem;
+            {{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}: 0.6875rem;
         }
 
         .for-brand-hover:hover {
@@ -37,31 +31,29 @@
         }
 
         .for-shoting {
-            padding- {{Session::get('direction') === "rtl" ? 'left' : 'right'}}: 9px;
+            padding-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}: 9px;
         }
 
         .sidepanel {
-        {{Session::get('direction') === "rtl" ? 'right' : 'left'}}: 0;
+            {{ Session::get('direction') === 'rtl' ? 'right' : 'left' }}: 0;
         }
         .sidepanel .closebtn {
-        {{Session::get('direction') === "rtl" ? 'left' : 'right'}}: 25 px;
+            {{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}: 25px;
         }
         @media (max-width: 360px) {
             .for-shoting-mobile {
-                margin- {{Session::get('direction') === "rtl" ? 'left' : 'right'}}: 0% !important;
+                margin-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}: 0% !important;
             }
 
             .for-mobile {
-
-                margin- {{Session::get('direction') === "rtl" ? 'right' : 'left'}}: 10% !important;
+                margin-{{ Session::get('direction') === 'rtl' ? 'right' : 'left' }}: 10% !important;
             }
 
         }
 
         @media (max-width: 500px) {
             .for-mobile {
-
-                margin- {{Session::get('direction') === "rtl" ? 'right' : 'left'}}: 27%;
+                margin-{{ Session::get('direction') === 'rtl' ? 'right' : 'left' }}: 27%;
             }
         }
 
@@ -269,7 +261,9 @@
                         @include('web-views.products._ajax-products', [
                             'products' => $products,
                             'decimal_point_settings' => $decimal_point_settings,
-                            'show_pagination' => false,
+                            // Server-rendered page links only for non-JS full-page loads;
+                            // AJAX/scroll requests (is_ajax=1) keep the infinite-scroll grid.
+                            'show_pagination' => !(request()->ajax() || request()->get('is_ajax')),
                         ])
                     </div>
                     <div id="infinite-scroll-loader" class="text-center py-4" style="display: none;">

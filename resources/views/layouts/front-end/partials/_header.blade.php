@@ -1,12 +1,6 @@
 <style>
     :root {
-        --primary_color : {
-                {
-                $web_config['primary_color']
-            }
-        }
-
-        ;
+        --primary_color: {{ $web_config['primary_color'] }};
     }
 
     .for-count-value {
@@ -30,13 +24,7 @@
         }
 
         .navbar-expand-md .dropdown-menu>.dropdown>.dropdown-toggle {
-            padding- {
-                    {
-                    Session: :get('direction')==="rtl" ? 'left': 'right'
-                }
-            }
-
-            : 1.95rem;
+            padding-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}: 1.95rem;
         }
 
         .mega-nav1 {
@@ -1273,6 +1261,16 @@
                             </div>
                         </div>
                     @endif
+                    <a class="navbar-tool {{ Session::get('direction') === 'rtl' ? 'mr-3' : 'ml-3' }}"
+                        href="{{ route('wishlists') }}" title="{{ \App\CPU\translate('wishlist') }}"
+                        aria-label="{{ \App\CPU\translate('wishlist') }}">
+                        <span class="navbar-tool-icon-box bg-secondary">
+                            <i class="fa fa-heart" aria-hidden="true"></i>
+                        </span>
+                        <span class="navbar-tool-text">
+                            <span class="countWishlist">{{ session()->has('wish_list') ? count(session('wish_list')) : 0 }}</span>
+                        </span>
+                    </a>
                     <div id="cart_items">
                         @include('layouts.front-end.partials.cart')
                     </div>
@@ -1760,8 +1758,8 @@
             // Mobile search input
             $(document).on('input', '#mobileSearchInput', debounce(function() {
                 var q = $(this).val().trim();
-                var $card = $('#mobileSearchOverlay1 .search-card');
-                var $box = $('#mobileSearchOverlay1 .search-result-box');
+                var $card = $('#mobileSearchOverlay .search-card');
+                var $box = $('#mobileSearchOverlay .search-result-box');
                 if (!q || q.length < 2) {
                     $card.hide();
                     return;
@@ -1774,10 +1772,10 @@
             $(document).on('click', '.suggestion-item', function(e) {
                 e.preventDefault();
                 var name = $(this).data('name') || $(this).text().trim();
-                if ($(this).closest('#mobileSearchOverlay1').length) {
+                if ($(this).closest('#mobileSearchOverlay').length) {
                     $('#mobileSearchInput').val(name);
 
-                    $('#mobileSearchOverlay1').closest('form').submit();
+                    $('#mobileSearchForm').submit();
                 } else {
                     $('.search-bar-input').val(name);
 

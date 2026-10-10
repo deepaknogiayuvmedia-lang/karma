@@ -1,4 +1,4 @@
-<!-- Footer (BigHaat Specification) -->
+<!-- Footer -->
 <footer class="bh-footer rtl">
     <!-- Top Green Bar with Brand Logo & Social Links -->
     <div class="bh-footer-topbar">
@@ -11,19 +11,8 @@
                             alt="{{ $web_config['name']->value }}" style="max-height: 48px; width: auto;" />
                     </a>
                 </div>
-                <div class="col-md-4 col-6 text-end  text-md-right">
-                    @php($social_media = \App\Model\SocialMedia::where('active_status', 1)->get())
-                    @if (isset($social_media))
-                        <div class="d-flex justify-content-end gap-2">
-                            @foreach ($social_media as $item)
-                                <a class="btn btn-sm btn-circle text-white mx-1 bh-footer-social-icon"
-                                    target="_blank" href="{{ $item->link }}">
-                                    <i class="{{ $item->icon }}" aria-hidden="true"></i>
-                                </a>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
+                @php($social_media = \App\Model\SocialMedia::where('active_status', 1)->get())
+                
             </div>
         </div>
     </div>
@@ -46,9 +35,9 @@
                     </ul>
                     @if (isset($social_media) && count($social_media) > 0)
                         <h6 class="bh-footer-heading mt-3">{{ \App\CPU\translate('FOLLOW US') }}</h6>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex" style="gap: 5px;">
                             @foreach ($social_media as $item)
-                                <a class="btn btn-sm btn-circle text-white bh-footer-social-icon"
+                                <a class="btn btn-sm btn-circle bh-footer-social-icon"
                                     target="_blank" href="{{ $item->link }}">
                                     <i class="{{ $item->icon }}" aria-hidden="true"></i>
                                 </a>
@@ -70,7 +59,22 @@
                     </ul>
                 </div>
 
-                <!-- Column 2: Policy -->
+                <!-- Column 2: Shop by Category -->
+                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                    <h6 class="bh-footer-heading">{{ \App\CPU\translate('SHOP BY CATEGORY') }}</h6>
+                    <ul class="list-unstyled mb-0 bh-footer-links">
+                        @php($footer_categories = \App\Model\Category::where('position', 0)->priority()->get())
+                        @foreach($footer_categories as $footer_category)
+                            <li>
+                                <a href="{{ route('products', ['id' => $footer_category['id'], 'data_from' => 'category', 'page' => 1]) }}">
+                                    {{ $footer_category['name'] }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <!-- Column 3: Policy -->
                 <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
                     <h6 class="bh-footer-heading">{{ \App\CPU\translate('POLICY') }}</h6>
                     <ul class="list-unstyled mb-0 bh-footer-links">

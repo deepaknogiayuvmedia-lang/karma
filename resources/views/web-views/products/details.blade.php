@@ -1,23 +1,23 @@
 @extends('layouts.front-end.app')
 
-@section('title', $product['name'] ?? 'PI Biovita Liquid Biofertilizer- Root Growth & Yield Support | BigHaat')
+@section('title', ($product->name ?? \App\CPU\translate('Product')) . ' | ' . ($web_config['name']->value ?? config('app.name')))
 
 @push('css_or_js')
-    <meta name="description" content="{{ $product->slug ?? 'biovita-liquid-biofertilizer' }}">
-    <meta name="keywords" content="@foreach (explode(' ', $product['name'] ?? 'Biovita Liquid Biofertilizer Seaweed Extract') as $keyword) {{ $keyword . ' , ' }} @endforeach">
+    <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags($product->description ?? $product->details ?? ''), 160) }}">
+    <meta name="keywords" content="@foreach (explode(' ', $product->name ?? '') as $keyword) {{ $keyword . ' , ' }} @endforeach">
     @if (isset($product->added_by) && $product->added_by == 'seller')
         <meta name="author" content="{{ $product->seller->shop ? $product->seller->shop->name : $product->seller->f_name }}">
     @elseif(isset($product->added_by) && $product->added_by == 'admin')
-        <meta name="author" content="{{ $web_config['name']->value ?? 'BigHaat' }}">
+        <meta name="author" content="{{ $web_config['name']->value ?? config('app.name') }}">
     @endif
 
     <meta property="og:image" content="{{ asset(config('app.public_storage_path') . '/app/public/product/thumbnail') }}/{{ $product->thumbnail ?? '' }}" />
-    <meta property="og:title" content="{{ $product->name ?? 'PI Biovita Liquid Biofertilizer' }}" />
-    <meta property="og:url" content="{{ route('product', [$product->slug ?? 'biovita']) }}">
+    <meta property="og:title" content="{{ $product->name ?? '' }}" />
+    <meta property="og:url" content="{{ route('product', [$product->slug ?? '']) }}">
 
     <style>
         /* ==========================================================================
-           BIGHHAAT PRODUCT DETAIL PAGE (PDP) - AUTHENTIC RESPONSIVE DESIGN SYSTEM
+           PRODUCT DETAIL PAGE (PDP) - RESPONSIVE DESIGN SYSTEM
            ========================================================================== */
         :root {
             --bh-primary: #168A3A;
@@ -468,7 +468,7 @@
             stroke: var(--bh-deal-blue);
         }
 
-        /* ---------------- Pack Size Selection (BigHaat Card Style) ---------------- */
+        /* ---------------- Pack Size Selection (Product Card Style) ---------------- */
         .bh-variants-wrapper {
             margin-bottom: 18px;
         }
@@ -2391,7 +2391,7 @@
             $soldCount = 0;
         }
 
-        // Check if DB images exist, otherwise fallback to BigHaat Biovita images
+        // Product gallery: own uploaded images first, then the thumbnail, then a local placeholder
         $dbImages = [];
         if (!empty($product->images)) {
             $decoded = json_decode($product->images, true);
@@ -2402,12 +2402,12 @@
             }
         }
 
-        // Biovita authentic BigHaat imagery as primary / rich fallback
-        $biovitaImages = [
-            'https://cdn.shopify.com/s/files/1/0722/2059/files/biovita-liquid-biofertilizer-file-20047.jpg?v=1772222413&width=640&format=webp',
-            'https://cdn.shopify.com/s/files/1/0722/2059/files/01.webp?v=1772222413&width=640&format=webp'
-        ];
-        $galleryImages = !empty($dbImages) ? array_merge($dbImages, $biovitaImages) : $biovitaImages;
+        if (!empty($product->thumbnail)) {
+            $dbImages[] = asset(config('app.public_storage_path') . '/product/thumbnail/' . $product->thumbnail);
+        }
+
+        $localPlaceholder = asset('assets/front-end/img/placeholder.png');
+        $galleryImages = !empty($dbImages) ? array_values(array_unique($dbImages)) : [$localPlaceholder];
 
         // Real product variants from variation JSON (source of truth)
         $choiceOpts = json_decode($product->choice_options ?? '[]', true) ?? [];
@@ -2482,7 +2482,7 @@
                             <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/></svg>
                         </button>
 
-                        <img id="bhHeroImage" src="{{ $galleryImages[0] }}" alt="PI Biovita Liquid Biofertilizer" loading="eager">
+                        <img id="bhHeroImage" src="{{ $galleryImages[0] }}" alt="{{ $product->name }}" loading="eager">
                     </div>
 
                     {{-- Thumbnails Strip --}}
@@ -2504,11 +2504,14 @@
                 <div class="bh-product-info">
 
                     {{-- Brand Link --}}
-                    <a href="/collections/pi-industries" class="bh-brand-tag">PI Industries</a>
+                    @if ($product->brand)
+                        <a href="{{ route('products', ['data_from' => 'brand', 'id' => $product->brand_id, 'page' => 1]) }}"
+                            class="bh-brand-tag">{{ $product->brand->name }}</a>
+                    @endif
 
                     {{-- Title --}}
                     <h1 class="bh-product-title">
-                        Biovita Liquid Biofertilizer (Seaweed Extract – Ascophyllum nodosum)
+                        {{ $product->name }}
                     </h1>
 
                     {{-- Rating & Social Proof (dynamic from reviews + orders) --}}
@@ -2552,7 +2555,7 @@
                     @if ($defaultVariant['discount'] > 0)
                     <div class="bh-special-deal-banner" onclick="bhSelectVariant('{{ $defaultVariant['name'] }}', {{ $defaultVariant['price'] }}, {{ $defaultVariant['mrp'] }}, {{ $defaultVariant['discount'] }})">
                         <div class="bh-special-deal-left">
-                            <img src="https://media.bighaat.com/wsf-animations/PDP_SP_Deal.gif?w=16&q=80&format=webp&compress=true" alt="Deal" class="bh-deal-gif-icon">
+                            <svg class="bh-deal-gif-icon" viewBox="0 0 24 24" style="stroke:none;" fill="currentColor" aria-hidden="true"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.22-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
                             <span>Get it for <span class="bh-deal-highlight-price">₹{{ number_format($defaultVariant['price']) }}</span> with deals</span>
                         </div>
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
@@ -2576,7 +2579,7 @@
                                          data-mrp="{{ $v['mrp'] }}"
                                          data-discount="{{ $v['discount'] }}"
                                          onclick="bhOnVariantCardClick(this)">
-                                        <img class="bh-variant-selected-tick" src="https://media.bighaat.com/appicons/selected-variant.webp?w=96&q=80&format=webp&compress=true" alt="Selected">
+                                        <svg class="bh-variant-selected-tick" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#168A3A"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                         <div class="bh-vc-size-name">{{ $v['name'] }}</div>
                                         @if ($v['discount'] > 0)
                                         <div><span class="bh-vc-discount-tag">{{ $v['discount'] }}% OFF</span></div>
@@ -2605,7 +2608,7 @@
                                          data-mrp="{{ $mpack->mrp }}"
                                          data-discount="{{ $mpack->discount }}"
                                          onclick="bhOnVariantCardClick(this)">
-                                        <img class="bh-variant-selected-tick" src="https://media.bighaat.com/appicons/selected-variant.webp?w=96&q=80&format=webp&compress=true" alt="Selected">
+                                        <svg class="bh-variant-selected-tick" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#168A3A"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                         <div class="bh-vc-size-name " style="">
                                             <div style="white-space: nowrap;">{{ $mpack->name }}</div>
                                         </div>
@@ -2624,7 +2627,20 @@
                         </div>
                         @endif
 
-                        {{-- Composition Box --}}
+                        {{-- Composition Box (only when composition/technical name data exists) --}}
+                        @php
+                            $compositionText = '';
+                            foreach ($product->specifications ?? collect() as $spec) {
+                                if (stripos((string) $spec->label, 'composition') !== false || stripos((string) $spec->label, 'technical') !== false) {
+                                    $compositionText = trim(strip_tags((string) $spec->value));
+                                    break;
+                                }
+                            }
+                            if ($compositionText === '') {
+                                $compositionText = trim((string) ($product->technical_name ?? ''));
+                            }
+                        @endphp
+                        @if ($compositionText !== '')
                         <div class="bh-composition-card">
                             <div class="bh-comp-left">
                                 <div class="bh-comp-icon-wrap">
@@ -2632,11 +2648,11 @@
                                 </div>
                                 <div>
                                     <div class="bh-comp-title">Composition</div>
-                                    <div class="bh-comp-content">Seaweed extracts (Ascophyllum nodosum)</div>
+                                    <div class="bh-comp-content">{{ $compositionText }}</div>
                                 </div>
                             </div>
-                            <img class="bh-comp-badge-img" src="https://media.bighaat.com/trustmarkers/green-molecule.webp" alt="Bio Active Molecule" onerror="this.style.display='none'">
                         </div>
+                        @endif
 
                         {{-- Delivery / Pincode Checker --}}
                         <div class="bh-delivery-widget">
@@ -2685,25 +2701,40 @@
                     </form>
 
                     {{-- Trust Checkpoints List --}}
+                    @php
+                        $originText = '';
+                        foreach ($product->specifications ?? collect() as $spec) {
+                            if (stripos((string) $spec->label, 'origin') !== false) {
+                                $originText = trim(strip_tags((string) $spec->value));
+                                break;
+                            }
+                        }
+                    @endphp
                     <div class="bh-trust-features">
-                        <div class="bh-trust-item">
-                            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-                            <span>Country of Origin: India</span>
-                        </div>
+                        @if ($originText !== '')
+                            <div class="bh-trust-item">
+                                <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                                <span>{{ \App\CPU\translate('Country of Origin') }}: {{ $originText }}</span>
+                            </div>
+                        @endif
                         <div class="bh-trust-item">
                             <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                            <span>100% Secure Payments</span>
+                            <span>{{ \App\CPU\translate('Secure Payments') }}</span>
                         </div>
                         <div class="bh-trust-item">
                             <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                            <span>In stock, Ready to Ship</span>
+                            @if ((int) $product->current_stock > 0)
+                                <span>{{ \App\CPU\translate('In stock') }}</span>
+                            @else
+                                <span>{{ \App\CPU\translate('Currently out of stock') }}</span>
+                            @endif
                         </div>
                     </div>
                     @php
                         $company_phone = \App\CPU\Helpers::get_business_settings('company_phone');
                     @endphp
                       {{-- Bulk Order Inquiries Banner --}}
-                    <a href="#" class="bh-bulk-order-banner">
+                    <a href="{{ route('contacts') }}" class="bh-bulk-order-banner">
                         <div>
                             <p class="title">Looking for Bulk Orders? Inquire Now</p>
                             <span class="phone">Missed Call To Order:   {{ $company_phone }}</span>
@@ -2807,46 +2838,34 @@
                                 </div>
                             @endforelse
                         </div>
-                        <h3 class="bh-section-heading">Compatibility, Safety & Storage</h3>
+                        <h3 class="bh-section-heading">Safety, Handling &amp; Storage</h3>
                         <div class="bh-tri-cards-grid">
                             <div class="bh-tri-card">
                                 <h4>
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="#0B5D2A"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-                                    Tank-Mix Compatibility
+                                    Follow The Label
                                 </h4>
-                                <p>BIOVITA Liquid is broadly compatible with most commonly used insecticides, fungicides, and water-soluble foliar fertilizers. Always conduct a standard jar test before mixing with alkaline compounds.</p>
+                                <p>Always read and follow the directions for use, precautions and warnings printed on the product label and packaging. This page does not replace the manufacturer's instructions.</p>
                             </div>
                             <div class="bh-tri-card">
                                 <h4>
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="#D97706"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 10h2v4h-2zm0 6h2v2h-2z"/></svg>
-                                    Safety Precautions
+                                    Handle With Care
                                 </h4>
-                                <p>Keep out of reach of children and pets. Use protective gloves while mixing and spraying. Wash hands thoroughly with soap after handling. In case of accidental eye contact, rinse with clean water.</p>
+                                <p>Keep out of reach of children and pets. Wear the protective clothing, gloves and mask recommended on the label while opening, mixing and spraying. Wash thoroughly after handling.</p>
                             </div>
                             <div class="bh-tri-card">
                                 <h4>
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="#2563EB"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
-                                    Storage Guidelines
+                                    Store Properly
                                 </h4>
-                                <p>Store tightly sealed in its original container in a cool, well-ventilated, dry place away from direct sunlight and extreme temperatures. It is advisable to use the entire quantity once opened.</p>
+                                <p>Keep the product tightly sealed in its original container in a cool, dry and ventilated place, away from direct sunlight, food and animal feed.</p>
                             </div>
                         </div>
                     </div>
 
                  
 
-                    {{-- BigHaat Agronomy Expert Advice --}}
-                    <div class="bh-expert-advice-card">
-                        <div class="bh-expert-avatar">
-                            <i class="fa fa-user-md"></i>
-                        </div>
-                        <div class="bh-expert-text-wrap">
-                            <blockquote>
-                                "For maximum yield results, synchronize BIOVITA applications with your crop's key physiological milestones—namely pre-branching, early flower initiation, and early fruit set. Always spray during cooler morning or late evening hours with adequate soil moisture, and pair with balanced basal NPK nutrition rather than using it as a standalone fertilizer."
-                            </blockquote>
-                            <div class="bh-expert-author">— Dr. R. K. Sharma, Senior Agronomy Specialist, BigHaat Kisan Advisory</div>
-                        </div>
-                    </div>
                 </div>
 
                 {{-- Tab 2: Dosage & Recommended Crops --}}
@@ -2953,31 +2972,53 @@
             </div>
 
             {{-- 6. Similar Products Section --}}
+            @php
+                $simCatIds = json_decode($product->category_ids, true) ?? [];
+                $simCatLink = route('products', ['data_from' => 'latest', 'page' => 1]);
+                if (count($simCatIds) > 0) {
+                    $simCat = end($simCatIds);
+                    $simCatId = is_array($simCat) ? ($simCat['id'] ?? null) : $simCat;
+                    if ($simCatId) {
+                        $simCatLink = route('products', ['id' => $simCatId, 'data_from' => 'category', 'page' => 1]);
+                    }
+                }
+            @endphp
             <div class="bh-content-card" style="margin-top:20px;">
                 <div class="bh-similar-header">
                     <h2 class="bh-similar-title">Similar Products</h2>
-                    <a href="{{ route('products', ['data_from' => 'category']) }}" class="bh-similar-viewall">View All &rarr;</a>
+                    <a href="{{ $simCatLink }}" class="bh-similar-viewall">View All &rarr;</a>
                 </div>
 
                 <div class="bh-similar-grid">
                     @if (isset($relatedProducts) && count($relatedProducts) > 0)
                         @foreach ($relatedProducts->take(6) as $rProd)
+                            @php
+                                $rReviews = $rProd->reviews ?? collect();
+                                $rReviewsCount = $rReviews->count();
+                                $rRating = $rReviewsCount > 0 ? round($rReviews->avg('rating'), 1) : 0;
+                                $rDiscountAmount = \App\CPU\Helpers::get_product_discount($rProd, $rProd->unit_price);
+                                $rDiscountPct = $rProd->unit_price > 0 ? round(($rDiscountAmount / $rProd->unit_price) * 100) : 0;
+                            @endphp
                             <a href="{{ route('product', $rProd->slug) }}" class="bh-similar-card">
                                 <div class="bh-sc-img-wrap">
-                                    @if ($rProd->discount > 0)
-                                        <span class="bh-sc-discount">{{ round($rProd->discount) }}% OFF</span>
+                                    @if ($rDiscountPct > 0)
+                                        <span class="bh-sc-discount">{{ $rDiscountPct }}% OFF</span>
                                     @endif
-                                    <span class="bh-sc-rating">4.8 ★</span>
+                                    @if ($rReviewsCount > 0)
+                                        <span class="bh-sc-rating">{{ number_format($rRating, 1) }} &#9733;</span>
+                                    @endif
                                     <img src="{{ asset(config('app.public_storage_path') . '/product/thumbnail/' . $rProd->thumbnail) }}"
-                                         onerror="this.src='https://cdn.shopify.com/s/files/1/0722/2059/files/amstorng-seaweed-nutrient-based-file-6072.jpg?v=1737432481&width=256&format=webp'"
+                                         onerror="this.src='{{ asset('assets/front-end/img/placeholder.png') }}'"
                                          alt="{{ $rProd->name }}">
                                 </div>
                                 <div class="bh-sc-body">
                                     <h4 class="bh-sc-title">{{ $rProd->name }}</h4>
-                                    <span class="bh-sc-brand">Organic Crop Nutrition</span>
+                                    @if ($rProd->brand)
+                                        <span class="bh-sc-brand">{{ $rProd->brand->name }}</span>
+                                    @endif
                                     <div class="bh-sc-price-row">
-                                        <span class="bh-sc-sell">{{ \App\CPU\Helpers::currency_converter($rProd->unit_price - \App\CPU\Helpers::get_product_discount($rProd, $rProd->unit_price)) }}</span>
-                                        @if ($rProd->discount > 0)
+                                        <span class="bh-sc-sell">{{ \App\CPU\Helpers::currency_converter($rProd->unit_price - $rDiscountAmount) }}</span>
+                                        @if ($rDiscountPct > 0)
                                             <span class="bh-sc-mrp">{{ \App\CPU\Helpers::currency_converter($rProd->unit_price) }}</span>
                                         @endif
                                     </div>
@@ -2985,67 +3026,10 @@
                             </a>
                         @endforeach
                     @else
-                        {{-- High-fidelity BigHaat Fallback Similar Products --}}
-                        <a href="#" class="bh-similar-card">
-                            <div class="bh-sc-img-wrap">
-                                <span class="bh-sc-discount">10% OFF</span>
-                                <span class="bh-sc-rating">4.8 ★</span>
-                                <img src="https://cdn.shopify.com/s/files/1/0722/2059/files/amstorng-seaweed-nutrient-based-file-6072.jpg?v=1737432481&width=256&format=webp" alt="Amruth Amstrong">
-                            </div>
-                            <div class="bh-sc-body">
-                                <h4 class="bh-sc-title">Amruth Amstrong Growth Promoter</h4>
-                                <span class="bh-sc-brand">Amruth Organic</span>
-                                <div class="bh-sc-price-row">
-                                    <span class="bh-sc-sell">₹540</span>
-                                    <span class="bh-sc-mrp">₹600</span>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="#" class="bh-similar-card">
-                            <div class="bh-sc-img-wrap">
-                                <span class="bh-sc-discount">15% OFF</span>
-                                <span class="bh-sc-rating">4.7 ★</span>
-                                <img src="https://cdn.shopify.com/s/files/1/0722/2059/files/iffco-sagarika-seaweed-extract-fertilizer.jpg?v=1737432481&width=256&format=webp" onerror="this.src='{{ $galleryImages[0] }}'" alt="IFFCO Sagarika">
-                            </div>
-                            <div class="bh-sc-body">
-                                <h4 class="bh-sc-title">IFFCO Sagarika Seaweed Extract Biofertilizer</h4>
-                                <span class="bh-sc-brand">IFFCO</span>
-                                <div class="bh-sc-price-row">
-                                    <span class="bh-sc-sell">₹480</span>
-                                    <span class="bh-sc-mrp">₹565</span>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="#" class="bh-similar-card">
-                            <div class="bh-sc-img-wrap">
-                                <span class="bh-sc-discount">20% OFF</span>
-                                <span class="bh-sc-rating">4.9 ★</span>
-                                <img src="https://cdn.shopify.com/s/files/1/0722/2059/files/biovita-granules.jpg?v=1737432481&width=256&format=webp" onerror="this.src='{{ $galleryImages[1] }}'" alt="Biovita Granules">
-                            </div>
-                            <div class="bh-sc-body">
-                                <h4 class="bh-sc-title">PI Biovita Granules (Seaweed Extract 4kg)</h4>
-                                <span class="bh-sc-brand">PI Industries</span>
-                                <div class="bh-sc-price-row">
-                                    <span class="bh-sc-sell">₹699</span>
-                                    <span class="bh-sc-mrp">₹875</span>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="#" class="bh-similar-card">
-                            <div class="bh-sc-img-wrap">
-                                <span class="bh-sc-discount">12% OFF</span>
-                                <span class="bh-sc-rating">4.6 ★</span>
-                                <img src="https://cdn.shopify.com/s/files/1/0722/2059/files/rapigro-rallis.jpg?v=1737432481&width=256&format=webp" onerror="this.src='{{ $galleryImages[0] }}'" alt="Rallis RapiGro">
-                            </div>
-                            <div class="bh-sc-body">
-                                <h4 class="bh-sc-title">Tata Rallis RapiGro Bio Plant Energizer</h4>
-                                <span class="bh-sc-brand">Tata Rallis</span>
-                                <div class="bh-sc-price-row">
-                                    <span class="bh-sc-sell">₹390</span>
-                                    <span class="bh-sc-mrp">₹445</span>
-                                </div>
-                            </div>
-                        </a>
+                        <div class="bh-review-empty" style="grid-column: 1 / -1; text-align:center; padding:24px 12px;">
+                            <p>No similar products are available right now.</p>
+                            <a href="{{ route('categories') }}" class="btn btn-outline-primary btn-sm mt-2">{{ \App\CPU\translate('Browse categories') }}</a>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -3057,10 +3041,10 @@
     <div class="bh-mobile-sticky-bar">
         <div class="bh-mobile-bar-inner">
             <div class="bh-mobile-prod-peek">
-                <img src="{{ $galleryImages[0] }}" alt="Biovita">
+                <img src="{{ $galleryImages[0] }}" alt="{{ $product->name }}">
                 <div class="bh-mobile-peek-info">
-                    <span class="bh-mobile-peek-price" id="bhMobilePeekPrice">₹799</span>
-                    <span class="bh-mobile-peek-size" id="bhMobilePeekSize">1 ltr (41% OFF)</span>
+                    <span class="bh-mobile-peek-price" id="bhMobilePeekPrice">₹{{ number_format($defaultVariant['price']) }}</span>
+                    <span class="bh-mobile-peek-size" id="bhMobilePeekSize">{{ $defaultVariant['name'] }}{{ $defaultVariant['discount'] > 0 ? ' (' . $defaultVariant['discount'] . '% OFF)' : '' }}</span>
                 </div>
             </div>
             <div class="bh-mobile-cta-actions">
@@ -3210,7 +3194,14 @@
             if (discountEl) discountEl.textContent = discount + '% OFF';
 
             var topBadge = document.getElementById('bhBadgeTop');
-            if (topBadge) topBadge.textContent = discount + '% OFF';
+            if (topBadge) {
+                if (parseInt(discount) > 0) {
+                    topBadge.style.display = '';
+                    topBadge.textContent = discount + '% OFF';
+                } else {
+                    topBadge.style.display = 'none';
+                }
+            }
 
             var sizeLabel = document.getElementById('bhCurrentSizeLabel');
             if (sizeLabel) sizeLabel.textContent = size;
@@ -3223,7 +3214,7 @@
             if (mobilePrice) mobilePrice.textContent = '₹' + parseInt(price).toLocaleString('en-IN');
 
             var mobileSize = document.getElementById('bhMobilePeekSize');
-            if (mobileSize) mobileSize.textContent = size + ' (' + discount + '% OFF)';
+            if (mobileSize) mobileSize.textContent = size + (parseInt(discount) > 0 ? ' (' + discount + '% OFF)' : '');
         }
 
         // Quantity Stepper

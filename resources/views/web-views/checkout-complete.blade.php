@@ -15,7 +15,7 @@
 
         @media (max-width: 600px) {
             .orderId {
-                margin- {{Session::get('direction') === "rtl" ? 'left' : 'right'}}: 91px;
+                margin-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}: 91px;
             }
         }
         /*  */

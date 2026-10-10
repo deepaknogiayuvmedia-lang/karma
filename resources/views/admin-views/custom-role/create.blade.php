@@ -116,6 +116,15 @@
                                     for="system_settings">{{ \App\CPU\translate('System_Settings') }}</label>
                             </div>
                         </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="form-group d-flex gap-2">
+                                <input type="checkbox" class="module-permission" name="modules[]"
+                                    value="pos_management" id="pos_management">
+                                <label class="title-color mb-0"
+                                    style="{{ Session::get('direction') === 'rtl' ? 'margin-right: 1.25rem;' : '' }};"
+                                    for="pos_management">{{ \App\CPU\translate('POS_Management') }}</label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-end">

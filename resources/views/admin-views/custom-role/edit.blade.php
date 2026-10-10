@@ -112,6 +112,16 @@
                                     for="system_settings">{{ \App\CPU\translate('System_Settings') }}</label>
                             </div>
                         </div>
+                        <div class="col-lg-3 col-sm-6">
+                            <div class="form-group form-check">
+                                <input type="checkbox" name="modules[]" value="pos_management"
+                                    class="form-check-input module-permission" id="pos_management"
+                                    {{ in_array('pos_management', (array) json_decode($role['module_access'])) ? 'checked' : '' }}>
+                                <label class="form-check-label"
+                                    style="{{ Session::get('direction') === 'rtl' ? 'margin-right: 1.25rem;' : '' }};"
+                                    for="pos_management">{{ \App\CPU\translate('POS_Management') }}</label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-end gap-3">

@@ -117,7 +117,7 @@ class LoginController extends Controller
             session()->put('wish_list', $wish_list);
             Toastr::info('Welcome to ' . Helpers::get_business_settings('company_name') . '!');
             CartManager::cart_to_db();
-            return redirect(session('keep_return_url'));
+            return redirect(Helpers::safe_return_url(session('keep_return_url')));
         }
 
         Toastr::error('Credentials do not match or account has been suspended.');

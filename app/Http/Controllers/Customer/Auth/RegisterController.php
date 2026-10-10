@@ -167,7 +167,7 @@ class RegisterController extends Controller
                     session()->put('wish_list', $wish_list);
                     CartManager::cart_to_db();
                     
-                    return redirect(session('keep_return_url') ?? route('home'));
+                    return redirect(\App\CPU\Helpers::safe_return_url(session('keep_return_url')));
                 }
                 else{
                     return redirect(route('customer.auth.login'));
@@ -197,7 +197,7 @@ class RegisterController extends Controller
                 session()->put('wish_list', $wish_list);
                 CartManager::cart_to_db();
 
-                return redirect(session('keep_return_url') ?? route('home'));
+                return redirect(\App\CPU\Helpers::safe_return_url(session('keep_return_url')));
             } else {
                 Toastr::error('Verification code/ OTP mismatched');
                 return redirect()->back();

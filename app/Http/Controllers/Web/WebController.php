@@ -908,8 +908,6 @@ class WebController extends Controller
     {
         $product = Product::active()->with(['reviews', 'seller.shop', 'tags', 'faqs', 'specifications', 'features', 'packs'])->where('slug', $slug)->first();
         if ($product != null) {
-            $countOrder = OrderDetail::where('product_id', $product->id)->count();
-            $countWishlist = Wishlist::where('product_id', $product->id)->count();
             $relatedProducts = Product::with(['reviews'])
                 ->active()
                 ->lowestPricePerPid()
@@ -929,31 +927,8 @@ class WebController extends Controller
                 ->unique('name')
                 ->values();
 
-            // Other vendors selling same product (sorted by lowest price, no duplicates)
-            $otherVendorProducts = Product::with(['seller.shop', 'reviews'])
-                ->active()
-                ->lowestPricePerPid()
-                ->where('name', $product->name)
-                ->where('id', '!=', $product->id)
-                ->orderBy('unit_price', 'asc')
-                ->take(5)
-                ->get()
-                ->unique('seller_id')
-                ->values();
-            $deal_of_the_day = DealOfTheDay::where('product_id', $product->id)->where('status', 1)->first();
-            $current_date = date('Y-m-d');
-            $seller_vacation_start_date = ($product->added_by == 'seller' && isset($product->seller->shop->vacation_start_date)) ? date('Y-m-d', strtotime($product->seller->shop->vacation_start_date)) : null;
-            $seller_vacation_end_date = ($product->added_by == 'seller' && isset($product->seller->shop->vacation_end_date)) ? date('Y-m-d', strtotime($product->seller->shop->vacation_end_date)) : null;
-            $seller_temporary_close = ($product->added_by == 'seller' && isset($product->seller->shop->temporary_close)) ? $product->seller->shop->temporary_close : false;
-
-            $temporary_close = Helpers::get_business_settings('temporary_close');
-            $inhouse_vacation = Helpers::get_business_settings('vacation_add');
-            $inhouse_vacation_start_date = $product->added_by == 'admin' ? $inhouse_vacation['vacation_start_date'] : null;
-            $inhouse_vacation_end_date = $product->added_by == 'admin' ? $inhouse_vacation['vacation_end_date'] : null;
-            $inhouse_vacation_status = $product->added_by == 'admin' ? $inhouse_vacation['status'] : false;
-            $inhouse_temporary_close = $product->added_by == 'admin' ? $temporary_close['status'] : false;
-
-            $recentlyViewed = [];
+            // Record the view for the homepage "recently viewed" carousel.
+            // The carousel reads this table directly, so only the write belongs here.
             if (auth('customer')->check()) {
                 $grpId = !empty($product->pid) ? $product->pid : $product->id;
                 $currentGroupFeatured = Product::active()
@@ -968,101 +943,13 @@ class WebController extends Controller
                     ['user_id' => auth('customer')->id(), 'product_id' => $targetProductId],
                     ['updated_at' => now()]
                 );
-
-                $recentlyViewed = \App\Model\RecentlyViewedProduct::with(['product.reviews'])
-                    ->where('user_id', auth('customer')->id())
-                    ->where('product_id', '!=', $targetProductId)
-                    ->orderBy('id', 'desc')
-                    ->take(15)
-                    ->get()
-                    ->map(function ($rv) {
-                        if (!$rv->product)
-                            return null;
-                        $grpId = !empty($rv->product->pid) ? $rv->product->pid : $rv->product->id;
-                        $featuredProd = Product::active()
-                            ->where(function ($q) use ($grpId) {
-                                $q->where('id', $grpId)->orWhere('pid', $grpId);
-                            })
-                            ->lowestPricePerPid()
-                            ->first();
-                        if ($featuredProd) {
-                            $rv->product = $featuredProd;
-                            $rv->product_id = $featuredProd->id;
-                        }
-                        return $rv;
-                    })
-                    ->filter()
-                    ->unique('product_id')
-                    ->take(5)
-                    ->values();
             }
-
-            // Best Selling Products
-            $bestSellIds = OrderDetail::select('product_id', DB::raw('COUNT(product_id) as quantity'))
-                ->groupBy('product_id')
-                ->orderByDesc('quantity')
-                ->limit(12)
-                ->pluck('product_id');
-            $bestSellProducts = Product::with(['reviews'])
-                ->active()
-                ->lowestPricePerPid()
-                ->whereIn('id', $bestSellIds)
-                ->orderByRaw('FIELD(id, ' . implode(',', $bestSellIds->toArray()) . ')')
-                ->get();
-
-            // New Arrivals
-            $newArrivals = Product::with(['reviews'])
-                ->active()
-                ->lowestPricePerPid()
-                ->orderBy('id', 'desc')
-                ->limit(12)
-                ->get();
-
-            // Featured Products
-            $featuredProducts = Product::with(['reviews'])
-                ->active()
-                ->lowestPricePerPid()
-                ->where('featured', 1)
-                ->orderBy('indexing', 'asc')
-                ->orderBy('priority', 'desc')
-                ->limit(12)
-                ->get();
-
-            // Banners
-            $banners = \App\Model\Banner::where('banner_type', 'Main Section Banner')
-                ->where('published', 1)
-                ->limit(5)
-                ->get();
-
-            // Brands
-            $brands = \App\Model\Brand::where('status', 1)
-                ->orderBy('name')
-                ->limit(15)
-                ->get();
 
             return view(
                 'web-views.products.details',
                 compact(
                     'product',
-                    'countWishlist',
-                    'countOrder',
-                    'relatedProducts',
-                    'otherVendorProducts',
-                    'recentlyViewed',
-                    'deal_of_the_day',
-                    'current_date',
-                    'seller_vacation_start_date',
-                    'seller_vacation_end_date',
-                    'seller_temporary_close',
-                    'inhouse_vacation_start_date',
-                    'inhouse_vacation_end_date',
-                    'inhouse_vacation_status',
-                    'inhouse_temporary_close',
-                    'bestSellProducts',
-                    'newArrivals',
-                    'featuredProducts',
-                    'banners',
-                    'brands'
+                    'relatedProducts'
                 )
             );
         }

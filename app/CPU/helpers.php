@@ -1003,6 +1003,21 @@ class Helpers
         }
         return $config;
     }
+
+    /**
+     * Restrict post-login redirects to same-host URLs so a forged Referer
+     * cannot send a freshly authenticated user to an external site.
+     */
+    public static function safe_return_url($url)
+    {
+        $home_host = parse_url(url('/'), PHP_URL_HOST);
+
+        if (is_string($url) && $url !== '' && parse_url($url, PHP_URL_HOST) === $home_host) {
+            return $url;
+        }
+
+        return url('/');
+    }
 }
 
 

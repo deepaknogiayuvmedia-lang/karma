@@ -29,27 +29,67 @@ class RazorPayController extends Controller
 
     public function payment(Request $request)
     {
+        $payment_id = $request->input('razorpay_payment_id');
+        if (empty($payment_id)) {
+            Toastr::error('Payment process failed');
+            return back();
+        }
+
+        // Verify the checkout signature when Razorpay provides it.
+        $order_id = $request->input('razorpay_order_id');
+        $signature = $request->input('razorpay_signature');
+        if (!empty($order_id) && !empty($signature)) {
+            $expected = hash_hmac('sha256', $order_id . '|' . $payment_id, (string) config('razor.razor_secret'));
+            if (!hash_equals($expected, (string) $signature)) {
+                Toastr::error('Payment verification failed');
+                return back();
+            }
+        }
+
         try {
             $api = new Api(config('razor.razor_key'), config('razor.razor_secret'));
-            $payment = $api->payment->fetch($request['razorpay_payment_id']);
-            /*$api->transfer->create(array('account' => 'acc_id', 'amount' => 500, 'currency' => 'INR'));*/
+            $payment = $api->payment->fetch($payment_id);
 
-            if (count($request->all()) && !empty($request['razorpay_payment_id'])) {
-                $response = $api->payment->fetch($request['razorpay_payment_id'])->capture(array('amount' => $payment['amount']));
-                $unique_id = OrderManager::gen_unique_id();
-                $order_ids = [];
-                foreach (CartManager::get_cart_group_ids() as $group_id) {
-                    $data = [
-                        'payment_method' => 'razor_pay',
-                        'order_status' => 'confirmed',
-                        'payment_status' => 'paid',
-                        'transaction_ref' => $response['id'],
-                        'order_group_id' => $unique_id,
-                        'cart_group_id' => $group_id
-                    ];
-                    $order_id = OrderManager::generate_order($data);
-                    array_push($order_ids, $order_id);
-                }
+            // Idempotency: a payment already converted into orders must not create them again.
+            if (Order::where('transaction_ref', $payment_id)->exists()) {
+                CartManager::cart_clean();
+                return $this->payment_complete_response();
+            }
+
+            $status = $payment['status'] ?? '';
+            if (!in_array($status, ['authorized', 'captured'], true)) {
+                Toastr::error('Payment process failed');
+                return back();
+            }
+
+            // Verify the paid amount against the server-side cart total.
+            // Must mirror the value rendered into the Razorpay checkout form:
+            // (round(usdToinr(cart_grand_total() - coupon_discount))) * 100.
+            $discount = session()->has('coupon_discount') ? session('coupon_discount') : 0;
+            $expected_paise = (int) (round(\App\CPU\Convert::usdToinr(CartManager::cart_grand_total() - $discount)) * 100);
+            $paid_paise = (int) ($payment['amount'] ?? 0);
+            if ($expected_paise <= 0 || $paid_paise !== $expected_paise) {
+                Toastr::error('Payment amount mismatch. Please contact support.');
+                return back();
+            }
+
+            if ($status === 'authorized') {
+                $payment = $api->payment->fetch($payment_id)->capture(['amount' => $paid_paise]);
+            }
+
+            $unique_id = OrderManager::gen_unique_id();
+            $order_ids = [];
+            foreach (CartManager::get_cart_group_ids() as $group_id) {
+                $data = [
+                    'payment_method' => 'razor_pay',
+                    'order_status' => 'confirmed',
+                    'payment_status' => 'paid',
+                    'transaction_ref' => $payment_id,
+                    'order_group_id' => $unique_id,
+                    'cart_group_id' => $group_id
+                ];
+                $order_id = OrderManager::generate_order($data);
+                array_push($order_ids, $order_id);
             }
             CartManager::cart_clean();
 
@@ -58,6 +98,11 @@ class RazorPayController extends Controller
             return back();
         }
 
+        return $this->payment_complete_response();
+    }
+
+    private function payment_complete_response()
+    {
         if (session()->has('payment_mode') && session('payment_mode') == 'app') {
             return redirect()->route('payment-success');
         }

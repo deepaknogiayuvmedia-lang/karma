@@ -113,7 +113,7 @@ class LoginController extends Controller
                     Mail::to($admin->email)->send(new \App\Mail\EmailVerification($otp));
                 }
 
-                Log::info("Admin login OTP sent to {$admin->email}: {$otp}");
+                Log::info("Admin login OTP sent to {$admin->email}");
             } catch (\Exception $e) {
                 Log::error("Failed to send Admin login OTP: " . $e->getMessage());
             }
@@ -144,7 +144,8 @@ class LoginController extends Controller
 
         if ($session_data['expires_at'] < time()) {
             Toastr::error(\App\CPU\translate('OTP code has expired. Please request a new one.'));
-            return back();
+            Session::forget('admin_otp_verification');
+            return redirect()->route('admin.auth.login');
         }
 
         $otp = $request->otp;
@@ -152,12 +153,22 @@ class LoginController extends Controller
             $otp = implode('', $otp);
         }
 
-        if ($otp == $session_data['otp']) {
+        $attempts = (int) ($session_data['attempts'] ?? 0);
+        if ($attempts >= 5) {
+            Session::forget('admin_otp_verification');
+            Toastr::error(\App\CPU\translate('Too many invalid attempts. Please login again.'));
+            return redirect()->route('admin.auth.login');
+        }
+
+        if (hash_equals((string) $session_data['otp'], (string) $otp)) {
             auth('admin')->loginUsingId($session_data['admin_id'], $session_data['remember']);
             Session::forget('admin_otp_verification');
             Toastr::success(\App\CPU\translate('Welcome to your dashboard!'));
             return redirect()->route('admin.dashboard');
         }
+
+        $session_data['attempts'] = $attempts + 1;
+        Session::put('admin_otp_verification', $session_data);
 
         Toastr::error(\App\CPU\translate('Invalid OTP code. Please try again.'));
         return back();
@@ -189,7 +200,7 @@ class LoginController extends Controller
                 Mail::to($session_data['email'])->send(new \App\Mail\EmailVerification($otp));
             }
 
-            Log::info("Admin login OTP resent to {$session_data['email']}: {$otp}");
+            Log::info("Admin login OTP resent to {$session_data['email']}");
 
             if ($request->ajax()) {
                 return response()->json([

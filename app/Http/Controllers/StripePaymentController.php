@@ -13,6 +13,7 @@ use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use PHPUnit\Exception;
+use Illuminate\Http\Request;
 use Stripe\Charge;
 use Stripe\Stripe;
 
@@ -65,40 +66,76 @@ class StripePaymentController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => $YOUR_DOMAIN . '/pay-stripe/success',
+            'success_url' => $YOUR_DOMAIN . '/pay-stripe/success?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => url()->previous(),
         ]);
 
         return response()->json(['id' => $checkout_session->id]);
     }
 
-    public function success()
+    public function success(Request $request)
     {
-        $unique_id = OrderManager::gen_unique_id();
-        $order_ids = [];
-        foreach (CartManager::get_cart_group_ids() as $group_id) {
-            $data = [
-                'payment_method' => 'stripe',
-                'order_status' => 'confirmed',
-                'payment_status' => 'paid',
-                'transaction_ref' => session('transaction_ref'),
-                'order_group_id' => $unique_id,
-                'cart_group_id' => $group_id
-            ];
-            $order_id = OrderManager::generate_order($data);
-            array_push($order_ids, $order_id);
-        }
-        CartManager::cart_clean();
-        
         if (session()->has('payment_mode') && session('payment_mode') == 'app') {
             return redirect()->route('payment-success');
         }
-        
-        if (auth('customer')->check()) {
-            Toastr::success('Payment success.');
-            return view('web-views.checkout-complete');
+
+        $session_id = $request->query('session_id');
+        $tran = session('transaction_ref');
+
+        // The order must be created only from a Stripe-verified checkout session.
+        if (empty($session_id) || empty($tran) || !auth('customer')->check()) {
+            Toastr::error('Payment verification failed');
+            return redirect('/account-oder');
         }
-        return response()->json(['message' => 'Payment succeeded'], 200);
+
+        try {
+            $config = Helpers::get_business_settings('stripe');
+            if (empty($config['api_key'] ?? null)) {
+                throw new \RuntimeException('Stripe api key missing');
+            }
+            Stripe::setApiKey($config['api_key']);
+
+            $stripe_session = \Stripe\Checkout\Session::retrieve($session_id);
+
+            if ($stripe_session->payment_status !== 'paid' || $stripe_session->status !== 'complete') {
+                Toastr::error('Payment verification failed');
+                return redirect('/account-oder');
+            }
+
+            $discount = session()->has('coupon_discount') ? session('coupon_discount') : 0;
+            $expected_paise = (int) round(round(CartManager::cart_grand_total() - $discount, 2) * 100);
+            $paid_paise = (int) ($stripe_session->amount_total ?? 0);
+            if ($expected_paise <= 0 || $paid_paise !== $expected_paise) {
+                Toastr::error('Payment amount mismatch. Please contact support.');
+                return redirect('/account-oder');
+            }
+
+            // Idempotency: this checkout session must not create orders twice.
+            if (Order::where('transaction_ref', $tran)->exists()) {
+                CartManager::cart_clean();
+                Toastr::success('Payment success.');
+                return view('web-views.checkout-complete');
+            }
+
+            $unique_id = OrderManager::gen_unique_id();
+            foreach (CartManager::get_cart_group_ids() as $group_id) {
+                OrderManager::generate_order([
+                    'payment_method' => 'stripe',
+                    'order_status' => 'confirmed',
+                    'payment_status' => 'paid',
+                    'transaction_ref' => $tran,
+                    'order_group_id' => $unique_id,
+                    'cart_group_id' => $group_id
+                ]);
+            }
+            CartManager::cart_clean();
+        } catch (\Throwable $e) {
+            Toastr::error('Payment verification failed');
+            return redirect('/account-oder');
+        }
+
+        Toastr::success('Payment success.');
+        return view('web-views.checkout-complete');
     }
 
     public function fail()

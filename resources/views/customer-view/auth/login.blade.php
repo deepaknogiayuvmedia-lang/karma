@@ -11,8 +11,8 @@
 
     <div class="container py-4 py-lg-5 my-4"
          style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
-        <div class="mx-auto __max-w-620">
-            <div class="card border-0 box-shadow">
+        <div class="mx-auto __max-w-620 row justify-content-center">
+            <div class="card border-0 box-shadow col-md-7 ">
                 <div class="card-body">
                     <h2 class="h4 mb-1">{{\App\CPU\translate('sign_in')}}</h2>
                     <form class="needs-validation mt-2" autocomplete="off" action="{{route('customer.auth.login')}}"

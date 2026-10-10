@@ -949,8 +949,8 @@
         <div class="bh-home-section container-fluid px-0">
             <div class="banners banners2">
                 <div class="banner">
-                    <a href="#" class="w-100"><img src="{{ asset('assets/front-end/img/id2-banner2.png') }}"
-                            alt="image" class="w-100"></a>
+                    <a href="{{ route('categories') }}" class="w-100"><img src="{{ asset('assets/front-end/img/id2-banner2.png') }}"
+                            alt="{{ \App\CPU\translate('Shop by category') }}" class="w-100"></a>
                 </div>
             </div>
         </div>
@@ -964,20 +964,20 @@
                             <li class="item-2">
                                 <div class="item-inner">
                                     <img class="policy-icon" src="{{ asset('assets/front-end/img/policy/price.png') }}"
-                                        alt="Best Price">
+                                        alt="{{ \App\CPU\translate('Shipping Policy') }}">
                                     <div class="content">
-                                        <a href="#">{{ \App\CPU\translate('Best Price Assured') }}</a>
-                                        <p>{{ \App\CPU\translate('Guaranteed Lowest') }}</p>
+                                        <a href="{{ route('shipping-policy') }}">{{ \App\CPU\translate('Shipping Policy') }}</a>
+                                        <p>{{ \App\CPU\translate('Delivery charges & timelines') }}</p>
                                     </div>
                                 </div>
                             </li>
                             <li class="item-3">
                                 <div class="item-inner">
                                     <img class="policy-icon" src="{{ asset('assets/front-end/img/policy/advice.png') }}"
-                                        alt="Expert Advice">
+                                        alt="{{ \App\CPU\translate('Help & Support') }}">
                                     <div class="content">
-                                        <a href="#">{{ \App\CPU\translate('Expert Advice') }}</a>
-                                        <p>{{ \App\CPU\translate('Support 24/7') }}</p>
+                                        <a href="{{ route('contacts') }}">{{ \App\CPU\translate('Help & Support') }}</a>
+                                        <p>{{ \App\CPU\translate('Contact & FAQ') }}</p>
                                     </div>
                                 </div>
                             </li>
@@ -985,10 +985,10 @@
                                 <div class="item-inner">
                                     <img class="policy-icon"
                                         src="{{ asset('assets/front-end/img/policy/safe_secure.png') }}"
-                                        alt="Safe & Secure">
+                                        alt="{{ \App\CPU\translate('Secure Payment') }}">
                                     <div class="content">
-                                        <a href="#">{{ \App\CPU\translate('Safe & Secure Payment') }}</a>
-                                        <p>{{ \App\CPU\translate('100% Protected') }}</p>
+                                        <a href="{{ route('privacy-policy') }}">{{ \App\CPU\translate('Secure Payment') }}</a>
+                                        <p>{{ \App\CPU\translate('Privacy & data safety') }}</p>
                                     </div>
                                 </div>
                             </li>
@@ -996,10 +996,10 @@
                                 <div class="item-inner">
                                     <img class="policy-icon"
                                         src="{{ asset('assets/front-end/img/policy/original.png') }}"
-                                        alt="Original Products">
+                                        alt="{{ \App\CPU\translate('Returns & Refunds') }}">
                                     <div class="content">
-                                        <a href="#">{{ \App\CPU\translate('Original Products') }}</a>
-                                        <p>{{ \App\CPU\translate('100% Genuine') }}</p>
+                                        <a href="{{ route('return-policy') }}">{{ \App\CPU\translate('Returns & Refunds') }}</a>
+                                        <p>{{ \App\CPU\translate('As per published policy') }}</p>
                                     </div>
                                 </div>
                             </li>

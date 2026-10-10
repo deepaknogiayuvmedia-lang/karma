@@ -66,7 +66,7 @@ class SocialAuthController extends Controller
                 'l_name' => $last_name,
                 'email' => $user_data->getEmail(),
                 'phone' => '',
-                'password' => bcrypt($user_data->id),
+                'password' => bcrypt(Str::random(64)),
                 'is_active' => 1,
                 'login_medium' => $service,
                 'social_id' => $user_data->id,

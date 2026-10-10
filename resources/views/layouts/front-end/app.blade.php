@@ -366,13 +366,14 @@
             padding: 12px 0;
         }
         .bh-footer-social-icon {
-            background: rgba(255,255,255,0.15);
+            background: #00695c;
             width: 34px;
-            height: 34px;
+            height: 41px;
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            color: #fff;
         }
         .bh-footer-body {
             padding: 40px 0;
@@ -387,6 +388,11 @@
             font-size: 0.9rem;
             letter-spacing: 0.5px;
             line-height: 1.4;
+        }
+        .btn.bh-footer-social-icon:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            color: #ffffff !important;
         }
         .bh-footer-links {
             font-size: 0.85rem;
@@ -560,7 +566,7 @@
     <!-- Footer-->
     @include('layouts.front-end.partials._footer')
 
-    <!-- Mobile Bottom Navigation Toolbar (BigHaat Specification) -->
+    <!-- Mobile Bottom Navigation Toolbar -->
     <div class="bh-mobile-nav">
         <a href="{{ route('home') }}" class="bh-mobile-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
             <i class="fa fa-home"></i>
