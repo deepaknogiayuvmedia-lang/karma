@@ -177,7 +177,67 @@
         }
     </style>
 
-    @php($shippingMethod=\App\CPU\Helpers::get_business_settings('shipping_method'))
+    {{-- Products Grid for Mobile --}}
+    <style>
+        .os-products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .os-product-card {
+            background: #fff;
+            border: 1px solid #E8ECEA;
+            border-radius: 12px;
+            padding: 8px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .os-product-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .os-product-img {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 6px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .os-product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .os-product-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1c252e;
+            margin: 4px 0 2px;
+            line-height: 1.3;
+        }
+
+        .os-product-qty {
+            font-size: 11px;
+            color: #66706A;
+            margin-bottom: 4px;
+        }
+
+        .os-product-price {
+            font-size: 13px;
+            color: #168A3A;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+    </style>
+
+   
+    {{-- Coupon Section --}}
     @php($sub_total=0)
     @php($total_tax=0)
     @php($total_shipping_cost=0)

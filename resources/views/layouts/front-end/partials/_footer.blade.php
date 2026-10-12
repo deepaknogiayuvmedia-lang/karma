@@ -12,7 +12,16 @@
                     </a>
                 </div>
                 @php($social_media = \App\Model\SocialMedia::where('active_status', 1)->get())
-                
+                 @if (isset($social_media) && count($social_media) > 0)
+                        <div class="d-flex" style="gap: 5px;">
+                            @foreach ($social_media as $item)
+                                <a class="btn btn-sm btn-circle bh-footer-social-icon"
+                                    target="_blank" href="{{ $item->link }}">
+                                    <i class="{{ $item->icon }}" aria-hidden="true"></i>
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
             </div>
         </div>
     </div>
@@ -33,17 +42,7 @@
                         <li><a href="{{ route('sellers') }}">{{ \App\CPU\translate('Our Sellers') }}</a></li>
                         <li><a href="{{ route('contacts') }}">{{ \App\CPU\translate('Feedback') }}</a></li>
                     </ul>
-                    @if (isset($social_media) && count($social_media) > 0)
-                        <h6 class="bh-footer-heading mt-3">{{ \App\CPU\translate('FOLLOW US') }}</h6>
-                        <div class="d-flex" style="gap: 5px;">
-                            @foreach ($social_media as $item)
-                                <a class="btn btn-sm btn-circle bh-footer-social-icon"
-                                    target="_blank" href="{{ $item->link }}">
-                                    <i class="{{ $item->icon }}" aria-hidden="true"></i>
-                                </a>
-                            @endforeach
-                        </div>
-                    @endif
+                   
                 </div>
                 <!-- Column 1: Quick Links -->
                 <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">

@@ -37,6 +37,7 @@ class ProductStoreRequest extends FormRequest
             'priority'             => 'nullable|integer|min:0|max:5',
             'meta_title'           => 'nullable|string|max:255',
             'meta_description'     => 'nullable|string|max:500',
+            'toxicity_category'    => 'nullable|string|in:red,yellow,blue,green,null',
         ];
     }
 

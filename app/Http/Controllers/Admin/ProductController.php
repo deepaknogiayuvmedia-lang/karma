@@ -633,6 +633,7 @@ class ProductController extends BaseController
         $p->admin_commission_type = $request->admin_commission_type ?? 'percentage';
         // Phase 7: Product Priority
         $p->priority = $request->priority ?? 0;
+        $p->toxicity_category = $request->toxicity_category ?? null;
         // Phase 8: Approval Status (admin products are auto-approved)
         $p->approval_status = 'approved';
 
@@ -1722,6 +1723,7 @@ class ProductController extends BaseController
         $product->admin_commission_type = $request->admin_commission_type ?? 'percentage';
         // Phase 7: Product Priority
         $product->priority = $request->priority ?? 0;
+        $product->toxicity_category = $request->toxicity_category ?? null;
 
             if ($request->file('images')) {
                 foreach ($request->file('images') as $img) {

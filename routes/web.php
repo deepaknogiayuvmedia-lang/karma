@@ -190,6 +190,9 @@ Route::group(['prefix' => 'cart', 'as' => 'cart.', 'namespace' => 'Web'], functi
     Route::post('updateQuantity', 'CartController@updateQuantity')->name('updateQuantity');
 });
 
+// Buy Now - direct checkout without adding to cart
+Route::post('buy-now', [WebController::class, 'buy_now'])->name('buy-now')->middleware('customer');
+
 //Seller shop apply
 Route::group(['prefix' => 'coupon', 'as' => 'coupon.', 'namespace' => 'Web'], function () {
     Route::post('apply', 'CouponController@apply')->name('apply');

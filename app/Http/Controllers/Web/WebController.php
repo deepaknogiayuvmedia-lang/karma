@@ -684,6 +684,37 @@ class WebController extends Controller
         return redirect('/');
     }
 
+    public function buy_now(Request $request)
+    {
+        $product = Product::active()->find($request->id);
+        if (!$product) {
+            return response()->json(['status' => 0, 'message' => 'Product not found']);
+        }
+
+        // Check stock
+        if ($product->product_type == 'physical' && $product->current_stock < $request->quantity) {
+            return response()->json(['status' => 0, 'message' => 'Out of stock!']);
+        }
+
+        // Validate required options
+        $choice_options = json_decode($product->choice_options);
+        if ($choice_options) {
+            foreach ($choice_options as $choice) {
+                if (empty($request[$choice->name])) {
+                    return response()->json(['status' => 0, 'message' => 'Please select all options (like size, color, etc.)']);
+                }
+            }
+        }
+
+        // Add to cart silently (required for checkout to work)
+        $cart = CartManager::add_to_cart($request);
+        if ($cart['status'] == 0) {
+            return response()->json($cart);
+        }
+
+        return response()->json(['status' => 1, 'message' => 'Success']);
+    }
+
     // for seller Shop
 
     public function seller_shop(Request $request, $id)

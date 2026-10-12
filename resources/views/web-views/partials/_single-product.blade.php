@@ -8,6 +8,44 @@
         : ($product->unit_price > 0 && $discountAmount > 0 ? round(($discountAmount / $product->unit_price) * 100, 0) : 0);
 @endphp
 
+<style>
+    .bh-pc-toxicity {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .bh-pc-toxicity-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .toxicity-red {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .toxicity-yellow {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .toxicity-blue {
+        background: #bfdbfe;
+        color: #1e40af;
+    }
+
+    .toxicity-green {
+        background: #d1fae5;
+        color: #059669;
+    }
+</style>
+
 <div class="bh-pc-card">
     {{-- Discount Badge --}}
     @if ($product->discount > 0)
@@ -75,6 +113,14 @@
             </div>
         @else
             <div class="bh-pc-save bh-pc-save-empty">&nbsp;</div>
+        @endif
+
+        @if (!empty($product['toxicity_category']))
+        <div class="bh-pc-toxicity">
+            <span class="bh-pc-toxicity-badge toxicity-{{ $product['toxicity_category'] }}">
+                {{ \App\CPU\translate('Toxicity: ') }} {{ \App\CPU\translate($product['toxicity_category']) }}
+            </span>
+        </div>
         @endif
 
         {{-- Size / Variant Selector --}}

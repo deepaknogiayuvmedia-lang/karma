@@ -374,6 +374,10 @@
             align-items: center;
             justify-content: center;
             color: #fff;
+            @media (max-width : 480px) {
+               width: 41px;
+                height: 41px;
+            }
         }
         .bh-footer-body {
             padding: 40px 0;
@@ -903,8 +907,42 @@
         }
 
         function buy_now() {
-            addToCart('add-to-cart-form', true);
-            /* location.href = "{{ route('checkout-details') }}"; */
+            if (checkAddToCartValidity()) {
+                var $form = $('#add-to-cart-form');
+                var formData = $form.serializeArray();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    }
+                });
+                $.post({
+                    url: '{{ route("buy-now") }}',
+                    data: formData,
+                    beforeSend: function() {
+                        $('#loading').show();
+                    },
+                    success: function(response) {
+                        if (response.status == 1) {
+                            location.href = "{{ route('checkout-details') }}";
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message
+                            });
+                        }
+                    },
+                    complete: function() {
+                        $('#loading').hide();
+                    }
+                });
+            } else {
+                Swal.fire({
+                    type: 'info',
+                    title: 'Options',
+                    text: 'Please select a product option (like pack size) before proceeding'
+                });
+            }
         }
 
         // Phase 4: Language Search Functionality
@@ -1118,17 +1156,18 @@
 
         function checkAddToCartValidity() {
             var names = {};
-            $('#add-to-cart-form input:radio').each(function() { // find unique names
+            $('#add-to-cart-form input:radio').each(function() {
                 names[$(this).attr('name')] = true;
             });
             var count = 0;
-            $.each(names, function() { // then count them
+            $.each(names, function() {
                 count++;
             });
-            if ($('input:radio:checked').length == count) {
-                return true;
+            if (count > 0) {
+                return $('input:radio:checked').length == count;
             }
-            return false;
+            // No radio buttons — product uses cards or has no options
+            return true;
         }
 
         @if (Request::is('/') && \Illuminate\Support\Facades\Cookie::has('popup_banner') == false)

@@ -302,6 +302,36 @@
             margin: 0 0 12px;
         }
 
+        .toxicity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .toxicity-red {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .toxicity-yellow {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .toxicity-blue {
+            background: #bfdbfe;
+            color: #1e40af;
+        }
+
+        .toxicity-green {
+            background: #d1fae5;
+            color: #059669;
+        }
+
         /* Ratings & Social Proof */
         .bh-rating-row {
             display: flex;
@@ -654,6 +684,26 @@
             font-size: 13px;
             font-weight: 600;
             color: var(--bh-dark);
+        }
+        .bh-comp-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toxicity-image-box {
+            text-align: center;
+        }
+        .toxicity-image-box img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 4px;
+        }
+        .toxicity-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #dc2626;
+            text-transform: uppercase;
         }
         .bh-comp-badge-img {
             width: 34px;
@@ -2514,6 +2564,14 @@
                         {{ $product->name }}
                     </h1>
 
+                    @if (!empty($product['toxicity_category']))
+                    <div class="bh-pdp-toxicity-info mb-3">
+                        <div class="toxicity-badge toxicity-{{ $product['toxicity_category'] }}">
+                            {{ \App\CPU\translate('Toxicity: ') }} {{ \App\CPU\translate($product['toxicity_category']) }}
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- Rating & Social Proof (dynamic from reviews + orders) --}}
                     <div class="bh-rating-row">
                         <div class="bh-stars-group">
@@ -2550,17 +2608,6 @@
                             </div>
                         </div>
                     </div>
-
-                    {{-- Special Deal Banner --}}
-                    @if ($defaultVariant['discount'] > 0)
-                    <div class="bh-special-deal-banner" onclick="bhSelectVariant('{{ $defaultVariant['name'] }}', {{ $defaultVariant['price'] }}, {{ $defaultVariant['mrp'] }}, {{ $defaultVariant['discount'] }})">
-                        <div class="bh-special-deal-left">
-                            <svg class="bh-deal-gif-icon" viewBox="0 0 24 24" style="stroke:none;" fill="currentColor" aria-hidden="true"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.22-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
-                            <span>Get it for <span class="bh-deal-highlight-price">₹{{ number_format($defaultVariant['price']) }}</span> with deals</span>
-                        </div>
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                    </div>
-                    @endif
 
                     {{-- Dynamic & Static Variant Selection Form --}}
                     <form id="add-to-cart-form">
@@ -2641,6 +2688,30 @@
                             }
                         @endphp
                         @if ($compositionText !== '')
+                        <div class="bh-composition-card">
+                            <div class="bh-comp-left">
+                                <div class="bh-comp-icon-wrap">
+                                    <svg viewBox="0 0 24 24"><path d="M6.63379 19.8486H17.5967L15.1797 13.1577H9.05234L6.63379 19.8486Z"/><path d="M15.4278 6.92479V3.87496H15.9425C16.4924 3.87496 16.9374 3.46353 16.9374 2.93748C16.9374 2.41167 16.4924 2 15.9425 2H8.28846C7.73907 2 7.29351 2.41155 7.29351 2.93748C7.29351 3.46341 7.73895 3.87496 8.28846 3.87496H8.89785V6.92479L4 20.3891V20.4378C4 20.9439 4.34149 21.3448 4.701 21.6135C5.06533 21.8883 5.5857 22 6.07658 22H18.1558C18.6452 22 19.0516 21.8883 19.4141 21.6135C19.7752 21.3448 20 20.9439 20 20.4378V20.3882L15.4278 6.92479ZM5.72583 20.4378L10.5301 6.92479V3.87496H13.7957V6.92479L18.5623 20.4396L5.72583 20.4378Z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="bh-comp-title">Composition</div>
+                                    <div class="bh-comp-content">{{ $compositionText }}</div>
+                                </div>
+                            </div>
+                            <div class="bh-comp-right">
+                                @if (!empty($product['toxicity_category']))
+                                <div class="toxicity-image-box">
+                                    <img src="{{ asset('assets/front-end/img/toxic_img/'.$product['toxicity_category'].'.png') }}" 
+                                         alt="{{ \App\CPU\translate('Toxicity: ') }} {{ \App\CPU\translate($product['toxicity_category']) }}"
+                                         class="toxicity-image">
+                                    <div class="toxicity-label">
+                                        {{ \App\CPU\translate('Toxicity: ') }} {{ \App\CPU\translate($product['toxicity_category']) }}
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        @else
                         <div class="bh-composition-card">
                             <div class="bh-comp-left">
                                 <div class="bh-comp-icon-wrap">
@@ -2762,49 +2833,7 @@
                         @if (trim((string) $product->description) !== '')
                             <div class="bh-prose bh-product-overview">{!! $product->description !!}</div>
                         @endif
-                        <h3 class="bh-section-heading">Overview & Specifications</h3>
-                        <table class="bh-specs-table">
-                            <tbody>
-                                <tr>
-                                    <td class="label-col">Product Name</td>
-                                    <td class="value-col">{{ $product->name }}</td>
-                                </tr>
-                                @if ($product->brand)
-                                    <tr>
-                                        <td class="label-col">Brand</td>
-                                        <td class="value-col">{{ $product->brand->name }}</td>
-                                    </tr>
-                                @endif
-                                @php
-                                    $catIdsArr = json_decode($product->category_ids, true) ?? [];
-                                    $catName = '';
-                                    if (count($catIdsArr) > 0) {
-                                        $lastCat = end($catIdsArr);
-                                        $lastCatId = is_array($lastCat) ? ($lastCat['id'] ?? null) : $lastCat;
-                                        $catObj = $lastCatId ? \App\Model\Category::find($lastCatId) : null;
-                                        $catName = $catObj ? $catObj->name : '';
-                                    }
-                                @endphp
-                                @if ($catName)
-                                    <tr>
-                                        <td class="label-col">Category</td>
-                                        <td class="value-col">{{ $catName }}</td>
-                                    </tr>
-                                @endif
-                                @php $specList = $product->specifications ?? collect(); @endphp
-                                @forelse ($specList as $spec)
-                                    <tr>
-                                        <td class="label-col">{{ $spec->label }}</td>
-                                        <td class="value-col">{!! $spec->value !!}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td class="label-col">Technical Content</td>
-                                        <td class="value-col">{{ $product->technical_name ?: '—' }}</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                      
                     </div>
 
                 </div>
@@ -2823,45 +2852,7 @@
                                 <p>{{ $product->name }} — {{ $product->technical_name ?: 'premium quality product' }}.</p>
                             @endif
                         </div>
-                        <h3 class="bh-section-heading">Key Features & Benefits</h3>
-                        <div class="bh-features-grid">
-                            @php $featList = $product->features ?? collect(); @endphp
-                            @forelse ($featList as $feat)
-                                <div class="bh-feature-item">
-                                    <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
-                                    <span><strong>{{ $feat->title }}:</strong> {{ $feat->description }}</span>
-                                </div>
-                            @empty
-                                <div class="bh-feature-item">
-                                    <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
-                                    <span><strong>Premium Quality:</strong> Carefully formulated for effective results.</span>
-                                </div>
-                            @endforelse
-                        </div>
-                        <h3 class="bh-section-heading">Safety, Handling &amp; Storage</h3>
-                        <div class="bh-tri-cards-grid">
-                            <div class="bh-tri-card">
-                                <h4>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0B5D2A"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-                                    Follow The Label
-                                </h4>
-                                <p>Always read and follow the directions for use, precautions and warnings printed on the product label and packaging. This page does not replace the manufacturer's instructions.</p>
-                            </div>
-                            <div class="bh-tri-card">
-                                <h4>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#D97706"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 10h2v4h-2zm0 6h2v2h-2z"/></svg>
-                                    Handle With Care
-                                </h4>
-                                <p>Keep out of reach of children and pets. Wear the protective clothing, gloves and mask recommended on the label while opening, mixing and spraying. Wash thoroughly after handling.</p>
-                            </div>
-                            <div class="bh-tri-card">
-                                <h4>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#2563EB"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
-                                    Store Properly
-                                </h4>
-                                <p>Keep the product tightly sealed in its original container in a cool, dry and ventilated place, away from direct sunlight, food and animal feed.</p>
-                            </div>
-                        </div>
+                       
                     </div>
 
                  
@@ -2915,10 +2906,10 @@
                                         </div>
                                         <div>
                                             <div class="bh-review-name">{{ $review->customer ? trim(($review->customer->f_name ?? '') . ' ' . ($review->customer->l_name ?? '')) : 'Verified Customer' }}</div>
-                                            <div class="bh-verified-badge">
+                                            <!-- <div class="bh-verified-badge">
                                                 <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                                                 Verified Farmer
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </div>
                                     <div class="bh-review-rating-row">

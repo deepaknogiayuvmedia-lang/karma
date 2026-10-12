@@ -233,6 +233,9 @@ class Helpers
         }
         $data['variation'] = $variation;
 
+        // Add toxicity category if available
+        $data['toxicity_category'] = $data['toxicity_category'] ?? null;
+
         return $data;
     }
 

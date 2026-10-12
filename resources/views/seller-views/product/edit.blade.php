@@ -254,6 +254,18 @@
                                                 {{ \App\CPU\translate('Ready Product') }}</option>
                                         </select>
                                     </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="title-color">{{ \App\CPU\translate('Pesticide Toxicity Category') }}</label>
+                                        <select name="toxicity_category" class="form-control">
+                                            <option value="">-- Select --</option>
+                                            <option value="red">{{ \App\CPU\translate('Red - Extremely toxic') }}</option>
+                                            <option value="yellow">{{ \App\CPU\translate('Yellow - Highly toxic') }}</option>
+                                            <option value="blue">{{ \App\CPU\translate('Blue - Moderately toxic') }}</option>
+                                            <option value="green">{{ \App\CPU\translate('Green - Slightly toxic') }}</option>
+                                            <option value="null">{{ \App\CPU\translate('Not applicable') }}</option>
+                                        </select>
+                                        <small class="text-muted">{{ \App\CPU\translate('Select the toxicity category based on the approved pesticide label.') }}</small>
+                                    </div>
                                     <div class="col-md-4 mb-3" id="digital_file_ready_show" style="display: none;">
                                         <div class="row">
                                             <div class="col-md-6">

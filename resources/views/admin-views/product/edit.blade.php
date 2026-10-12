@@ -576,6 +576,26 @@
                         </div>
                     </div>
 
+                <div class="card mt-2 rest-part">
+                    <div class="card-header">
+                        <h4 class="mb-0">{{ \App\CPU\translate('Toxicity Category') }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="title-color">{{ \App\CPU\translate('Pesticide Toxicity Category') }}</label>
+                            <select name="toxicity_category" class="form-control">
+                                <option value="">-- {{ \App\CPU\translate('Select') }} --</option>
+                                <option value="red">{{ \App\CPU\translate('Red - Extremely toxic') }}</option>
+                                <option value="yellow">{{ \App\CPU\translate('Yellow - Highly toxic') }}</option>
+                                <option value="blue">{{ \App\CPU\translate('Blue - Moderately toxic') }}</option>
+                                <option value="green">{{ \App\CPU\translate('Green - Slightly toxic') }}</option>
+                                <option value="null">{{ \App\CPU\translate('Not applicable') }}</option>
+                            </select>
+                            <small class="text-muted">{{ \App\CPU\translate('Select the toxicity category based on the approved pesticide label.') }}</small>
+                        </div>
+                    </div>
+                </div>
+
                     <div class="card mt-2 rest-part __coba-aspect">
                         <div class="card-body">
                             <div class="row">

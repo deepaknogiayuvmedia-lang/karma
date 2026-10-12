@@ -116,6 +116,41 @@
         border-radius: 4px;
         text-transform: uppercase;
     }
+
+    .inline-product-toxicity {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 4px;
+        font-size: 10px;
+    }
+
+    .toxicity-badge {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .toxicity-red {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .toxicity-yellow {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .toxicity-blue {
+        background: #bfdbfe;
+        color: #1e40af;
+    }
+
+    .toxicity-green {
+        background: #d1fae5;
+        color: #059669;
+    }
 </style>
 
 @php
@@ -138,6 +173,14 @@
         <div class="inline-product-title" title="{{ $product['name'] }}">
             {{ $product['name'] }}
         </div>
+        
+        @if (!empty($product['toxicity_category']))
+        <div class="inline-product-toxicity">
+            <span class="toxicity-badge toxicity-{{ $product['toxicity_category'] }}">
+                {{ \App\CPU\translate('Toxicity: ') }} {{ \App\CPU\translate($product['toxicity_category']) }}
+            </span>
+        </div>
+        @endif
 
       
 

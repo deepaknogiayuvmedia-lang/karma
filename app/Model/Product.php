@@ -40,6 +40,7 @@ class Product extends Model
         'admin_commission' => 'float',
         'approval_status' => 'string',
         'edit_status' => 'string',
+        'toxicity_category' => 'string',
 
     ];
 
@@ -60,6 +61,7 @@ class Product extends Model
         'admin_commission_type',
         'approval_status',
         'edit_status',
+        'toxicity_category',
     ];
 
     public function translations()

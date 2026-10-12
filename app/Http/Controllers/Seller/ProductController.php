@@ -1533,6 +1533,7 @@ class ProductController extends Controller
         $product->admin_commission = $request->admin_commission ?? $product->admin_commission;
         $product->admin_commission_type = $request->admin_commission_type ?? $product->admin_commission_type;
         $product->priority = $request->priority ?? $product->priority;
+        $product->toxicity_category = $request->toxicity_category ?? null;
 
         if (Helpers::get_business_settings('product_wise_shipping_cost_approval') == 1 && $product->shipping_cost != Convert::usd($request->shipping_cost)) {
             $product->temp_shipping_cost = Convert::usd($request->shipping_cost);
