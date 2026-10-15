@@ -14,49 +14,86 @@
 
         .pay-page {
             --pay-primary: {{ $web_config['primary_color'] ?? '#168A3A' }};
+            --pay-ink: #1b1f1d;
+            --pay-muted: #66706a;
         }
 
-        .pay-heading {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: var(--bh-text-primary, #1B1F1D);
-            margin: 1.75rem 0 0.35rem;
-        }
-
-        .pay-sub {
-            font-size: 0.9rem;
-            color: var(--bh-text-secondary, #66706A);
+        .pay-page .feature_header {
             margin-bottom: 1.25rem;
         }
 
-        .pay-opt-list {
+        .pay-method-panel {
+            padding: 1.4rem;
+            border: 1px solid #e6ebe8;
+            border-radius: 16px;
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+            box-shadow: 0 10px 30px rgba(17, 24, 39, 0.05);
+        }
+
+        .pay-panel-head {
             display: flex;
-            flex-direction: column;
-            gap: 0.85rem;
+            align-items: flex-start;
+            gap: 13px;
+            margin-bottom: 1.25rem;
+        }
+
+        .pay-panel-icon {
+            display: flex;
+            flex: 0 0 44px;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 13px;
+            background: #edf7ef;
+            color: var(--pay-primary);
+            font-size: 19px;
+        }
+
+        .pay-heading {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--pay-ink);
+            margin: 0 0 0.25rem;
+        }
+
+        .pay-sub {
+            font-size: 0.84rem;
+            color: var(--pay-muted);
+            margin: 0;
+        }
+
+        .pay-opt-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
         }
 
         .pay-opt {
             position: relative;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.1rem;
+            gap: 0.75rem;
+            min-width: 0;
+            min-height: 94px;
+            padding: 0.9rem;
             background: #fff;
-            border: 1.5px solid #E5E7EB;
+            border: 1px solid #e5eae7;
             border-radius: 12px;
             cursor: pointer;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+            transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
         }
 
         .pay-opt:hover {
             border-color: var(--pay-primary);
-            box-shadow: 0 4px 14px rgba(22, 138, 58, 0.08);
+            transform: translateY(-1px);
+            box-shadow: 0 7px 18px rgba(22, 138, 58, 0.09);
         }
 
         .pay-opt.selected {
             border-color: var(--pay-primary);
-            background: #F0FDF4;
-            box-shadow: 0 0 0 3px rgba(22, 138, 58, 0.12);
+            background: #f3fbf5;
+            box-shadow: 0 0 0 2px rgba(22, 138, 58, 0.1);
         }
 
         .pay-opt input[type="radio"] {
@@ -97,14 +134,14 @@
 
         .pay-opt .pay-icon-wrap {
             flex-shrink: 0;
-            width: 56px;
-            height: 40px;
+            width: 52px;
+            height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #F8FAF9;
-            border-radius: 8px;
-            border: 1px solid #EEF2F0;
+            background: #f8faf9;
+            border-radius: 9px;
+            border: 1px solid #edf1ee;
             overflow: hidden;
         }
 
@@ -121,22 +158,25 @@
 
         .pay-opt .pay-title {
             display: block;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             font-weight: 600;
-            color: var(--bh-text-primary, #1B1F1D);
+            color: var(--pay-ink);
             line-height: 1.3;
         }
 
         .pay-opt .pay-desc {
             display: block;
-            font-size: 0.8rem;
-            color: var(--bh-text-secondary, #66706A);
+            font-size: 0.74rem;
+            color: var(--pay-muted);
             margin-top: 0.15rem;
+            line-height: 1.35;
         }
 
         .pay-opt .pay-badge {
-            flex-shrink: 0;
-            font-size: 0.7rem;
+            position: absolute;
+            top: 7px;
+            right: 8px;
+            font-size: 0.62rem;
             font-weight: 600;
             color: var(--pay-primary);
             background: #DCFCE7;
@@ -153,8 +193,12 @@
             display: flex;
             flex-wrap: wrap;
             gap: 0.75rem;
-            margin-top: 1.5rem;
+            margin-top: 1rem;
             align-items: center;
+            padding: 1rem 1.2rem;
+            border: 1px solid #e8ede9;
+            border-radius: 0 0 14px 14px;
+            background: #f8faf9;
         }
 
         .pay-actions .btn-pay {
@@ -206,9 +250,9 @@
             display: flex;
             flex-wrap: wrap;
             gap: 1rem 1.5rem;
-            margin-top: 1.25rem;
-            padding-top: 1rem;
-            border-top: 1px solid #EEF2F0;
+            justify-content: center;
+            margin-top: 1rem;
+            padding: 0.9rem 0.5rem 0;
             font-size: 0.78rem;
             color: var(--bh-text-secondary, #66706A);
         }
@@ -221,6 +265,36 @@
 
         .pay-secure i {
             color: var(--pay-primary);
+        }
+
+        .pay-terms {
+            margin-top: 1rem;
+            padding: 0.9rem 1rem;
+            border: 1px solid #e5eae7;
+            border-radius: 10px;
+            background: #fff;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .pay-terms.is-invalid {
+            border-color: #dc2626;
+            background: #fff7f7;
+        }
+
+        .pay-terms .custom-control-label {
+            cursor: pointer;
+        }
+
+        .pay-terms-error {
+            display: none;
+            margin: 0.55rem 0 0 1.5rem;
+            color: #b91c1c;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .pay-terms.is-invalid .pay-terms-error {
+            display: block;
         }
 
         .pay-forms {
@@ -245,6 +319,16 @@
 
         @keyframes paySpin {
             to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 767.98px) {
+            .pay-opt-list {
+                grid-template-columns: 1fr;
+            }
+
+            .pay-method-panel {
+                padding: 1rem;
+            }
         }
 
         @media (max-width: 576px) {
@@ -291,8 +375,14 @@
                     </div>
 
                     <div id="pay-select-ui">
-                        <h2 class="pay-heading">{{\App\CPU\translate('choose_payment')}}</h2>
-                        <p class="pay-sub">{{\App\CPU\translate('Select a payment method to continue')}}</p>
+                        <div class="pay-method-panel">
+                            <div class="pay-panel-head">
+                                <span class="pay-panel-icon"><i class="fa fa-credit-card"></i></span>
+                                <div>
+                                    <h2 class="pay-heading">{{\App\CPU\translate('choose_payment')}}</h2>
+                                    <p class="pay-sub">{{\App\CPU\translate('Select a payment method to continue')}}</p>
+                                </div>
+                            </div>
 
                         @php($config=\App\CPU\Helpers::get_business_settings('cash_on_delivery'))
                         @php($coupon_discount = session()->has('coupon_discount') ? session('coupon_discount') : 0)
@@ -300,7 +390,7 @@
                         @php($digital_payment=\App\CPU\Helpers::get_business_settings('digital_payment'))
                         @php($pay_method_count = 0)
 
-                        <div class="pay-opt-list" id="pay-opt-list">
+                            <div class="pay-opt-list" id="pay-opt-list">
                             {{-- Cash on Delivery --}}
                             @if(!$cod_not_show && $config['status'])
                                 @php($pay_method_count++)
@@ -611,8 +701,18 @@
                                     </label>
                                 @endif
                             @endif
+                            </div>
                         </div>
-
+                         <div class="custom-control custom-checkbox pay-terms" id="checkout-terms-wrap">
+                            <input type="checkbox" class="custom-control-input position-static" id="checkout-terms-accepted">
+                            <label class="custom-control-label" for="checkout-terms-accepted">
+                                {{\App\CPU\translate('I agree to the')}}
+                                <a href="{{route('terms')}}" target="_blank" rel="noopener" style="text-decoration: underline;">{{\App\CPU\translate('Terms and Conditions')}}</a>
+                            </label>
+                            <div class="pay-terms-error" id="checkout-terms-error" role="alert" aria-live="assertive">
+                                {{\App\CPU\translate('Please accept the terms and conditions before continuing.')}}
+                            </div>
+                        </div>
                         <div class="pay-actions">
                             <a class="btn btn-back" href="{{route('checkout-details')}}">
                                 <i class="fa fa-arrow-left mr-1"></i>
@@ -624,19 +724,7 @@
                                 {{\App\CPU\translate('Proceed_to_Pay')}}
                             </button>
                         </div>
-                        <div class="custom-control custom-checkbox mt-3">
-                            <input type="checkbox" class="custom-control-input" id="checkout-terms-accepted">
-                            <label class="custom-control-label" for="checkout-terms-accepted">
-                                {{\App\CPU\translate('I agree to the')}}
-                                <a href="{{route('terms')}}" target="_blank" rel="noopener">{{\App\CPU\translate('Terms and Conditions')}}</a>
-                            </label>
-                        </div>
 
-                        <div class="pay-secure">
-                            <span><i class="fa fa-shield"></i> {{\App\CPU\translate('100%_secure_payments')}}</span>
-                            <span><i class="fa fa-lock"></i> {{\App\CPU\translate('SSL_encrypted')}}</span>
-                            <span><i class="fa fa-undo"></i> {{\App\CPU\translate('Easy_returns')}}</span>
-                        </div>
                     </div>
 
                     {{-- Hidden forms / gateway actions --}}
@@ -942,6 +1030,13 @@
             $list.on('change', 'input[name="selected_pay_method"]', syncSelection);
             syncSelection();
 
+            $('#checkout-terms-accepted').on('change', function () {
+                if (this.checked) {
+                    $('#checkout-terms-wrap').removeClass('is-invalid');
+                    $(this).removeAttr('aria-invalid');
+                }
+            });
+
             function showRedirecting() {
                 $('#pay-select-ui').hide();
                 $('#pay-redirecting').show();
@@ -1038,8 +1133,10 @@
                     toastr.warning('{{\App\CPU\translate('Please_select_a_payment_method')}}');
                     return;
                 }
-                if (!$('#checkout-terms-accepted').is(':checked')) {
-                    toastr.warning('{{\App\CPU\translate('Please accept the terms and conditions before continuing.')}}');
+                var $terms = $('#checkout-terms-accepted');
+                if (!$terms.is(':checked')) {
+                    $('#checkout-terms-wrap').addClass('is-invalid');
+                    $terms.attr('aria-invalid', 'true').trigger('focus');
                     return;
                 }
 

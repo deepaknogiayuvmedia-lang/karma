@@ -636,12 +636,28 @@ class ProductController extends Controller
 
     public function status_update(Request $request)
     {
+        $request->validate([
+            'id' => 'required|integer',
+            'status' => 'required|in:0,1',
+        ]);
+
         $seller = $request->seller;
         $product = Product::where(['added_by' => 'seller', 'user_id' => $seller->id])->find($request->id);
         if (!$product) {
             return response()->json(['message' => translate('invalid_prodcut')], 403);
         }
-        $product->status = $request->status;
+
+        if ((int) $request->status === 1 && (
+            $product->approval_status !== 'approved'
+            || (int) $product->request_status !== 1
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product must be approved by admin before it can be activated.',
+            ], 403);
+        }
+
+        $product->status = (int) $request->status;
         $product->save();
 
         return response()->json([

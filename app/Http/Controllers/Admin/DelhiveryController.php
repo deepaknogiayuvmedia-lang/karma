@@ -25,20 +25,17 @@ class DelhiveryController extends Controller
     public function saveSettings(Request $request)
     {
         $request->validate([
-            'environment' => ['required', 'in:test,live'],
-            'base_url' => ['required', 'url'],
             'api_token' => ['nullable', 'string', 'max:5000'],
             'pickup_location' => ['required', 'string', 'max:255'],
             'is_enabled' => ['nullable', 'boolean'],
         ]);
 
         $settings = DelhiverySetting::query()->latest('id')->first();
-        $environment = $request->environment === 'live' ? 'production' : 'staging';
 
         $payload = [
             'name' => 'Delhivery',
-            'environment' => $environment,
-            'base_url' => $request->base_url,
+            'environment' => 'production',
+            'base_url' => 'https://track.delhivery.com',
             'pickup_location' => $request->pickup_location,
             'is_enabled' => (bool) $request->boolean('is_enabled'),
         ];
@@ -57,7 +54,7 @@ class DelhiveryController extends Controller
             if ($legacy) {
                 $legacy->update([
                     'api_secret' => $request->filled('api_token') ? $request->api_token : $legacy->api_secret,
-                    'environment' => $request->environment === 'live' ? 'live' : 'test',
+                    'environment' => 'live',
                     'status' => 1,
                 ]);
             }

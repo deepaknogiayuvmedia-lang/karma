@@ -258,6 +258,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'as' => 'admin.'], fu
             Route::post('resend-notification', 'NotificationController@resendNotification')->name('resend-notification');
             Route::post('delete', 'NotificationController@delete')->name('delete');
         });
+        Route::get('admin-notifications', 'NotificationController@all_admin_notifications')->name('admin.notifications.all');
         Route::post('admin-notifications/mark-read', 'NotificationController@mark_admin_read')->name('admin.notifications.mark-read');
         Route::group(['prefix' => 'reviews', 'as' => 'reviews.','middleware'=>['module:user_section']], function () {
             Route::get('list', 'ReviewsController@list')->name('list')->middleware('actch');

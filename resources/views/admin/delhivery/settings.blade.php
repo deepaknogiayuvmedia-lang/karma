@@ -16,16 +16,8 @@
                         <input type="checkbox" name="is_enabled" value="1" {{ ($settings->is_enabled ?? false) ? 'checked' : '' }}>
                     </div>
                     <div class="form-group">
-                        <label>Environment</label>
-                        <select class="form-control" name="environment">
-                            @php($env = strtolower((string) ($settings->environment ?? 'test')))
-                            <option value="test" {{ in_array($env, ['test', 'staging'], true) ? 'selected' : '' }}>Test</option>
-                            <option value="live" {{ in_array($env, ['live', 'production'], true) ? 'selected' : '' }}>Live</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label>Base URL</label>
-                        <input type="url" class="form-control" name="base_url" value="{{ $settings->base_url ?? 'https://staging-express.delhivery.com' }}">
+                        <input type="text" class="form-control" value="https://track.delhivery.com" readonly>
                     </div>
                     <div class="form-group">
                         <label>API Token</label>

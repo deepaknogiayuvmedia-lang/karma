@@ -294,12 +294,6 @@
                                         <span class="text-truncate">{{\App\CPU\translate('bulk_import')}}</span>
                                     </a>
                                 </li>
-                                <li class="nav-item {{Request::is('seller/product/edit-requests')?'active':''}}">
-                                    <a class="nav-link " href="{{route('seller.product.edit-requests')}}">
-                                        <span class="tio-circle nav-indicator-icon"></span>
-                                        <span class="text-truncate">{{\App\CPU\translate('Edit Requests')}}</span>
-                                    </a>
-                                </li>
                                 <li class="nav-item {{Request::is('seller/product/change-requests')?'active':''}}">
                                     <a class="nav-link " href="{{route('seller.product.change-requests')}}">
                                         <span class="tio-circle nav-indicator-icon"></span>

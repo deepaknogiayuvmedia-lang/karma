@@ -113,6 +113,52 @@
                         <!-- End Notification -->
                     </li>
 
+                    @php($sellerUnreadNotifications = \App\Model\SellerNotification::where('seller_id', auth('seller')->id())->unread()->count())
+                    @php($sellerNotifications = \App\Model\SellerNotification::where('seller_id', auth('seller')->id())->latest()->take(10)->get())
+                    <li class="nav-item d-none d-md-inline-block">
+                        <div class="hs-unfold dropdown">
+                            <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle"
+                               href="javascript:" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="tio-notifications-on-outlined {{ $sellerUnreadNotifications > 0 ? 'notification-bell--unread' : '' }}"></i>
+                                @if ($sellerUnreadNotifications > 0)
+                                    <span class="btn-status btn-sm-status btn-status-danger">{{ $sellerUnreadNotifications }}</span>
+                                @endif
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right"
+                                 style="min-width: 320px; max-height: 380px; overflow-y: auto;">
+                                <div class="dropdown-header">{{ \App\CPU\translate('notifications') }}</div>
+                                <div class="dropdown-divider"></div>
+                                @forelse ($sellerNotifications as $sellerNotification)
+                                    <a class="dropdown-item py-2 d-block {{ $sellerNotification->is_read ? 'opacity-50' : '' }}"
+                                       href="{{ $sellerNotification->product_id ? route('seller.product.view', [$sellerNotification->product_id]) : 'javascript:' }}"
+                                       @if (!$sellerNotification->is_read)
+                                           onclick="fetch('{{ route('seller.notifications.read-approval') }}',{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify({id:{{ $sellerNotification->id }}})});"
+                                       @endif>
+                                        <div class="font-weight-bold text-truncate" style="max-width: 280px;">
+                                            {{ $sellerNotification->title }}
+                                            @unless ($sellerNotification->is_read)
+                                                <span class="badge badge-danger badge-pill ml-1">●</span>
+                                            @endunless
+                                        </div>
+                                        <div class="fz-12 text-muted" style="white-space: normal;">
+                                            {{ $sellerNotification->description }}
+                                        </div>
+                                        <div class="fz-11 text-muted">{{ $sellerNotification->created_at->diffForHumans() }}</div>
+                                    </a>
+                                @empty
+                                    <div class="dropdown-item-text text-center text-muted py-3">
+                                        {{ \App\CPU\translate('no_notifications_found') }}
+                                    </div>
+                                @endforelse
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-center font-weight-bold"
+                                   href="{{ route('seller.notifications.index') }}">
+                                    View all notifications
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
                     <li class="nav-item d-none d-md-inline-block">
                         <!-- Notification -->
                         <div class="hs-unfold">
@@ -345,4 +391,3 @@
 </div>
 <div id="headerFluid" class="d-none"></div>
 <div id="headerDouble" class="d-none"></div>
-

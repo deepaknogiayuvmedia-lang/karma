@@ -37,6 +37,8 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
         //dashboard routes
 
         Route::get('/get-order-data', 'SystemController@order_data')->name('get-order-data');
+        Route::get('notifications', 'SystemController@notifications')->name('notifications.index');
+        Route::post('notifications/read-approval', 'SystemController@read_approval_notification')->name('notifications.read-approval');
 
         Route::group(['prefix' => 'dashboard', 'as' => 'dashboard.'], function () {
             Route::get('dashboard', 'DashboardController@dashboard');

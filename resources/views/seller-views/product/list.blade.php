@@ -142,12 +142,9 @@
                                     @php
                                         $isDenied =
                                             ($p->request_status ?? 0) == 2 || ($p->approval_status ?? '') == 'rejected';
-                                        $editReq = \App\Model\ProductEditRequest::where('product_id', $p['id'])
-                                            ->where('seller_id', auth('seller')->id())
-                                            ->latest()
-                                            ->first();
-                                        $hasApprovedEdit = $editReq && $editReq->status == 'approved';
-                                        $hasPendingEdit = $editReq && $editReq->status == 'pending';
+                                        $canEditProduct = $isDenied
+                                            || (in_array($p->approval_status ?? '', ['draft', 'pending'], true)
+                                                && (int) ($p->request_status ?? 0) !== 1);
                                     @endphp
                                     {{-- @dd($p['lowest_market_price']) --}}
                                     <tr>
@@ -217,7 +214,8 @@
                                         <td>
                                             <label class="switcher">
                                                 <input type="checkbox" class="status switcher_input"
-                                                    id="{{ $p['id'] }}" {{ $p->status == 1 ? 'checked' : '' }}>
+                                                    id="{{ $p['id'] }}"
+                                                    {{ $p->status == 1 ? 'checked' : '' }}>
                                                 <span class="switcher_control"></span>
                                             </label>
                                         </td>
@@ -236,84 +234,27 @@
                                                 </a>
 
                                                 <button type="button"
-                                                    class="btn btn-outline-primary btn-sm square-btn edit-price-btn"
-                                                    title="{{ \App\CPU\translate('Edit Price & Variants') }}"
-                                                    data-id="{{ $p['id'] }}" data-unit="{{ $p['unit'] ?? 'pc' }}"
-                                                    data-unit-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['unit_price']) }}"
-                                                    data-purchase-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['purchase_price']) }}"
-                                                    data-discount="{{ $p['discount'] ?? 0 }}"
-                                                    data-discount-type="{{ $p['discount_type'] ?? 'flat' }}"
-                                                    data-tax="{{ $p['tax'] ?? 0 }}"
-                                                    data-tax-model="{{ $p['tax_model'] ?? 'include' }}"
-                                                    data-min-order="{{ $p['minimum_order_qty'] ?? 1 }}"
-                                                    data-current-stock="{{ $p['current_stock'] ?? 0 }}"
-                                                    data-name="{{ $p['name'] }}">
-                                                    <i class="tio-money"></i>
+                                                        class="btn btn-outline-primary btn-sm square-btn edit-price-btn"
+                                                        title="{{ \App\CPU\translate('Edit Price & Variants') }}"
+                                                        data-id="{{ $p['id'] }}" data-unit="{{ $p['unit'] ?? 'pc' }}"
+                                                        data-unit-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['unit_price']) }}"
+                                                        data-purchase-price="{{ \App\CPU\BackEndHelper::usd_to_currency($p['purchase_price']) }}"
+                                                        data-discount="{{ $p['discount'] ?? 0 }}"
+                                                        data-discount-type="{{ $p['discount_type'] ?? 'flat' }}"
+                                                        data-tax="{{ $p['tax'] ?? 0 }}"
+                                                        data-tax-model="{{ $p['tax_model'] ?? 'include' }}"
+                                                        data-min-order="{{ $p['minimum_order_qty'] ?? 1 }}"
+                                                        data-current-stock="{{ $p['current_stock'] ?? 0 }}"
+                                                        data-name="{{ $p['name'] }}">
+                                                        <i class="tio-money"></i>
                                                 </button>
 
-                                                @if (!empty($isDenied))
-                                                    <a class="btn btn-outline-primary btn-sm square-btn"
-                                                        title="{{ \App\CPU\translate('Edit & Resubmit') }}"
-                                                        href="{{ route('seller.product.edit', [$p['id']]) }}">
+                                                @if ($canEditProduct)
+                                                        <a class="btn btn-outline-primary btn-sm square-btn"
+                                                            title="{{ !empty($isDenied) ? \App\CPU\translate('Edit & Resubmit') : \App\CPU\translate('Edit') }}"
+                                                            href="{{ route('seller.product.edit', [$p['id']]) }}">
                                                         <i class="tio-edit"></i>
-                                                    </a>
-                                                @elseif(!empty($hasApprovedEdit))
-                                                    <a class="btn btn-outline-primary btn-sm square-btn"
-                                                        style="display: none;" title="{{ \App\CPU\translate('Edit') }}"
-                                                        href="{{ route('seller.product.edit', [$p['id']]) }}">
-                                                        <i class="tio-edit"></i>
-                                                    </a>
-                                                @elseif(!empty($hasPendingEdit))
-                                                    <span class="btn btn-outline-warning btn-sm square-btn"
-                                                        style="display: none;"
-                                                        title="{{ \App\CPU\translate('Edit request pending') }}">
-                                                        <i class="tio-time"></i>
-                                                    </span>
-                                                @else
-                                                    <button type="button"
-                                                        class="btn btn-outline-secondary btn-sm square-btn"
-                                                        style="display: none;"
-                                                        title="{{ \App\CPU\translate('Request Edit Access') }}"
-                                                        data-toggle="modal"
-                                                        data-target="#editRequestModal{{ $p['id'] }}">
-                                                        <i class="tio-lock"></i>
-                                                    </button>
-
-                                                    <!-- Edit Request Modal -->
-                                                    <div class="modal fade" id="editRequestModal{{ $p['id'] }}"
-                                                        tabindex="-1" role="dialog">
-                                                        <div class="modal-dialog" role="document">
-                                                            <form action="{{ route('seller.product.request-edit') }}"
-                                                                method="POST">
-                                                                @csrf
-                                                                <input type="hidden" name="product_id"
-                                                                    value="{{ $p['id'] }}">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title">
-                                                                            {{ \App\CPU\translate('Request Edit Access') }}
-                                                                        </h5>
-                                                                        <button type="button" class="close"
-                                                                            data-dismiss="modal"><span>&times;</span></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <div class="form-group">
-                                                                            <label>{{ \App\CPU\translate('Reason for editing') }}
-                                                                                <span class="text-danger">*</span></label>
-                                                                            <textarea name="note" class="form-control" rows="4" required
-                                                                                placeholder="{{ \App\CPU\translate('Enter reason for editing this product') }}"></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary"
-                                                                            data-dismiss="modal">{{ \App\CPU\translate('Cancel') }}</button>
-                                                                        <button type="submit"
-                                                                            class="btn btn--primary">{{ \App\CPU\translate('Send Request') }}</button>
-                                                                    </div>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
+                                                        </a>
                                                 @endif
 
                                                 <a class="btn btn-outline-danger btn-sm square-btn" href="javascript:"
@@ -569,13 +510,11 @@
         });
 
         $('.status').on('change', function() {
-            var id = $(this).attr("id");
-            if ($(this).prop("checked") == true) {
-                var status = 1;
-            } else if ($(this).prop("checked") == false) {
-                var status = 0;
-            }
-            let t = $(this);
+            var toggle = $(this);
+            var id = toggle.attr("id");
+            var status = toggle.prop("checked") ? 1 : 0;
+            var previousStatus = status === 1 ? 0 : 1;
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
@@ -589,14 +528,21 @@
                     status: status
                 },
                 success: function(data) {
-                    if (data.success == true) {
+                    if (data.success) {
                         toastr.success('{{ \App\CPU\translate('Status updated successfully') }}');
-                    } else if (data.success == false) {
-                        t.removeAttr('checked');
-                        toastr.error(
-                            '{{ \App\CPU\translate('Status updated failed. Product must be approved') }}'
+                    } else {
+                        toggle.prop('checked', previousStatus === 1);
+                        toastr.error(data.message ||
+                            '{{ \App\CPU\translate('Product must be approved by admin before it can be activated') }}'
                         );
                     }
+                },
+                error: function(xhr) {
+                    toggle.prop('checked', previousStatus === 1);
+                    var message = xhr.responseJSON && xhr.responseJSON.message
+                        ? xhr.responseJSON.message
+                        : '{{ \App\CPU\translate('Unable to update product status') }}';
+                    toastr.error(message);
                 }
             });
         });

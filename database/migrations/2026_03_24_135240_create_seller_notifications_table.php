@@ -15,6 +15,12 @@ class CreateSellerNotificationsTable extends Migration
     {
         Schema::create('seller_notifications', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('seller_id')->index();
+            $table->unsignedBigInteger('product_id')->nullable()->index();
+            $table->string('title');
+            $table->text('description');
+            $table->string('type')->default('warning');
+            $table->boolean('is_read')->default(false)->index();
             $table->timestamps();
         });
     }

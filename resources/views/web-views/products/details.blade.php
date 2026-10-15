@@ -3,7 +3,7 @@
 @section('title', ($product->name ?? \App\CPU\translate('Product')) . ' | ' . ($web_config['name']->value ?? config('app.name')))
 
 @push('css_or_js')
-    <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags($product->description ?? $product->details ?? ''), 160) }}">
+    <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags($product->description ?? $product->details ?? ''), 200) }}">
     <meta name="keywords" content="@foreach (explode(' ', $product->name ?? '') as $keyword) {{ $keyword . ' , ' }} @endforeach">
     @if (isset($product->added_by) && $product->added_by == 'seller')
         <meta name="author" content="{{ $product->seller->shop ? $product->seller->shop->name : $product->seller->f_name }}">
@@ -11,9 +11,19 @@
         <meta name="author" content="{{ $web_config['name']->value ?? config('app.name') }}">
     @endif
 
-    <meta property="og:image" content="{{ asset(config('app.public_storage_path') . '/app/public/product/thumbnail') }}/{{ $product->thumbnail ?? '' }}" />
-    <meta property="og:title" content="{{ $product->name ?? '' }}" />
-    <meta property="og:url" content="{{ route('product', [$product->slug ?? '']) }}">
+    <meta property="og:type" content="product">
+    <meta property="og:site_name" content="{{ $web_config['name']->value ?? config('app.name') }}">
+    <meta property="og:title" content="{{ $product->name ?? \App\CPU\translate('Product') }}">
+    <meta property="og:description" content="{{ \Illuminate\Support\Str::limit(strip_tags($product->description ?? $product->details ?? ''), 200) }}">
+    <meta property="og:url" content="{{ route('product', [$product->slug]) }}">
+    <meta property="og:image" content="{{ !empty($product->thumbnail) ? \App\CPU\ProductManager::product_image_path('thumbnail') . '/' . $product->thumbnail : asset('assets/front-end/img/image-place-holder.png') }}">
+    <meta property="og:image:secure_url" content="{{ !empty($product->thumbnail) ? \App\CPU\ProductManager::product_image_path('thumbnail') . '/' . $product->thumbnail : asset('assets/front-end/img/image-place-holder.png') }}">
+    <meta property="og:image:alt" content="{{ $product->name ?? \App\CPU\translate('Product') }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $product->name ?? \App\CPU\translate('Product') }}">
+    <meta name="twitter:description" content="{{ \Illuminate\Support\Str::limit(strip_tags($product->description ?? $product->details ?? ''), 200) }}">
+    <meta name="twitter:image" content="{{ !empty($product->thumbnail) ? \App\CPU\ProductManager::product_image_path('thumbnail') . '/' . $product->thumbnail : asset('assets/front-end/img/image-place-holder.png') }}">
+    <meta name="twitter:image:alt" content="{{ $product->name ?? \App\CPU\translate('Product') }}">
 
     <style>
         /* ==========================================================================
@@ -1510,6 +1520,9 @@
             gap: 24px;
             align-items: start;
         }
+        .bh-reviews-grid-no-faq {
+            grid-template-columns: 300px minmax(0, 1fr);
+        }
 
         /* Left: summary card */
         .bh-reviews-summary {
@@ -1589,32 +1602,82 @@
             flex-shrink: 0;
             color: var(--bh-muted);
         }
+        .bh-summary-write {
+            padding: 16px;
+            border: 1px solid #DCEFE3;
+            border-radius: 14px;
+            background: linear-gradient(145deg, #F5FBF7 0%, #FFFFFF 100%);
+        }
+        .bh-write-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .bh-write-icon {
+            display: flex;
+            width: 34px;
+            height: 34px;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 34px;
+            border-radius: 10px;
+            background: #E5F4EA;
+            color: var(--bh-primary-dark);
+        }
+        .bh-write-icon svg {
+            width: 19px;
+            height: 19px;
+            fill: currentColor;
+        }
         .bh-write-title {
             font-size: 15px;
             font-weight: 700;
             color: var(--bh-dark);
-            margin-bottom: 4px;
+            line-height: 1.3;
         }
         .bh-write-sub {
             font-size: 13px;
             color: var(--bh-muted);
             line-height: 1.5;
-            margin: 0 0 14px;
+            margin: 0 0 13px 44px;
         }
         .bh-write-btn {
+            display: flex;
             width: 100%;
+            min-height: 44px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             background: var(--bh-primary);
             color: #FFFFFF;
             border: none;
-            border-radius: 10px;
-            padding: 12px;
+            border-radius: 11px;
+            padding: 11px 14px;
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
-            transition: background 0.2s;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 3px 8px rgba(22, 101, 52, 0.16);
+            transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
         }
         .bh-write-btn:hover {
             background: var(--bh-primary-dark);
+            color: #FFFFFF;
+            text-decoration: none;
+            box-shadow: 0 5px 12px rgba(22, 101, 52, 0.22);
+            transform: translateY(-1px);
+        }
+        .bh-write-btn:focus-visible {
+            outline: 3px solid rgba(22, 101, 52, 0.28);
+            outline-offset: 2px;
+        }
+        .bh-write-btn svg {
+            width: 17px;
+            height: 17px;
+            flex: 0 0 17px;
+            fill: currentColor;
         }
 
         /* Middle: review feed */
@@ -2863,8 +2926,11 @@
                 
 
                 {{-- 6. Customer Reviews & Ratings (separate section, always visible) --}}
+                @php
+                    $faqsList = $product->faqs ?? collect();
+                @endphp
                 <div class="bh-reviews-section" id="reviews-section">
-                    <div class="bh-reviews-grid">
+                    <div class="bh-reviews-grid {{ $faqsList->isEmpty() ? 'bh-reviews-grid-no-faq' : '' }}">
 
                         {{-- Left: Summary --}}
                         <div class="bh-reviews-summary">
@@ -2887,13 +2953,26 @@
                                     <div class="bh-bar-row"><span class="bh-bar-label">{{ $s }} star</span><div class="bh-bar-track"><div class="bh-bar-fill" style="width:{{ $pct }}%;"></div></div><span class="bh-bar-pct">{{ $pct }}%</span></div>
                                 @endfor
                             </div>
-                            @auth('customer')
                             <div class="bh-summary-write">
-                                <div class="bh-write-title">Review this product</div>
-                                <p class="bh-write-sub">Share your thoughts with other customers</p>
-                                <button type="button" class="bh-write-btn" onclick="bhOpenReviewModal()">Write a Product Review</button>
+                                <div class="bh-write-heading">
+                                    <span class="bh-write-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31l-5.8 3.06 1.1-6.47-4.7-4.58 6.5-.94L12 2.5z"/></svg>
+                                    </span>
+                                    <div class="bh-write-title">Review this product</div>
+                                </div>
+                                <p class="bh-write-sub">Your feedback helps other customers choose with confidence.</p>
+                                @auth('customer')
+                                    <button type="button" class="bh-write-btn" onclick="bhOpenReviewModal()">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66z"/></svg>
+                                        Write a Product Review
+                                    </button>
+                                @else
+                                    <a class="bh-write-btn" href="{{ route('customer.auth.login') }}">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04a1 1 0 0 0 0-1.42l-2.5-2.5a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 2-1.66z"/></svg>
+                                        Write a Product Review
+                                    </a>
+                                @endauth
                             </div>
-                            @endauth
                         </div>
 
                         {{-- Middle: Review feed --}}
@@ -2930,14 +3009,14 @@
                         </div>
 
                         {{-- Right: FAQ accordion --}}
+                        @if ($faqsList->isNotEmpty())
                         <div class="bh-reviews-faq">
                             <div class="bh-faq-header" onclick="bhToggleFaqAll(this)">
                                 <h3>Frequently Asked Questions</h3>
                                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
                             </div>
                             <div class="bh-faq-accordion">
-                                @php $faqsList = $product->faqs ?? collect(); @endphp
-                                @forelse ($faqsList as $faq)
+                                @foreach ($faqsList as $faq)
                                     <div class="bh-faq-item">
                                         <div class="bh-faq-question" onclick="bhToggleFaq(this)">
                                             <span>{{ $faq->question }}</span>
@@ -2945,17 +3024,10 @@
                                         </div>
                                         <div class="bh-faq-answer">{!! $faq->answer !!}</div>
                                     </div>
-                                @empty
-                                    <div class="bh-faq-item">
-                                        <div class="bh-faq-question" onclick="bhToggleFaq(this)">
-                                            <span>No FAQs available for this product yet.</span>
-                                            <svg class="bh-faq-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                                        </div>
-                                        <div class="bh-faq-answer">Please check back later or contact support for product-related questions.</div>
-                                    </div>
-                                @endforelse
+                                @endforeach
                             </div>
                         </div>
+                        @endif
 
                     </div>
                 </div>
@@ -3402,6 +3474,7 @@
             $.ajax({
                 type: "POST",
                 url: '{{ route("check-pincode") }}',
+                headers: {'Cache-Control': 'no-cache'},
                 data: {
                     _token: '{{ csrf_token() }}',
                     pincode: pin,
@@ -3411,6 +3484,7 @@
                 success: function(response) {
                     btn.disabled = false;
                     btn.textContent = 'Check';
+                    if (input.value.trim() !== pin) return;
                     if (response && response.status === 'success' && response.serviceable) {
                         feedback.className = 'bh-pincode-result-box success';
                         feedback.innerHTML = '<div style="display:flex; flex-direction:column; gap:4px;">' +
@@ -3430,11 +3504,17 @@
                 error: function() {
                     btn.disabled = false;
                     btn.textContent = 'Check';
+                    if (input.value.trim() !== pin) return;
                     feedback.className = 'bh-pincode-result-box error';
                     feedback.textContent = 'Unable to check delivery for this pincode. Please try again.';
                     feedback.style.display = 'block';
                 }
             });
         }
+
+        document.getElementById('bh_pincode_input').addEventListener('input', function() {
+            var feedback = document.getElementById('bh_pincode_feedback');
+            if (feedback) feedback.style.display = 'none';
+        });
     </script>
 @endpush

@@ -31,8 +31,8 @@ class RazorPayController extends Controller
     {
         $payment_id = $request->input('razorpay_payment_id');
         if (empty($payment_id)) {
-            Toastr::error('Payment process failed');
-            return back();
+            Toastr::error('Payment process canceled.');
+            return redirect()->route('checkout-payment');
         }
 
         // Verify the checkout signature when Razorpay provides it.

@@ -110,9 +110,6 @@
                                                 <option value="rejected"
                                                     {{ ($p->approval_status ?? 'draft') == 'rejected' ? 'selected' : '' }}>
                                                     {{ \App\CPU\translate('Rejected') }}</option>
-                                                <option value="pending_edit"
-                                                    {{ ($p->approval_status ?? 'draft') == 'pending_edit' ? 'selected' : '' }}>
-                                                    {{ \App\CPU\translate('Pending Edit') }}</option>
                                             </select>
                                         </td>
                                         <td class="text-center">
@@ -234,7 +231,6 @@
                     return;
                 }
 
-                select.data("prev", approval_status);
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
@@ -246,6 +242,7 @@
                         approval_status: approval_status
                     },
                     success: function(data) {
+                        select.data("prev", approval_status);
                         toastr.success(
                             '{{ \App\CPU\translate('Verify status updated successfully') }}'
                             );
@@ -254,6 +251,7 @@
                         var msg = (response.responseJSON && response.responseJSON.message) ?
                             response.responseJSON.message :
                             '{{ \App\CPU\translate('Something went wrong') }}';
+                        select.val(prev);
                         toastr.error(msg);
                     }
                 });

@@ -56,20 +56,11 @@
                                     value="{{ isset($config) ? $config['api_secret'] : '' }}">
                             </div>
 
+                            <input type="hidden" name="environment" value="live">
                             <div class="form-group">
                                 <label class="d-flex title-color">{{ \App\CPU\translate('Environment') }}</label>
-                                <select class="form-control" name="environment">
-                                    @php($env = isset($config) ? ($config['environment'] ?? 'test') : 'test')
-                                    <option value="test" {{ $env === 'test' || $env === 'dev' ? 'selected' : '' }}>
-                                        {{ \App\CPU\translate('Test') }}
-                                    </option>
-                                    <option value="live" {{ $env === 'live' ? 'selected' : '' }}>
-                                        {{ \App\CPU\translate('Live') }}
-                                    </option>
-                                </select>
-                                <small class="text-muted d-block mt-1">
-                                    {{ \App\CPU\translate('Test = Delhivery staging API | Live = Delhivery production API') }}
-                                </small>
+                                <input type="text" class="form-control" value="Live" readonly>
+                                <small class="text-muted d-block mt-1">Delhivery production API</small>
                             </div>
 
                             <div class="mt-3 d-flex flex-wrap justify-content-end gap-10">

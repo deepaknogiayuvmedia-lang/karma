@@ -37,9 +37,19 @@
                     <a href="{{url()->previous()}}" class="btn btn--primary">
                         <i class="tio-back-ui"></i> {{\App\CPU\translate('Back')}}
                     </a>
-                    @if($product['request_status'] == 2 || ($product['approval_status'] ?? '') == 'rejected')
+                    @if(
+                        $product['request_status'] == 2
+                        || ($product['approval_status'] ?? '') == 'rejected'
+                        || (
+                            in_array($product['approval_status'] ?? '', ['draft', 'pending'], true)
+                            && (int) ($product['request_status'] ?? 0) !== 1
+                        )
+                    )
                         <a href="{{ route('seller.product.edit', [$product['id']]) }}" class="btn btn--primary">
-                            <i class="tio-edit"></i> {{\App\CPU\translate('Edit & Resubmit')}}
+                            <i class="tio-edit"></i>
+                            {{ $product['request_status'] == 2 || ($product['approval_status'] ?? '') == 'rejected'
+                                ? \App\CPU\translate('Edit & Resubmit')
+                                : \App\CPU\translate('Edit') }}
                         </a>
                     @endif
                 </div>

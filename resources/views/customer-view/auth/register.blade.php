@@ -142,10 +142,7 @@
                                                name="terms_accepted" value="1" id="inputCheckd" required
                                                {{ old('terms_accepted') ? 'checked' : '' }}>
                                     </strong>
-                                    <span class="mb-4px d-block w-0 flex-grow pl-1" > <span>{{\App\CPU\translate('i_agree_to_Your')}}</span> <a
-                                            class="font-size-sm" target="_blank" href="{{route('terms')}}">
-                                            {{\App\CPU\translate('terms_and_condition')}}
-                                        </a></span>
+                                    <span class="mb-4px d-block w-0 flex-grow pl-1" > <span>{{\App\CPU\translate('i_agree_to_Your')}}</span> <a href="{{route('terms')}}" target="_blank" rel="noopener" style="text-decoration: underline;">{{\App\CPU\translate('Terms and Conditions')}}</a></span>
                                 </label>
 
                             </div>

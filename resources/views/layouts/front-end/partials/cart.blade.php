@@ -233,7 +233,7 @@
     }
 </style>
 
-@php($cart=\App\CPU\CartManager::get_cart())
+@php($cart=\App\CPU\CartManager::get_regular_cart())
 <div class="navbar-tool dropdown {{Session::get('direction') === 'rtl' ? 'mr-md-3' : 'ml-md-3'}}"
      style="margin-{{Session::get('direction') === 'rtl' ? 'left' : 'right'}}: 6px">
     <a class="navbar-tool-icon-box bg-secondary dropdown-toggle" href="{{route('shop-cart')}}">

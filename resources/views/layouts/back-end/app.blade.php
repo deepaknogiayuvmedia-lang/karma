@@ -35,6 +35,22 @@
     <link rel="stylesheet" href="{{asset('css/lightbox.css')}}">
     @stack('css_or_js')
     <style>
+        @keyframes notification-bell-ring {
+            0%, 100% { transform: rotate(0); }
+            10%, 30%, 50%, 70% { transform: rotate(12deg); }
+            20%, 40%, 60%, 80% { transform: rotate(-12deg); }
+            90% { transform: rotate(0); }
+        }
+        .notification-bell--unread {
+            display: inline-block;
+            transform-origin: top center;
+            animation: notification-bell-ring 1.2s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .notification-bell--unread {
+                animation: none;
+            }
+        }
         .back-btn {
             position: fixed;
             bottom: 30px;
@@ -476,4 +492,3 @@
 </script>
 </body>
 </html>
-

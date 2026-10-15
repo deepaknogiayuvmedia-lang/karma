@@ -139,8 +139,13 @@
                                 <div class="col-12">
                                     <center>
                                         <h3>{{ \App\CPU\translate('Send_Mail') }}</h3>
-                                        <label
-                                            class="badge-soft-danger px-1">{{ \App\CPU\translate('Configure_your_mail_setup_first') }}.</label>
+                                        @if ($mailConfigured)
+                                            <label class="badge badge-soft-success px-1">Mail setup is configured.</label>
+                                        @else
+                                            <label class="badge badge-soft-danger px-1">
+                                                {{ \App\CPU\translate('Configure_your_mail_setup_first') }}.
+                                            </label>
+                                        @endif
                                     </center>
 
 

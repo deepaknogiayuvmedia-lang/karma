@@ -85,7 +85,7 @@ class PaypalPaymentController extends Controller
 
         $redirect_urls = new RedirectUrls();
         $redirect_urls->setReturnUrl(URL::route('paypal-status'))
-            ->setCancelUrl(URL::route('home'));
+            ->setCancelUrl(URL::route('checkout-payment'));
 
         $payment = new Payment();
         $payment->setIntent('Sale')

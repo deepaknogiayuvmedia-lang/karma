@@ -24,15 +24,10 @@ class DelhiveryService
                 ->first();
 
             if ($legacy && !empty($legacy->api_secret)) {
-                $legacyEnv = strtolower((string) ($legacy->environment ?? 'test'));
-                $isLive = in_array($legacyEnv, ['live', 'production'], true);
-
                 $settings = new DelhiverySetting([
                     'name' => 'Delhivery',
-                    'environment' => $isLive ? 'production' : 'staging',
-                    'base_url' => $isLive
-                        ? 'https://track.delhivery.com'
-                        : 'https://staging-express.delhivery.com',
+                    'environment' => 'production',
+                    'base_url' => 'https://track.delhivery.com',
                     'api_token' => $legacy->api_secret,
                     'pickup_location' => 'Default Warehouse',
                     'is_enabled' => true,
@@ -43,6 +38,9 @@ class DelhiveryService
         if (!$settings || empty($settings->api_token) || empty($settings->base_url)) {
             throw new RuntimeException('Delhivery is not configured or enabled.');
         }
+
+        $settings->environment = 'production';
+        $settings->base_url = 'https://track.delhivery.com';
 
         return $settings;
     }

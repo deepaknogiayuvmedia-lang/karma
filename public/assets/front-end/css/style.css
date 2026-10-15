@@ -2762,7 +2762,7 @@ pre code {
     .container-md,
     .container-lg,
     .container-xl {
-        max-width: 1480px
+        max-width: 1300px
     }
 }
 
@@ -13631,6 +13631,14 @@ hr {
         padding-left: 67px
     }
 }
+@media (min-width: 1180px) {
+
+    .container-fluid,
+    .container-xl {
+        padding-right: 67px;
+        padding-left: 67px
+    }
+}
 
 b,
 strong {
@@ -20811,7 +20819,7 @@ html[dir="rtl"] .feature_header span {
     vertical-align: -0.10em;
     border-radius: 1em;
     border: 0.35em solid #fff;
-    margin-left: 0.75em;
+    /* margin-left: 0.75em; */
     transition: 0.5s ease all;
 }
 

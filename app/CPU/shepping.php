@@ -12,19 +12,12 @@ class shepping
 {
     public static function is_live(): bool
     {
-        $config = Helpers::get_shipping_config();
-        if ($config && !empty($config->environment)) {
-            $environment = strtolower((string) $config->environment);
-            return in_array($environment, ['live', 'production'], true);
-        }
-        return env('APP_MODE') == 'live';
+        return true;
     }
 
     public static function base_url(): string
     {
-        return self::is_live()
-            ? 'https://track.delhivery.com'
-            : 'https://staging-express.delhivery.com';
+        return 'https://track.delhivery.com';
     }
 
     public static function CreateWhereHouse($data)
@@ -564,54 +557,127 @@ class shepping
 
     public static function check_pincode($pin)
     {
-       
+        $pin = trim((string) $pin);
+        if (!preg_match('/^[0-9]{6}$/', $pin)) {
+            return [
+                'status' => 'error',
+                'serviceable' => false,
+                'cod_available' => false,
+                'message' => 'Please enter a valid 6-digit pincode.',
+            ];
+        }
+
         $config = Helpers::get_shipping_config();
-        
+
         if (!$config || !$config->status) {
             Log::warning('Delhivery shipping config not found or inactive');
             return ['status' => 'error', 'serviceable' => false, 'message' => 'Delhivery is not active'];
         }
 
         $api_token = $config->api_secret;
-        
-        $url = self::base_url() . "/c/api/pin-codes/json/?filter_codes=" . $pin;
-        
-        Log::info('Delhivery pincode check', ['pin' => $pin, 'url' => $url, 'mode' => self::is_live() ? 'live' : 'test']);
+        if (empty($api_token)) {
+            Log::error('Delhivery pincode check blocked: API token is missing');
+
+            return [
+                'status' => 'error',
+                'serviceable' => false,
+                'cod_available' => false,
+                'message' => 'Delhivery API token is not configured.',
+            ];
+        }
+
+        $url = self::base_url() . '/c/api/pin-codes/json/';
+
+        Log::info('Delhivery pincode check', ['pin' => $pin, 'url' => $url, 'mode' => 'live']);
 
         try {
             $response = Http::withoutVerifying()->withHeaders([
                 'Authorization' => 'Token ' . $api_token,
-                'Content-Type' => 'application/json'
-            ])->timeout(10)->get($url);
+                'Accept' => 'application/json',
+            ])->timeout(10)->get($url, ['filter_codes' => $pin]);
 
             $body = $response->json();
+            $rawBody = trim($response->body());
+            $contentType = $response->header('Content-Type');
 
-            Log::info('Delhivery API response', [
+            Log::info('Delhivery pincode API response', [
                 'pin' => $pin,
                 'status_code' => $response->status(),
-                'body' => $body
+                'content_type' => $contentType,
+                'body_length' => strlen($rawBody),
+                'delivery_codes_count' => is_array($body)
+                    && is_array($body['delivery_codes'] ?? null)
+                    ? count($body['delivery_codes'])
+                    : 0,
             ]);
 
-            if ($response->successful() && isset($body['delivery_codes']) && count($body['delivery_codes']) > 0) {
-                $code = $body['delivery_codes'][0];
-                $postal = $code['postal_code'] ?? [];
+            if (!$response->successful()) {
+                Log::warning('Delhivery pincode API returned an unsuccessful response', [
+                    'pin' => $pin,
+                    'status_code' => $response->status(),
+                    'content_type' => $contentType,
+                    'body_preview' => substr($rawBody, 0, 500),
+                ]);
 
-                $cod = ($postal['cod'] ?? '') === 'Y';
-                $pre_paid = ($postal['pre_paid'] ?? '') === 'Y';
-                $pickup = ($postal['pickup'] ?? '') === 'Y';
-                $repl = ($postal['repl'] ?? '') === 'Y';
+                return [
+                    'status' => 'error',
+                    'serviceable' => false,
+                    'cod_available' => false,
+                    'message' => 'Delhivery pincode check failed (HTTP ' . $response->status() . '). Please try again.',
+                ];
+            }
+
+            if (!is_array($body)) {
+                Log::error('Delhivery pincode API returned an empty or invalid JSON response', [
+                    'pin' => $pin,
+                    'status_code' => $response->status(),
+                    'content_type' => $contentType,
+                    'body_preview' => substr($rawBody, 0, 500),
+                ]);
+
+                return [
+                    'status' => 'error',
+                    'serviceable' => false,
+                    'cod_available' => false,
+                    'message' => 'Delhivery returned an empty or invalid response. Please check the API configuration.',
+                ];
+            }
+
+            $deliveryCodes = data_get($body, 'delivery_codes', []);
+            if (is_array($deliveryCodes) && isset($deliveryCodes['postal_code'])) {
+                $deliveryCodes = [$deliveryCodes];
+            }
+            $deliveryCodes = is_array($deliveryCodes) ? array_values($deliveryCodes) : [];
+
+            foreach ($deliveryCodes as $code) {
+                $postal = is_array($code) ? ($code['postal_code'] ?? []) : [];
+                if (!is_array($postal)) {
+                    continue;
+                }
+
+                $returnedPin = (string) ($postal['pin'] ?? $postal['pincode'] ?? $postal['pin_code'] ?? $pin);
+                if ($returnedPin !== $pin) {
+                    continue;
+                }
+
+                $prePaid = self::delhiveryFlagIsYes($postal['pre_paid'] ?? false);
+                $cod = self::delhiveryFlagIsYes($postal['cod'] ?? false);
+                if (!$prePaid && !$cod) {
+                    continue;
+                }
 
                 return [
                     'status' => 'success',
                     'serviceable' => true,
+                    'pincode' => $pin,
                     'message' => 'Pincode is serviceable.',
                     'cod_available' => $cod,
-                    'pre_paid' => $pre_paid,
-                    'pickup' => $pickup,
-                    'repl' => $repl,
+                    'pre_paid' => $prePaid,
+                    'pickup' => self::delhiveryFlagIsYes($postal['pickup'] ?? false),
+                    'repl' => self::delhiveryFlagIsYes($postal['repl'] ?? false),
                     'district' => $postal['district'] ?? '',
                     'state_code' => $postal['state_code'] ?? '',
-                    'data' => $postal
+                    'data' => $postal,
                 ];
             }
 
@@ -624,8 +690,18 @@ class shepping
             ];
         } catch (\Exception $e) {
             Log::error('Delhivery pincode check exception', ['pin' => $pin, 'error' => $e->getMessage()]);
-            return ['status' => 'error', 'serviceable' => false, 'message' => 'API error: ' . $e->getMessage()];
+            return [
+                'status' => 'error',
+                'serviceable' => false,
+                'cod_available' => false,
+                'message' => 'Unable to check this pincode right now. Please try again.',
+            ];
         }
+    }
+
+    private static function delhiveryFlagIsYes($value)
+    {
+        return $value === true || strtoupper((string) $value) === 'Y';
     }
 
     public static function get_origin_pincode($seller_is = 'admin', $seller_id = null)

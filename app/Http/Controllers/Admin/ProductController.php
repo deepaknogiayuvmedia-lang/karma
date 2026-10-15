@@ -21,13 +21,17 @@ use App\Model\Product;
 use App\Model\ProductChangeRequest;
 use App\Model\ProductEditRequest;
 use App\Model\Review;
+use App\Model\SellerNotification;
 use App\Model\Tag;
 use App\Model\Tempproduct;
 use App\Model\Translation;
 use App\Model\Wishlist;
+use App\Mail\NotificationMail;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -211,20 +215,40 @@ class ProductController extends BaseController
 
     public function approve_status(Request $request)
     {
-        $product = Product::find($request->id);
+        $product = Product::with('seller.shop')->findOrFail($request->id);
+
+        $approvalError = $this->sellerApprovalDetailsError($product);
+        if ($approvalError) {
+            $this->notifySellerApprovalBlocked($product, $approvalError);
+            Toastr::error($approvalError);
+            return redirect()->back();
+        }
+
         $adminId = auth('admin')->id();
         $update = [];
+        $isSellerApproval = $product->added_by === 'seller'
+            && in_array($product->approval_status, ['pending', 'pending_edit'], true);
 
         // Phase 8: Handle new approval workflow
-        if ($product->approval_status === 'pending' || $product->approval_status === 'pending_edit') {
+        if ($isSellerApproval) {
             $update['approval_status'] = 'approved';
             $update['edit_status'] = 'none';
+            $update['request_status'] = 1;
         } else {
             $update['request_status'] = ($product['request_status'] == 0) ? 1 : 0;
         }
 
         // Only touch approval fields — never rewrite other product columns
         DB::table('products')->where('id', $product->id)->update($update);
+
+        if ($isSellerApproval) {
+            $this->notifySellerAboutProduct(
+                $product,
+                'Product approved',
+                'Your product has been approved and is ready to be activated.',
+                'success'
+            );
+        }
 
         ProductChangeRequest::where('product_id', $product->id)
             ->where('status', 'pending')
@@ -235,6 +259,138 @@ class ProductController extends BaseController
             ]);
 
         return redirect()->route('admin.product.list', ['seller', 'status' => $update['request_status'] ?? $product['request_status']]);
+    }
+
+    private function sellerApprovalDetailsError(Product $product): ?string
+    {
+        if ($product->added_by !== 'seller') {
+            return null;
+        }
+
+        $seller = $product->seller;
+        if (!$seller) {
+            return 'Product cannot be approved because vendor account information is missing.';
+        }
+
+        $shop = $seller->shop;
+        $missingShopInfo = [];
+
+        if (trim((string) $seller->f_name) === '' || trim((string) $seller->l_name) === '') {
+            $missingShopInfo[] = 'Vendor Name';
+        }
+        if (trim((string) $seller->phone) === '') {
+            $missingShopInfo[] = 'Vendor Phone';
+        }
+        if (!$shop) {
+            $missingShopInfo[] = 'Shop Profile';
+        } else {
+            foreach ([
+                'name' => 'Shop Name',
+                'address' => 'Shop Address',
+                'contact' => 'Shop Contact',
+            ] as $field => $label) {
+                if (trim((string) $shop->{$field}) === '') {
+                    $missingShopInfo[] = $label;
+                }
+            }
+        }
+
+        $warehouse = $shop ? $shop->wherehouse : null;
+        if (is_string($warehouse)) {
+            $warehouse = json_decode($warehouse, true);
+        }
+        if (!is_array($warehouse)) {
+            $warehouse = [];
+        }
+
+        $missingWarehouseInfo = [];
+        foreach ([
+            'address_line1' => 'Address',
+            'city' => 'City',
+            'state' => 'State',
+            'country' => 'Country',
+        ] as $field => $label) {
+            if (trim((string) ($warehouse[$field] ?? '')) === '') {
+                $missingWarehouseInfo[] = $label;
+            }
+        }
+        if (!preg_match('/^\d{6}$/', trim((string) ($warehouse['pincode'] ?? '')))) {
+            $missingWarehouseInfo[] = 'valid 6-digit PIN Code';
+        }
+
+        $reasons = [];
+        if ($missingShopInfo) {
+            $reasons[] = 'vendor/shop information is incomplete (' . implode(', ', $missingShopInfo) . ')';
+        }
+        if ($missingWarehouseInfo) {
+            $reasons[] = 'vendor warehouse information is incomplete (' . implode(', ', $missingWarehouseInfo) . ')';
+        }
+
+        return $reasons
+            ? 'Product cannot be approved: ' . implode('; ', $reasons) . '.'
+            : null;
+    }
+
+    private function notifySellerApprovalBlocked(Product $product, string $reason): void
+    {
+        $this->notifySellerAboutProduct($product, 'Product approval blocked', $reason, 'warning');
+    }
+
+    private function notifySellerAboutProduct(Product $product, string $title, string $message, string $type): void
+    {
+        if ($product->added_by !== 'seller' || !$product->user_id) {
+            return;
+        }
+
+        $seller = $product->seller;
+
+        SellerNotification::create([
+            'seller_id' => $product->user_id,
+            'product_id' => $product->id,
+            'title' => $title,
+            'description' => $message,
+            'type' => $type,
+        ]);
+
+        if (!$seller || !filter_var($seller->email, FILTER_VALIDATE_EMAIL)) {
+            Log::warning('Product notification email was not sent because the seller email address is missing or invalid.', [
+                'product_id' => $product->id,
+                'seller_id' => $product->user_id,
+            ]);
+            return;
+        }
+
+        $smtpConfig = Helpers::get_business_settings('mail_config');
+        $sendgridConfig = Helpers::get_business_settings('mail_config_sendgrid');
+        $mailConfig = is_array($smtpConfig) && (int) ($smtpConfig['status'] ?? 0) === 1
+            ? $smtpConfig
+            : (is_array($sendgridConfig) && (int) ($sendgridConfig['status'] ?? 0) === 1
+                ? $sendgridConfig
+                : null);
+
+        if ($mailConfig === null) {
+            Log::warning('Product notification email was not sent because no mail provider is active.', [
+                'product_id' => $product->id,
+                'seller_id' => $product->user_id,
+            ]);
+            return;
+        }
+
+        try {
+            $sellerName = trim(($seller->f_name ?? '') . ' ' . ($seller->l_name ?? ''));
+            Mail::to($seller->email)->send(new NotificationMail(
+                $title,
+                $message,
+                $sellerName,
+                $type
+            ));
+        } catch (\Throwable $exception) {
+            Log::error('Failed to email seller about product notification.', [
+                'product_id' => $product->id,
+                'seller_id' => $product->user_id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 
     public function deny(Request $request)
@@ -260,6 +416,13 @@ class ProductController extends BaseController
             'request_status' => 2,
             'denied_note' => $request->denied_note,
         ]);
+
+        $this->notifySellerAboutProduct(
+            $product,
+            'Product rejected',
+            'Your product was rejected: ' . $request->denied_note,
+            'danger'
+        );
 
         ProductChangeRequest::where('product_id', $product->id)
             ->where('status', 'pending')
@@ -779,23 +942,26 @@ class ProductController extends BaseController
         } else {
             $pro = Product::with(['seller.shop'])->where(['added_by' => 'seller']);
             if ($seller_id != '') {
-                // Selected seller: only their copy-and-add products (pid not null)
-                $pro->where('user_id', $seller_id)->whereNotNull('pid');
+                $pro->where('user_id', $seller_id);
                 $query_param['seller_id'] = $seller_id;
-            } else {
-                $pro->whereNull('pid');
             }
-            // Default "New Seller Products": only pending (0) or denied (2) — never approved
+            // Pending approvals include only vendor-created products awaiting their first approval.
             $request_status = $request->has('status') ? $request['status'] : 'pending';
             if ($request_status === 'pending') {
-                $pro->whereIn('request_status', [0, 2])
-                    ->where(function ($q) {
-                        $q->where('approval_status', '!=', 'approved')
-                          ->orWhereNull('approval_status')
-                          ->orWhere('approval_status', '');
-                    });
-            } elseif ($request_status !== 'all' && $request_status !== null && $request_status !== '') {
-                $pro->where('request_status', $request_status);
+                $pro->whereNull('pid')
+                    ->where('request_status', 0)
+                    ->where('approval_status', 'pending');
+            } else {
+                if ($seller_id != '') {
+                    // Other seller-specific tabs continue to show their copied products.
+                    $pro->whereNotNull('pid');
+                }
+                if ($request_status !== 'all' && $request_status !== null && $request_status !== '') {
+                    $pro->where('request_status', $request_status);
+                }
+            }
+            if ($seller_id == '' && $request_status !== 'pending') {
+                $pro->whereNull('pid');
             }
         }
 
@@ -829,14 +995,20 @@ class ProductController extends BaseController
 
         // Counts for tabs
         $all_count = Product::where('added_by', $type == 'in_house' ? 'admin' : 'seller')
-            ->when($type != 'in_house', fn($q) => $q->whereNull('pid'))
+            ->when($type != 'in_house' && $seller_id != '', function ($q) use ($seller_id) {
+                $q->where('user_id', $seller_id);
+            })
+            ->when($type != 'in_house' && $request_status !== 'pending', function ($q) use ($seller_id) {
+                if ($seller_id != '') {
+                    $q->whereNotNull('pid');
+                } else {
+                    $q->whereNull('pid');
+                }
+            })
             ->when($type != 'in_house' && $request_status === 'pending', function ($q) {
-                $q->whereIn('request_status', [0, 2])
-                  ->where(function ($qq) {
-                      $qq->where('approval_status', '!=', 'approved')
-                         ->orWhereNull('approval_status')
-                         ->orWhere('approval_status', '');
-                  });
+                $q->whereNull('pid')
+                    ->where('request_status', 0)
+                    ->where('approval_status', 'pending');
             })
             ->when($type != 'in_house' && $request_status !== 'all' && $request_status !== null && $request_status !== '' && $request_status !== 'pending', fn($q) => $q->where('request_status', $request_status))
             ->count();
@@ -1238,8 +1410,7 @@ class ProductController extends BaseController
             if (
                 $product->added_by == 'seller' && (
                     trim((string) ($product->approval_status ?? '')) !== 'approved'
-                    || $product->request_status == 0
-                    || $product->request_status == 2
+                    || (int) $product->request_status !== 1
                 )
             ) {
                 $success = 0;
@@ -1257,6 +1428,11 @@ class ProductController extends BaseController
 
     public function approval_status_update(Request $request)
     {
+        $request->validate([
+            'id' => 'required|exists:products,id',
+            'approval_status' => 'required|in:draft,pending,approved,rejected,pending_edit',
+        ]);
+
         if ($request->approval_status == 'rejected') {
             $validator = Validator::make($request->all(), [
                 'denied_note' => 'required|string|max:500',
@@ -1274,15 +1450,47 @@ class ProductController extends BaseController
         }
 
         $product = Product::findOrFail($request->id);
+
+        if ($request->approval_status === 'approved') {
+            $approvalError = $this->sellerApprovalDetailsError($product);
+            if ($approvalError) {
+                $this->notifySellerApprovalBlocked($product, $approvalError);
+                return response()->json([
+                    'success' => false,
+                    'message' => $approvalError,
+                ], 422);
+            }
+        }
+
         $update = ['approval_status' => $request->approval_status];
 
         if ($request->approval_status === 'rejected') {
             $update['request_status'] = 2;
             $update['denied_note'] = $request->denied_note;
+        } elseif ($request->approval_status === 'approved' && $product->added_by === 'seller') {
+            $update['request_status'] = 1;
         }
 
         // Partial update: only approval fields, never other product columns
         DB::table('products')->where('id', $product->id)->update($update);
+
+        if ($product->added_by === 'seller' && $product->approval_status !== $request->approval_status) {
+            if ($request->approval_status === 'approved') {
+                $this->notifySellerAboutProduct(
+                    $product,
+                    'Product approved',
+                    'Your product has been approved and is ready to be activated.',
+                    'success'
+                );
+            } elseif ($request->approval_status === 'rejected') {
+                $this->notifySellerAboutProduct(
+                    $product,
+                    'Product rejected',
+                    'Your product was rejected: ' . $request->denied_note,
+                    'danger'
+                );
+            }
+        }
 
         return response()->json([
             'success' => true,

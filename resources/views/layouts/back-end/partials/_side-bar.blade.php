@@ -549,17 +549,9 @@
                         @endif
 
                         <!--Product Edit/Change Requests-->
-                        <li class="nav-item {{ Request::is('admin/product/edit-requests*') || Request::is('admin/product/change-requests*') ? 'active' : '' }}" style="display: none;">
+                        <li class="nav-item {{ Request::is('admin/product/change-requests*') ? 'active' : '' }}" style="display: none;">
                             <small class="nav-subtitle" title="">{{ \App\CPU\translate('Product Approval') }}</small>
                             <small class="tio-more-horizontal nav-subtitle-replacer"></small>
-                        </li>
-                        <li class="nav-item {{ Request::is('admin/product/edit-requests*') ? 'active' : '' }}" style="display: none;">
-                            <a class="nav-link" href="{{ route('admin.product.edit-requests') }}">
-                                <i class="tio-edit nav-icon"></i>
-                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
-                                    {{ \App\CPU\translate('Edit Requests') }}
-                                </span>
-                            </a>
                         </li>
                         <li class="nav-item {{ Request::is('admin/product/change-requests*') ? 'active' : '' }}" style="display: none;">
                             <a class="nav-link" href="{{ route('admin.product.change-requests') }}">

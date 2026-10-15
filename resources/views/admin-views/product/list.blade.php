@@ -236,7 +236,7 @@
                                             </label>
                                         </td>
                                         <td class="text-center">
-                                            @if ($p->added_by == 'seller' && trim((string) ($p->approval_status ?? '')) !== 'approved')
+                                            @if ($p->added_by == 'seller' && (trim((string) ($p->approval_status ?? '')) !== 'approved' || (int) ($p->request_status ?? 0) !== 1))
                                                 <span class="text-muted"
                                                     title="{{ \App\CPU\translate('Product must be approved first') }}">-</span>
                                             @else
@@ -262,9 +262,6 @@
                                                 <option value="rejected"
                                                     {{ ($p->approval_status ?? 'draft') == 'rejected' ? 'selected' : '' }}>
                                                     {{ \App\CPU\translate('Rejected') }}</option>
-                                                <option value="pending_edit"
-                                                    {{ ($p->approval_status ?? 'draft') == 'pending_edit' ? 'selected' : '' }}>
-                                                    {{ \App\CPU\translate('Pending Edit') }}</option>
                                             </select>
                                         </td>
 
@@ -799,8 +796,7 @@
                     $.each(data.sellers, function(index, seller) {
                         var featuredBtn = buildFeaturedBtn(seller.id, seller.featured);
                         var verifyStatus = seller.approval_status || 'draft';
-                        var verifyOptions = ['draft', 'pending', 'approved', 'rejected',
-                        'pending_edit'];
+                        var verifyOptions = ['draft', 'pending', 'approved', 'rejected'];
                         var verifySelect =
                             '<select class="form-control form-control-sm seller-approval-status" data-id="' +
                             seller.id + '" style="width:auto;display:inline-block;">';

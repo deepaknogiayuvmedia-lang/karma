@@ -332,8 +332,8 @@
 
   <section class="hero">
     <div class="hero-content">
-      <h1 class="text-white">About us</h1>
-  
+      <h1 class="text-white">About {{ $web_config['name']->value }}</h1>
+      <p>Bringing customers, farmers, and agricultural sellers together through one online marketplace.</p>
     </div>
   </section>
 
@@ -350,18 +350,18 @@
         <div class="about-content">
           <div class="section-title">Who We Are</div>
 
-          <h2>Empowering Farmers Through Digital Agriculture</h2>
+          <h2>A marketplace for farming and everyday agriculture needs</h2>
 
           <p>
-            Pro Kissan is a modern agriculture multi-vendor platform designed to help local farmers and agriculture businesses sell products online with ease and transparency.
+            {{ $web_config['name']->value }} is a multi-vendor marketplace where customers can discover products listed by farmers, vendors, and agricultural businesses.
           </p>
 
           <p>
-            We believe fresh food should come directly from farms to customers while ensuring fair pricing, better profits for farmers, and healthier choices for families.
+            We make it easier to explore available products online, compare listings, and place orders from participating sellers. Product details and seller information help customers make an informed choice.
           </p>
 
           <p>
-            Our platform supports organic vegetables, fruits, dairy products, grains, seeds, fertilizers, farming tools, and much more.
+            The marketplace includes farm produce and other agriculture-related items such as seeds, fertilizers, and farming tools. Product availability and delivery options can vary by seller and delivery location.
           </p>
 
           
@@ -377,9 +377,9 @@
     <div class="container">
 
       <div class="heading">
-        <h2>Why Choose Us</h2>
+        <h2>How the Marketplace Helps</h2>
         <p>
-          We provide a trusted and technology-driven farming marketplace experience for both sellers and buyers.
+          Useful tools bring product discovery, vendor listings, and delivery information together in one place.
         </p>
       </div>
 
@@ -387,33 +387,33 @@
 
         <div class="feature-card">
           <div class="feature-icon">🌱</div>
-          <h3>Fresh Products</h3>
+          <h3>Explore Products</h3>
           <p>
-            Freshly harvested vegetables, fruits, and organic products directly from farms.
+            Browse available farm produce and agriculture-related products from participating sellers.
           </p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">🚜</div>
-          <h3>Verified Farmers</h3>
+          <h3>Multiple Vendors</h3>
           <p>
-            Trusted and verified vendors ensuring quality agricultural products and services.
+            Discover listings from farmers, vendors, and agricultural businesses on one marketplace.
           </p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">📦</div>
-          <h3>Fast Delivery</h3>
+          <h3>Location-Based Delivery</h3>
           <p>
-            Secure and fast delivery system connecting farms directly to your doorstep.
+            Delivery serviceability and shipping charges are checked for the delivery PIN code at checkout.
           </p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">💚</div>
-          <h3>Organic Focus</h3>
+          <h3>Clear Product Details</h3>
           <p>
-            Promoting sustainable farming and healthy organic food for a better future.
+            Review product descriptions, available options, seller details, and customer feedback before ordering.
           </p>
         </div>
 
@@ -422,31 +422,35 @@
     </div>
   </section>
 
-  <!-- STATS -->
+  <!-- MARKETPLACE CATEGORIES -->
 
   <section class="stats">
     <div class="container">
 
+      <div class="heading">
+        <h2>Made for Agriculture</h2>
+        <p>Find products for the home, the farm, and the work in between.</p>
+      </div>
+
       <div class="stats-wrapper">
-
         <div class="stat-box">
-          <h2>500+</h2>
-          <p>Farm Vendors</p>
+          <h2><i class="fa fa-pagelines" aria-hidden="true"></i></h2>
+          <p>Farm Produce</p>
         </div>
 
         <div class="stat-box">
-          <h2>10K+</h2>
-          <p>Happy Customers</p>
+          <h2><i class="fa fa-leaf" aria-hidden="true"></i></h2>
+          <p>Seeds and Crop Care</p>
         </div>
 
         <div class="stat-box">
-          <h2>120+</h2>
-          <p>Organic Products</p>
+          <h2><i class="fa fa-flask" aria-hidden="true"></i></h2>
+          <p>Fertilizers and Supplies</p>
         </div>
 
         <div class="stat-box">
-          <h2>24/7</h2>
-          <p>Customer Support</p>
+          <h2><i class="fa fa-cogs" aria-hidden="true"></i></h2>
+          <p>Farming Tools and Equipment</p>
         </div>
 
       </div>
@@ -510,10 +514,10 @@
 
   <section class="cta">
     <div class="container">
-      <h2 class="text-white">Join Our Farming Community</h2>
+      <h2 class="text-white">Discover the Marketplace</h2>
 
       <p>
-        Become a vendor, support local agriculture, and enjoy Pro Kissan products delivered directly to you.
+        Explore products, review seller and delivery details for your location, and choose what works for you.
       </p>
 
    

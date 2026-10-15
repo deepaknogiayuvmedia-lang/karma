@@ -6,6 +6,7 @@ use App\CPU\ImageManager;
 use App\Http\Controllers\Controller;
 use App\Model\Seller;
 use App\Model\Shop;
+use App\Model\AdminNotification;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use function App\CPU\translate;
@@ -49,7 +50,16 @@ class ProfileController extends Controller
         if ($request->image) {
             $seller->image = ImageManager::update('seller/', $seller->image, 'png', $request->file('image'));
         }
+        $profileChanged = $seller->isDirty(['f_name', 'l_name', 'phone', 'image']);
         $seller->save();
+
+        if ($profileChanged) {
+            $this->notifyAdminOfSellerProfileUpdate(
+                $seller,
+                'Vendor Profile Updated',
+                'The vendor updated their account profile information.'
+            );
+        }
 
         Toastr::info('Profile updated successfully!');
         return back();
@@ -76,9 +86,30 @@ class ProfileController extends Controller
         $bank->branch = $request->branch;
         $bank->holder_name = $request->holder_name;
         $bank->account_no = $request->account_no;
+        $bankDetailsChanged = $bank->isDirty(['bank_name', 'branch', 'holder_name', 'account_no']);
         $bank->save();
+
+        if ($bankDetailsChanged) {
+            $this->notifyAdminOfSellerProfileUpdate(
+                $bank,
+                'Vendor Bank Details Updated',
+                'The vendor updated their bank details.'
+            );
+        }
+
         Toastr::success('Bank Info updated');
         return redirect()->route('seller.profile.view');
+    }
+
+    private function notifyAdminOfSellerProfileUpdate(Seller $seller, string $title, string $message): void
+    {
+        AdminNotification::create([
+            'seller_id' => $seller->id,
+            'title' => $title,
+            'message' => trim(($seller->f_name ?? '') . ' ' . ($seller->l_name ?? '')) . ': ' . $message,
+            'link' => route('admin.sellers.view', $seller->id),
+            'is_read' => 0,
+        ]);
     }
 
     public function bank_edit($id)

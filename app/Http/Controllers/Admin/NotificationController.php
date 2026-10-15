@@ -25,6 +25,13 @@ class NotificationController extends Controller
         return response()->json(['success' => 1]);
     }
 
+    public function all_admin_notifications()
+    {
+        $notifications = AdminNotification::latest()->paginate(Helpers::pagination_limit());
+
+        return view('admin-views.notification.all-admin', compact('notifications'));
+    }
+
     public function index(Request $request)
     {
         $query_param = [];

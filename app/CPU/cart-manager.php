@@ -25,7 +25,9 @@ class CartManager
                 $db_cart = Cart::where(['customer_id' => $user->id, 'seller_id' => $item['seller_id'], 'seller_is' => $item['seller_is']])->first();
                 $storage[] = [
                     'customer_id' => $user->id,
-                    'cart_group_id' => isset($db_cart) ? $db_cart['cart_group_id'] : str_replace('offline', $user->id, $item['cart_group_id']),
+                    'cart_group_id' => session('bh_buy_now_cart_group_id') === ($item['cart_group_id'] ?? null)
+                        ? $item['cart_group_id']
+                        : (isset($db_cart) ? $db_cart['cart_group_id'] : str_replace('offline', $user->id, $item['cart_group_id'])),
                     'product_id' => $item['product_id'],
                     'color' => $item['color'],
                     'choices' => $item['choices'],
@@ -55,10 +57,27 @@ class CartManager
     public static function get_cart($group_id = null)
     {
         $user = Helpers::get_customer();
+        $buyNowGroupId = session('bh_buy_now_cart_group_id');
+        if ($buyNowGroupId) {
+            if ($group_id !== null && $group_id !== $buyNowGroupId) {
+                return collect();
+            }
+
+            if ($user == 'offline') {
+                return collect(session('offline_cart', []))
+                    ->where('cart_group_id', $buyNowGroupId)
+                    ->values();
+            }
+
+            return Cart::where('customer_id', $user->id)
+                ->where('cart_group_id', $buyNowGroupId)
+                ->get();
+        }
+
         if (session()->has('offline_cart') && $user == 'offline') {
             $cart = session('offline_cart');
             if ($group_id != null) {
-                return $cart->where('cart_group_id', $group_id)->get();
+                return $cart->where('cart_group_id', $group_id)->values();
             } else {
                 return $cart;
             }
@@ -71,6 +90,27 @@ class CartManager
         }
 
         return $cart;
+    }
+
+    public static function get_regular_cart()
+    {
+        $buyNowGroupId = session('bh_buy_now_cart_group_id');
+        if (!$buyNowGroupId) {
+            return self::get_cart();
+        }
+
+        $user = Helpers::get_customer();
+        if ($user == 'offline') {
+            return collect(session('offline_cart', []))
+                ->reject(function ($item) use ($buyNowGroupId) {
+                    return data_get($item, 'cart_group_id') === $buyNowGroupId;
+                })
+                ->values();
+        }
+
+        return Cart::where('customer_id', $user->id)
+            ->where('cart_group_id', '!=', $buyNowGroupId)
+            ->get();
     }
 
     public static function get_cart_for_api($request, $group_id=null)
@@ -87,6 +127,20 @@ class CartManager
     public static function get_cart_group_ids($request = null)
     {
         $user = Helpers::get_customer($request);
+        $buyNowGroupId = session('bh_buy_now_cart_group_id');
+        if ($buyNowGroupId) {
+            if ($user == 'offline') {
+                $hasSelectedItem = collect(session('offline_cart', []))
+                    ->contains('cart_group_id', $buyNowGroupId);
+            } else {
+                $hasSelectedItem = Cart::where('customer_id', $user->id)
+                    ->where('cart_group_id', $buyNowGroupId)
+                    ->exists();
+            }
+
+            return $hasSelectedItem ? [$buyNowGroupId] : [];
+        }
+
         if ($user == 'offline') {
             if (session()->has('offline_cart') == false) {
                 session()->put('offline_cart', collect([]));
@@ -214,8 +268,94 @@ class CartManager
     {
         $cart_ids = CartManager::get_cart_group_ids($request);
         CartShipping::whereIn('cart_group_id', $cart_ids)->delete();
+
+        if (session()->has('bh_buy_now_cart_group_id')) {
+            $user = Helpers::get_customer($request);
+            if ($user == 'offline') {
+                $offlineCart = collect(session('offline_cart', []))
+                    ->reject(function ($item) use ($cart_ids) {
+                        return in_array(data_get($item, 'cart_group_id'), $cart_ids, true);
+                    })
+                    ->values();
+                session()->put('offline_cart', $offlineCart);
+            } else {
+                Cart::where('customer_id', $user->id)
+                    ->whereIn('cart_group_id', $cart_ids)
+                    ->delete();
+            }
+
+            session()->forget([
+                'bh_buy_now_cart_group_id',
+                'bh_buy_now_original_group_id',
+                'bh_buy_now_was_in_cart',
+            ]);
+            self::forgetCheckoutState();
+            return;
+        }
+
         Cart::whereIn('cart_group_id', $cart_ids)->delete();
 
+        self::forgetCheckoutState();
+    }
+
+    public static function restore_buy_now_cart(): void
+    {
+        $buyNowGroupId = session('bh_buy_now_cart_group_id');
+        $originalGroupId = session('bh_buy_now_original_group_id');
+        $wasAlreadyInCart = (bool) session('bh_buy_now_was_in_cart', false);
+        if (!$buyNowGroupId) {
+            return;
+        }
+
+        CartShipping::where('cart_group_id', $buyNowGroupId)->delete();
+        $user = Helpers::get_customer();
+        if ($user == 'offline') {
+            $offlineCart = collect(session('offline_cart', []))
+                ->reject(function ($item) use ($buyNowGroupId, $originalGroupId, $wasAlreadyInCart) {
+                    return (!$wasAlreadyInCart || !$originalGroupId)
+                        && data_get($item, 'cart_group_id') === $buyNowGroupId;
+                })
+                ->map(function ($item) use ($buyNowGroupId, $originalGroupId, $wasAlreadyInCart) {
+                    if ($wasAlreadyInCart
+                        && data_get($item, 'cart_group_id') === $buyNowGroupId
+                        && $originalGroupId) {
+                        $item['cart_group_id'] = $originalGroupId;
+                    }
+                    return $item;
+                });
+            session()->put('offline_cart', $offlineCart->values());
+        } else {
+            $query = Cart::where('customer_id', $user->id)
+                ->where('cart_group_id', $buyNowGroupId);
+            $buyNowCart = $query->first();
+            if ($wasAlreadyInCart && $originalGroupId && $buyNowCart) {
+                $restoreGroupId = $originalGroupId;
+                if (strpos((string) $restoreGroupId, 'offline') === 0) {
+                    $existingSellerGroupId = Cart::where('customer_id', $user->id)
+                        ->where('seller_id', $buyNowCart->seller_id)
+                        ->where('seller_is', $buyNowCart->seller_is)
+                        ->where('cart_group_id', '!=', $buyNowGroupId)
+                        ->value('cart_group_id');
+                    $restoreGroupId = $existingSellerGroupId
+                        ?: str_replace('offline', (string) $user->id, $restoreGroupId);
+                }
+
+                $query->update(['cart_group_id' => $restoreGroupId]);
+            } else {
+                $query->delete();
+            }
+        }
+
+        session()->forget([
+            'bh_buy_now_cart_group_id',
+            'bh_buy_now_original_group_id',
+            'bh_buy_now_was_in_cart',
+        ]);
+        self::forgetCheckoutState();
+    }
+
+    private static function forgetCheckoutState(): void
+    {
         session()->forget('coupon_code');
         session()->forget('coupon_type');
         session()->forget('coupon_bearer');
@@ -226,6 +366,10 @@ class CartManager
         session()->forget('order_id');
         session()->forget('cart_group_id');
         session()->forget('order_note');
+        session()->forget('delhivery_pincode');
+        session()->forget('delhivery_shipping_cost');
+        session()->forget('checkout_terms_accepted_at');
+        session()->forget('checkout_terms_version');
     }
 
     public static function add_to_cart($request, $from_api = false)
@@ -265,7 +409,10 @@ class CartManager
                 } else {
                     return [
                         'status' => 0,
-                        'message' => translate('already_added!')
+                        'message' => translate('already_added!'),
+                        'cart_id' => $check['id'],
+                        'cart_group_id' => $check['cart_group_id'],
+                        'variant' => $check['variant'],
                     ];
                 }
             } else {
@@ -279,7 +426,10 @@ class CartManager
             } else {
                 return [
                     'status' => 0,
-                    'message' => translate('already_added!')
+                    'message' => translate('already_added!'),
+                    'cart_id' => $cart->id,
+                    'cart_group_id' => $cart->cart_group_id,
+                    'variant' => $cart->variant,
                 ];
             }
         }
@@ -387,7 +537,10 @@ class CartManager
 
         return [
             'status' => 1,
-            'message' => translate('successfully_added!')
+            'message' => translate('successfully_added!'),
+            'cart_id' => $cart['id'],
+            'cart_group_id' => $cart['cart_group_id'],
+            'variant' => $cart['variant'],
         ];
     }
 

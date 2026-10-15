@@ -1,5 +1,20 @@
-<aside class="col-lg-4 pt-4 pt-lg-2">
+<aside class="col-lg-4 pt-4 pt-lg-2 {{ request()->routeIs('checkout-details', 'checkout-payment') ? 'os-sticky-sidebar' : '' }}">
     <style>
+        @media (min-width: 992px) {
+            .os-sticky-sidebar {
+                position: sticky;
+                top: 90px;
+                align-self: flex-start;
+                z-index: 2;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .os-sticky-sidebar {
+                position: static;
+            }
+        }
+
         .os-card {
             --os-primary: #168A3A;
             background: #fff;
@@ -247,6 +262,20 @@
     @php($cart_group_ids=\App\CPU\CartManager::get_cart_group_ids())
     @php($shipping_cost=session('delhivery_shipping_cost', 0))
     @php($item_count=0)
+    @php($format_order_price = function ($amount) {
+        if (request()->routeIs('checkout-details', 'checkout-payment')) {
+            $rounded_amount = round((float) $amount);
+            $formatted_amount = number_format(abs($rounded_amount), 0);
+            $sign = $rounded_amount < 0 ? '-' : '';
+            \App\CPU\Helpers::currency_load();
+            $currency_symbol = session('currency_symbol');
+            return \App\CPU\Helpers::get_business_settings('currency_symbol_position') === 'left'
+                ? $sign . $currency_symbol . $formatted_amount
+                : $sign . $formatted_amount . $currency_symbol;
+        }
+
+        return \App\CPU\Helpers::currency_converter($amount);
+    })
     @if($cart->count() > 0)
         @foreach($cart as $key => $cartItem)
             @php($sub_total+=$cartItem['price']*$cartItem['quantity'])
@@ -298,7 +327,7 @@
                                 </div>
                             @endif
                             <div class="os-pl-meta">
-                                Qty {{$cartItem['quantity']}} · <b>{{\App\CPU\Helpers::currency_converter($cartItem['price'] * $cartItem['quantity'])}}</b>
+                                Qty {{$cartItem['quantity']}} · <b>{{ $format_order_price($cartItem['price'] * $cartItem['quantity']) }}</b>
                             </div>
                         </div>
                     </div>
@@ -307,12 +336,12 @@
             <div class="os-rows">
                 <div class="os-row">
                     <span class="os-label">{{\App\CPU\translate('sub_total')}}</span>
-                    <span class="os-val">{{\App\CPU\Helpers::currency_converter($sub_total)}}</span>
+                    <span class="os-val">{{ $format_order_price($sub_total) }}</span>
                 </div>
                 @if($total_tax > 0)
                     <div class="os-row">
                         <span class="os-label">{{\App\CPU\translate('tax')}}</span>
-                        <span class="os-val">{{\App\CPU\Helpers::currency_converter($total_tax)}}</span>
+                        <span class="os-val">{{ $format_order_price($total_tax) }}</span>
                     </div>
                 @endif
                 <div class="os-row os-ship">
@@ -320,7 +349,7 @@
                     <span class="os-val" id="order-summary-shipping">
                         @if(session()->has('delhivery_shipping_cost'))
                             @if($total_shipping_cost > 0)
-                                {{\App\CPU\Helpers::currency_converter($total_shipping_cost)}}
+                                {{ $format_order_price($total_shipping_cost) }}
                             @else
                                 {{\App\CPU\translate('Free')}}
                             @endif
@@ -332,7 +361,7 @@
                 @if($total_discount_on_product > 0)
                     <div class="os-row os-discount">
                         <span class="os-label">{{\App\CPU\translate('discount_on_product')}}</span>
-                        <span class="os-val">- {{\App\CPU\Helpers::currency_converter($total_discount_on_product)}}</span>
+                        <span class="os-val">- {{ $format_order_price($total_discount_on_product) }}</span>
                     </div>
                 @endif
             </div>
@@ -343,7 +372,7 @@
                 <div class="os-coupon">
                     <div class="os-coupon-applied">
                         <span><i class="fa fa-tag mr-1"></i> {{\App\CPU\translate('coupon_discount')}} ({{ session('coupon_code') ?? '' }})</span>
-                        <span id="coupon-discount-amount">- {{\App\CPU\Helpers::currency_converter($coupon_discount+$order_wise_shipping_discount)}}</span>
+                        <span id="coupon-discount-amount">- {{ $format_order_price($coupon_discount+$order_wise_shipping_discount) }}</span>
                     </div>
                 </div>
             @else
@@ -363,13 +392,17 @@
                 </div>
             @endif
 
+            @php($exact_order_total = $sub_total+$total_tax+$total_shipping_cost-$coupon_dis-$total_discount_on_product-$order_wise_shipping_discount)
+            @php($rounded_component_total = round($sub_total)+round($total_tax)+round($total_shipping_cost)-round($coupon_dis+$order_wise_shipping_discount)-round($total_discount_on_product))
+            @php($rounding_adjustment = round($exact_order_total)-$rounded_component_total)
+
             <div class="os-total">
                 <div class="os-total-label">
                     {{\App\CPU\translate('Total Payable')}}
                     <small>{{\App\CPU\translate('inclusive of all taxes')}}</small>
                 </div>
                 <div class="os-total-val" id="order-summary-total">
-                    {{\App\CPU\Helpers::currency_converter($sub_total+$total_tax+$total_shipping_cost-$coupon_dis-$total_discount_on_product-$order_wise_shipping_discount)}}
+                    {{ $format_order_price($exact_order_total) }}
                 </div>
             </div>
         @else

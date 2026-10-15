@@ -61,7 +61,8 @@ class ContactController extends Controller
     public function view($id)
     {
         $contact = Contact::findOrFail($id);
-        return view('admin-views.contacts.view', compact('contact'));
+        $mailConfigured = $this->activeMailConfig() !== null;
+        return view('admin-views.contacts.view', compact('contact', 'mailConfigured'));
     }
 
     public function update(Request $request, $id)
@@ -84,6 +85,11 @@ class ContactController extends Controller
 
     public function send_mail(Request $request, $id)
     {
+        if ($this->activeMailConfig() === null) {
+            Toastr::error('Configure and activate an SMTP or SendGrid mail provider first.');
+            return back();
+        }
+
         $contact = Contact::findOrFail($id);
         $data = array('body' => $request['mail_body']);
         Mail::send('email-templates.customer-message', $data, function ($message) use ($contact, $request) {
@@ -100,5 +106,20 @@ class ContactController extends Controller
 
         Toastr::success('Mail sent successfully!');
         return back();
+    }
+
+    private function activeMailConfig(): ?array
+    {
+        $smtp = Helpers::get_business_settings('mail_config');
+        if (is_array($smtp) && (int) ($smtp['status'] ?? 0) === 1) {
+            return $smtp;
+        }
+
+        $sendgrid = Helpers::get_business_settings('mail_config_sendgrid');
+        if (is_array($sendgrid) && (int) ($sendgrid['status'] ?? 0) === 1) {
+            return $sendgrid;
+        }
+
+        return null;
     }
 }

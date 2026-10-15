@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Seller;
 use App\CPU\ImageManager;
 use App\Http\Controllers\Controller;
 use App\Model\Shop;
+use App\Model\AdminNotification;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,7 +63,16 @@ class ShopController extends Controller
         if ($request->banner) {
             $shop->banner = ImageManager::update('shop/banner/', $shop->banner, 'png', $request->file('banner'));
         }
+        $profileChanged = $shop->isDirty(['name', 'address', 'contact', 'image', 'banner']);
         $shop->save();
+
+        if ($profileChanged) {
+            $this->notifyAdminOfSellerProfileUpdate(
+                $shop,
+                'Vendor Shop Profile Updated',
+                'The vendor updated their shop profile information.'
+            );
+        }
 
         Toastr::info('Shop updated successfully!');
         return redirect()->route('seller.shop.view');
@@ -117,6 +127,7 @@ class ShopController extends Controller
         ];
 
         $shop = Shop::find($id);
+        $warehouseChanged = json_decode((string) $shop->wherehouse, true) !== $warehouseAddress;
 
         $shop->whatsapp_no = $request->whatsapp_number;
         $shop->gst_no = $request->gst_number;
@@ -150,7 +161,32 @@ class ShopController extends Controller
         }
         $shop->business_address = json_encode($businessAddress);
         $shop->wherehouse        = json_encode($warehouseAddress);
+        $businessProfileChanged = $shop->isDirty([
+            'whatsapp_no',
+            'gst_no',
+            'gst_doc',
+            'pen_no',
+            'pen_doc',
+            'business_address',
+        ]);
         $shop->save();
+
+        if ($businessProfileChanged) {
+            $this->notifyAdminOfSellerProfileUpdate(
+                $shop,
+                'Vendor Business Profile Updated',
+                'The vendor updated their business address or verification details.'
+            );
+        }
+
+        if ($warehouseChanged) {
+            $this->notifyAdminOfSellerProfileUpdate(
+                $shop,
+                'Vendor Warehouse Updated',
+                'The vendor updated their warehouse address and delivery PIN code.'
+            );
+        }
+
         return redirect()->back();
     }
 
@@ -177,6 +213,7 @@ class ShopController extends Controller
             'country'       => 'India',
         ];
         $shop = Shop::find($id);
+        $warehouseChanged = json_decode((string) $shop->wherehouse, true) !== $warehouseAddress;
            $shop->whatsapp_no = $request->whatsapp_number;
         $shop->gst_no = $request->gst_number;
         //save certificate
@@ -209,12 +246,53 @@ class ShopController extends Controller
         }
         $shop->business_address = json_encode($businessAddress);
         $new_warehouse_address = json_encode($warehouseAddress);
-        if ($shop->wherehouse != $new_warehouse_address) {
+        $businessProfileChanged = $shop->isDirty([
+            'whatsapp_no',
+            'gst_no',
+            'gst_doc',
+            'pen_no',
+            'pen_doc',
+            'business_address',
+        ]);
+        if ($warehouseChanged) {
             $shop->wherehouse = $new_warehouse_address;
             $shop->status = 'update';
         }
         $shop->save();
+
+        if ($businessProfileChanged) {
+            $this->notifyAdminOfSellerProfileUpdate(
+                $shop,
+                'Vendor Business Profile Updated',
+                'The vendor updated their business address or verification details.'
+            );
+        }
+
+        if ($warehouseChanged) {
+            $this->notifyAdminOfSellerProfileUpdate(
+                $shop,
+                'Vendor Warehouse Updated',
+                'The vendor updated their warehouse address and delivery PIN code.'
+            );
+        }
+
         return redirect()->back()->with('success', 'Address updated successfully!');
+    }
+
+    private function notifyAdminOfSellerProfileUpdate(Shop $shop, string $title, string $message): void
+    {
+        $seller = $shop->seller;
+        $sellerName = $seller
+            ? trim(($seller->f_name ?? '') . ' ' . ($seller->l_name ?? ''))
+            : 'Vendor';
+
+        AdminNotification::create([
+            'seller_id' => $shop->seller_id,
+            'title' => $title,
+            'message' => $sellerName . ': ' . $message,
+            'link' => route('admin.sellers.view', $shop->seller_id),
+            'is_read' => 0,
+        ]);
     }
 
     public function tallyCompanies()

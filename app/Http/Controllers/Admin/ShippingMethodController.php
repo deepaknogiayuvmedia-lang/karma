@@ -130,24 +130,21 @@ class ShippingMethodController extends Controller
     }  
 
     public function third_party_shipping_store(Request $request) {
-        $environment = $request->environment === 'live' ? 'live' : 'test';
         \App\Model\ThirdPartyShippingMethod::updateOrCreate(
             ['user_id' => auth('admin')->id()],
             [
                 'api_key' => $request->api_key,
                 'api_secret' => $request->api_secret,
                 'status' => $request->status ? 1 : 0,
-                'environment' => $environment,
+                'environment' => 'live',
             ]
         );
 
         \App\Models\DelhiverySetting::updateOrCreate(
             ['name' => 'Delhivery'],
             [
-                'environment' => $environment === 'live' ? 'production' : 'staging',
-                'base_url' => $environment === 'live'
-                    ? 'https://track.delhivery.com'
-                    : 'https://staging-express.delhivery.com',
+                'environment' => 'production',
+                'base_url' => 'https://track.delhivery.com',
                 'api_token' => $request->api_secret,
                 'pickup_location' => 'Default Warehouse',
                 'is_enabled' => $request->status ? 1 : 0,

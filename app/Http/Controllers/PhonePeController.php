@@ -311,8 +311,9 @@ class PhonePeController extends Controller
         if (session()->has('payment_mode') && session('payment_mode') == 'app') {
             return redirect()->route('payment-fail');
         }
-        Toastr::error('Payment process failed!');
-        return back();
+        session()->forget('phonepe_txn_id');
+        Toastr::error('Payment was canceled or could not be completed. You can choose a payment method and try again.');
+        return redirect()->route('checkout-payment');
     }
 
     private function checkStatus($config, $merchantTransactionId)

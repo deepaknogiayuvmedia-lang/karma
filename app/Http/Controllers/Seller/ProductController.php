@@ -81,32 +81,35 @@ class ProductController extends Controller
 
     public function status_update(Request $request)
     {
-        if ($request['status'] == 0) {
-            Product::where(['id' => $request['id'], 'added_by' => 'seller', 'user_id' => \auth('seller')->id()])->update([
-                'status' => $request['status'],
-            ]);
-            return response()->json([
-                'success' => 1,
-            ], 200);
-        } elseif ($request['status'] == 1) {
-            $product = Product::where(['id' => $request['id'], 'added_by' => 'seller', 'user_id' => \auth('seller')->id()])->first();
-            $isApproved = $product && (
-                ($product->approval_status ?? '') === 'approved'
-                || (int) ($product->request_status ?? 0) === 1
-            );
-            if ($isApproved) {
-                Product::where(['id' => $request['id'], 'added_by' => 'seller', 'user_id' => \auth('seller')->id()])->update([
-                    'status' => $request['status'],
-                ]);
-                return response()->json([
-                    'success' => 1,
-                ], 200);
-            } else {
-                return response()->json([
-                    'success' => 0,
-                ], 200);
-            }
+        $request->validate([
+            'id' => 'required|integer',
+            'status' => 'required|in:0,1',
+        ]);
+
+        $product = Product::where([
+            'id' => $request->id,
+            'added_by' => 'seller',
+            'user_id' => \auth('seller')->id(),
+        ])->first();
+
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'Product not found.'], 404);
         }
+
+        if ((int) $request->status === 1 && (
+            $product->approval_status !== 'approved'
+            || (int) $product->request_status !== 1
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product must be approved by admin before it can be activated.',
+            ], 200);
+        }
+
+        $product->status = (int) $request->status;
+        $product->save();
+
+        return response()->json(['success' => true], 200);
     }
     public function admintoseller(Request $request)
     {
@@ -138,10 +141,9 @@ class ProductController extends Controller
             $duplicate->featured       = 0;
             $duplicate->featured_status = 0;
             $duplicate->code = $code;
-            // Copied products are auto-verified — no admin approval needed
-            $duplicate->approval_status = 'approved';
+            $duplicate->approval_status = 'pending';
             $duplicate->edit_status = 'none';
-            $duplicate->request_status = 1;
+            $duplicate->request_status = 0;
             $duplicate->denied_note = null;
 
             // Price related changes from copy modal
@@ -221,6 +223,7 @@ class ProductController extends Controller
             unset($duplicate->reviews_count);
 
             $duplicate->save();
+            self::notify_admin_new_product($duplicate);
 
             // Copy translations (name, description, technical_name) from original product
             $translations = \App\Model\Translation::where('translationable_type', 'App\Model\Product')
@@ -860,6 +863,13 @@ class ProductController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized']);
         }
 
+        if ($product->added_by === 'seller' && !$this->sellerCanEditProductBeforeApproval($product)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Approved products cannot be edited.',
+            ], 422);
+        }
+
         $variations = json_decode($product->variation, true) ?? [];
 
         $stock_count = 0;
@@ -1141,7 +1151,21 @@ class ProductController extends Controller
 
     public function edit($id)
     {
-        $product = Product::withoutGlobalScopes()->find($id);
+        $product = Product::withoutGlobalScopes()
+            ->where('id', $id)
+            ->where('added_by', 'seller')
+            ->where('user_id', auth('seller')->id())
+            ->first();
+
+        if (!$product) {
+            Toastr::error(translate('Product not found!'));
+            return redirect()->route('seller.product.list');
+        }
+
+        if (!$this->sellerCanEditProductBeforeApproval($product)) {
+            Toastr::error('Approved products cannot be edited.');
+            return redirect()->route('seller.product.list');
+        }
 
         $product_category = json_decode($product->category_ids, true) ?? [];
         $product->colors = json_decode($product->colors);
@@ -1155,9 +1179,19 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        $product = Product::withoutGlobalScopes()->find($id);
+        $product = Product::withoutGlobalScopes()
+            ->where('id', $id)
+            ->where('added_by', 'seller')
+            ->where('user_id', auth('seller')->id())
+            ->first();
+
         if (!$product) {
             Toastr::error(translate('Product not found!'));
+            return redirect()->route('seller.product.list');
+        }
+
+        if (!$this->sellerCanEditProductBeforeApproval($product)) {
+            Toastr::error('Approved products cannot be edited.');
             return redirect()->route('seller.product.list');
         }
 
@@ -1521,11 +1555,6 @@ class ProductController extends Controller
         $product->current_stock     = $request->product_type == 'physical' ? abs($stock_count) : 0;
         $product->shipping_cost     = $request->product_type == 'physical' ? ($product->shipping_cost ?? 0) : 0;
         $product->multiply_qty      = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
-        // Phase 8: Approval Workflow - approved products need re-approval after edit
-        if ($product->approval_status === 'approved') {
-            $product->approval_status = 'pending_edit';
-            $product->edit_status = 'pending_edit';
-        }
         $product->admin_commission = $request->admin_commission ?? $product->admin_commission;
         $product->admin_commission_type = $request->admin_commission_type ?? $product->admin_commission_type;
         $product->priority = $request->priority ?? $product->priority;
@@ -1864,45 +1893,22 @@ class ProductController extends Controller
             'note' => 'required|string|min:5',
         ]);
 
-        $productId = $request->product_id;
-        $product = Product::find($productId);
-
-        if (!$product) {
-            Toastr::error('Product not found.');
-            return back();
-        }
-
-        // Check if there's already a pending request
-        $existingRequest = ProductEditRequest::where('product_id', $productId)
-            ->where('seller_id', auth('seller')->id())
-            ->where('status', 'pending')
-            ->exists();
-
-        if ($existingRequest) {
-            Toastr::info('Edit request already pending for this product.');
-            return back();
-        }
-
-        // Check if there's already an approved request (seller can edit directly)
-        $approvedRequest = ProductEditRequest::where('product_id', $productId)
-            ->where('seller_id', auth('seller')->id())
-            ->where('status', 'approved')
-            ->exists();
-
-        if ($approvedRequest) {
-            Toastr::info('You already have edit access for this product.');
-            return back();
-        }
-
-        ProductEditRequest::create([
-            'product_id' => $productId,
-            'seller_id' => auth('seller')->id(),
-            'status' => 'pending',
-            'seller_note' => $request->note ?? 'Requesting edit access for product',
-        ]);
-
-        Toastr::success('Edit request sent to admin for approval.');
+        Toastr::error('Product edit requests are no longer available. Products can only be edited before approval.');
         return back();
+    }
+
+    private function sellerCanEditProductBeforeApproval(Product $product): bool
+    {
+        if ($product->pid !== null && $product->pid !== '') {
+            return true;
+        }
+
+        if ($product->request_status == 2 || $product->approval_status === 'rejected') {
+            return true;
+        }
+
+        return in_array($product->approval_status, ['draft', 'pending'], true)
+            && (int) $product->request_status !== 1;
     }
 
     public function edit_requests()

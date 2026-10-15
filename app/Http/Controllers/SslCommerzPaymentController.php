@@ -182,6 +182,6 @@ class SslCommerzPaymentController extends Controller
             return redirect()->route('payment-fail');
         }
         Toastr::error('Payment process canceled!');
-        return back();
+        return redirect()->route('checkout-payment');
     }
 }

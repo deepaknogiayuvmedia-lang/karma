@@ -31,12 +31,10 @@
             <div class="row justify-content-between {{ Session::get('direction') === 'rtl' ? 'text-md-right' : 'text-md-left' }}">
                  <!-- Column 4: Info -->
                 <div class="col-lg-3 col-md-6 mb-0">
-                    <h6 class="bh-footer-heading">{{ \App\CPU\translate('INFO') }}</h6>
-                    @if(isset($web_config['about']) && $web_config['about'])
-                        <p class="bh-footer-text mb-3">
-                            {{ \Illuminate\Support\Str::limit(strip_tags($web_config['about']->value ?? ''), 180) }}
-                        </p>
-                    @endif
+                    <h6 class="bh-footer-heading">{{ $web_config['name']->value }}</h6>
+                    <p class="bh-footer-text mb-3">
+                        {{ $web_config['name']->value }} is a multi-vendor marketplace for farm produce and agriculture-related products. Browse seller listings, review product details, and check delivery availability for your PIN code at checkout.
+                    </p>
                     <ul class="list-unstyled mb-3 bh-footer-links">
                         <li><a href="{{ route('about-us') }}">{{ \App\CPU\translate('About Us') }}</a></li>
                         <li><a href="{{ route('sellers') }}">{{ \App\CPU\translate('Our Sellers') }}</a></li>

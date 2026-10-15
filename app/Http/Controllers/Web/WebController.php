@@ -726,6 +726,8 @@ class WebController extends Controller
 
     public function shop_cart(Request $request)
     {
+        CartManager::restore_buy_now_cart();
+
         if (auth('customer')->check() && Cart::where(['customer_id' => auth('customer')->id()])->count() > 0) {
             return view('web-views.shop-cart');
         }
@@ -764,6 +766,8 @@ class WebController extends Controller
             }
         }
 
+        CartManager::restore_buy_now_cart();
+
         // Add to cart silently (checkout reads cart data). For Buy Now, "already added"
         // simply means the exact item is already in the cart, which is fine.
         $cart = CartManager::add_to_cart($request);
@@ -771,6 +775,50 @@ class WebController extends Controller
         if ($cart['status'] == 0 && !$alreadyAdded) {
             return response()->json($cart);
         }
+
+        $originalGroupId = $cart['cart_group_id'] ?? null;
+        $buyNowGroupId = 'buy-now-' . (auth('customer')->id() ?? 'guest') . '-' . \Illuminate\Support\Str::random(12);
+
+        if (auth('customer')->check()) {
+            $selectedCart = Cart::where('id', $cart['cart_id'] ?? null)
+                ->where('customer_id', auth('customer')->id())
+                ->first();
+            if (!$selectedCart) {
+                return response()->json(['status' => 0, 'message' => 'Unable to prepare this product for checkout.']);
+            }
+            $selectedCart->cart_group_id = $buyNowGroupId;
+            $selectedCart->save();
+        } else {
+            $offlineCart = collect(session('offline_cart', []));
+            $selectedIndex = $offlineCart->search(function ($item) use ($cart, $product) {
+                return (int) data_get($item, 'product_id') === (int) $product->id
+                    && (string) data_get($item, 'variant', '') === (string) ($cart['variant'] ?? '');
+            });
+            if ($selectedIndex === false) {
+                return response()->json(['status' => 0, 'message' => 'Unable to prepare this product for checkout.']);
+            }
+
+            $selectedCart = $offlineCart->get($selectedIndex);
+            $selectedCart['cart_group_id'] = $buyNowGroupId;
+            $offlineCart->put($selectedIndex, $selectedCart);
+            session()->put('offline_cart', $offlineCart);
+        }
+
+        session([
+            'bh_buy_now_cart_group_id' => $buyNowGroupId,
+            'bh_buy_now_original_group_id' => $originalGroupId,
+            'bh_buy_now_was_in_cart' => $alreadyAdded,
+        ]);
+        session()->forget([
+            'coupon_code',
+            'coupon_type',
+            'coupon_bearer',
+            'coupon_discount',
+            'delhivery_pincode',
+            'delhivery_shipping_cost',
+            'checkout_terms_accepted_at',
+            'checkout_terms_version',
+        ]);
 
         // Guest: the item is now in the session (offline) cart. Send the user to
         // login; after a successful login they are redirected to checkout-details.
@@ -1087,7 +1135,7 @@ class WebController extends Controller
             'product_id' => $request->product_id,
             'response' => $response
         ]);
-
+       
         if ($response['status'] === 'success' && $response['serviceable']) {
             $quantity = (int) $request->input('quantity', 1);
             $origin_pincode = \App\CPU\shepping::get_origin_pincode(

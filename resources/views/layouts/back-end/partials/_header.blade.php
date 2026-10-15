@@ -141,7 +141,7 @@
                         <div class="hs-unfold dropdown">
                             <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle"
                                href="javascript:" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="tio-notifications-on-outlined"></i>
+                                <i class="tio-notifications-on-outlined {{ $adminUnreadCount > 0 ? 'notification-bell--unread' : '' }}"></i>
                                 @if ($adminUnreadCount > 0)
                                     <span class="btn-status btn-sm-status btn-status-danger">{{ $adminUnreadCount }}</span>
                                 @endif
@@ -182,6 +182,11 @@
                                         </a>
                                     @endforeach
                                 @endif
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-center font-weight-bold"
+                                   href="{{ route('admin.admin.notifications.all') }}">
+                                    View all notifications
+                                </a>
                             </div>
                         </div>
                     </li>
@@ -343,4 +348,3 @@
 </div>
 <div id="headerFluid" class="d-none"></div>
 <div id="headerDouble" class="d-none"></div>
-
