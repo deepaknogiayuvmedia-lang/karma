@@ -339,36 +339,35 @@ class shepping
             }
             return $value !== null && $value !== '';
         }, ARRAY_FILTER_USE_BOTH);
-        $pickup_location = [
-            "name" => trim(Helpers::get_business_settings('company_name') ?? "Karma"),
-            "add" => "Ajmer",
-            "city" => "Ajmer",
-            "pin" => "305001"
-        ];
-
         if ($order->seller_is == 'seller') {
             $shop = Shop::where('seller_id', $order->seller_id)->first();
-            if ($shop && $shop->wherehouse) {
-                $wherehouse = is_array($shop->wherehouse) ? $shop->wherehouse : json_decode($shop->wherehouse, true);
-                $pickup_location = [
-                    "name" => trim($shop->name),
-                    "add" => $wherehouse['address_line1'] ?? $shop->address ?? '',
-                    "city" => $wherehouse['city'] ?? $shop->city ?? '',
-                    "pin" => $wherehouse['pincode'] ?? $shop->pincode ?? '',
-                ];
-            }
+            $wherehouse = $shop ? $shop->wherehouse : null;
+            $warehouse_name = $shop ? $shop->name : '';
         } else {
-            $admin = \App\Model\Admin::where('id', $order->seller_id)->first() ?? \App\Model\Admin::whereNotNull('wherehouse')->first();
-            if ($admin && $admin->wherehouse) {
-                $wherehouse = is_array($admin->wherehouse) ? $admin->wherehouse : json_decode($admin->wherehouse, true);
-                $pickup_location = [
-                    "name" => trim($admin->name),
-                    "add" => $wherehouse['address_line1'] ?? '',
-                    "city" => $wherehouse['city'] ?? '',
-                    "pin" => $wherehouse['pincode'] ?? '',
-                ];
-            }
+            $admin = \App\Model\Admin::find($order->seller_id)
+                ?: \App\Model\Admin::whereNotNull('wherehouse')->first();
+            $wherehouse = $admin ? $admin->wherehouse : null;
+            $warehouse_name = $admin ? $admin->name : '';
         }
+
+        if (is_string($wherehouse)) {
+            $wherehouse = json_decode($wherehouse, true);
+        }
+
+        $warehouse_pincode = self::get_origin_pincode($order->seller_is, $order->seller_id);
+        if (!$warehouse_pincode || !is_array($wherehouse)) {
+            return [
+                'status' => 'error',
+                'message' => 'A valid seller or admin warehouse address and pincode are required to create the Delhivery shipment.',
+            ];
+        }
+
+        $pickup_location = [
+            "name" => trim((string) $warehouse_name),
+            "add" => $wherehouse['address_line1'] ?? '',
+            "city" => $wherehouse['city'] ?? '',
+            "pin" => $warehouse_pincode,
+        ];
 
         // Format for Delhivery API
         $payload = [
@@ -629,7 +628,29 @@ class shepping
         }
     }
 
-    public static function get_shipping_charges($destination_pin, $payment_type = 'COD', $cod_amount = 0, $weight_grams = 500)
+    public static function get_origin_pincode($seller_is = 'admin', $seller_id = null)
+    {
+        if ($seller_is === 'seller' && $seller_id) {
+            $shop = Shop::where('seller_id', $seller_id)->first();
+            $warehouse = $shop ? $shop->wherehouse : null;
+        } else {
+            $admin = $seller_id
+                ? \App\Model\Admin::find($seller_id)
+                : null;
+            $admin = $admin ?: \App\Model\Admin::whereNotNull('wherehouse')->first();
+            $warehouse = $admin ? $admin->wherehouse : null;
+        }
+
+        if (is_string($warehouse)) {
+            $warehouse = json_decode($warehouse, true);
+        }
+
+        $pincode = is_array($warehouse) ? ($warehouse['pincode'] ?? '') : '';
+
+        return preg_match('/^[0-9]{6}$/', (string) $pincode) ? (string) $pincode : null;
+    }
+
+    public static function get_shipping_charges($destination_pin, $payment_type = 'COD', $cod_amount = 0, $weight_grams = 500, $origin_pin = null)
     {
         $config = Helpers::get_shipping_config();
 
@@ -639,14 +660,8 @@ class shepping
 
         $api_token = $config->api_secret;
 
-        // Get origin pincode from admin warehouse
-        $o_pin = '305001';
-        $admin = \App\Model\Admin::whereNotNull('wherehouse')->first();
-        if ($admin && $admin->wherehouse) {
-            $wherehouse = is_array($admin->wherehouse) ? $admin->wherehouse : json_decode($admin->wherehouse, true);
-            if (!empty($wherehouse['pincode'])) {
-                $o_pin = $wherehouse['pincode'];
-            }
+        if (!preg_match('/^[0-9]{6}$/', (string) $origin_pin)) {
+            return ['status' => 'error', 'message' => 'A valid origin warehouse pincode is required.'];
         }
 
         $url = self::base_url() . "/api/kinko/v1/invoice/charges/.json";
@@ -655,7 +670,7 @@ class shepping
             'md' => 'E',
             'ss' => 'Delivered',
             'd_pin' => $destination_pin,
-            'o_pin' => $o_pin,
+            'o_pin' => $origin_pin,
             'cgm' => $weight_grams,
             'pt' => $payment_type,
             'cod' => $cod_amount

@@ -48,6 +48,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -1089,11 +1090,31 @@ class WebController extends Controller
 
         if ($response['status'] === 'success' && $response['serviceable']) {
             $quantity = (int) $request->input('quantity', 1);
+            $origin_pincode = \App\CPU\shepping::get_origin_pincode(
+                $product->added_by,
+                $product->added_by === 'seller' ? $product->user_id : ($product->seller_id ?? null)
+            );
+
+            if (!$origin_pincode) {
+                Log::warning('Product warehouse pincode is missing or invalid', [
+                    'product_id' => $product->id,
+                    'seller_is' => $product->added_by,
+                    'seller_id' => $product->added_by === 'seller' ? $product->user_id : ($product->seller_id ?? null),
+                ]);
+
+                return response()->json([
+                    'status' => 'error',
+                    'serviceable' => false,
+                    'message' => 'Shipping warehouse pincode is not configured for this product.',
+                ]);
+            }
+
             $charges = \App\CPU\shepping::get_shipping_charges(
                 $pincode,
                 'COD',
                 ($product->unit_price ?? 0) * $quantity,
-                500 * $quantity
+                500 * $quantity,
+                $origin_pincode
             );
 
             if (($charges['status'] ?? '') !== 'success'
@@ -1195,49 +1216,78 @@ class WebController extends Controller
             ]);
         }
 
-        // Calculate COD amount and estimated parcel weight for Delhivery's quote.
-        $total_cod_amount = 0;
-        $total_weight_grams = 0;
-        foreach ($cart_items as $item) {
-            $product = \App\Model\Product::find(data_get($item, 'product_id'));
-            if ($product) {
-                $total_cod_amount += ($product->unit_price ?? 0) * data_get($item, 'quantity');
-                $total_weight_grams += 500 * data_get($item, 'quantity');
+        $shipping_cost_by_group = [];
+        foreach ($cart_items->groupBy(function ($item) {
+            return data_get($item, 'cart_group_id');
+        }) as $group_id => $group_items) {
+            $group_seller = $group_items->first();
+            $seller_is = data_get($group_seller, 'seller_is', 'admin');
+            $seller_id = data_get($group_seller, 'seller_id');
+            $origin_pincode = \App\CPU\shepping::get_origin_pincode($seller_is, $seller_id);
+            $total_cod_amount = 0;
+            $total_weight_grams = 0;
+
+            foreach ($group_items as $item) {
+                $product = \App\Model\Product::find(data_get($item, 'product_id'));
+                if ($product) {
+                    $quantity = (int) data_get($item, 'quantity', 1);
+                    $total_cod_amount += ($product->unit_price ?? 0) * $quantity;
+                    $total_weight_grams += 500 * $quantity;
+                }
             }
+
+            if (!$origin_pincode) {
+                Log::warning('Checkout warehouse pincode is missing or invalid', [
+                    'cart_group_id' => $group_id,
+                    'seller_is' => $seller_is,
+                    'seller_id' => $seller_id,
+                ]);
+
+                return response()->json([
+                    'status' => 'error',
+                    'serviceable' => false,
+                    'message' => 'Shipping warehouse pincode is not configured for one or more sellers.',
+                ]);
+            }
+
+            $charges = \App\CPU\shepping::get_shipping_charges(
+                $pincode,
+                'COD',
+                $total_cod_amount,
+                max($total_weight_grams, 500),
+                $origin_pincode
+            );
+
+            if (($charges['status'] ?? '') !== 'success'
+                || !isset($charges['total_amount'])
+                || !is_numeric($charges['total_amount'])
+                || $charges['total_amount'] < 0) {
+                Log::warning('Delhivery checkout shipping quote failed', [
+                    'cart_group_id' => $group_id,
+                    'pincode' => $pincode,
+                    'origin_pincode' => $origin_pincode,
+                    'response' => $charges,
+                ]);
+
+                return response()->json([
+                    'status' => 'error',
+                    'serviceable' => false,
+                    'message' => 'Unable to calculate shipping charges. Please try again.',
+                ]);
+            }
+
+            $shipping_cost_by_group[$group_id] = (float) $charges['total_amount'];
         }
 
-        // Get actual shipping charges from Delhivery API
-        $charges = \App\CPU\shepping::get_shipping_charges(
-            $pincode,
-            'COD',
-            $total_cod_amount,
-            max($total_weight_grams, 500)
-        );
-
-        if (($charges['status'] ?? '') !== 'success'
-            || !isset($charges['total_amount'])
-            || !is_numeric($charges['total_amount'])
-            || $charges['total_amount'] < 0) {
-            Log::warning('Delhivery checkout shipping quote failed', [
-                'pincode' => $pincode,
-                'response' => $charges,
-            ]);
-
-            return response()->json([
-                'status' => 'error',
-                'serviceable' => false,
-                'message' => 'Unable to calculate shipping charges. Please try again.',
-            ]);
-        }
-        $final_shipping_cost = (float) $charges['total_amount'];
+        $final_shipping_cost = array_sum($shipping_cost_by_group);
 
         // Persist Delhivery charge so order summary + order placement use it
-        foreach ($cart_group_ids as $index => $group_id) {
+        foreach ($cart_group_ids as $group_id) {
             $cart_shipping = \App\Model\CartShipping::firstOrNew(['cart_group_id' => $group_id]);
             $cart_shipping->shipping_method_id = $cart_shipping->shipping_method_id
                 ?? \App\Model\ShippingMethod::orderBy('id')->value('id')
                 ?? 0;
-            $cart_shipping->shipping_cost = $index === 0 ? $final_shipping_cost : 0;
+            $cart_shipping->shipping_cost = $shipping_cost_by_group[$group_id] ?? 0;
             $cart_shipping->save();
             \App\Model\Cart::where('cart_group_id', $group_id)
                 ->where('product_type', 'physical')
