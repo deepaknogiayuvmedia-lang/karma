@@ -464,6 +464,8 @@ class OrderManager
             'shipping_cost' => CartManager::get_shipping_cost($data['cart_group_id']),
             'shipping_method_id' => $shipping_method_id,
             'shipping_type' => $shipping_type,
+            'terms_accepted_at' => session('checkout_terms_accepted_at'),
+            'terms_version' => session('checkout_terms_version'),
             'created_at' => now(),
             'updated_at' => now(),
             'order_note' => $order_note

@@ -63,7 +63,7 @@
                     $request_status !== '' &&
                     $request_status !== 1 &&
                     $request_status !== '1')
-                <div class="alert alert-warning mb-0 mt-2 d-flex align-items-center gap-2" role="alert">
+                <div class="alert mb-0 mt-2 d-flex align-items-center gap-2" role="alert">
                     <i class="tio-info-o"></i>
                     <span>{{ \App\CPU\translate('You need to approved to publish product') }}</span>
                 </div>
@@ -351,7 +351,6 @@
                                                     data-discount-type="{{ $p['discount_type'] ?? 'flat' }}"
                                                     data-tax="{{ $p['tax'] ?? 0 }}"
                                                     data-tax-model="{{ $p['tax_model'] ?? 'include' }}"
-                                                    data-shipping-cost="{{ \App\CPU\BackEndHelper::usd_to_currency($p['shipping_cost'] ?? 0) }}"
                                                     data-min-order="{{ $p['minimum_order_qty'] ?? 1 }}"
                                                     data-current-stock="{{ $p['current_stock'] ?? 0 }}"
                                                     data-name="{{ $p['name'] }}">
@@ -496,12 +495,6 @@
                                         style="font-size: 12px;">{{ \App\CPU\translate('minimum_order_quantity') }}</label>
                                     <input type="number" min="1" step="1"
                                         class="form-control form-control-sm" id="editMinOrder">
-                                </div>
-                                <div class="col-md-4 form-group mb-2">
-                                    <label class="title-color mb-1"
-                                        style="font-size: 12px;">{{ \App\CPU\translate('shipping_cost') }}</label>
-                                    <input type="number" step="0.01" min="0"
-                                        class="form-control form-control-sm" id="editShippingCost">
                                 </div>
                             </div>
                         </div>
@@ -1198,7 +1191,6 @@
             $('#editDiscountType').val(btn.data('discount-type'));
             $('#editTax').val(btn.data('tax'));
             $('#editTaxModel').val(btn.data('tax-model'));
-            $('#editShippingCost').val(btn.data('shipping-cost'));
             $('#editMinOrder').val(btn.data('min-order'));
             $('#editCurrentStock').val(btn.data('current-stock'));
 
@@ -1364,7 +1356,6 @@
                     discount_type: $('#editDiscountType').val(),
                     tax: $('#editTax').val(),
                     tax_model: $('#editTaxModel').val(),
-                    shipping_cost: $('#editShippingCost').val(),
                     minimum_order_qty: $('#editMinOrder').val(),
                     variants: variants,
                     deleted_variants: deletedVariants,

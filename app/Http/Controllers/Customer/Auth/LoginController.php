@@ -117,6 +117,14 @@ class LoginController extends Controller
             session()->put('wish_list', $wish_list);
             Toastr::info('Welcome to ' . Helpers::get_business_settings('company_name') . '!');
             CartManager::cart_to_db();
+
+            // If the customer used "Buy Now" as a guest, send them to checkout after login.
+            if (session('bh_buy_now_redirect')) {
+                $url = session('bh_buy_now_redirect');
+                session()->forget('bh_buy_now_redirect');
+                return redirect($url);
+            }
+
             return redirect(Helpers::safe_return_url(session('keep_return_url')));
         }
 

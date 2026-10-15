@@ -49,6 +49,18 @@
                                         <i class="tio-print mr-1"></i> {{ \App\CPU\translate('Print') }}
                                         {{ \App\CPU\translate('invoice') }}
                                     </a>
+                                    @if ($order->original_invoice_path)
+                                        <a class="btn btn-outline-secondary px-3" target="_blank" rel="noopener"
+                                            href="{{ route('seller.orders.original-invoice-view', [$order->id]) }}">
+                                            <i class="tio-visible mr-1"></i>
+                                            {{\App\CPU\translate('View uploaded invoice')}}
+                                        </a>
+                                    @endif
+                                    <button type="button" class="btn btn-outline-primary px-3" data-toggle="modal"
+                                        data-target="#originalInvoiceModal">
+                                        <i class="tio-upload mr-1"></i>
+                                        {{\App\CPU\translate($order->original_invoice_path ? 'Replace original invoice' : 'Upload original invoice')}}
+                                    </button>
                                 </div>
                                 <div class="d-flex flex-column gap-2 mt-3">
                                     <!-- Order status -->
@@ -657,6 +669,42 @@
         </div>
     </div>
     <!-- End Modal -->
+    <div class="modal fade" id="originalInvoiceModal" tabindex="-1" role="dialog"
+        aria-labelledby="originalInvoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form action="{{ route('seller.orders.original-invoice') }}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="originalInvoiceModalLabel">
+                            {{\App\CPU\translate($order->original_invoice_path ? 'Replace original invoice' : 'Upload original invoice')}}
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{{\App\CPU\translate('Close')}}">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @if ($order->original_invoice_path)
+                            <p>{{\App\CPU\translate('An original invoice is already uploaded. Uploading a new file will replace it.')}}</p>
+                        @endif
+                        <input type="hidden" name="order_id" value="{{ $order->id }}">
+                        <div class="form-group mb-0">
+                            <label for="seller-original-invoice">{{\App\CPU\translate('Original invoice')}}</label>
+                            <input type="file" class="form-control-file" id="seller-original-invoice"
+                                name="original_invoice" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <small class="form-text text-muted">{{\App\CPU\translate('PDF, JPG or PNG; maximum 10 MB.')}}</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            {{\App\CPU\translate('Close')}}
+                        </button>
+                        <button type="submit" class="btn btn--primary">{{\App\CPU\translate('Upload')}}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 @push('script')
     <script>

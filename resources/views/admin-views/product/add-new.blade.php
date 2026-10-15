@@ -411,25 +411,6 @@
                                         placeholder="{{ \App\CPU\translate('minimum_order_quantity') }}"
                                         name="minimum_order_qty" class="form-control" required>
                                 </div>
-                                <div class="col-md-3 form-group physical_product_show" id="shipping_cost">
-                                    <label class="title-color">{{ \App\CPU\translate('shipping_cost') }} </label>
-                                    <input type="number" min="0" value="0" step="1"
-                                        placeholder="{{ \App\CPU\translate('shipping_cost') }}" name="shipping_cost"
-                                        class="form-control" required>
-                                </div>
-                                <div class="col-md-3 form-group physical_product_show" id="shipping_cost_multy">
-                                    <div>
-                                        <label
-                                            class="title-color">{{ \App\CPU\translate('shipping_cost_multiply_with_quantity') }}
-                                        </label>
-                                    </div>
-                                    <div>
-                                        <label class="switcher">
-                                            <input type="checkbox" class="switcher_input" name="multiplyQTY">
-                                            <span class="switcher_control"></span>
-                                        </label>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

@@ -113,8 +113,8 @@
                 <td>
                     <div style="text-align: right; margin-right:15px;">
                         @php($logo=\App\Model\BusinessSetting::where(['type'=>'company_web_logo'])->first()->value)
-                        <img style="max-width:250px;border:0;" src="{{asset('/'.config('app.public_storage_path').'/company/'.$logo)}}" title=""
-                            class="sitelogo" width="60%"  alt=""/>
+                        <img style="display:block; width:auto; height:auto; max-width:250px; max-height:60px; border:0;" src="{{rtrim(config('app.mail_asset_url'), '/').'/'.trim(config('app.public_storage_path'), '/').'/company/'.$logo}}" title=""
+                            class="sitelogo" width="250" alt="{{ \App\CPU\Helpers::get_business_settings('company_name') }}"/>
                     </div>
                 </td>
             </tr>
@@ -140,7 +140,7 @@
                     
                         <div style="display:flex; align-items:center;margin-top:10px;">
                             
-                            <img style="border:0;border-radius:50%;" src="{{asset('/'.config('app.public_storage_path').'/app/public/shop/'.$shop->image)}}" title=""
+                            <img style="border:0;border-radius:50%;" src="{{rtrim(config('app.mail_asset_url'), '/').'/'.trim(config('app.public_storage_path'), '/').'/shop/'.$shop->image}}" title=""
                                     class="sitelogo" width="20%"  alt=""/>
                         
                             <span style="padding-left: 5px;">{{$seller->f_name . ' ' . $seller->l_name}}</span>
@@ -355,7 +355,7 @@
                         
                             <div class="" >
                               <a href="{{$item->link}}" target=”_blank”>
-                              <img src="{{asset('assets/back-end/img/'.$item->name.'.png')}}" alt="" style="height: 50px; width:50px; margin:10px;">
+                              <img src="{{rtrim(config('app.mail_asset_url'), '/').'/assets/back-end/img/'.$item->name.'.png}}" alt="" style="height: 50px; width:50px; margin:10px;">
                               </a>
                             </div>
                             

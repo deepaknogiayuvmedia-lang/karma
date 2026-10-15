@@ -11,8 +11,11 @@ use App\Model\PhoneOrEmailVerification;
 use App\Model\Wishlist;
 use App\User;
 use Brian2694\Toastr\Facades\Toastr;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Session;
@@ -32,12 +35,34 @@ class RegisterController extends Controller
         return view('customer-view.auth.register');
     }
 
-    public function submit(Request $request)
+    public function social_terms_consent(Request $request)
     {
         $request->validate([
-            'f_name' => 'required',
-            'email' => 'required|email|unique:users',
-            'phone' => 'unique:users',
+            'terms_accepted' => 'required|accepted',
+        ]);
+
+        session([
+            'signup_terms_accepted_at' => now()->toDateTimeString(),
+            'signup_terms_version' => config('app.terms_version'),
+        ]);
+
+        return response()->json(['accepted' => true]);
+    }
+
+    public function submit(Request $request)
+    {
+        $phoneVerification = Helpers::get_business_settings('phone_verification');
+        $request->validate([
+            'f_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'phone' => [$phoneVerification ? 'required' : 'nullable', 'string', 'max:32', 'unique:users,phone'],
+            'farm_acres' => 'nullable|numeric|min:0|max:1000000',
+            'crops_sown' => 'nullable|string|max:2000',
+            'farm_latitude' => 'nullable|numeric|between:-90,90',
+            'farm_longitude' => 'nullable|numeric|between:-180,180',
+            'farm_location_name' => 'nullable|string|max:255',
+            'farm_address' => 'nullable|string|max:1000',
+            'terms_accepted' => 'required|accepted',
             'password' => 'required|min:8|same:con_password'
         ], [
             'f_name.required' => 'First name is required',
@@ -46,34 +71,53 @@ class RegisterController extends Controller
         //recaptcha validation
         $recaptcha = Helpers::get_business_settings('recaptcha');
         if (isset($recaptcha) && $recaptcha['status'] == 1) {
-            try {
-                $request->validate([
-                    'g-recaptcha-response' => [
-                        function ($attribute, $value, $fail) {
-                            $secret_key = Helpers::get_business_settings('recaptcha')['secret_key'];
-                            $response = $value;
-                            $url = 'https://www.google.com/recaptcha/api/siteverify?secret=' . $secret_key . '&response=' . $response;
-                            $response = \file_get_contents($url);
-                            $response = json_decode($response);
-                            if (!$response->success) {
-                                $fail(\App\CPU\translate('ReCAPTCHA Failed'));
-                            }
-                        },
-                    ],
-                ]);
-            } catch (\Exception $exception) {}
+            $request->validate([
+                'g-recaptcha-response' => [
+                    'required',
+                    function ($attribute, $value, $fail) use ($recaptcha) {
+                        try {
+                            $response = Http::asForm()->timeout(5)->post(
+                                'https://www.google.com/recaptcha/api/siteverify',
+                                ['secret' => $recaptcha['secret_key'], 'response' => $value]
+                            );
+                        } catch (ConnectionException $exception) {
+                            Log::warning('Registration reCAPTCHA verification unavailable.');
+                            $fail(\App\CPU\translate('ReCAPTCHA verification is temporarily unavailable. Please try again.'));
+                            return;
+                        }
+
+                        $result = $response->json();
+                        if (!$response->successful() || !is_array($result) || empty($result['success'])) {
+                            $fail(\App\CPU\translate('ReCAPTCHA Failed'));
+                        }
+                    },
+                ],
+            ]);
         } else {
-            if (strtolower($request->default_captcha_value) != strtolower(Session('default_captcha_code'))) {
-                \Illuminate\Support\Facades\Session::forget('default_captcha_code');
-                return back()->withErrors(\App\CPU\translate('Captcha Failed'));
+            $captchaCode = Session('default_captcha_code');
+            $captchaValue = $request->input('default_captcha_value');
+            if (!$captchaCode || !is_string($captchaValue) || strtolower($captchaValue) !== strtolower($captchaCode)) {
+                Session::forget('default_captcha_code');
+                return back()
+                    ->withErrors(['default_captcha_value' => \App\CPU\translate('Captcha Failed. Please enter the new captcha shown.')])
+                    ->withInput($request->except(['password', 'con_password', 'default_captcha_value']));
             }
+            Session::forget('default_captcha_code');
         }
 
         $user = User::create([
             'f_name' => $request['f_name'],
             'l_name' => $request['l_name'],
             'email' => $request['email'],
-            'phone' => $request['phone'],
+            'phone' => $request->input('phone', ''),
+            'farm_acres' => $request->input('farm_acres'),
+            'crops_sown' => $request->input('crops_sown'),
+            'farm_latitude' => $request->input('farm_latitude'),
+            'farm_longitude' => $request->input('farm_longitude'),
+            'farm_location_name' => $request->input('farm_location_name'),
+            'farm_address' => $request->input('farm_address'),
+            'terms_accepted_at' => now(),
+            'terms_version' => config('app.terms_version'),
             'is_active' => 1,
             'password' => bcrypt($request['password'])
         ]);
@@ -81,20 +125,27 @@ class RegisterController extends Controller
         $phone_verification = Helpers::get_business_settings('phone_verification');
         $email_verification = Helpers::get_business_settings('email_verification');
         if ($phone_verification && !$user->is_phone_verified) {
-            return redirect(route('customer.auth.check', [$user->id]));
+            return redirect(route('customer.auth.check', ['id' => $user->id, 'type' => 'register']));
         }
         if ($email_verification && !$user->is_email_verified) {
-            return redirect(route('customer.auth.check', [$user->id]));
+            return redirect(route('customer.auth.check', ['id' => $user->id, 'type' => 'register']));
         }
 
+        auth('customer')->login($user);
+        $wish_list = Wishlist::whereHas('wishlistProduct', function ($query) {
+            return $query;
+        })->where('customer_id', $user->id)->pluck('product_id')->toArray();
+        session()->put('wish_list', $wish_list);
+        CartManager::cart_to_db();
+
         Toastr::success(translate('registration_success_login_now'));
-        return redirect(route('customer.auth.login'));
+        return redirect(\App\CPU\Helpers::safe_return_url(session('keep_return_url')));
     }
 
-    public static function check($id, $login = null)
+    public static function check($id, $type = null)
     {
         $user = User::find($id);
-        $loginuser = $login;
+        $loginuser = $type;
         
 
         $token = rand(1000, 9999);
@@ -159,7 +210,7 @@ class RegisterController extends Controller
                 Toastr::success(translate('verification_done_successfully'));
                 
                 // Login the user and create session
-                if($request->type == 'login'){
+                if (in_array($request->type, ['login', 'register'], true)) {
                     auth('customer')->login($user);
                     $wish_list = Wishlist::whereHas('wishlistProduct',function($q){
                         return $q;

@@ -388,65 +388,67 @@
             .mobile-sticky-category{
                 position: -webkit-sticky;
                 position: sticky;
-                top: 0;
-                z-index: 9;
-                background: #fff;
+                top: 120px;
+                z-index: 8;
+                background: #f3f7ef;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-                padding: 8px 0;
-                border-bottom: 1px solid #f0f0f0;
+                padding: 10px 8px;
+                border-bottom: 1px solid #dfe8d9;
                 width: 100%;
                 max-width: 100%;
                 box-sizing: border-box;
                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             }
 
-            .mobile-sticky-category .owl-stage {
+            .mobile-sticky-category .category-grid {
                 display: flex;
-                /* align-items: center; */
+                flex-wrap: nowrap;
+                gap: 6px;
+                width: 100%;
+                max-width: 1100px;
+                margin: 0 auto;
+                overflow: hidden;
             }
 
-            /* Keep every item at its exact slot width so 6 fit in any mobile screen */
-            .mobile-sticky-category .owl-item {
-                flex: 0 0 auto;
-                box-sizing: border-box;
+            .mobile-sticky-category .category-grid .cate-item {
+                flex: 1 1 0;
+                min-width: 0;
+                border: 0;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.7);
             }
 
             .mobile-sticky-category .cate-item {
-                display: block !important;
-                width: 100%;
-                padding: 6px 4px !important;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                /* min-height: 70px; */
+                padding: 5px 3px !important;
                 text-decoration: none !important;
                 color: #2c3138;
                 text-align: center;
-                border-right: 1px solid #f0f0f0;
                 box-sizing: border-box;
                 max-width: 100%;
             }
 
-            .mobile-sticky-category .owl-item:last-child .cate-item {
-                border-right: none;
-            }
-
             .mobile-sticky-category .cate-item img {
-                width: clamp(36px, 8vw, 50px);
-                height: clamp(36px, 8vw, 50px);
+                width: clamp(18px, 7vw, 34px);
+                height: clamp(18px, 7vw, 34px);
                 object-fit: cover;
                 border-radius: 50%;
                 margin: 0 auto 4px;
                 display: block;
             }
-@media (min-width: 769px) {
+            @media (min-width: 769px) {
                 .mobile-sticky-category {
                     display: none !important;
                 }
-                  .mobile-sticky-category .cate-item span {
-                    font-size: 12px !important;
-                  }
             }
             /* Category label typography: Inter, responsive size, proper weight (600), 2-line clamp */
             .mobile-sticky-category .cate-item span {
                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-                font-size: 8px !important;
+                font-size: clamp(6px, 2.2vw, 10px) !important;
                 font-weight: 600 !important;
                 letter-spacing: -0.01em;
                 color: #2c3138 !important;
@@ -455,11 +457,9 @@
                 margin-top: 3px !important;
                 max-width: 100%;
                 overflow: hidden !important;
-                white-space: normal;
-                word-break: break-word;
-                display: -webkit-box !important;
-                -webkit-box-orient: vertical;
-                -webkit-line-clamp: 2;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                display: block !important;
             }
 
             
@@ -470,7 +470,28 @@
 
     <div class="__inline-61">
         @php($decimal_point_settings = !empty(\App\CPU\Helpers::get_business_settings('decimal_point_settings')) ? \App\CPU\Helpers::get_business_settings('decimal_point_settings') : 0)
-        <!-- Hero (Banners + Slider)-->
+        <!-- Section 04: Shop by Crop (Crop-First Discovery) -->
+
+        @php($business_mode = \App\CPU\Helpers::get_business_settings('business_mode'))
+        {{-- categries --}}
+
+        @if (isset($categories) && count($categories) > 0)
+            <div class="mobile-sticky-category">
+                <div class="category-grid">
+                    @foreach ($categories as $category)
+                        <a class="cate-item"
+                            href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
+                            <img src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
+                                onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
+                                alt="{{ $category->name }}">
+                            <span>{{ $category->name }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <!-- Hero (Banners + Slider) -->
         @php($main_banner = \App\Model\Banner::where('banner_type', 'Main Banner')->where('published', 1)->orderBy('id', 'desc')->get())
         @if (isset($main_banner) && count($main_banner) > 0)
             <section class="bh-home-section bh-home-section-t bg-transparent">
@@ -484,30 +505,9 @@
             </section>
         @endif
 
-
-
-        <!-- Section 04: Shop by Crop (Crop-First Discovery) -->
-
-        @php($business_mode = \App\CPU\Helpers::get_business_settings('business_mode'))
-        {{-- categries --}}
-
         @if (isset($categories) && count($categories) > 0)
             @if ($business_mode == 'multi')
-                <div class="mobile-sticky-category">
-
-                    <div class=" owl-carousel py-2" id="mobile-category-slider">
-                        @foreach ($categories as $category)
-                            <a class="cate-item"
-                                href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
-                                <img src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
-                                    onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                    alt="{{ $category->name }}">
-                                <span>{{ $category->name }}</span>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-                <div class="bh-home-section container d-lg-block d-none">
+                <div class="bh-home-section container d-none d-md-block">
                     <div class="row">
                         <div class="col-md-12 mb-0">
                             <div class="border-0 bg-transparent h-100">
@@ -516,73 +516,64 @@
                                         <div class="bh-section-title-wrap">
                                             <h3 class="bh-section-title">{{ \App\CPU\translate('categories') }}</h3>
                                         </div>
-
                                     </div>
                                     <div class="carousel-wrap ">
-                                        <div class=" mt-3 owl-carousel owl-theme" id="categorylist_slider">
+                                        <div class="mt-3 owl-carousel owl-theme" id="categorylist_slider">
                                             @foreach ($categories as $key => $category)
                                                 @if ($key < 12)
-                                                    <div class="text-center  __cate-item ">
-                                                        <a
-                                                            href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
-                                                            <div class="__img overflow-hidden rounded-circle"
-                                                                style="margin: 0 auto;">
+                                                    <div class="text-center __cate-item">
+                                                        <a href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
+                                                            <div class="__img overflow-hidden rounded-circle" style="margin: 0 auto;">
                                                                 <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
                                                                     src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
                                                                     alt="{{ $category->name }}">
                                                             </div>
-                                                            <p class="text-center  mt-2">{{ $category->name }}
-                                                            </p>
+                                                            <p class="text-center mt-2">{{ $category->name }}</p>
                                                         </a>
                                                     </div>
                                                 @endif
                                             @endforeach
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             @else
-                    <div class="bh-home-section container d-none d-md-block">
-                        <div class=" border-0 h-100 pb-0">
-                            <div class="card-body p-0">
-                                <div class="bh-section-header">
-                                    <div class="bh-section-title-wrap">
-                                        <h3 class="bh-section-title">{{ \App\CPU\translate('categories') }}</h3>
-                                    </div>
-                                    <a class="bh-view-all-link" href="{{ route('categories') }}">
-                                        {{ \App\CPU\translate('view_all') }}
-                                        <i
-                                            class="czi-arrow-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}"></i>
-                                    </a>
+                <div class="bh-home-section container d-none d-md-block">
+                    <div class="border-0 h-100 pb-0">
+                        <div class="card-body p-0">
+                            <div class="bh-section-header">
+                                <div class="bh-section-title-wrap">
+                                    <h3 class="bh-section-title">{{ \App\CPU\translate('categories') }}</h3>
                                 </div>
-                                <div class="carousel-wrap ">
-                                    <div class=" mt-3 owl-carousel owl-theme" id="categorylist_slider">
-                                        @foreach ($categories as $key => $category)
-                                            @if ($key < 6)
-                                                <div class="text-center __cate-item">
-                                                    <a
-                                                        href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
-                                                        <div class="__img">
-                                                            <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                                                src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
-                                                                alt="{{ $category->name }}">
-                                                            <p class="text-center small mt-1">
-                                                                {{ Str::limit($category->name, 12) }}</p>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                    </div>
+                                <a class="bh-view-all-link" href="{{ route('categories') }}">
+                                    {{ \App\CPU\translate('view_all') }}
+                                    <i class="czi-arrow-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}"></i>
+                                </a>
+                            </div>
+                            <div class="carousel-wrap">
+                                <div class="mt-3 owl-carousel owl-theme" id="categorylist_slider">
+                                    @foreach ($categories as $key => $category)
+                                        @if ($key < 6)
+                                            <div class="text-center __cate-item">
+                                                <a href="{{ route('products', ['id' => $category['id'], 'data_from' => 'category', 'page' => 1]) }}">
+                                                    <div class="__img">
+                                                        <img onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
+                                                            src="{{ asset(config('app.public_storage_path') . '/category/' . $category->icon) }}"
+                                                            alt="{{ $category->name }}">
+                                                        <p class="text-center small mt-1">{{ Str::limit($category->name, 12) }}</p>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        @endif
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
                     </div>
-                  
+                </div>
             @endif
         @endif
 
@@ -903,23 +894,23 @@
             </section>
         @endif
 
-        @if (isset($latest_products) && count($latest_products) > 0)
+        @if (isset($featured_products) && count($featured_products) > 0)
             <div class="bh-home-section container rtl">
-                {{-- Latest products --}}
+                {{-- Featured products --}}
                 <div class="col-xl-12 col-md-12 p-0 mt-2">
                     <div class="latest-product-margin">
                         <div class="bh-section-header px-0">
                             <div class="bh-section-title-wrap">
-                                <h3 class="bh-section-title">{{ \App\CPU\translate('latest_products') }}</h3>
+                                <h3 class="bh-section-title">{{ \App\CPU\translate('featured_products') }}</h3>
                             </div>
-                            <a class="bh-view-all-link" href="{{ route('products', ['data_from' => 'latest']) }}">
+                            <a class="bh-view-all-link" href="{{ route('products', ['data_from' => 'featured']) }}">
                                 {{ \App\CPU\translate('view_all') }}
                                 <i class="czi-arrow-{{ Session::get('direction') === 'rtl' ? 'left' : 'right' }}"></i>
                             </a>
                         </div>
 
                         <div class="row mt-0 g-3 d-none d-sm-flex" style="overflow:hidden;">
-                            @foreach ($latest_products->take(12) as $product)
+                            @foreach ($featured_products->take(12) as $product)
                                 <div class="col-xxl-2 col-xl-2-4 col-lg-2-4 col-md-4 col-sm-4 col-6 mb-3 px-2">
                                     @include('web-views.partials._single-product', [
                                         'product' => $product,
@@ -930,8 +921,8 @@
                         </div>
 
                         <div class="d-block d-sm-none mt-2">
-                            <div class="owl-carousel owl-theme" id="latest-products-slider">
-                                @foreach ($latest_products as $product)
+                            <div class="owl-carousel owl-theme" id="featured-products-slider">
+                                @foreach ($featured_products as $product)
                                     <div class="p-1">
                                         @include('web-views.partials._single-product', [
                                             'product' => $product,
@@ -1309,24 +1300,6 @@
             }
         });
 
-        $('#mobile-category-slider').owlCarousel({
-            loop: false,
-            autoplay: false,
-            margin: 0,
-            nav: false,
-            dots: false,
-            pullDrag: true,
-            freeDrag: false,
-            mouseDrag: true,
-            touchDrag: true,
-            // Always show exactly 6 categories per view on every mobile screen size
-            responsive: {
-                0: {
-                    items: 6
-                }
-            }
-        });
-
         $('#categorylist_slider').owlCarousel({
             loop: true,
             autoplay: true,
@@ -1559,7 +1532,7 @@
             }
         })
 
-        $('#latest-products-slider').owlCarousel({
+        $('#featured-products-slider').owlCarousel({
             loop: true,
             autoplay: true,
             autoplayTimeout: 3000,

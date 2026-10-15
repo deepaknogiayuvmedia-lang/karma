@@ -327,9 +327,43 @@
                                         <div class="form-group col-md-6 mb-0">
                                             <label for="phone">{{\App\CPU\translate('phone_number')}} </label>
                                            
-                                            <input type="number" class="form-control" id="phone"
+                                            <input type="tel" class="form-control" id="phone"
                                                    name="phone"
-                                                   value="{{$customerDetail['phone']}}" required>
+                                                           value="{{$customerDetail['phone']}}"
+                                                           @if(\App\CPU\Helpers::get_business_settings('phone_verification')) required @endif>
+                                        </div>
+                                    </div>
+                                    <h3 class="section-title mt-4"><i class="fa fa-leaf"></i>{{\App\CPU\translate('Farm information')}}</h3>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6 mb-0">
+                                            <label for="farm-acres">{{\App\CPU\translate('Farm size (acres)')}}</label>
+                                            <input type="number" min="0" max="1000000" step="0.01" class="form-control" id="farm-acres" name="farm_acres" value="{{old('farm_acres', $customerDetail->farm_acres)}}">
+                                        </div>
+                                        <div class="form-group col-md-6 mb-0">
+                                            <label for="crops-sown">{{\App\CPU\translate('Crops sown')}}</label>
+                                            <input type="text" maxlength="2000" class="form-control" id="crops-sown" name="crops_sown" value="{{old('crops_sown', $customerDetail->crops_sown)}}">
+                                        </div>
+                                        <div class="form-group col-md-6 mb-0">
+                                            <label for="farm-latitude">{{\App\CPU\translate('Farm latitude')}}</label>
+                                            <input type="number" min="-90" max="90" step="any" class="form-control" id="farm-latitude" name="farm_latitude" value="{{old('farm_latitude', $customerDetail->farm_latitude)}}">
+                                        </div>
+                                        <div class="form-group col-md-6 mb-0">
+                                            <label for="farm-longitude">{{\App\CPU\translate('Farm longitude')}}</label>
+                                            <input type="number" min="-180" max="180" step="any" class="form-control" id="farm-longitude" name="farm_longitude" value="{{old('farm_longitude', $customerDetail->farm_longitude)}}">
+                                        </div>
+                                        <div class="form-group col-md-6 mb-0">
+                                            <label for="farm-location-name">{{\App\CPU\translate('Location name')}}</label>
+                                            <input type="text" maxlength="255" class="form-control" id="farm-location-name" name="farm_location_name" value="{{old('farm_location_name', $customerDetail->farm_location_name)}}">
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <label for="farm-address">{{\App\CPU\translate('Full address')}}</label>
+                                            <textarea maxlength="1000" rows="2" class="form-control" id="farm-address" name="farm_address">{{old('farm_address', $customerDetail->farm_address)}}</textarea>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <button type="button" class="btn btn-outline-primary" id="farm-location-button">
+                                                <i class="fa fa-map-marker"></i> {{\App\CPU\translate('Use my current location')}}
+                                            </button>
+                                            <small id="farm-location-status" class="field-hint" role="status"></small>
                                         </div>
                                     </div>
                                     <div class="form-row">
@@ -383,6 +417,76 @@
         </div>
     </div>
 @endsection
+
+@push('script')
+    <script src="https://maps.googleapis.com/maps/api/js?key={{\App\CPU\Helpers::get_business_settings('map_api_key')}}"></script>
+    <script>
+        function fillFarmAddress(results) {
+            var match = results && results[0];
+            if (!match) {
+                return false;
+            }
+
+            var components = match.address_components || [];
+            var name = '';
+            var preferredTypes = ['locality', 'postal_town', 'sublocality_level_1', 'administrative_area_level_2', 'administrative_area_level_1'];
+            for (var i = 0; i < preferredTypes.length && !name; i++) {
+                for (var j = 0; j < components.length; j++) {
+                    if (components[j].types.indexOf(preferredTypes[i]) !== -1) {
+                        name = components[j].long_name;
+                        break;
+                    }
+                }
+            }
+
+            document.getElementById('farm-location-name').value = name;
+            document.getElementById('farm-address').value = match.formatted_address || '';
+            return true;
+        }
+
+        (function () {
+            var button = document.getElementById('farm-location-button');
+            var status = document.getElementById('farm-location-status');
+            if (!button) return;
+
+            button.addEventListener('click', function () {
+                if (!navigator.geolocation) {
+                    status.textContent = '{{\App\CPU\translate('Location is not supported by this browser')}}';
+                    return;
+                }
+
+                button.disabled = true;
+                status.textContent = '{{\App\CPU\translate('Requesting location permission')}}';
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+                    document.getElementById('farm-latitude').value = latitude;
+                    document.getElementById('farm-longitude').value = longitude;
+
+                    if (!window.google || !google.maps || !google.maps.Geocoder) {
+                        status.textContent = '{{\App\CPU\translate('Address lookup is unavailable. Please check the Maps API configuration.')}}';
+                        button.disabled = false;
+                        return;
+                    }
+
+                    new google.maps.Geocoder().geocode({
+                        location: {lat: latitude, lng: longitude}
+                    }, function (results, lookupStatus) {
+                        if (lookupStatus === 'OK' && fillFarmAddress(results)) {
+                            status.textContent = '{{\App\CPU\translate('Location name and full address added to your profile')}}';
+                        } else {
+                            status.textContent = '{{\App\CPU\translate('Address lookup failed. Please check the Maps API configuration or enter the address manually.')}}';
+                        }
+                        button.disabled = false;
+                    });
+                }, function () {
+                    status.textContent = '{{\App\CPU\translate('Location permission was not granted; enter coordinates manually')}}';
+                    button.disabled = false;
+                }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+            });
+        })();
+    </script>
+@endpush
 
 @push('script')
     <script src="{{asset('assets/front-end')}}/vendor/nouislider/distribute/nouislider.min.js"></script>
@@ -457,4 +561,3 @@
         }
     </script>
 @endpush
-

@@ -359,24 +359,6 @@
                                             placeholder="{{ \App\CPU\translate('minimum_order_quantity') }}" name="minimum_order_qty"
                                                class="form-control" required>
                                     </div>
-                                    <div class="col-md-4 mb-3 physical_product_show" id="shipping_cost">
-                                        <label class="title-color">{{ \App\CPU\translate('shipping_cost') }} </label>
-                                        <input type="number" min="0" value="0" step="1"
-                                            placeholder="{{ \App\CPU\translate('shipping_cost') }}" name="shipping_cost"
-                                            class="form-control" required>
-                                    </div>
-                                    <div class="col-md-4 mb-3 physical_product_show" id="shipping_cost_multy">
-                                        <div class="border rounded px-3 py-2 min-h-40 d-flex justify-content-between gap-3">
-                                            <label
-                                                class="title-color mb-0">{{ \App\CPU\translate('shipping_cost_multiply_with_quantity') }}
-                                            </label>
-
-                                            <label class="switcher">
-                                                <input class="switcher_input" type="checkbox" name="multiplyQTY" id="">
-                                                <span class="switcher_control"></span>
-                                            </label>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div class="sku_combination mb-3" id="sku_combination"></div>
@@ -943,4 +925,3 @@
         });
     </script>
 @endpush
-

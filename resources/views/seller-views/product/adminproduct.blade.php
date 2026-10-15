@@ -105,7 +105,6 @@
                                                 data-tax-model="{{ $p['tax_model'] ?? 'include' }}"
                                                 data-discount="{{ $p['discount'] ?? 0 }}"
                                                 data-discount-type="{{ $p['discount_type'] ?? 'flat' }}"
-                                                data-shipping-cost="{{ \App\CPU\BackEndHelper::usd_to_currency($p['shipping_cost'] ?? 0) }}"
                                                 data-min-order="{{ $p['minimum_order_qty'] ?? 1 }}">
                                                 <i class="tio-copy"></i>
                                                 {{ \App\CPU\translate('Copy') }}
@@ -227,12 +226,6 @@
                                     <input type="number" min="1" step="1"
                                         class="form-control form-control-sm" id="copyMinOrder">
                                 </div>
-                                <div class="col-md-6 form-group mb-2">
-                                    <label class="title-color mb-1"
-                                        style="font-size: 12px;">{{ \App\CPU\translate('shipping_cost') }}</label>
-                                    <input type="number" step="0.01" min="0"
-                                        class="form-control form-control-sm" id="copyShippingCost">
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -346,7 +339,6 @@
             $('#copyTaxModel').val(btn.data('tax-model'));
             $('#copyDiscount').val(btn.data('discount'));
             $('#copyDiscountType').val(btn.data('discount-type'));
-            $('#copyShippingCost').val(btn.data('shipping-cost'));
             $('#copyMinOrder').val(btn.data('min-order'));
             $('#deletedVariants').val('');
             $('#newVariantsAdded').val('0');
@@ -471,7 +463,6 @@
                     tax_model: $('#copyTaxModel').val(),
                     discount: currencyToNumber($('#copyDiscount').val()),
                     discount_type: $('#copyDiscountType').val(),
-                    shipping_cost: currencyToNumber($('#copyShippingCost').val()),
                     minimum_order_qty: currencyToNumber($('#copyMinOrder').val()) || 1,
                     variants: variants,
                     deleted_variants: deletedVariants

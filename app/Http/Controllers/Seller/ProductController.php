@@ -275,7 +275,6 @@ class ProductController extends Controller
             'unit_price'            => 'required|numeric|gt:0',
             'purchase_price'        => 'required|numeric|gt:0',
             'discount'              => 'nullable|numeric|min:0',
-            'shipping_cost'         => 'required_if:product_type,==,physical|gt:-1',
             'code'                  => 'required|numeric|min:1|digits_between:6,20|unique:products',
             'minimum_order_qty'     => 'required|numeric|min:1',
         ], [
@@ -290,7 +289,6 @@ class ProductController extends Controller
             'digital_file_ready.required_if'    => 'Ready product upload is required!',
             'digital_file_ready.mimes'          => 'Ready product upload must be a file of type: pdf, zip, jpg, jpeg, png, gif.',
             'digital_product_type.required_if'  => 'Digital product type is required!',
-            'shipping_cost.required_if'         => 'Shipping Cost is required!',
         ]);
 
         if (!$request->has('colors_active') && !$request->file('images')) {
@@ -527,8 +525,8 @@ class ProductController extends Controller
         $product->video_url      = $request->video_link;
         $product->request_status = Helpers::get_business_settings('new_product_approval') == 1 ? 0 : 1;
         $product->status         = 0;
-        $product->shipping_cost  = $request->product_type == 'physical' ? Convert::usd($request->shipping_cost) : 0;
-        $product->multiply_qty   = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
+        $product->shipping_cost  = 0;
+        $product->multiply_qty   = 0;
         // Phase 8: Approval Workflow - seller products start as pending
         $product->approval_status = Helpers::get_business_settings('new_product_approval') == 1 ? 'pending' : 'approved';
         $product->admin_commission = $request->admin_commission ?? 0;
@@ -1221,7 +1219,6 @@ class ProductController extends Controller
             'unit_price'            => 'required|numeric|gt:0',
             'purchase_price'        => 'required|numeric|gt:0',
             'discount'              => 'nullable|numeric|min:0',
-            'shipping_cost'         => 'required_if:product_type,==,physical|gt:-1',
             'code'                  => 'required|numeric|min:1|digits_between:6,20|unique:products,code,' . $product->id,
             'minimum_order_qty'     => 'required|numeric|min:1',
         ], [
@@ -1234,7 +1231,6 @@ class ProductController extends Controller
             'minimum_order_qty.min'             => 'Minimum order quantity must be positive!',
             'digital_file_ready.mimes'          => 'Ready product upload must be a file of type: pdf, zip, jpg, jpeg, png, gif.',
             'digital_product_type.required_if'  => 'Digital product type is required!',
-            'shipping_cost.required_if'         => 'Shipping Cost is required!',
         ]);
 
         $brand_setting = BusinessSetting::where('type', 'product_brand')->first()->value;
@@ -1523,7 +1519,7 @@ class ProductController extends Controller
         $product->attributes        = $request->product_type == 'physical' ? json_encode($request->choice_attributes ?? []) : json_encode([]);
         $product->discount_type     = $request->discount_type;
         $product->current_stock     = $request->product_type == 'physical' ? abs($stock_count) : 0;
-        $product->shipping_cost     = $request->product_type == 'physical' ? (Helpers::get_business_settings('product_wise_shipping_cost_approval') == 1 ? $product->shipping_cost : Convert::usd($request->shipping_cost)) : 0;
+        $product->shipping_cost     = $request->product_type == 'physical' ? ($product->shipping_cost ?? 0) : 0;
         $product->multiply_qty      = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
         // Phase 8: Approval Workflow - approved products need re-approval after edit
         if ($product->approval_status === 'approved') {
@@ -1535,10 +1531,6 @@ class ProductController extends Controller
         $product->priority = $request->priority ?? $product->priority;
         $product->toxicity_category = $request->toxicity_category ?? null;
 
-        if (Helpers::get_business_settings('product_wise_shipping_cost_approval') == 1 && $product->shipping_cost != Convert::usd($request->shipping_cost)) {
-            $product->temp_shipping_cost = Convert::usd($request->shipping_cost);
-            $product->is_shipping_cost_updated = 0;
-        }
 
         $product->video_provider = 'youtube';
         $product->video_url = $request->video_link;

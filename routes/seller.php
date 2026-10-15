@@ -137,6 +137,8 @@ Route::group(['namespace' => 'Seller', 'prefix' => 'seller', 'as' => 'seller.'],
             Route::post('productStatus', 'OrderController@productStatus')->name('productStatus');
             Route::post('payment-status', 'OrderController@payment_status')->name('payment-status');
             Route::post('digital-file-upload-after-sell', 'OrderController@digital_file_upload_after_sell')->name('digital-file-upload-after-sell');
+            Route::post('original-invoice', 'OrderController@upload_original_invoice')->name('original-invoice');
+            Route::get('original-invoice/{id}', 'OrderController@view_original_invoice')->name('original-invoice-view');
 
             Route::post('update-deliver-info','OrderController@update_deliver_info')->name('update-deliver-info');
             Route::post('assign-delhivery','OrderController@assign_delhivery')->name('assign-delhivery');

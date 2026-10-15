@@ -1,6 +1,6 @@
 @extends('layouts.back-end.app')
 
-@section('title', \App\CPU\translate('Product Query'))
+@section('title', \App\CPU\translate('Product Bidding'))
 @push('css_or_js')
 @endpush
 @section('content')

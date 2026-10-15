@@ -245,7 +245,7 @@
     @php($total_discount_on_product=0)
     @php($cart=\App\CPU\CartManager::get_cart())
     @php($cart_group_ids=\App\CPU\CartManager::get_cart_group_ids())
-    @php($shipping_cost=\App\CPU\CartManager::get_shipping_cost())
+    @php($shipping_cost=session('delhivery_shipping_cost', 0))
     @php($item_count=0)
     @if($cart->count() > 0)
         @foreach($cart as $key => $cartItem)
@@ -266,6 +266,44 @@
         </div>
 
         @if($cart->count() > 0)
+            {{-- Products listed in the order summary --}}
+            <style>
+                .os-product-list { padding: 0.75rem 1.15rem 0.25rem; }
+                .os-pl-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0; border-bottom: 1px dashed #E8ECEA; }
+                .os-pl-item:last-child { border-bottom: none; }
+                .os-pl-img { width: 44px; height: 44px; flex: 0 0 44px; background: #F8F9FA; border: 1px solid #E8ECEA; border-radius: 9px; overflow: hidden; }
+                .os-pl-img img { width: 100%; height: 100%; object-fit: contain; }
+                .os-pl-body { min-width: 0; flex: 1; }
+                .os-pl-name { font-size: 0.8rem; font-weight: 600; color: #1B1F1D; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+                .os-pl-var { font-size: 0.7rem; color: #66706A; margin-top: 1px; }
+                .os-pl-meta { font-size: 0.72rem; color: #66706A; margin-top: 2px; }
+                .os-pl-meta b { color: #168A3A; font-weight: 700; }
+            </style>
+            <div class="os-product-list">
+                @foreach($cart as $cartItem)
+                    @php($plVariations = json_decode($cartItem['variations'], true) ?: [])
+                    <div class="os-pl-item">
+                        <div class="os-pl-img">
+                            <img src="{{\App\CPU\ProductManager::product_image_path('thumbnail')}}/{{$cartItem['thumbnail'] ?? 'placeholder.jpg'}}"
+                                 onerror="this.src='{{asset('assets/front-end/img/image-place-holder.png')}}'"
+                                 alt="{{$cartItem['name']}}">
+                        </div>
+                        <div class="os-pl-body">
+                            <div class="os-pl-name">{{$cartItem['name']}}</div>
+                            @if(!empty($plVariations))
+                                <div class="os-pl-var">
+                                    @foreach($plVariations as $vKey => $vVal)
+                                        {{$vKey}}: {{$vVal}}@if(!$loop->last) · @endif
+                                    @endforeach
+                                </div>
+                            @endif
+                            <div class="os-pl-meta">
+                                Qty {{$cartItem['quantity']}} · <b>{{\App\CPU\Helpers::currency_converter($cartItem['price'] * $cartItem['quantity'])}}</b>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
             <div class="os-rows">
                 <div class="os-row">
                     <span class="os-label">{{\App\CPU\translate('sub_total')}}</span>
@@ -280,10 +318,14 @@
                 <div class="os-row os-ship">
                     <span class="os-label">{{\App\CPU\translate('shipping')}}</span>
                     <span class="os-val" id="order-summary-shipping">
-                        @if($total_shipping_cost > 0)
-                            {{\App\CPU\Helpers::currency_converter($total_shipping_cost)}}
+                        @if(session()->has('delhivery_shipping_cost'))
+                            @if($total_shipping_cost > 0)
+                                {{\App\CPU\Helpers::currency_converter($total_shipping_cost)}}
+                            @else
+                                {{\App\CPU\translate('Free')}}
+                            @endif
                         @else
-                            {{\App\CPU\translate('Free')}}
+                            {{\App\CPU\translate('Check pincode')}}
                         @endif
                     </span>
                 </div>

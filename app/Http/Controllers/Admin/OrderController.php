@@ -18,6 +18,7 @@ use App\Model\ShippingAddress;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Ramsey\Uuid\Uuid;
 use function App\CPU\translate;
@@ -227,6 +228,61 @@ class OrderController extends Controller
             return view('admin-views.pos.order.order-details', compact('order', 'company_name', 'company_web_logo'));
         }
 
+    }
+
+    public function upload_original_invoice(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|integer',
+            'original_invoice' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+
+        $order = Order::findOrFail($request->input('order_id'));
+        $file = $request->file('original_invoice');
+        $extension = strtolower($file->getClientOriginalExtension());
+        $path = $file->storeAs(
+            'private/invoices',
+            $order->id . '-' . Uuid::uuid4() . '.' . $extension,
+            'local'
+        );
+
+        if (!$path) {
+            Toastr::error(translate('Original invoice could not be saved.'));
+            return redirect()->back();
+        }
+
+        if ($order->original_invoice_path && strpos($order->original_invoice_path, 'private/invoices/') === 0) {
+            Storage::disk('local')->delete($order->original_invoice_path);
+        }
+
+        $order->original_invoice_path = $path;
+        $order->save();
+
+        Toastr::success(translate('Original invoice uploaded.'));
+        return redirect()->back();
+    }
+
+    public function view_original_invoice($id)
+    {
+        $order = Order::findOrFail($id);
+        $path = $order->original_invoice_path;
+        abort_unless(
+            $path && strpos($path, 'private/invoices/') === 0 && Storage::disk('local')->exists($path),
+            404
+        );
+
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $mimeType = [
+            'pdf' => 'application/pdf',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+        ][$extension] ?? 'application/octet-stream';
+
+        return response()->file(Storage::disk('local')->path($path), [
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => 'inline; filename="original-invoice-order-' . $order->id . '.' . $extension . '"',
+        ]);
     }
 
     public function add_delivery_man($order_id, $delivery_man_id)

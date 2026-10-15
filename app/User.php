@@ -19,7 +19,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'f_name', 'l_name', 'name', 'email', 'password', 'phone', 'image', 'login_medium','is_active','social_id','is_phone_verified','temporary_token'
+        'f_name', 'l_name', 'name', 'email', 'password', 'phone', 'image', 'login_medium','is_active','social_id','is_phone_verified','temporary_token',
+        'farm_acres', 'crops_sown', 'farm_latitude', 'farm_longitude', 'farm_location_name', 'farm_address', 'terms_accepted_at', 'terms_version'
     ];
 
     /**
@@ -42,7 +43,11 @@ class User extends Authenticatable
         'is_phone_verified'=>'integer',
         'is_email_verified' => 'integer',
         'wallet_balance'=>'float',
-        'loyalty_point'=>'float'
+        'loyalty_point'=>'float',
+        'farm_acres' => 'decimal:2',
+        'farm_latitude' => 'decimal:7',
+        'farm_longitude' => 'decimal:7',
+        'terms_accepted_at' => 'datetime',
     ];
 
     public function wish_list()

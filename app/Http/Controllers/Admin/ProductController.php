@@ -361,7 +361,6 @@ class ProductController extends BaseController
             'unit_price' => 'required|numeric|gt:0',
             'purchase_price' => 'required|numeric|gt:0',
             'discount' => 'required|gt:-1',
-            'shipping_cost' => 'required_if:product_type,==,physical|gt:-1',
             'code' => 'required|numeric|min:1|digits_between:6,20|unique:products',
             'minimum_order_qty' => 'required|numeric|min:1',
             'technical_name' => 'nullable|array',
@@ -377,7 +376,6 @@ class ProductController extends BaseController
             'digital_file_ready.required_if' => 'Ready product upload is required!',
             'digital_file_ready.mimes' => 'Ready product upload must be a file of type: pdf, zip, jpg, jpeg, png, gif.',
             'digital_product_type.required_if' => 'Digital product type is required!',
-            'shipping_cost.required_if' => 'Shipping Cost is required!',
         ]);
 
         if (!$request->has('colors_active') && !$request->file('images')) {
@@ -626,8 +624,8 @@ class ProductController extends BaseController
         $p->video_provider = 'youtube';
         $p->video_url = $request->video_link;
         $p->request_status = 1;
-        $p->shipping_cost = $request->product_type == 'physical' ? BackEndHelper::currency_to_usd($request->shipping_cost) : 0;
-        $p->multiply_qty = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
+        $p->shipping_cost = 0;
+        $p->multiply_qty = 0;
         // Phase 6: Per-Product Commission
         $p->admin_commission = $request->admin_commission ?? 0;
         $p->admin_commission_type = $request->admin_commission_type ?? 'percentage';
@@ -1427,7 +1425,6 @@ class ProductController extends BaseController
             'unit_price' => 'required|numeric|gt:0',
             'purchase_price' => 'required|numeric|gt:0',
             'discount' => 'required|gt:-1',
-            'shipping_cost' => 'required_if:product_type,==,physical|gt:-1',
             'code' => 'required|numeric|min:1|digits_between:6,20|unique:products,code,' . $product->id,
             'minimum_order_qty' => 'required|numeric|min:1',
             'technical_name' => 'nullable|array',
@@ -1443,7 +1440,6 @@ class ProductController extends BaseController
             'minimum_order_qty.min' => 'Minimum order quantity must be positive!',
             'digital_file_ready.mimes' => 'Ready product upload must be a file of type: pdf, zip, jpg, jpeg, png, gif.',
             'digital_product_type.required_if' => 'Digital product type is required!',
-            'shipping_cost.required_if' => 'Shipping Cost is required!',
         ]);
 
         $brand_setting = BusinessSetting::where('type', 'product_brand')->first()->value;
@@ -1716,8 +1712,8 @@ class ProductController extends BaseController
             $product->request_status = 1;
         }
 
-        $product->shipping_cost = $request->product_type == 'physical' ? BackEndHelper::currency_to_usd($request->shipping_cost) : 0;
-        $product->multiply_qty = ($request->product_type == 'physical') ? ($request->multiplyQTY == 'on' ? 1 : 0) : 0;
+        $product->shipping_cost = $request->product_type == 'physical' ? ($product->shipping_cost ?? 0) : 0;
+        $product->multiply_qty = $request->product_type == 'physical' ? ($product->multiply_qty ?? 0) : 0;
         // Phase 6: Per-Product Commission
         $product->admin_commission = $request->admin_commission ?? 0;
         $product->admin_commission_type = $request->admin_commission_type ?? 'percentage';

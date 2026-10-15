@@ -88,7 +88,7 @@
             <div class="header">
                 @php($logo = \App\CPU\Helpers::get_business_settings('company_web_logo'))
                 @if($logo)
-                    <img src="{{ asset(config('app.public_storage_path').'/company/'.$logo) }}" alt="Logo" style="max-height: 50px; margin-bottom: 20px;">
+                    <img src="{{ rtrim(config('app.mail_asset_url'), '/') . '/' . trim(config('app.public_storage_path'), '/') . '/company/' . $logo }}" alt="{{ \App\CPU\Helpers::get_business_settings('company_name') }}" width="250" style="display:inline-block; width:auto; height:auto; max-width:250px; max-height:60px; margin-bottom:20px; background-color:#ffffff; padding:8px; border-radius:4px;">
                 @endif
                 <h1>{{ \App\CPU\translate('Verify Your Email') }}</h1>
             </div>
@@ -115,4 +115,3 @@
     </div>
 </body>
 </html>
-

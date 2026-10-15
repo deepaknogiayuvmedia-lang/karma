@@ -273,7 +273,7 @@
                             <small class="tio-more-horizontal nav-subtitle-replacer"></small>
                         </li>
 
-                        <li class="navbar-vertical-aside-has-menu {{(Request::is('seller/product*'))?'active':''}}">
+                        <li class="navbar-vertical-aside-has-menu {{(Request::is('seller/product*') && !Request::is('seller/product/bidding-list'))?'active':''}}">
                             <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle" href="javascript:">
                                 <i class="tio-premium-outlined nav-icon"></i>
                                 <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
@@ -281,20 +281,13 @@
                                 </span>
                             </a>
                             <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
-                                style="display: {{(Request::is('seller/product*'))?'block':''}}">
+                                style="display: {{(Request::is('seller/product*') && !Request::is('seller/product/bidding-list'))?'block':''}}">
                                 <li class="nav-item {{Request::is('seller/product/list') || Request::is('seller/product/stock-limit-list/in_house')?'active':''}}">
                                     <a class="nav-link " href="{{route('seller.product.list')}}">
                                         <span class="tio-circle nav-indicator-icon"></span>
                                         <span class="text-truncate">{{\App\CPU\translate('Products')}}</span>
                                     </a>
                                 </li>
-                                <li class="nav-item {{Request::is('seller/product/bidding-list') || Request::is('seller/product/stock-limit-list/in_house')?'active':''}}">
-                                    <a class="nav-link " href="{{route('seller.product.bidding-list')}}">
-                                        <span class="tio-circle nav-indicator-icon"></span>
-                                        <span class="text-truncate">{{\App\CPU\translate('Products Bidding')}}</span>
-                                    </a>
-                                </li>
-
                                 <li class="nav-item {{Request::is('seller/product/bulk-import')?'active':''}}">
                                     <a class="nav-link " href="{{route('seller.product.bulk-import')}}">
                                         <span class="tio-circle nav-indicator-icon"></span>
@@ -314,6 +307,15 @@
                                     </a>
                                 </li>
                             </ul>
+                        </li>
+
+                        <li class="navbar-vertical-aside-has-menu {{Request::is('seller/product/bidding-list')?'active':''}}">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link" href="{{route('seller.product.bidding-list')}}">
+                                <i class="tio-gavel nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                    {{\App\CPU\translate('Product Bidding')}}
+                                </span>
+                            </a>
                         </li>
 
                         <li class="navbar-vertical-aside-has-menu {{Request::is('seller/reviews/list*')?'active':''}}">
@@ -529,4 +531,3 @@
         });
     </script>
 @endpush
-

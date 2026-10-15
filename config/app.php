@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'mail_asset_url' => env('MAIL_ASSET_URL', 'https://cropshopindia.com'),
+
     'asset_url' => env('ASSET_URL', null),
 
     /*
@@ -68,6 +70,7 @@ return [
     */
 
     'timezone' => 'Asia/Dhaka',
+    'terms_version' => env('TERMS_VERSION', '2026-10-14'),
 
     /*
     |--------------------------------------------------------------------------

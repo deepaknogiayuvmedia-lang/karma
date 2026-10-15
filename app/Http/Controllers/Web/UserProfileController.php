@@ -22,8 +22,8 @@ use App\User;
 use Brian2694\Toastr\Facades\Toastr;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 use function App\CPU\translate;
 use App\CPU\Convert;
@@ -50,6 +50,14 @@ class UserProfileController extends Controller
         $request->validate([
             'f_name' => 'required',
             'l_name' => 'required',
+            'phone' => (Helpers::get_business_settings('phone_verification') ? 'required' : 'nullable')
+                . '|string|max:32|unique:users,phone,' . auth('customer')->id(),
+            'farm_acres' => 'nullable|numeric|min:0|max:1000000',
+            'crops_sown' => 'nullable|string|max:2000',
+            'farm_latitude' => 'nullable|numeric|between:-90,90',
+            'farm_longitude' => 'nullable|numeric|between:-180,180',
+            'farm_location_name' => 'nullable|string|max:255',
+            'farm_address' => 'nullable|string|max:1000',
         ], [
             'f_name.required' => 'First name is required',
             'l_name.required' => 'Last name is required',
@@ -76,6 +84,12 @@ class UserProfileController extends Controller
             'f_name' => $request->f_name,
             'l_name' => $request->l_name,
             'phone' => $request->phone,
+            'farm_acres' => $request->input('farm_acres'),
+            'crops_sown' => $request->input('crops_sown'),
+            'farm_latitude' => $request->input('farm_latitude'),
+            'farm_longitude' => $request->input('farm_longitude'),
+            'farm_location_name' => $request->input('farm_location_name'),
+            'farm_address' => $request->input('farm_address'),
             'password' => strlen($request->password) > 5 ? bcrypt($request->password) : auth('customer')->user()->password,
         ];
         if (auth('customer')->check()) {
@@ -603,6 +617,22 @@ class UserProfileController extends Controller
         $mpdf_view = \View::make('web-views.invoice', compact('order'));
         Helpers::gen_mpdf($mpdf_view, 'order_invoice_', $order->id);
     }
+
+    public function download_original_invoice($id)
+    {
+        $order = Order::where('id', $id)
+            ->where('customer_id', auth('customer')->id())
+            ->firstOrFail();
+
+        $path = $order->original_invoice_path;
+        abort_unless(
+            $path && strpos($path, 'private/invoices/') === 0 && Storage::disk('local')->exists($path),
+            404
+        );
+
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        return Storage::disk('local')->download($path, 'original-invoice-order-' . $order->id . '.' . $extension);
+    }
     public function refund_details($id)
     {
         $order_details = OrderDetail::find($id);
@@ -694,4 +724,3 @@ class UserProfileController extends Controller
         ]);
     }
 }
-

@@ -38,8 +38,8 @@
 
                     <td align="left" valign="top" colspan="2"
                         style="border-bottom: 1px solid #CCCCCC; padding-bottom: 10px;">
-                        <img alt="" border="0" src="{{url('/').'/'.config('app.public_storage_path').'/company/'.$logo}}" title=""
-                             class="sitelogo" width="60%" style="max-width:250px;"/>
+                        <img alt="{{ \App\CPU\Helpers::get_business_settings('company_name') }}" border="0" src="{{rtrim(config('app.mail_asset_url'), '/').'/'.trim(config('app.public_storage_path'), '/').'/company/'.$logo}}" title=""
+                             class="sitelogo" width="250" style="display:block; width:auto; height:auto; max-width:250px; max-height:60px;"/>
                     </td>
 
                 </tr>
@@ -96,4 +96,3 @@
 </body>
 
 </html>
-

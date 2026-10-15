@@ -180,43 +180,52 @@
             font-size: 1.25rem;
         }
 
-        .btn-invoice-action {
-            background: {{$web_config['primary_color']}};
-            color: #ffffff !important;
-            font-weight: 600;
-            padding: 12px 24px;
-            border-radius: 12px;
-            border: none;
+        .order-invoice-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .order-invoice-actions .btn-invoice-action,
+        .order-invoice-actions .btn-track-action {
+            flex: 1 1 180px;
+            min-width: 0;
+            min-height: 56px;
+            padding: 12px 18px;
+            border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: filter 0.2s ease;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            gap: 9px;
+            font-weight: 600;
+            line-height: 1.35;
+            text-align: center;
             text-decoration: none !important;
+            transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
         }
-        .btn-invoice-action:hover {
-            filter: brightness(0.92);
+        .order-invoice-actions .btn-invoice-action {
+            background: {{$web_config['primary_color']}};
+            color: #ffffff !important;
+            border: none;
+            box-shadow: 0 3px 10px rgba(0, 105, 92, 0.16);
+        }
+        .order-invoice-actions .btn-invoice-action:hover {
+            box-shadow: 0 5px 14px rgba(0, 105, 92, 0.22);
+            transform: translateY(-1px);
             color: #ffffff !important;
         }
 
-        .btn-track-action {
+        .order-invoice-actions .btn-track-action {
             background: #f3f4f6;
             color: #374151 !important;
-            font-weight: 600;
-            padding: 12px 24px;
-            border-radius: 12px;
             border: 1px solid #d1d5db;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background 0.2s ease, color 0.2s ease;
-            text-decoration: none !important;
         }
-        .btn-track-action:hover {
+        .order-invoice-actions .btn-track-action:hover {
             background: #e5e7eb;
             color: #111827 !important;
+        }
+        .order-invoice-actions i {
+            flex: 0 0 auto;
         }
 
         @media (max-width: 767.98px) {
@@ -225,6 +234,16 @@
             }
             .order-item-table td {
                 padding: 14px 12px;
+            }
+        }
+        @media (max-width: 575.98px) {
+            .order-invoice-actions {
+                gap: 10px;
+            }
+            .order-invoice-actions .btn-invoice-action,
+            .order-invoice-actions .btn-track-action {
+                flex-basis: 100%;
+                width: 100%;
             }
         }
     </style>
@@ -549,13 +568,19 @@
                             </table>
                         </div>
 
-                        <div class="d-flex align-items-center justify-content-between gap-3 mt-4">
-                            <a href="{{route('generate-invoice',[$order->id])}}" class="btn-invoice-action flex-grow-1" target="_blank">
+                        <div class="order-invoice-actions">
+                            <a href="{{route('generate-invoice',[$order->id])}}" class="btn-invoice-action" target="_blank">
                                 <i class="fa fa-file-text-o"></i>
                                 {{\App\CPU\translate('generate_invoice')}}
                             </a>
+                            @if($order->original_invoice_path)
+                                <a href="{{route('original-invoice',[$order->id])}}" class="btn-invoice-action">
+                                    <i class="fa fa-download"></i>
+                                    {{\App\CPU\translate('Download original invoice')}}
+                                </a>
+                            @endif
                             @if(!empty($order->third_party_delivery_tracking_id))
-                                <a href="{{route('track-order.result',['order_id'=>$order['id'],'from_order_details'=>1])}}" class="btn-track-action flex-grow-1">
+                                <a href="{{route('track-order.result',['order_id'=>$order['id'],'from_order_details'=>1])}}" class="btn-track-action">
                                     <i class="fa fa-truck"></i>
                                     {{\App\CPU\translate('Track')}} {{\App\CPU\translate('Order')}}
                                 </a>

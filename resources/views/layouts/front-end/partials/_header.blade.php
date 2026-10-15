@@ -376,6 +376,23 @@
             justify-content: center;
         }
 
+        .navbar-toolbar .customer-profile-icon-box {
+            width: clamp(32px, 10vw, 40px);
+            height: clamp(32px, 10vw, 40px);
+            flex: 0 0 clamp(32px, 10vw, 40px);
+            overflow: hidden;
+        }
+
+        .navbar-toolbar .customer-profile-icon {
+            display: block;
+            width: 70%;
+            height: 70%;
+            max-width: 28px;
+            max-height: 28px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
         .navbar-toolbar .navbar-tool-icon-box:active {
             background: rgba(255, 255, 255, 0.22);
         }
@@ -1187,7 +1204,7 @@
                 <div class="d-none d-md-flex align-items-center mx-2">
                     <a href="{{ route('technical-names') }}" class="btn btn-outline-primary btn-sm"
                         style="border-radius: 20px; white-space: nowrap; font-size: 0.85rem; padding: 6px 16px;">
-                        <i class="fa fa-tags mr-1"></i> {{ \App\CPU\translate('Technical Names') }}
+                        <i class="fa fa-search mr-1"></i> {{ \App\CPU\translate('Technical Search') }}
                     </a>
                 </div>
 
@@ -1206,12 +1223,13 @@
                         <div class="dropdown">
                             <a class="navbar-tool ml-3" type="button" data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
-                                <div class="navbar-tool-icon-box bg-secondary">
-                                    <div class="navbar-tool-icon-box bg-secondary">
-                                        <img src="{{ asset(config('app.public_storage_path') . '/profile/' . auth('customer')->user()->image) }}"
-                                            onerror="this.src='{{ asset('assets/front-end/img/image-place-holder.png') }}'"
-                                            class="img-profile rounded-circle __inline-14">
-                                    </div>
+                                <div class="navbar-tool-icon-box bg-secondary customer-profile-icon-box">
+                                    <img src="{{ empty(auth('customer')->user()->image) || auth('customer')->user()->image === 'def.png'
+                                            ? asset('assets/front-end/img/profile-placeholder.svg')
+                                            : asset(config('app.public_storage_path') . '/profile/' . auth('customer')->user()->image) }}"
+                                        onerror="this.src='{{ asset('assets/front-end/img/profile-placeholder.svg') }}'"
+                                        class="img-profile rounded-circle customer-profile-icon __inline-14"
+                                        alt="{{ \App\CPU\translate('Profile') }}">
                                 </div>
                                 <div class="navbar-tool-text">
                                     <small>{{ \App\CPU\translate('hello') }},
@@ -1267,7 +1285,7 @@
                         <span class="navbar-tool-icon-box bg-secondary">
                             <i class="fa fa-heart" aria-hidden="true"></i>
                         </span>
-                        <span class="navbar-tool-text">
+                        <span class="navbar-tool-label">
                             <span class="countWishlist">{{ session()->has('wish_list') ? count(session('wish_list')) : 0 }}</span>
                         </span>
                     </a>
@@ -1302,7 +1320,7 @@
                 </form>
                 <a href="{{ route('technical-names') }}" class="btn btn-outline-primary btn-sm"
                     style="border-radius: 20px; white-space: nowrap; font-size: 0.8rem; padding: 6px 12px; flex-shrink:0; border: 1.5px solid #168A3A; color: #168A3A;">
-                    <i class="fa fa-tags mr-1"></i> {{ \App\CPU\translate('Technical') }}
+                    <i class="fa fa-search mr-1"></i> {{ \App\CPU\translate('Technical Search') }}
                 </a>
             </div>
         </div>

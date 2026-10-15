@@ -27,7 +27,6 @@ class ProductStoreRequest extends FormRequest
             'unit_price'           => 'required|numeric|gt:0',
             'purchase_price'       => 'required|numeric|gt:0',
             'discount'             => 'required|numeric|min:0',
-            'shipping_cost'        => 'required_if:product_type,physical|nullable|numeric|min:0',
             'code'                 => 'required|numeric|min:1|digits_between:6,20|unique:products',
             'minimum_order_qty'    => 'required|numeric|min:1',
             'technical_name'       => 'nullable|array',

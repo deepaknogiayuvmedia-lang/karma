@@ -503,6 +503,7 @@ class WebController extends Controller
     {
         $cart_group_ids = CartManager::get_cart_group_ids();
         $shippingMethod = Helpers::get_business_settings('shipping_method');
+        $has_physical_products = false;
 
         $physical_products[] = false;
         foreach ($cart_group_ids as $group_id) {
@@ -511,6 +512,7 @@ class WebController extends Controller
             foreach ($carts as $cart) {
                 if ($cart->product_type == 'physical') {
                     $physical_product = true;
+                    $has_physical_products = true;
                 }
             }
             $physical_products[] = $physical_product;
@@ -554,7 +556,21 @@ class WebController extends Controller
             }
         }
 
+        $shipping_address = session()->has('address_id')
+            ? \App\Model\ShippingAddress::find(session('address_id'))
+            : null;
+
+        if ($has_physical_products
+            && (!session()->has('delhivery_shipping_cost')
+                || empty(session('delhivery_pincode'))
+                || !$shipping_address
+                || trim((string) $shipping_address->zip) !== trim((string) session('delhivery_pincode')))) {
+            Toastr::warning(translate('Please check shipping cost for your pincode first'));
+            return redirect()->route('checkout-shipping');
+        }
+
         if (session()->has('address_id') && count($cart_group_ids) > 0) {
+            session()->forget(['checkout_terms_accepted_at', 'checkout_terms_version']);
             return view('web-views.checkout-payment', compact('cod_not_show'));
         }
 
@@ -564,6 +580,10 @@ class WebController extends Controller
 
     public function checkout_complete(Request $request)
     {
+        if (!$this->hasAcceptedCheckoutTerms()) {
+            Toastr::error(translate('Please accept the terms and conditions before placing your order.'));
+            return redirect()->route('checkout-payment');
+        }
         if ($request->payment_method != 'cash_on_delivery') {
             return back()->with('error', 'Something went wrong!');
         }
@@ -603,6 +623,10 @@ class WebController extends Controller
 
     public function offline_payment_checkout_complete(Request $request)
     {
+        if (!$this->hasAcceptedCheckoutTerms()) {
+            Toastr::error(translate('Please accept the terms and conditions before placing your order.'));
+            return redirect()->route('checkout-payment');
+        }
         if ($request->payment_method != 'offline_payment') {
             return back()->with('error', 'Something went wrong!');
         }
@@ -632,6 +656,10 @@ class WebController extends Controller
 
     public function checkout_complete_wallet(Request $request = null)
     {
+        if (!$this->hasAcceptedCheckoutTerms()) {
+            Toastr::error(translate('Please accept the terms and conditions before placing your order.'));
+            return redirect()->route('checkout-payment');
+        }
         if (!auth('customer')->check()) {
             return redirect()->route('customer.auth.login');
         }
@@ -675,6 +703,26 @@ class WebController extends Controller
         return view('web-views.checkout-complete');
     }
 
+    public function accept_checkout_terms(Request $request)
+    {
+        $request->validate([
+            'terms_accepted' => 'required|accepted',
+        ]);
+
+        session([
+            'checkout_terms_accepted_at' => now()->toDateTimeString(),
+            'checkout_terms_version' => config('app.terms_version'),
+        ]);
+
+        return response()->json(['accepted' => true]);
+    }
+
+    private function hasAcceptedCheckoutTerms()
+    {
+        return session()->has('checkout_terms_accepted_at')
+            && session('checkout_terms_version') === config('app.terms_version');
+    }
+
     public function shop_cart(Request $request)
     {
         if (auth('customer')->check() && Cart::where(['customer_id' => auth('customer')->id()])->count() > 0) {
@@ -691,25 +739,47 @@ class WebController extends Controller
             return response()->json(['status' => 0, 'message' => 'Product not found']);
         }
 
+        // The product page submits the selected variant as "pack_size", but
+        // CartManager::add_to_cart() reads the choice option name (e.g. "choice_4").
+        // Map the selected pack size onto it so validation passes and the correct
+        // variant price is used (single-choice products, which the card UI uses).
+        $choiceOptions = json_decode($product->choice_options, true) ?: [];
+        $packSize = $request->input('pack_size');
+        if ($packSize !== null && count($choiceOptions) === 1 && !empty($choiceOptions[0]['name'])) {
+            $request->merge([$choiceOptions[0]['name'] => $packSize]);
+        }
+
         // Check stock
         if ($product->product_type == 'physical' && $product->current_stock < $request->quantity) {
             return response()->json(['status' => 0, 'message' => 'Out of stock!']);
         }
 
         // Validate required options
-        $choice_options = json_decode($product->choice_options);
-        if ($choice_options) {
-            foreach ($choice_options as $choice) {
-                if (empty($request[$choice->name])) {
+        if ($choiceOptions) {
+            foreach ($choiceOptions as $choice) {
+                if (empty($request[$choice['name']])) {
                     return response()->json(['status' => 0, 'message' => 'Please select all options (like size, color, etc.)']);
                 }
             }
         }
 
-        // Add to cart silently (required for checkout to work)
+        // Add to cart silently (checkout reads cart data). For Buy Now, "already added"
+        // simply means the exact item is already in the cart, which is fine.
         $cart = CartManager::add_to_cart($request);
-        if ($cart['status'] == 0) {
+        $alreadyAdded = isset($cart['message']) && stripos((string) $cart['message'], 'already') !== false;
+        if ($cart['status'] == 0 && !$alreadyAdded) {
             return response()->json($cart);
+        }
+
+        // Guest: the item is now in the session (offline) cart. Send the user to
+        // login; after a successful login they are redirected to checkout-details.
+        if (!auth('customer')->check()) {
+            session(['bh_buy_now_redirect' => route('checkout-details')]);
+            return response()->json([
+                'status' => 1,
+                'login_required' => true,
+                'login_url' => route('customer.auth.login'),
+            ]);
         }
 
         return response()->json(['status' => 1, 'message' => 'Success']);
@@ -993,7 +1063,8 @@ class WebController extends Controller
     {
         $request->validate([
             'pincode' => 'required|numeric|digits:6',
-            'product_id' => 'required|integer'
+            'product_id' => 'required|integer',
+            'quantity' => 'sometimes|integer|min:1|max:100',
         ]);
 
         $pincode = $request->pincode;
@@ -1017,8 +1088,32 @@ class WebController extends Controller
         ]);
 
         if ($response['status'] === 'success' && $response['serviceable']) {
-            // Calculate delivery cost
-            $shipping_cost = $product->shipping_cost ?? 0;
+            $quantity = (int) $request->input('quantity', 1);
+            $charges = \App\CPU\shepping::get_shipping_charges(
+                $pincode,
+                'COD',
+                ($product->unit_price ?? 0) * $quantity,
+                500 * $quantity
+            );
+
+            if (($charges['status'] ?? '') !== 'success'
+                || !isset($charges['total_amount'])
+                || !is_numeric($charges['total_amount'])
+                || $charges['total_amount'] < 0) {
+                Log::warning('Delhivery product shipping quote failed', [
+                    'pincode' => $pincode,
+                    'product_id' => $product->id,
+                    'response' => $charges,
+                ]);
+
+                return response()->json([
+                    'status' => 'error',
+                    'serviceable' => false,
+                    'message' => 'Unable to calculate shipping charges. Please try again.',
+                ]);
+            }
+
+            $shipping_cost = (float) $charges['total_amount'];
 
             // Calculate estimated delivery date (5-7 business days default)
             $business_days = 5;
@@ -1060,6 +1155,16 @@ class WebController extends Controller
 
         $pincode = $request->pincode;
 
+        session()->forget(['delhivery_pincode', 'delhivery_shipping_cost']);
+        $cart_group_ids = \App\CPU\CartManager::get_cart_group_ids($request);
+        foreach ($cart_group_ids as $group_id) {
+            \App\Model\CartShipping::where('cart_group_id', $group_id)
+                ->update(['shipping_cost' => 0]);
+            \App\Model\Cart::where('cart_group_id', $group_id)
+                ->where('product_type', 'physical')
+                ->update(['shipping_cost' => 0]);
+        }
+
         // Check pincode serviceability via Delhivery API
         $response = \App\CPU\shepping::check_pincode($pincode);
 
@@ -1090,14 +1195,12 @@ class WebController extends Controller
             ]);
         }
 
-        // Calculate total shipping cost for all cart items
-        $total_shipping_cost = 0;
+        // Calculate COD amount and estimated parcel weight for Delhivery's quote.
         $total_cod_amount = 0;
         $total_weight_grams = 0;
         foreach ($cart_items as $item) {
             $product = \App\Model\Product::find(data_get($item, 'product_id'));
             if ($product) {
-                $total_shipping_cost += \App\CPU\CartManager::get_shipping_cost_for_product_category_wise($product, data_get($item, 'quantity'));
                 $total_cod_amount += ($product->unit_price ?? 0) * data_get($item, 'quantity');
                 $total_weight_grams += 500 * data_get($item, 'quantity');
             }
@@ -1111,14 +1214,24 @@ class WebController extends Controller
             max($total_weight_grams, 500)
         );
 
-        // Use API charges if available, else fallback to product shipping_cost
-        $final_shipping_cost = $total_shipping_cost;
-        if (($charges['status'] ?? '') === 'success' && isset($charges['total_amount']) && $charges['total_amount'] > 0) {
-            $final_shipping_cost = $charges['total_amount'];
+        if (($charges['status'] ?? '') !== 'success'
+            || !isset($charges['total_amount'])
+            || !is_numeric($charges['total_amount'])
+            || $charges['total_amount'] < 0) {
+            Log::warning('Delhivery checkout shipping quote failed', [
+                'pincode' => $pincode,
+                'response' => $charges,
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'serviceable' => false,
+                'message' => 'Unable to calculate shipping charges. Please try again.',
+            ]);
         }
+        $final_shipping_cost = (float) $charges['total_amount'];
 
         // Persist Delhivery charge so order summary + order placement use it
-        $cart_group_ids = \App\CPU\CartManager::get_cart_group_ids($request);
         foreach ($cart_group_ids as $index => $group_id) {
             $cart_shipping = \App\Model\CartShipping::firstOrNew(['cart_group_id' => $group_id]);
             $cart_shipping->shipping_method_id = $cart_shipping->shipping_method_id
@@ -1166,6 +1279,16 @@ class WebController extends Controller
 
     public function products(Request $request)
     {
+        $request->validate([
+            'filter_brand_ids' => 'sometimes|array',
+            'filter_brand_ids.*' => 'integer|exists:brands,id',
+            'filter_category_ids' => 'sometimes|array',
+            'filter_category_ids.*' => 'integer|exists:categories,id',
+        ]);
+
+        $filterBrandIds = array_values(array_unique(array_map('intval', $request->input('filter_brand_ids', []))));
+        $filterCategoryIds = array_values(array_unique(array_map('intval', $request->input('filter_category_ids', []))));
+
         // -----------------------------
         // Default values
         // -----------------------------
@@ -1231,6 +1354,17 @@ class WebController extends Controller
             $query = $porduct_data->where('technical_name', $request['technical_name']);
         }
 
+        if ($filterBrandIds) {
+            $query->whereIn('brand_id', $filterBrandIds);
+        }
+        if ($filterCategoryIds) {
+            $query->where(function ($categoryQuery) use ($filterCategoryIds) {
+                foreach ($filterCategoryIds as $categoryId) {
+                    $categoryQuery->orWhereJsonContains('category_ids', [['id' => (string) $categoryId]]);
+                }
+            });
+        }
+
         // -----------------------------
         // Sorting (selling price = after discount, matches card display)
         // -----------------------------
@@ -1289,9 +1423,11 @@ class WebController extends Controller
             'min_price' => $request['min_price'],
             'max_price' => $request['max_price'],
             'technical_name' => $request['technical_name'],
+            'filter_brand_ids' => $filterBrandIds,
+            'filter_category_ids' => $filterCategoryIds,
         ];
 
-        $products = $fetched->paginate(20)->appends($data);
+        $products = $fetched->paginate(20)->appends($request->query());
 
         // -----------------------------
         // AJAX response

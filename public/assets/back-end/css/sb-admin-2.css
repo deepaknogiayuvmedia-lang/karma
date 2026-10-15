@@ -190,12 +190,12 @@ a:hover {
 }
 
 a:not([href]) {
-    color: inherit;
+    color: #ffffff;
     text-decoration: none;
 }
 
 a:not([href]):hover {
-    color: inherit;
+    color: #ffffff;
     text-decoration: none;
 }
 
@@ -2524,7 +2524,7 @@ textarea.form-control.is-invalid {
 }
 
 .btn:hover {
-    color: #858796;
+    color: #ffffff;
     text-decoration: none;
 }
 

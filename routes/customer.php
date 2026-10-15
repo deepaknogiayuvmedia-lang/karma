@@ -32,6 +32,7 @@ Route::group(['namespace' => 'Customer', 'prefix' => 'customer', 'as' => 'custom
 
         Route::get('sign-up', 'RegisterController@register')->name('sign-up');
         Route::post('sign-up', 'RegisterController@submit')->middleware('throttle:5,1');
+        Route::post('sign-up/terms-consent', 'RegisterController@social_terms_consent')->name('sign-up.terms-consent');
 
         Route::get('check/{id}/{type}', 'RegisterController@check')->name('check');
 
@@ -66,4 +67,3 @@ Route::group(['namespace' => 'Customer', 'prefix' => 'customer', 'as' => 'custom
         });
     });
 });
-

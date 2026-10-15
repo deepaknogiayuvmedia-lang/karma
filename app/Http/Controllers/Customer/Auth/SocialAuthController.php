@@ -10,10 +10,10 @@ use App\Model\Wishlist;
 use App\User;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Session;
-use  App\CPU\ImageManager;
 
 class SocialAuthController extends Controller
 {
@@ -28,7 +28,8 @@ class SocialAuthController extends Controller
 
         try {
             return Socialite::driver($service)->redirect();
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
+            Log::warning('Social login redirect failed.', ['provider' => $service, 'exception' => get_class($e)]);
             return redirect()->route('customer.auth.login')
                 ->with('error', 'Social login service is not configured.');
         }
@@ -42,16 +43,23 @@ class SocialAuthController extends Controller
         }
 
         try {
-            $user_data = Socialite::driver($service)->stateless()->user();
-        } catch (\Throwable $e) {
+            $user_data = Socialite::driver($service)->user();
+        } catch (\Exception $e) {
+            Log::warning('Social login callback failed.', ['provider' => $service, 'exception' => get_class($e)]);
             return redirect()->route('customer.auth.login')
                 ->with('error', 'Social login failed. Please try again.');
         }
         // dd($user_data['picture']);
-        $user = User::where('email', $user_data->getEmail())->first();
-        $user_img = $user_data['picture'];
-        $user_img = ImageManager::update('profile/', $user_img, 'png', $user_img);
-        $name = explode(' ', $user_data['name']);
+        $providerEmail = $user_data->getEmail();
+        if (!$providerEmail) {
+            return redirect()->route('customer.auth.sign-up')
+                ->with('error', 'The social provider did not return an email address. Please register with email and password.');
+        }
+
+        $user = User::where('email', $providerEmail)->first();
+        $user_img = 'def.png';
+        $providerName = trim((string) $user_data->getName());
+        $name = explode(' ', $providerName ?: strstr($providerEmail, '@', true));
         if (count($name) > 1) {
             $fast_name = implode(" ", array_slice($name, 0, -1));
             $last_name = end($name);
@@ -61,10 +69,16 @@ class SocialAuthController extends Controller
         }
 
         if (isset($user) == false) {
+            if (!session()->has('signup_terms_accepted_at')
+                || session('signup_terms_version') !== config('app.terms_version')) {
+                return redirect()->route('customer.auth.sign-up')
+                    ->with('error', 'Please accept the terms and conditions before creating an account.');
+            }
+
             $user = User::create([
                 'f_name' => $fast_name,
                 'l_name' => $last_name,
-                'email' => $user_data->getEmail(),
+                'email' => $providerEmail,
                 'phone' => '',
                 'password' => bcrypt(Str::random(64)),
                 'is_active' => 1,
@@ -73,8 +87,11 @@ class SocialAuthController extends Controller
                 'image' => $user_img,
                 'is_phone_verified' => 0,
                 'is_email_verified' => 1,
-                'temporary_token' => Str::random(40)
+                'temporary_token' => Str::random(40),
+                'terms_accepted_at' => session('signup_terms_accepted_at'),
+                'terms_version' => session('signup_terms_version'),
             ]);
+            session()->forget(['signup_terms_accepted_at', 'signup_terms_version']);
         } else {
             $user->temporary_token = Str::random(40);
             $user->save();
@@ -84,7 +101,7 @@ class SocialAuthController extends Controller
             return redirect()->route('customer.auth.update-phone', $user->id);
         }*/
         //redirect if website user
-        $message = self::login_process($user, $user_data->getEmail(), $user_data->id);
+        $message = self::login_process($user);
         Toastr::info($message);
         return redirect()->route('home');
     }
@@ -116,20 +133,21 @@ class SocialAuthController extends Controller
         $user->is_active = 1;
         $user->save();
 
-        return redirect(route('customer.auth.check', [$user->id]));
+        return redirect(route('customer.auth.check', ['id' => $user->id, 'type' => 'register']));
     }
 
-    public static function login_process($user, $email, $password)
+    public static function login_process($user)
     {
         $company_name = BusinessSetting::where('type', 'company_name')->first();
 
-        if ($user->is_active && auth('customer')->attempt(['email' => $email, 'password' => $password], true)) {
+        if ($user->is_active) {
+            auth('customer')->login($user, true);
             $wish_list = Wishlist::whereHas('wishlistProduct',function($q){
                 return $q;
             })->where('customer_id', $user->id)->pluck('product_id')->toArray();
 
             session()->put('wish_list', $wish_list);
-            $message = 'Welcome to ' . $company_name->value . '!';
+            $message = 'Welcome to ' . ($company_name->value ?? config('app.name')) . '!';
             CartManager::cart_to_db();
         } else {
             $message = 'Credentials are not matched or your account is not active!';

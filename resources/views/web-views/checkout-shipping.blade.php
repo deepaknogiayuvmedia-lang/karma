@@ -60,6 +60,7 @@
 
 @section('content')
 @php($billing_input_by_customer=\App\CPU\Helpers::get_business_settings('billing_input_by_customer'))
+@php($checkout_customer=auth('customer')->user())
     <div class="container pb-5 mb-2 mb-md-4 rtl __inline-56"
          style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
         <div class="row">
@@ -80,14 +81,13 @@
                         <h2 class="h4 pb-3 mb-2 mt-5">{{ \App\CPU\translate('choose_shipping_address')}}</h2>
                         @php($shipping_addresses=\App\Model\ShippingAddress::where('customer_id',auth('customer')->id())->where('is_billing',0)->get())
 
-                        @if($zip_restrict_status != 1)
                         <div class="card __card mb-3" id="checkout-pincode-card">
                             <div class="card-body">
                                 <label class="font-weight-bold mb-2">{{ \App\CPU\translate('Enter pincode to check delivery') }}</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control"
                                            name="checkout_pincode" id="checkout_pincode_input"
-                                           maxlength="6" value="{{ session('delhivery_pincode') ?? '' }}"
+                                           maxlength="6" value="{{ session('delhivery_pincode') ?? ($shipping_addresses->first()->zip ?? '') }}"
                                            placeholder="{{ \App\CPU\translate('Enter pincode') }}"
                                            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
                                     <div class="input-group-append">
@@ -97,19 +97,28 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div id="checkout_shipping_result" class="mt-2" @if(!session('delhivery_shipping_cost')) style="display:none;" @endif></div>
+                                <div id="checkout_shipping_result" class="mt-2"
+                                     data-serviceable="{{ session()->has('delhivery_shipping_cost') ? '1' : '0' }}"
+                                     data-pincode="{{ session('delhivery_pincode') ?? '' }}"
+                                     @if(!session()->has('delhivery_shipping_cost')) style="display:none;" @endif>
+                                    @if(session()->has('delhivery_shipping_cost'))
+                                        <div class="alert alert-success mb-0">
+                                            {{ \App\CPU\translate('Shipping Cost') }}:
+                                            {{ \App\CPU\Helpers::currency_converter(session('delhivery_shipping_cost')) }}
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                        @endif
-
                         <form method="post" class="card __card" id="address-form">
                             <div class="card-body p-0">
                                 <ul class="list-group">
                                     @foreach($shipping_addresses as $key=>$address)
-                                        <li class="list-group-item __inline-57" onclick="$('#sh-{{$address['id']}}').prop( 'checked', true )">
+                                        <li class="list-group-item __inline-57" onclick="$('#sh-{{$address['id']}}').prop('checked', true).trigger('change')">
                                             <input type="radio" name="shipping_method_id"
                                                    id="sh-{{$address['id']}}"
-                                                   value="{{$address['id']}}" {{$key==0?'checked':''}}>
+                                                   value="{{$address['id']}}" data-pincode="{{$address['zip']}}"
+                                                   {{$key==0?'checked':''}}>
                                             <span class="checkmark"
                                                   style="margin-{{Session::get('direction') === "rtl" ? 'left' : 'right'}}: 10px"></span>
                                             <label class="badge"
@@ -129,14 +138,14 @@
                                             </div>
                                         </li>
                                     @endforeach
-                                    <li class="list-group-item" onclick="anotherAddress()">
+                                    <li class="list-group-item">
                                         <input type="radio" name="shipping_method_id"
-                                               id="sh-0" value="0" data-toggle="collapse"
-                                               data-target="#collapseThree" {{$shipping_addresses->count()==0?'checked':''}}>
+                                               id="sh-0" value="0" data-pincode=""
+                                               {{$shipping_addresses->count()==0?'checked':''}}>
                                         <span class="checkmark"
                                               style="margin-{{Session::get('direction') === "rtl" ? 'left' : 'right'}}: 10px"></span>
 
-                                        <button type="button" class="btn btn-outline" data-toggle="collapse"
+                                        <button type="button" class="btn btn-outline" onclick="anotherAddress()" data-toggle="collapse"
                                                 data-target="#collapseThree">{{ \App\CPU\translate('Another')}} {{ \App\CPU\translate('address')}}
                                         </button>
                                         <div id="accordion">
@@ -150,21 +159,24 @@
                                                             for="exampleInputEmail1">{{ \App\CPU\translate('contact_person_name')}}
                                                             <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control"
-                                                               name="contact_person_name" {{$shipping_addresses->count()==0?'required':''}}>
+                                                               name="contact_person_name"
+                                                               value="{{ old('contact_person_name', trim(($checkout_customer->f_name ?? '') . ' ' . ($checkout_customer->l_name ?? ''))) }}"
+                                                               {{$shipping_addresses->count()==0?'required':''}}>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="exampleInputEmail1">{{ \App\CPU\translate('Phone')}}
                                                             <span
                                                                 class="text-danger">*</span></label>
                                                         <input type="text" class="form-control"
-                                                               name="phone" {{$shipping_addresses->count()==0?'required':''}}>
+                                                               name="phone"
+                                                               value="{{ old('phone', $checkout_customer->phone ?? '') }}"
+                                                               {{$shipping_addresses->count()==0?'required':''}}>
                                                     </div>
                                                     <div class="form-group">
                                                         <label
                                                             for="exampleInputPassword1">{{ \App\CPU\translate('address')}} {{ \App\CPU\translate('Type')}}</label>
                                                         <select class="form-control" name="address_type">
-                                                            <option
-                                                                value="permanent">{{ \App\CPU\translate('Permanent')}}</option>
+                                                            
                                                             <option value="home">{{ \App\CPU\translate('Home')}}</option>
                                                             <option
                                                                 value="others">{{ \App\CPU\translate('Others')}}</option>
@@ -228,10 +240,10 @@
                                                                 class="text-danger">*</span></label>
                                                         <textarea class="form-control" id="address"
                                                                   type="text"
-                                                                  name="address" {{$shipping_addresses->count()==0?'required':''}}></textarea>
+                                                                  name="address" {{$shipping_addresses->count()==0?'required':''}}>{{ old('address', $checkout_customer->farm_address ?? '') }}</textarea>
                                                     </div>
                                                     <div class="form-group">
-                                                        <input id="pac-input" class="controls rounded __inline-46" title="{{\App\CPU\translate('search_your_location_here')}}" type="text" placeholder="{{\App\CPU\translate('search_here')}}"/>
+                                                        <input type="hidden" id="pac-input">
                                                         <div class="__h-200px" id="location_map_canvas"></div>
                                                     </div>
                                                      <div class="form-check" style="padding-{{Session::get('direction') === "rtl" ? 'right' : 'left'}}: 1.25rem;">
@@ -308,15 +320,14 @@
 
                                         </li>
                                     @endforeach
-                                    <li class="list-group-item" onclick="billingAddress()">
+                                    <li class="list-group-item">
                                         <input type="radio" name="billing_method_id"
-                                            id="bh-0" value="0" data-toggle="collapse"
-                                            data-target="#billing_model" checked>
+                                            id="bh-0" value="0" checked>
 {{--                                        {{$billing_addresses->count()==0?'checked':''}}--}}
                                         <span class="checkmark"
                                             style="margin-{{Session::get('direction') === "rtl" ? 'left' : 'right'}}: 10px"></span>
 
-                                        <button type="button" class="btn btn-outline" data-toggle="collapse"
+                                        <button type="button" class="btn btn-outline" onclick="billingAddress()" data-toggle="collapse"
                                                 data-target="#billing_model">{{ \App\CPU\translate('Another')}} {{ \App\CPU\translate('address')}}
                                         </button>
                                         <div id="accordion">
@@ -330,21 +341,24 @@
                                                             for="exampleInputEmail1">{{ \App\CPU\translate('contact_person_name')}}
                                                             <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control"
-                                                            name="billing_contact_person_name" {{$billing_addresses->count()==0?'required':''}}>
+                                                            name="billing_contact_person_name"
+                                                            value="{{ old('billing_contact_person_name', trim(($checkout_customer->f_name ?? '') . ' ' . ($checkout_customer->l_name ?? ''))) }}"
+                                                            {{$billing_addresses->count()==0?'required':''}}>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="exampleInputEmail1">{{ \App\CPU\translate('Phone')}}
                                                             <span
                                                                 class="text-danger">*</span></label>
                                                         <input type="text" class="form-control"
-                                                            name="billing_phone" {{$billing_addresses->count()==0?'required':''}}>
+                                                            name="billing_phone"
+                                                            value="{{ old('billing_phone', $checkout_customer->phone ?? '') }}"
+                                                            {{$billing_addresses->count()==0?'required':''}}>
                                                     </div>
                                                     <div class="form-group">
                                                         <label
                                                             for="exampleInputPassword1">{{ \App\CPU\translate('address')}} {{ \App\CPU\translate('Type')}}</label>
                                                         <select class="form-control" name="billing_address_type">
-                                                            <option
-                                                                value="permanent">{{ \App\CPU\translate('Permanent')}}</option>
+                                                            
                                                             <option value="home">{{ \App\CPU\translate('Home')}}</option>
                                                             <option
                                                                 value="others">{{ \App\CPU\translate('Others')}}</option>
@@ -398,14 +412,11 @@
                                                                 class="text-danger">*</span></label>
                                                         <textarea class="form-control" id="billing_address"
                                                                 type="billing_text"
-                                                                name="billing_address" {{$billing_addresses->count()==0?'required':''}}></textarea>
+                                                                name="billing_address" {{$billing_addresses->count()==0?'required':''}}>{{ old('billing_address', $checkout_customer->farm_address ?? '') }}</textarea>
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <input id="pac-input-billing" class="controls rounded __inline-46"
-                                                            title="{{\App\CPU\translate('search_your_location_here')}}"
-                                                            type="text"
-                                                            placeholder="{{\App\CPU\translate('search_here')}}"/>
+                                                        <input type="hidden" id="pac-input-billing">
                                                         <div class="__h-200px" id="location_map_canvas_billing"></div>
                                                     </div>
                                                     <div class="form-check" style="padding-{{Session::get('direction') === "rtl" ? 'right' : 'left'}}: 1.25rem;">
@@ -469,13 +480,11 @@
     <script src="{{ asset('assets/front-end/js/bootstrap-select.min.js') }}"></script>
     <script>
         function anotherAddress() {
-            $('#sh-0').prop('checked', true);
-            $("#collapseThree").collapse();
+            $('#sh-0').prop('checked', true).trigger('change');
         }
 
         function billingAddress() {
             $('#bh-0').prop('checked', true);
-            $("#billing_model").collapse();
         }
 
     </script>
@@ -708,6 +717,19 @@
             let physical_product = $('#physical_product').val();
 
             if(physical_product === 'yes') {
+                var selectedShippingAddress = $('#address-form input[name="shipping_method_id"]:checked');
+                var addressPincode = selectedShippingAddress.val() === '0'
+                    ? ($('#address-form [name="zip"]').val() || '').trim()
+                    : String(selectedShippingAddress.data('pincode') || '').trim();
+
+                if (!$('#checkout_shipping_result').is(':visible')
+                    || $('#checkout_shipping_result').attr('data-serviceable') !== '1'
+                    || $('#checkout_pincode_input').val().trim() !== $('#checkout_shipping_result').attr('data-pincode')
+                    || $('#checkout_pincode_input').val().trim() !== addressPincode) {
+                    toastr.warning('{{ \App\CPU\translate("Please check shipping cost for your pincode first") }}');
+                    return;
+                }
+
                 var billing_addresss_same_shipping = $('#same_as_shipping_address').is(":checked");
 
                 let allAreFilled = true;
@@ -811,6 +833,9 @@
                 success: function(response) {
                     $btn.removeAttr('disabled').html('<i class="fa fa-truck mr-1"></i> {{ \App\CPU\translate("Check") }}');
                     if (response.status === 'success' && response.serviceable) {
+                        $('#checkout_shipping_result')
+                            .attr('data-serviceable', '1')
+                            .attr('data-pincode', pincode);
                         let codBadge = response.cod_available
                             ? '<div style="display:flex; align-items:center; justify-content:space-between;">'
                             + '<span style="font-size:12px; color:#66706A;">{{ \App\CPU\translate("Cash on Delivery") }}</span>'
@@ -840,27 +865,27 @@
                             + '</div>';
                         $('#checkout_shipping_result').html(html);
                     } else {
+                        $('#checkout_shipping_result').attr('data-serviceable', '0');
                         let html = '<div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px; display:flex; align-items:center; gap:8px;">'
                             + '<i class="fa fa-times-circle" style="color:#dc2626; font-size:14px;"></i>'
-                            + '<span style="font-size:12px; font-weight:600; color:#dc2626;">{{ \App\CPU\translate("Delivery not available for this pincode") }}</span>'
+                            + '<span style="font-size:12px; font-weight:600; color:#dc2626;">' + (response.message || '{{ \App\CPU\translate("Delivery not available for this pincode") }}') + '</span>'
                             + '</div>';
                         $('#checkout_shipping_result').html(html);
                     }
                     $('#checkout_shipping_result').show();
 
                     // Refresh order summary shipping + total
-                    if (response.status === 'success' && response.serviceable) {
-                        $.get('{{ route('checkout-details') }}', function(html) {
-                            var $tmp = $('<div>').append($.parseHTML(html));
-                            var shipRow = $tmp.find('#order-summary-shipping');
-                            var totalRow = $tmp.find('#order-summary-total');
-                            if (shipRow.length) $('#order-summary-shipping').text(shipRow.text());
-                            if (totalRow.length) $('#order-summary-total').text(totalRow.text());
-                        });
-                    }
+                    $.get('{{ route('checkout-details') }}', function(html) {
+                        var $tmp = $('<div>').append($.parseHTML(html));
+                        var shipRow = $tmp.find('#order-summary-shipping');
+                        var totalRow = $tmp.find('#order-summary-total');
+                        if (shipRow.length) $('#order-summary-shipping').text(shipRow.text());
+                        if (totalRow.length) $('#order-summary-total').text(totalRow.text());
+                    });
                 },
                 error: function(xhr) {
                     $btn.removeAttr('disabled').html('<i class="fa fa-truck mr-1"></i> {{ \App\CPU\translate("Check") }}');
+                    $('#checkout_shipping_result').attr('data-serviceable', '0');
                     var msg = (xhr.responseJSON && xhr.responseJSON.message)
                         ? xhr.responseJSON.message
                         : '{{ \App\CPU\translate("Error checking shipping. Please try again.") }}';
@@ -876,6 +901,26 @@
                 $('#checkout_calc_shipping_btn').click();
             }
         });
+
+        $('#checkout_pincode_input').on('input', function() {
+            $('#checkout_shipping_result').attr('data-serviceable', '0').hide();
+        });
+
+        $('#checkout_calc_shipping_btn').on('click', function() {
+            $('#checkout_shipping_result').attr('data-serviceable', '0');
+        });
+
+        $('#address-form input[name="shipping_method_id"]').on('change', function() {
+            var pincode = $(this).val() === '0'
+                ? ($('#address-form [name="zip"]').val() || '')
+                : ($(this).data('pincode') || '');
+            $('#checkout_pincode_input').val(pincode).trigger('input');
+        });
+
+        $('#address-form [name="zip"]').on('input change', function() {
+            if ($('#sh-0').is(':checked')) {
+                $('#checkout_pincode_input').val($(this).val()).trigger('input');
+            }
+        });
     </script>
 @endpush
-

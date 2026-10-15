@@ -2,8 +2,15 @@
 
 @section('title', \App\CPU\translate('Register'))
 
-
 @section('content')
+    <style>
+        .text-muted {
+            font-weight: 600;
+            font-size: 11px;
+            color: #6a6a6a !important;
+        }
+    </style>
+
     <div class="container py-4 py-lg-5 my-4 __inline-7"
          style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};">
         <div class="row justify-content-center">
@@ -13,8 +20,17 @@
                         <h2 class="h4 mb-1">{{\App\CPU\translate('sign_up')}}</h2>
                         <p class="font-size-sm text-muted mb-4">{{\App\CPU\translate('No Account')}} ? {{\App\CPU\translate('register_control_your_order')}}
                             .</p>
+                        @if ($errors->any())
+                            <div class="alert alert-danger" role="alert">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <form class="needs-validation_" id="form-id" action="{{route('customer.auth.sign-up')}}"
-                              method="post" id="sign-up-form">
+                              method="post">
                             @csrf
                             <div class="row">
                                 <div class="col-sm-6">
@@ -45,11 +61,40 @@
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label for="reg-phone">{{\App\CPU\translate('phone_number')}}
-                                            <small class="text-primary">( * {{\App\CPU\translate('country_code_is_must')}} {{\App\CPU\translate('like_for_BD_880')}} )</small></label>
-                                        <input class="form-control" type="number"  value="{{old('phone')}}"  name="phone"
+                                            @if(\App\CPU\Helpers::get_business_settings('phone_verification'))
+                                                <small class="text-primary">({{\App\CPU\translate('country_code_is_must')}})</small>
+                                            @else
+                                                <small class="text-muted">({{\App\CPU\translate('optional')}})</small>
+                                            @endif
+                                        </label>
+                                        <input class="form-control" type="tel" autocomplete="tel" value="{{old('phone')}}" name="phone"
                                                style="text-align: {{Session::get('direction') === "rtl" ? 'right' : 'left'}};"
-                                               required>
-                                        <div class="invalid-feedback">{{\App\CPU\translate('Please enter your phone number')}}!</div>
+                                               @if(\App\CPU\Helpers::get_business_settings('phone_verification')) required @endif>
+                                        <div class="invalid-feedback">{{\App\CPU\translate('Please enter a valid phone number')}}!</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="farm-acres">{{\App\CPU\translate('Farm size (acres)')}} <small class="text-muted">({{\App\CPU\translate('optional')}})</small></label>
+                                        <input class="form-control" type="number" min="0" step="0.01" max="1000000" name="farm_acres" id="farm-acres" value="{{old('farm_acres')}}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="crops-sown">{{\App\CPU\translate('Crops sown')}} <small class="text-muted">({{\App\CPU\translate('optional')}})</small></label>
+                                        <input class="form-control" type="text" maxlength="2000" name="crops_sown" id="crops-sown" value="{{old('crops_sown')}}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="farm-location-name">{{\App\CPU\translate('Location name')}} <small class="text-muted">({{\App\CPU\translate('optional')}})</small></label>
+                                        <input class="form-control" type="text" maxlength="255" name="farm_location_name" id="farm-location-name" value="{{old('farm_location_name')}}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="farm-address">{{\App\CPU\translate('Full address')}} <small class="text-muted">({{\App\CPU\translate('optional')}})</small></label>
+                                        <textarea class="form-control" maxlength="1000" rows="2" name="farm_address" id="farm-address">{{old('farm_address')}}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
@@ -94,7 +139,8 @@
                                 <label class="form-group mb-1 d-flex align-items-center">
                                     <strong>
                                         <input type="checkbox" class="mr-1"
-                                               name="remember" id="inputCheckd">
+                                               name="terms_accepted" value="1" id="inputCheckd" required
+                                               {{ old('terms_accepted') ? 'checked' : '' }}>
                                     </strong>
                                     <span class="mb-4px d-block w-0 flex-grow pl-1" > <span>{{\App\CPU\translate('i_agree_to_Your')}}</span> <a
                                             class="font-size-sm" target="_blank" href="{{route('terms')}}">
@@ -125,7 +171,8 @@
                             <div class="flex-between row" style="direction: {{ Session::get('direction') }}">
                                 <div class="mx-1">
                                     <div class="text-right">
-                                        <button class="btn btn--primary" id="sign-up" type="submit" disabled>
+                                        <button class="btn btn--primary" id="sign-up" type="submit"
+                                                @if (!old('terms_accepted')) disabled @endif>
                                             <i class="czi-user {{Session::get('direction') === "rtl" ? 'ml-2 mr-n1' : 'mr-2 ml-n1'}}"></i>
                                             {{\App\CPU\translate('sign_up')}}
                                         </button>
@@ -141,7 +188,7 @@
                                         @foreach (\App\CPU\Helpers::get_business_settings('social_login') as $socialLoginService)
                                             @if (isset($socialLoginService) && $socialLoginService['status']==true)
                                                 <div class="col-sm-6 text-center mt-1">
-                                                    <a class="btn btn-outline-primary w-100" href="{{route('customer.auth.service-login', $socialLoginService['login_medium'])}}">
+                                                    <a class="btn btn-outline-primary w-100 js-social-signup" href="{{route('customer.auth.service-login', $socialLoginService['login_medium'])}}">
                                                         <i class="czi-{{ $socialLoginService['login_medium'] }} {{Session::get('direction') === "rtl" ? 'ml-2 mr-n1' : 'mr-2 ml-n1'}}"></i>
                                                         {{\App\CPU\translate('sign_up_with_'.$socialLoginService['login_medium'])}}
                                                     </a>
@@ -170,7 +217,25 @@
             }
 
         });
+        $('.js-social-signup').click(function (event) {
+            event.preventDefault();
+            if (!$('#inputCheckd').is(':checked')) {
+                toastr.warning("{{\App\CPU\translate('Please accept the terms and conditions before continuing.')}}");
+                return;
+            }
 
+            var target = this.href;
+            $.post("{{route('customer.auth.sign-up.terms-consent')}}", {
+                _token: "{{csrf_token()}}",
+                terms_accepted: 1
+            }).done(function () {
+                window.location.href = target;
+            }).fail(function (xhr) {
+                toastr.error(xhr.responseJSON && xhr.responseJSON.message
+                    ? xhr.responseJSON.message
+                    : "{{\App\CPU\translate('Unable to record your consent. Please try again.')}}");
+            });
+        });
     </script>
 
     {{-- recaptcha scripts start --}}
@@ -206,4 +271,3 @@
     @endif
     {{-- recaptcha scripts end --}}
 @endpush
-

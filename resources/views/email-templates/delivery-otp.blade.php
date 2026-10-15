@@ -39,9 +39,9 @@
                 </td>
                 <td>
                     <div style="text-align:right; margin-right:15px;">
-                        <img style="max-width:250px; border:0;"
-                            src="{{asset('/'.config('app.public_storage_path').'/company/'.$company_web_logo)}}"
-                            title="" class="sitelogo" width="60%" alt=""/>
+                        <img style="display:block; width:auto; height:auto; max-width:250px; max-height:60px; border:0;"
+                            src="{{rtrim(config('app.mail_asset_url'), '/').'/'.trim(config('app.public_storage_path'), '/').'/company/'.$company_web_logo}}"
+                            title="" class="sitelogo" width="250" alt="{{ $company_name }}"/>
                     </div>
                 </td>
             </tr>

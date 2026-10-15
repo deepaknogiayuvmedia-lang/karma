@@ -2,10 +2,10 @@
 @if(isset($banner))
     <div class="modal fade" id="popup-modal">
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
+            <div class="modal-content pb-0">
                 <div class="modal-header border-0 __p-1px">
                     <button type="button" class="close __close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true" style="font-size: 2rem !important;">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body cursor-pointer __p-3px" onclick="location.href='{{$banner['url']}}'">

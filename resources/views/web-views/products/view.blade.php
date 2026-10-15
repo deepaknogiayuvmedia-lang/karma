@@ -182,9 +182,9 @@
                     <div class="bh-filter-group">
                         <div class="bh-filter-group-title">{{\App\CPU\translate('Price Range')}}</div>
                         <div class="d-flex align-items-center gap-2">
-                            <input class="form-control form-control-sm" type="number" value="0" min="0" max="1000000" id="min_price" placeholder="Min" style="border-radius: var(--bh-radius-sm);">
+                            <input class="form-control form-control-sm" type="number" value="{{ request('min_price', 0) }}" min="0" max="1000000" id="min_price" placeholder="Min" style="border-radius: var(--bh-radius-sm);">
                             <span class="text-muted font-weight-bold"> - </span>
-                            <input value="10000" min="10" max="1000000" class="form-control form-control-sm" type="number" id="max_price" placeholder="Max" style="border-radius: var(--bh-radius-sm);">
+                            <input value="{{ request('max_price', 10000) }}" min="10" max="1000000" class="form-control form-control-sm" type="number" id="max_price" placeholder="Max" style="border-radius: var(--bh-radius-sm);">
                             <button class="btn btn-bh-primary btn-sm ml-1" type="button" onclick="searchByPrice()" style="padding: 4px 10px !important;">
                                 <i class="fa fa-arrow-right"></i>
                             </button>
@@ -200,12 +200,16 @@
                         <div style="max-height: 180px; overflow-y: auto;">
                             <ul id="lista1" class="list-unstyled mb-0" style="font-size: 0.85rem;">
                                 @foreach(\App\CPU\BrandManager::get_active_brands() as $brand)
-                                    <li class="py-1 d-flex justify-content-between align-items-center cursor-pointer bh-brand-item"
-                                        onclick="location.href='{{route('products',['id'=> $brand['id'],'data_from'=>'brand','page'=>1])}}'">
-                                        <span style="color: var(--bh-text-primary);">{{ $brand['name'] }}</span>
-                                        @if($brand['brand_products_count'] > 0 )
-                                            <span class="badge badge-light border">{{ $brand['brand_products_count'] }}</span>
-                                        @endif
+                                    <li class="py-1 bh-brand-item">
+                                        <label class="d-flex justify-content-between align-items-center mb-0 cursor-pointer">
+                                            <span style="color: var(--bh-text-primary);">
+                                                <input type="checkbox" class="js-product-filter-brand mr-1" value="{{ $brand['id'] }}" {{ in_array((int) $brand['id'], $data['filter_brand_ids'] ?? [], true) ? 'checked' : '' }}>
+                                                {{ $brand['name'] }}
+                                            </span>
+                                            @if($brand['brand_products_count'] > 0 )
+                                                <span class="badge badge-light border">{{ $brand['brand_products_count'] }}</span>
+                                            @endif
+                                        </label>
                                     </li>
                                 @endforeach
                             </ul>
@@ -219,16 +223,22 @@
                         <div class="accordion" id="shop-categories" style="font-size: 0.85rem;">
                             @foreach($categories as $category)
                                 <div class="py-1 border-bottom">
-                                    <div class="d-flex justify-content-between align-items-center cursor-pointer" onclick="location.href='{{route('products',['id'=> $category['id'],'data_from'=>'category','page'=>1])}}'">
-                                        <span style="font-weight: 600; color: var(--bh-text-primary);">{{$category['name']}}</span>
+                                    <label class="d-flex justify-content-between align-items-center mb-0 cursor-pointer">
+                                        <span style="font-weight: 600; color: var(--bh-text-primary);">
+                                            <input type="checkbox" class="js-product-filter-category mr-1" value="{{ $category['id'] }}" {{ in_array((int) $category['id'], $data['filter_category_ids'] ?? [], true) ? 'checked' : '' }}>
+                                            {{$category['name']}}
+                                        </span>
                                         @if($category->childes->count() > 0)
                                             <i class="fa fa-angle-right text-muted"></i>
                                         @endif
-                                    </div>
+                                    </label>
                                 </div>
                             @endforeach
                         </div>
                     </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm mt-3 w-100" id="clear-product-filters">
+                        {{\App\CPU\translate('Clear filters')}}
+                    </button>
                 </div>
             </aside>
 
@@ -316,6 +326,8 @@
             var maxPrice = parseFloat($('#max_price').val());
             if (!isNaN(minPrice) && minPrice > 0) data.min_price = minPrice;
             if (!isNaN(maxPrice) && maxPrice > 0 && maxPrice != 10000) data.max_price = maxPrice;
+            data.filter_brand_ids = $('.js-product-filter-brand:checked').map(function () { return this.value; }).get();
+            data.filter_category_ids = $('.js-product-filter-category:checked').map(function () { return this.value; }).get();
             return data;
         }
 
@@ -324,8 +336,26 @@
                 var url = new URL(window.location.href);
                 url.searchParams.set('sort_by', sortBy);
                 url.searchParams.delete('page');
+                persistSelectedFilters(url);
                 window.history.replaceState({}, '', url.toString());
             } catch (e) {}
+        }
+
+        function persistSelectedFilters(url) {
+            url.searchParams.delete('filter_brand_ids[]');
+            url.searchParams.delete('filter_category_ids[]');
+            url.searchParams.delete('min_price');
+            url.searchParams.delete('max_price');
+            $('.js-product-filter-brand:checked').each(function () {
+                url.searchParams.append('filter_brand_ids[]', this.value);
+            });
+            $('.js-product-filter-category:checked').each(function () {
+                url.searchParams.append('filter_category_ids[]', this.value);
+            });
+            var minPrice = parseFloat($('#min_price').val());
+            var maxPrice = parseFloat($('#max_price').val());
+            if (!isNaN(minPrice) && minPrice > 0) url.searchParams.set('min_price', minPrice);
+            if (!isNaN(maxPrice) && maxPrice > 0 && maxPrice != 10000) url.searchParams.set('max_price', maxPrice);
         }
 
         function extractGridContent(html) {
@@ -382,6 +412,18 @@
 
         function searchByPrice() {
             requestProducts({ page: 1 });
+            try {
+                var url = new URL(window.location.href);
+                persistSelectedFilters(url);
+                var minPrice = $('#min_price').val();
+                var maxPrice = $('#max_price').val();
+                if (minPrice) url.searchParams.set('min_price', minPrice);
+                else url.searchParams.delete('min_price');
+                if (maxPrice && maxPrice != 10000) url.searchParams.set('max_price', maxPrice);
+                else url.searchParams.delete('max_price');
+                url.searchParams.delete('page');
+                window.history.replaceState({}, '', url.toString());
+            } catch (e) {}
         }
 
         function loadMoreProducts() {
@@ -434,17 +476,50 @@
         $('#searchByFilterValue, #searchByFilterValue-m').change(function () {
             var url = $(this).val();
             if (url) {
-                window.location = url;
+                var target = new URL(url, window.location.origin);
+                var filters = getFilterData();
+                (filters.filter_brand_ids || []).forEach(function (id) {
+                    target.searchParams.append('filter_brand_ids[]', id);
+                });
+                (filters.filter_category_ids || []).forEach(function (id) {
+                    target.searchParams.append('filter_category_ids[]', id);
+                });
+                if (filters.min_price) target.searchParams.set('min_price', filters.min_price);
+                if (filters.max_price) target.searchParams.set('max_price', filters.max_price);
+                window.location = target.toString();
             }
             return false;
         });
 
+        $(document).on('change', '.js-product-filter-brand, .js-product-filter-category', function () {
+            requestProducts({ page: 1 });
+            try {
+                var url = new URL(window.location.href);
+                persistSelectedFilters(url);
+                url.searchParams.delete('page');
+                window.history.replaceState({}, '', url.toString());
+            } catch (e) {}
+        });
+
         $("#search-brand").on("keyup", function () {
             var value = this.value.toLowerCase().trim();
-            $("#lista1 div>li").show().filter(function () {
+            $("#lista1 > li").show().filter(function () {
                 return $(this).text().toLowerCase().trim().indexOf(value) == -1;
             }).hide();
         });
+
+        $('#clear-product-filters').on('click', function () {
+            $('.js-product-filter-brand, .js-product-filter-category').prop('checked', false);
+            $('#min_price').val(0);
+            $('#max_price').val(10000);
+            requestProducts({ page: 1, min_price: '', max_price: '', filter_brand_ids: [], filter_category_ids: [] });
+            try {
+                var url = new URL(window.location.href);
+                ['filter_brand_ids[]', 'filter_category_ids[]', 'min_price', 'max_price', 'page'].forEach(function (key) {
+                    url.searchParams.delete(key);
+                });
+                window.history.replaceState({}, '', url.toString());
+            } catch (e) {}
+        });
     </script>
 @endpush
-

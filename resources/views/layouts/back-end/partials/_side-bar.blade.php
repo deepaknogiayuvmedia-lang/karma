@@ -67,16 +67,16 @@
                         @if (\App\CPU\Helpers::module_permission_check('order_management'))
                             <li class="nav-item {{ Request::is('admin/prdouct-query*') ? 'scroll-here' : '' }}">
                                 <small class="nav-subtitle"
-                                    title="">{{ \App\CPU\translate('Product Query') }}</small>
+                                    title="">{{ \App\CPU\translate('Product Bidding') }}</small>
                                 <small class="tio-more-horizontal nav-subtitle-replacer"></small>
                             </li>
                             <!-- Order -->
                             <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/orders*') ? 'active' : '' }}">
                                 <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle"
-                                    href="javascript:void(0)" title="{{ \App\CPU\translate('Product Query') }}">
+                                    href="javascript:void(0)" title="{{ \App\CPU\translate('Product Bidding') }}">
                                     <i class="tio-shopping-cart-outlined nav-icon"></i>
                                     <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
-                                        {{ \App\CPU\translate('Product Query') }}
+                                        {{ \App\CPU\translate('Product Bidding') }}
                                     </span>
                                 </a>
                                 <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
@@ -480,16 +480,7 @@
                                         class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">{{ \App\CPU\translate('Product_Attributes') }}</span>
                                 </a>
                             </li>
-                            <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/product/all-products') ? 'active' : '' }}">
-                                <a class="js-navbar-vertical-aside-menu-link nav-link"
-                                    href="{{ route('admin.product.all-products') }}"
-                                    title="{{ \App\CPU\translate('All Products') }}">
-                                    <i class="tio-list-numbered nav-icon"></i>
-                                    <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
-                                        {{ \App\CPU\translate('All Products') }}
-                                    </span>
-                                </a>
-                            </li>
+                           
                             <li
                                 class="navbar-vertical-aside-has-menu {{ Request::is('admin/product/list/in_house') || Request::is('admin/product/bulk-import') || Request::is('admin/product/add-new') || Request::is('admin/product/view/*') || Request::is('admin/product/barcode/*') ? 'active' : '' }}">
                                 <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle"
@@ -1137,4 +1128,3 @@
         });
     </script>
 @endpush
-

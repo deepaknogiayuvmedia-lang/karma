@@ -47,6 +47,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
         Route::get('checkout-details', 'WebController@checkout_details')->name('checkout-details');
         Route::get('checkout-shipping', 'WebController@checkout_details')->name('checkout-shipping')->middleware('customer');
         Route::get('checkout-payment', 'WebController@checkout_payment')->name('checkout-payment')->middleware('customer');
+        Route::post('checkout/terms-consent', 'WebController@accept_checkout_terms')->name('checkout.terms-consent')->middleware('customer');
         Route::get('checkout-review', 'WebController@checkout_payment')->name('checkout-review')->middleware('customer');
         Route::get('checkout-complete', 'WebController@checkout_complete')->name('checkout-complete')->middleware('customer');
         Route::post('offline-payment-checkout-complete', 'WebController@offline_payment_checkout_complete')->name('offline-payment-checkout-complete')->middleware('customer');
@@ -114,6 +115,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['maintenance_mode']], funct
     Route::get('account-oder', 'UserProfileController@account_oder')->name('account-oder')->middleware('customer');
     Route::get('account-order-details', 'UserProfileController@account_order_details')->name('account-order-details')->middleware('customer');
     Route::get('generate-invoice/{id}', 'UserProfileController@generate_invoice')->name('generate-invoice');
+    Route::get('original-invoice/{id}', 'UserProfileController@download_original_invoice')->name('original-invoice')->middleware('customer');
     Route::get('account-wishlist', 'UserProfileController@account_wishlist')->name('account-wishlist'); //add to card not work
     Route::get('refund-request/{id}', 'UserProfileController@refund_request')->name('refund-request');
     Route::get('refund-details/{id}', 'UserProfileController@refund_details')->name('refund-details');
@@ -190,8 +192,8 @@ Route::group(['prefix' => 'cart', 'as' => 'cart.', 'namespace' => 'Web'], functi
     Route::post('updateQuantity', 'CartController@updateQuantity')->name('updateQuantity');
 });
 
-// Buy Now - direct checkout without adding to cart
-Route::post('buy-now', [WebController::class, 'buy_now'])->name('buy-now')->middleware('customer');
+// Buy Now - direct checkout without adding to cart (guests allowed: they are sent to login, then back to checkout)
+Route::post('buy-now', [WebController::class, 'buy_now'])->name('buy-now');
 
 //Seller shop apply
 Route::group(['prefix' => 'coupon', 'as' => 'coupon.', 'namespace' => 'Web'], function () {

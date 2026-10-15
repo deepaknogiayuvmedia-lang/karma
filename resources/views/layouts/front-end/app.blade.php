@@ -448,6 +448,27 @@
             font-size: 0.8rem;
             color: var(--bh-text-secondary, #66706A);
         }
+        @media (max-width: 767px) {
+            .bh-mobile-nav {
+                width: 100%;
+                max-width: 100vw;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+            .bh-mobile-nav-item {
+                flex: 1 1 0;
+                min-width: 0;
+                padding: 4px 2px;
+            }
+            .bh-mobile-nav-item span {
+                display: block;
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-size: clamp(9px, 2.7vw, 11px);
+            }
+        }
     </style>
 
     <!-- Phase 24: Mobile Text Reset -->
@@ -923,7 +944,12 @@
                     },
                     success: function(response) {
                         if (response.status == 1) {
-                            location.href = "{{ route('checkout-details') }}";
+                            if (response.login_required) {
+                                // Not logged in: go to login, then return to checkout after login.
+                                location.href = response.login_url;
+                            } else {
+                                location.href = "{{ route('checkout-details') }}";
+                            }
                         } else {
                             Swal.fire({
                                 icon: 'error',
@@ -1398,4 +1424,3 @@
 </body>
 
 </html>
-

@@ -498,23 +498,6 @@
                                         step="1" placeholder="{{ \App\CPU\translate('minimum_order_quantity') }}"
                                         name="minimum_order_qty" class="form-control" required>
                                 </div>
-                                <div class="col-md-3 form-group physical_product_show" id="shipping_cost">
-                                    <label class="title-color">{{ \App\CPU\translate('shipping_cost') }} </label>
-                                    <input type="number" min="0"
-                                        value="{{ \App\CPU\Convert::default($product->shipping_cost) }}" step="1"
-                                        placeholder="{{ \App\CPU\translate('shipping_cost') }}" name="shipping_cost"
-                                        class="form-control" required>
-                                </div>
-                                <div class="col-md-3 form-group physical_product_show" id="shipping_cost">
-                                    <label
-                                        class="title-color">{{ \App\CPU\translate('shipping_cost_multiply_with_quantity') }}
-                                    </label>
-                                    <label class="switcher title-color">
-                                        <input class="switcher_input" type="checkbox" name="multiplyQTY" id=""
-                                            {{ $product->multiply_qty == 1 ? 'checked' : '' }}>
-                                        <span class="switcher_control"></span>
-                                    </label>
-                                </div>
                             </div>
                         </div>
                     </div>

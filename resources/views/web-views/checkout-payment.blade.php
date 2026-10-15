@@ -624,6 +624,13 @@
                                 {{\App\CPU\translate('Proceed_to_Pay')}}
                             </button>
                         </div>
+                        <div class="custom-control custom-checkbox mt-3">
+                            <input type="checkbox" class="custom-control-input" id="checkout-terms-accepted">
+                            <label class="custom-control-label" for="checkout-terms-accepted">
+                                {{\App\CPU\translate('I agree to the')}}
+                                <a href="{{route('terms')}}" target="_blank" rel="noopener">{{\App\CPU\translate('Terms and Conditions')}}</a>
+                            </label>
+                        </div>
 
                         <div class="pay-secure">
                             <span><i class="fa fa-shield"></i> {{\App\CPU\translate('100%_secure_payments')}}</span>
@@ -961,13 +968,7 @@
                 window.location.href = href;
             }
 
-            $btn.on('click', function () {
-                var m = selectedMethod();
-                if (!m) {
-                    toastr.warning('{{\App\CPU\translate('Please_select_a_payment_method')}}');
-                    return;
-                }
-
+            function continuePayment(m) {
                 switch (m) {
                     case 'cod':
                         submitForm('#form-cod');
@@ -1029,6 +1030,36 @@
                     default:
                         toastr.error('{{\App\CPU\translate('Error')}}');
                 }
+            }
+
+            $btn.on('click', function () {
+                var m = selectedMethod();
+                if (!m) {
+                    toastr.warning('{{\App\CPU\translate('Please_select_a_payment_method')}}');
+                    return;
+                }
+                if (!$('#checkout-terms-accepted').is(':checked')) {
+                    toastr.warning('{{\App\CPU\translate('Please accept the terms and conditions before continuing.')}}');
+                    return;
+                }
+
+                $btn.prop('disabled', true);
+                $.ajax({
+                    url: @json(route('checkout.terms-consent')),
+                    method: 'POST',
+                    data: {
+                        _token: @json(csrf_token()),
+                        terms_accepted: 1
+                    }
+                }).done(function () {
+                    continuePayment(m);
+                }).fail(function (xhr) {
+                    toastr.error(xhr.responseJSON && xhr.responseJSON.message
+                        ? xhr.responseJSON.message
+                        : '{{\App\CPU\translate('Unable to record your consent. Please try again.')}}');
+                }).always(function () {
+                    $btn.prop('disabled', false);
+                });
             });
 
             // If only one method, keep it selected (already handled by checked/selected on first)

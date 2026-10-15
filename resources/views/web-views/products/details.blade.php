@@ -3217,6 +3217,8 @@
             if (next < 1) next = 1;
             if (next > 100) next = 100;
             input.value = next;
+            var shippingFeedback = document.getElementById('bh_pincode_feedback');
+            if (shippingFeedback) shippingFeedback.style.display = 'none';
         }
 
         // Tab Switching
@@ -3403,7 +3405,8 @@
                 data: {
                     _token: '{{ csrf_token() }}',
                     pincode: pin,
-                    product_id: '{{ $product->id ?? 1 }}'
+                    product_id: '{{ $product->id ?? 1 }}',
+                    quantity: document.getElementById('bh_qty_input') ? document.getElementById('bh_qty_input').value : 1
                 },
                 success: function(response) {
                     btn.disabled = false;
@@ -3417,28 +3420,18 @@
                             '<div><strong>Cash On Delivery (COD):</strong> ' + (response.cod_available ? '<span style="color:#168A3A; font-weight:700;">Available</span>' : '<span style="color:#DC2626;">Not Available</span>') + '</div>' +
                             '</div>';
                     } else {
-                        // Friendly fallback simulation for preview
-                        feedback.className = 'bh-pincode-result-box success';
-                        feedback.innerHTML = '<div style="display:flex; flex-direction:column; gap:4px;">' +
-                            '<div style="font-weight:700;"><i class="fa fa-check-circle" style="color:#16A34A;"></i> Pincode ' + pin + ' is Serviceable!</div>' +
-                            '<div><strong>Estimated Delivery:</strong> 3 - 4 Days</div>' +
-                            '<div><strong>Shipping:</strong> <span style="color:#168A3A; font-weight:700;">FREE DELIVERY</span></div>' +
-                            '<div><strong>Cash On Delivery:</strong> <span style="color:#168A3A; font-weight:700;">Available</span></div>' +
-                            '</div>';
+                        feedback.className = 'bh-pincode-result-box error';
+                        feedback.textContent = response && response.message
+                            ? response.message
+                            : 'Delivery is not available for this pincode.';
                     }
                     feedback.style.display = 'block';
                 },
                 error: function() {
                     btn.disabled = false;
                     btn.textContent = 'Check';
-                    // Fallback serviceable display
-                    feedback.className = 'bh-pincode-result-box success';
-                    feedback.innerHTML = '<div style="display:flex; flex-direction:column; gap:4px;">' +
-                        '<div style="font-weight:700;"><i class="fa fa-check-circle" style="color:#16A34A;"></i> Pincode ' + pin + ' is Serviceable!</div>' +
-                        '<div><strong>Estimated Delivery:</strong> 3 - 5 Business Days</div>' +
-                        '<div><strong>Shipping:</strong> <span style="color:#168A3A; font-weight:700;">FREE DELIVERY</span></div>' +
-                        '<div><strong>Cash On Delivery:</strong> <span style="color:#168A3A; font-weight:700;">Available</span></div>' +
-                        '</div>';
+                    feedback.className = 'bh-pincode-result-box error';
+                    feedback.textContent = 'Unable to check delivery for this pincode. Please try again.';
                     feedback.style.display = 'block';
                 }
             });
