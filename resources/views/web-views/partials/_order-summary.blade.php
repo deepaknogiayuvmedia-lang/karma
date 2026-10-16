@@ -305,8 +305,8 @@
                 .os-pl-body { min-width: 0; flex: 1; }
                 .os-pl-name { font-size: 0.8rem; font-weight: 600; color: #1B1F1D; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
                 .os-pl-var { font-size: 0.7rem; color: #66706A; margin-top: 1px; }
-                .os-pl-meta { font-size: 0.72rem; color: #66706A; margin-top: 2px; }
-                .os-pl-meta b { color: #168A3A; font-weight: 700; }
+                .os-pl-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem; font-size: 0.72rem; color: #66706A; margin-top: 2px; }
+                .os-pl-total { color: #168A3A; font-weight: 700; white-space: nowrap; }
             </style>
             <div class="os-product-list">
                 @foreach($cart as $cartItem)
@@ -327,7 +327,11 @@
                                 </div>
                             @endif
                             <div class="os-pl-meta">
-                                Qty {{$cartItem['quantity']}} · <b>{{ $format_order_price($cartItem['price'] * $cartItem['quantity']) }}</b>
+                                <span>{{ $format_order_price($cartItem['price']) }}</span>
+                                <span aria-hidden="true">&times;</span>
+                                <span>{{$cartItem['quantity']}}</span>
+                                <span aria-hidden="true">=</span>
+                                <strong class="os-pl-total">{{ $format_order_price($cartItem['price'] * $cartItem['quantity']) }}</strong>
                             </div>
                         </div>
                     </div>
